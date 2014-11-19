@@ -197,6 +197,11 @@ void Pmove (pmove_t *pmove);
 
 //===================================================================================
 
+// tokens <-> lives
+#define LIFE2TOK(x)	((x)*100)
+#define TOK2LIFE(x)	((x)/100)
+
+#define SPAWNHEALTH LIFE2TOK(2)
 
 // player_state->stats[] indexes
 // NOTE: may not have more than 16
@@ -210,7 +215,7 @@ typedef enum {
 	STAT_ARMOR,				
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_HEALTH					// health / armor limit, changable by handicap
+	STAT_MAX_ARMOR,
 } statIndex_t;
 
 
@@ -618,7 +623,8 @@ typedef enum {
 	IT_HOLDABLE,			// single use, holdable item
 							// EFX: rotate + bob
 	IT_PERSISTANT_POWERUP,
-	IT_TEAM
+	IT_TEAM,
+	IT_LIFE
 } itemType_t;
 
 #define MAX_ITEM_MODELS 4

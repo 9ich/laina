@@ -36,9 +36,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 
-#define	RESPAWN_ARMOR		25
-#define	RESPAWN_HEALTH		35
-#define	RESPAWN_AMMO		40
+#define	RESPAWN_ARMOR		-1
+#define	RESPAWN_HEALTH		-1
+#define	RESPAWN_LIFE		-1
+#define	RESPAWN_AMMO		-1
 #define	RESPAWN_HOLDABLE	60
 #define	RESPAWN_MEGAHEALTH	35//120
 #define	RESPAWN_POWERUP		120
@@ -139,7 +140,6 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 
 		other->health = max;
 		other->client->ps.stats[STAT_HEALTH] = max;
-		other->client->ps.stats[STAT_MAX_HEALTH] = max;
 		other->client->ps.stats[STAT_ARMOR] = max;
 		other->client->pers.maxHealth = max;
 
@@ -272,71 +272,35 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	return g_weaponRespawn.integer;
 }
 
-
-//======================================================================
-
 int Pickup_Health (gentity_t *ent, gentity_t *other) {
-	int			max;
-	int			quantity;
-
-	// small and mega healths will go over the max
-#ifdef MISSIONPACK
-	if( bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-		max = other->client->ps.stats[STAT_MAX_HEALTH];
-	}
-	else
-#endif
-	if ( ent->item->quantity != 5 && ent->item->quantity != 100 ) {
-		max = other->client->ps.stats[STAT_MAX_HEALTH];
-	} else {
-		max = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
-	}
-
+	int quantity;
 	if ( ent->count ) {
 		quantity = ent->count;
 	} else {
 		quantity = ent->item->quantity;
 	}
-
 	other->health += quantity;
-
-	if (other->health > max ) {
-		other->health = max;
-	}
 	other->client->ps.stats[STAT_HEALTH] = other->health;
-
-	if ( ent->item->quantity == 100 ) {		// mega health respawns slow
-		return RESPAWN_MEGAHEALTH;
-	}
-
 	return RESPAWN_HEALTH;
 }
 
-//======================================================================
+int Pickup_Life (gentity_t *ent, gentity_t *other) {
+	int quantity;
+	if ( ent->count ) {
+		quantity = ent->count;
+	} else {
+		quantity = ent->item->quantity;
+	}
+	other->health += LIFE2TOK(quantity);
+	other->client->ps.stats[STAT_HEALTH] = other->health;
+	return RESPAWN_HEALTH;
+}
 
 int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
-#ifdef MISSIONPACK
-	int		upperBound;
-
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
-
-	if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-		upperBound = other->client->ps.stats[STAT_MAX_HEALTH];
+	if ( other->client->ps.stats[STAT_ARMOR] > other->client->ps.stats[STAT_MAX_ARMOR] ) {
+		other->client->ps.stats[STAT_ARMOR] = other->client->ps.stats[STAT_MAX_ARMOR];
 	}
-	else {
-		upperBound = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
-	}
-
-	if ( other->client->ps.stats[STAT_ARMOR] > upperBound ) {
-		other->client->ps.stats[STAT_ARMOR] = upperBound;
-	}
-#else
-	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
-	if ( other->client->ps.stats[STAT_ARMOR] > other->client->ps.stats[STAT_MAX_HEALTH] * 2 ) {
-		other->client->ps.stats[STAT_ARMOR] = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
-	}
-#endif
-
 	return RESPAWN_ARMOR;
 }
 
@@ -456,6 +420,9 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		break;
 	case IT_HEALTH:
 		respawn = Pickup_Health(ent, other);
+		break;
+	case IT_LIFE:
+		respawn = Pickup_Life(ent, other);
 		break;
 	case IT_POWERUP:
 		respawn = Pickup_Powerup(ent, other);
