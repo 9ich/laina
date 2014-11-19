@@ -541,6 +541,13 @@ ifeq ($(PLATFORM),mingw32)
       WINDRES=windres
     endif
   endif
+  # give windres a target flag to avoid having it detect the host system's arch
+  ifeq ($(ARCH),x86)
+    WINDRES_FLAGS=-Fpe-i386
+  endif
+  ifeq ($(ARCH),amd64)
+    WINDRES_FLAGS=-Fpe-x86-64
+  endif
 
   ifeq ($(CC),)
     $(error Cannot find a suitable cross compiler for $(PLATFORM))
@@ -1211,7 +1218,7 @@ endef
 
 define DO_WINDRES
 $(echo_cmd) "WINDRES $<"
-$(Q)$(WINDRES) -i $< -o $@
+$(Q)$(WINDRES) $(WINDRES_FLAGS) -i $< -o $@
 endef
 
 
