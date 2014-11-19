@@ -163,8 +163,18 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	char			*s;
 	uiClientState_t	cstate;
 	char			info[MAX_INFO_VALUE];
+	char			buf[2];
 
 	Menu_Cache();
+	
+	trap_Cvar_VariableStringBuffer("developer", buf, sizeof buf);
+	if (!atoi(buf)) {
+		// draw the dialog background
+		UI_SetColor( color_black );
+		UI_DrawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader );
+		UI_DrawProportionalString(320, 16, "Loading...", UI_BIGFONT|UI_CENTER|UI_DROPSHADOW, color_white);
+		return;
+	}
 
 	if ( !overlay ) {
 		// draw the dialog background

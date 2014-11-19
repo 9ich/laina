@@ -67,16 +67,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAT_MINUS			10	// num frame for '-' stats digit
 
 #define	ICON_SIZE			48
-#define	CHAR_WIDTH			32
-#define	CHAR_HEIGHT			48
+#define	CHAR_WIDTH			64
+#define	CHAR_HEIGHT			64
 #define	TEXT_ICON_SPACE		4
 
 #define	TEAMCHAT_WIDTH		80
 #define TEAMCHAT_HEIGHT		8
 
 // very large characters
-#define	GIANT_WIDTH			32
-#define	GIANT_HEIGHT		48
+#define	GIANT_WIDTH			64
+#define	GIANT_HEIGHT		64
 
 #define	NUM_CROSSHAIRS		10
 

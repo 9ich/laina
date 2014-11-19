@@ -18,7 +18,7 @@ ifeq ($(COMPILE_PLATFORM),darwin)
 endif
 
 ifndef BUILD_STANDALONE
-  BUILD_STANDALONE =
+  BUILD_STANDALONE = 1
 endif
 ifndef BUILD_CLIENT
   BUILD_CLIENT     =
@@ -45,12 +45,12 @@ endif
 #############################################################################
 #
 # If you require a different configuration from the defaults below, create a
-# new file named "Makefile.local" in the same directory as this file and define
+# new file named "Config.mk" in the same directory as this file and define
 # your parameters there. This allows you to change configuration without
 # causing problems with keeping up to date with the repository.
 #
 #############################################################################
--include Makefile.local
+-include Config.mk
 
 ifndef PLATFORM
 PLATFORM=$(COMPILE_PLATFORM)
@@ -108,7 +108,7 @@ SERVERBIN=ioq3ded
 endif
 
 ifndef BASEGAME
-BASEGAME=baseq3
+BASEGAME=foobar
 endif
 
 ifndef BASEGAME_CFLAGS
