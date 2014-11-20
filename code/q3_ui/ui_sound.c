@@ -98,12 +98,13 @@ static soundOptionsInfo_t	soundOptionsInfo;
 UI_SoundOptionsMenu_Event
 =================
 */
-static void UI_SoundOptionsMenu_Event( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void UI_SoundOptionsMenu_Event(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_GRAPHICS:
 		UI_PopMenu();
 		UI_GraphicsOptionsMenu();
@@ -121,59 +122,57 @@ static void UI_SoundOptionsMenu_Event( void* ptr, int event ) {
 		UI_PopMenu();
 		UI_NetworkOptionsMenu();
 		break;
-/*
-	case ID_A3D:
-		if( soundOptionsInfo.a3d.curvalue ) {
-			trap_Cmd_ExecuteText( EXEC_NOW, "s_enable_a3d\n" );
-		}
-		else {
-			trap_Cmd_ExecuteText( EXEC_NOW, "s_disable_a3d\n" );
-		}
-		soundOptionsInfo.a3d.curvalue = (int)trap_Cvar_VariableValue( "s_usingA3D" );
-		break;
-*/
+	/*
+		case ID_A3D:
+			if( soundOptionsInfo.a3d.curvalue ){
+				trap_Cmd_ExecuteText( EXEC_NOW, "s_enable_a3d\n" );
+			}
+			else{
+				trap_Cmd_ExecuteText( EXEC_NOW, "s_disable_a3d\n" );
+			}
+			soundOptionsInfo.a3d.curvalue = (int)trap_Cvar_VariableValue( "s_usingA3D" );
+			break;
+	*/
 	case ID_BACK:
 		UI_PopMenu();
 		break;
 
 	case ID_APPLY:
-		trap_Cvar_SetValue( "s_volume", soundOptionsInfo.sfxvolume.curvalue / 10 );
+		trap_Cvar_SetValue("s_volume", soundOptionsInfo.sfxvolume.curvalue / 10);
 		soundOptionsInfo.sfxvolume_original = soundOptionsInfo.sfxvolume.curvalue;
 
-		trap_Cvar_SetValue( "s_musicvolume", soundOptionsInfo.musicvolume.curvalue / 10 );
+		trap_Cvar_SetValue("s_musicvolume", soundOptionsInfo.musicvolume.curvalue / 10);
 		soundOptionsInfo.musicvolume_original = soundOptionsInfo.musicvolume.curvalue;
 
 		// Check if something changed that requires the sound system to be restarted.
-		if (soundOptionsInfo.quality_original != soundOptionsInfo.quality.curvalue
-			|| soundOptionsInfo.soundSystem_original != soundOptionsInfo.soundSystem.curvalue)
-		{
+		if(soundOptionsInfo.quality_original != soundOptionsInfo.quality.curvalue
+		        || soundOptionsInfo.soundSystem_original != soundOptionsInfo.soundSystem.curvalue){
 			int speed;
 
-			switch ( soundOptionsInfo.quality.curvalue )
-			{
-				default:
-				case 0:
-					speed = 11025;
-					break;
-				case 1:
-					speed = 22050;
-					break;
-				case 2:
-					speed = 44100;
-					break;
+			switch(soundOptionsInfo.quality.curvalue){
+			default:
+			case 0:
+				speed = 11025;
+				break;
+			case 1:
+				speed = 22050;
+				break;
+			case 2:
+				speed = 44100;
+				break;
 			}
 
-			if (speed == DEFAULT_SDL_SND_SPEED)
+			if(speed == DEFAULT_SDL_SND_SPEED)
 				speed = 0;
 
-			trap_Cvar_SetValue( "s_sdlSpeed", speed );
+			trap_Cvar_SetValue("s_sdlSpeed", speed);
 			soundOptionsInfo.quality_original = soundOptionsInfo.quality.curvalue;
 
-			trap_Cvar_SetValue( "s_useOpenAL", (soundOptionsInfo.soundSystem.curvalue == UISND_OPENAL) );
+			trap_Cvar_SetValue("s_useOpenAL", (soundOptionsInfo.soundSystem.curvalue == UISND_OPENAL));
 			soundOptionsInfo.soundSystem_original = soundOptionsInfo.soundSystem.curvalue;
 
 			UI_ForceMenuOff();
-			trap_Cmd_ExecuteText( EXEC_APPEND, "snd_restart\n" );
+			trap_Cmd_ExecuteText(EXEC_APPEND, "snd_restart\n");
 		}
 		break;
 	}
@@ -184,33 +183,26 @@ static void UI_SoundOptionsMenu_Event( void* ptr, int event ) {
 SoundOptions_UpdateMenuItems
 =================
 */
-static void SoundOptions_UpdateMenuItems( void )
+static void SoundOptions_UpdateMenuItems(void)
 {
-	if ( soundOptionsInfo.soundSystem.curvalue == UISND_SDL )
-	{
+	if(soundOptionsInfo.soundSystem.curvalue == UISND_SDL){
 		soundOptionsInfo.quality.generic.flags &= ~QMF_GRAYED;
-	}
-	else
-	{
+	}else{
 		soundOptionsInfo.quality.generic.flags |= QMF_GRAYED;
 	}
 
 	soundOptionsInfo.apply.generic.flags |= QMF_HIDDEN|QMF_INACTIVE;
 
-	if ( soundOptionsInfo.sfxvolume_original != soundOptionsInfo.sfxvolume.curvalue )
-	{
+	if(soundOptionsInfo.sfxvolume_original != soundOptionsInfo.sfxvolume.curvalue){
 		soundOptionsInfo.apply.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
 	}
-	if ( soundOptionsInfo.musicvolume_original != soundOptionsInfo.musicvolume.curvalue )
-	{
+	if(soundOptionsInfo.musicvolume_original != soundOptionsInfo.musicvolume.curvalue){
 		soundOptionsInfo.apply.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
 	}
-	if ( soundOptionsInfo.soundSystem_original != soundOptionsInfo.soundSystem.curvalue )
-	{
+	if(soundOptionsInfo.soundSystem_original != soundOptionsInfo.soundSystem.curvalue){
 		soundOptionsInfo.apply.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
 	}
-	if ( soundOptionsInfo.quality_original != soundOptionsInfo.quality.curvalue )
-	{
+	if(soundOptionsInfo.quality_original != soundOptionsInfo.quality.curvalue){
 		soundOptionsInfo.apply.generic.flags &= ~(QMF_HIDDEN|QMF_INACTIVE);
 	}
 }
@@ -220,12 +212,12 @@ static void SoundOptions_UpdateMenuItems( void )
 SoundOptions_MenuDraw
 ================
 */
-void SoundOptions_MenuDraw (void)
+void SoundOptions_MenuDraw(void)
 {
 //APSFIX - rework this
 	SoundOptions_UpdateMenuItems();
 
-	Menu_Draw( &soundOptionsInfo.menu );
+	Menu_Draw(&soundOptionsInfo.menu);
 }
 
 /*
@@ -233,11 +225,12 @@ void SoundOptions_MenuDraw (void)
 UI_SoundOptionsMenu_Init
 ===============
 */
-static void UI_SoundOptionsMenu_Init( void ) {
+static void UI_SoundOptionsMenu_Init(void)
+{
 	int				y;
 	int				speed;
 
-	memset( &soundOptionsInfo, 0, sizeof(soundOptionsInfo) );
+	memset(&soundOptionsInfo, 0, sizeof(soundOptionsInfo));
 
 	UI_SoundOptionsMenu_Cache();
 	soundOptionsInfo.menu.wrapAround = qtrue;
@@ -255,7 +248,7 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.framel.generic.type		= MTYPE_BITMAP;
 	soundOptionsInfo.framel.generic.name		= ART_FRAMEL;
 	soundOptionsInfo.framel.generic.flags		= QMF_INACTIVE;
-	soundOptionsInfo.framel.generic.x			= 0;  
+	soundOptionsInfo.framel.generic.x			= 0;
 	soundOptionsInfo.framel.generic.y			= 78;
 	soundOptionsInfo.framel.width				= 256;
 	soundOptionsInfo.framel.height				= 329;
@@ -350,16 +343,16 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.quality.generic.y			= y;
 	soundOptionsInfo.quality.itemnames			= quality_items;
 
-/*
-	y += BIGCHAR_HEIGHT+2;
-	soundOptionsInfo.a3d.generic.type			= MTYPE_RADIOBUTTON;
-	soundOptionsInfo.a3d.generic.name			= "A3D:";
-	soundOptionsInfo.a3d.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	soundOptionsInfo.a3d.generic.callback		= UI_SoundOptionsMenu_Event;
-	soundOptionsInfo.a3d.generic.id				= ID_A3D;
-	soundOptionsInfo.a3d.generic.x				= 400;
-	soundOptionsInfo.a3d.generic.y				= y;
-*/
+	/*
+		y += BIGCHAR_HEIGHT+2;
+		soundOptionsInfo.a3d.generic.type			= MTYPE_RADIOBUTTON;
+		soundOptionsInfo.a3d.generic.name			= "A3D:";
+		soundOptionsInfo.a3d.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+		soundOptionsInfo.a3d.generic.callback		= UI_SoundOptionsMenu_Event;
+		soundOptionsInfo.a3d.generic.id				= ID_A3D;
+		soundOptionsInfo.a3d.generic.x				= 400;
+		soundOptionsInfo.a3d.generic.y				= y;
+	*/
 	soundOptionsInfo.back.generic.type			= MTYPE_BITMAP;
 	soundOptionsInfo.back.generic.name			= ART_BACK0;
 	soundOptionsInfo.back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -382,38 +375,38 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.apply.height				= 64;
 	soundOptionsInfo.apply.focuspic				= ART_ACCEPT1;
 
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.banner );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.framel );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.framer );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.graphics );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.display );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.sound );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.network );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.sfxvolume );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.musicvolume );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.soundSystem );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.quality );
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.banner);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.framel);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.framer);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.graphics);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.display);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.sound);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.network);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.sfxvolume);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.musicvolume);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.soundSystem);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.quality);
 //	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.a3d );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.back );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.apply );
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.back);
+	Menu_AddItem(&soundOptionsInfo.menu, (void *) &soundOptionsInfo.apply);
 
-	soundOptionsInfo.sfxvolume.curvalue = soundOptionsInfo.sfxvolume_original = trap_Cvar_VariableValue( "s_volume" ) * 10;
-	soundOptionsInfo.musicvolume.curvalue = soundOptionsInfo.musicvolume_original = trap_Cvar_VariableValue( "s_musicvolume" ) * 10;
+	soundOptionsInfo.sfxvolume.curvalue = soundOptionsInfo.sfxvolume_original = trap_Cvar_VariableValue("s_volume") * 10;
+	soundOptionsInfo.musicvolume.curvalue = soundOptionsInfo.musicvolume_original = trap_Cvar_VariableValue("s_musicvolume") * 10;
 
-	if (trap_Cvar_VariableValue( "s_useOpenAL" ))
+	if(trap_Cvar_VariableValue("s_useOpenAL"))
 		soundOptionsInfo.soundSystem_original = UISND_OPENAL;
 	else
 		soundOptionsInfo.soundSystem_original = UISND_SDL;
 
 	soundOptionsInfo.soundSystem.curvalue = soundOptionsInfo.soundSystem_original;
 
-	speed = trap_Cvar_VariableValue( "s_sdlSpeed" );
-	if (!speed) // Check for default
+	speed = trap_Cvar_VariableValue("s_sdlSpeed");
+	if(!speed)  // Check for default
 		speed = DEFAULT_SDL_SND_SPEED;
 
-	if (speed <= 11025)
+	if(speed <= 11025)
 		soundOptionsInfo.quality_original = 0;
-	else if (speed <= 22050)
+	else if(speed <= 22050)
 		soundOptionsInfo.quality_original = 1;
 	else // 44100
 		soundOptionsInfo.quality_original = 2;
@@ -428,13 +421,14 @@ static void UI_SoundOptionsMenu_Init( void ) {
 UI_SoundOptionsMenu_Cache
 ===============
 */
-void UI_SoundOptionsMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_ACCEPT0 );
-	trap_R_RegisterShaderNoMip( ART_ACCEPT1 );
+void UI_SoundOptionsMenu_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(ART_FRAMEL);
+	trap_R_RegisterShaderNoMip(ART_FRAMER);
+	trap_R_RegisterShaderNoMip(ART_BACK0);
+	trap_R_RegisterShaderNoMip(ART_BACK1);
+	trap_R_RegisterShaderNoMip(ART_ACCEPT0);
+	trap_R_RegisterShaderNoMip(ART_ACCEPT1);
 }
 
 
@@ -443,8 +437,9 @@ void UI_SoundOptionsMenu_Cache( void ) {
 UI_SoundOptionsMenu
 ===============
 */
-void UI_SoundOptionsMenu( void ) {
+void UI_SoundOptionsMenu(void)
+{
 	UI_SoundOptionsMenu_Init();
-	UI_PushMenu( &soundOptionsInfo.menu );
-	Menu_SetCursorToItem( &soundOptionsInfo.menu, &soundOptionsInfo.sound );
+	UI_PushMenu(&soundOptionsInfo.menu);
+	Menu_SetCursorToItem(&soundOptionsInfo.menu, &soundOptionsInfo.sound);
 }

@@ -90,8 +90,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_PROXMINES				64
 
 //check points
-typedef struct bot_waypoint_s
-{
+typedef struct bot_waypoint_s {
 	int			inuse;
 	char		name[32];
 	bot_goal_t	goal;
@@ -101,8 +100,7 @@ typedef struct bot_waypoint_s
 #define MAX_ACTIVATESTACK		8
 #define MAX_ACTIVATEAREAS		32
 
-typedef struct bot_activategoal_s
-{
+typedef struct bot_activategoal_s {
 	int inuse;
 	bot_goal_t goal;						//goal to activate (buttons etc.)
 	float time;								//time to activate something
@@ -119,8 +117,7 @@ typedef struct bot_activategoal_s
 } bot_activategoal_t;
 
 //bot state
-typedef struct bot_state_s
-{
+typedef struct bot_state_s {
 	int inuse;										//true if this state is used by a bot client
 	int botthink_residual;							//residual for the bot thinks
 	int client;										//client number of the bot
@@ -284,10 +281,10 @@ extern float floattime;
 #define FloatTime() floattime
 
 // from the game source
-void	QDECL BotAI_Print(int type, char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
-void	QDECL QDECL BotAI_BotInitialChat( bot_state_t *bs, char *type, ... );
+void	QDECL BotAI_Print(int type, char *fmt, ...) __attribute__((format(printf, 2, 3)));
+void	QDECL QDECL BotAI_BotInitialChat(bot_state_t *bs, char *type, ...);
 void	BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
-int		BotAI_GetClientState( int clientNum, playerState_t *state );
-int		BotAI_GetEntityState( int entityNum, entityState_t *state );
-int		BotAI_GetSnapshotEntity( int clientNum, int sequence, entityState_t *state );
+int		BotAI_GetClientState(int clientNum, playerState_t *state);
+int		BotAI_GetEntityState(int entityNum, entityState_t *state);
+int		BotAI_GetSnapshotEntity(int clientNum, int sequence, entityState_t *state);
 int		BotTeamLeader(bot_state_t *bs);

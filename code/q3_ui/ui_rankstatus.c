@@ -33,8 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ID_OK			101
 
 
-typedef struct
-{
+typedef struct {
 	menuframework_s	menu;
 	menubitmap_s	frame;
 	menutext_s		message;
@@ -47,7 +46,7 @@ static menuframework_s	s_rankstatus_menu;
 static menuaction_s		s_rankstatus_ok;
 
 static grank_status_t	s_status = 0;
-static char*			s_rankstatus_message = NULL;
+static char			*s_rankstatus_message = NULL;
 
 static vec4_t s_rankingstatus_color_prompt  = {1.00, 0.43, 0.00, 1.00};
 
@@ -56,17 +55,17 @@ static vec4_t s_rankingstatus_color_prompt  = {1.00, 0.43, 0.00, 1.00};
 RankStatus_MenuEvent
 ===============
 */
-static void RankStatus_MenuEvent( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void RankStatus_MenuEvent(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_OK:
 		UI_PopMenu();
-		
-		switch( s_status )
-		{
+
+		switch(s_status){
 		case QGR_STATUS_NO_USER:
 			UI_RankingsMenu();
 			break;
@@ -104,10 +103,11 @@ static void RankStatus_MenuEvent( void* ptr, int event ) {
 RankStatus_MenuInit
 ===============
 */
-void RankStatus_MenuInit( void ) {
+void RankStatus_MenuInit(void)
+{
 	int		y;
 
-	memset( &s_rankstatus, 0, sizeof(s_rankstatus) );
+	memset(&s_rankstatus, 0, sizeof(s_rankstatus));
 
 	RankStatus_Cache();
 
@@ -144,9 +144,9 @@ void RankStatus_MenuInit( void ) {
 	s_rankstatus.ok.style						= UI_CENTER|UI_SMALLFONT;
 	s_rankstatus.ok.color						= colorRed;
 
-	Menu_AddItem( &s_rankstatus.menu, (void*) &s_rankstatus.frame );
-	Menu_AddItem( &s_rankstatus.menu, (void*) &s_rankstatus.message );
-	Menu_AddItem( &s_rankstatus.menu, (void*) &s_rankstatus.ok );
+	Menu_AddItem(&s_rankstatus.menu, (void *) &s_rankstatus.frame);
+	Menu_AddItem(&s_rankstatus.menu, (void *) &s_rankstatus.message);
+	Menu_AddItem(&s_rankstatus.menu, (void *) &s_rankstatus.ok);
 }
 
 
@@ -155,8 +155,9 @@ void RankStatus_MenuInit( void ) {
 RankStatus_Cache
 ===============
 */
-void RankStatus_Cache( void ) {
-	trap_R_RegisterShaderNoMip( RANKSTATUS_FRAME );
+void RankStatus_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(RANKSTATUS_FRAME);
 }
 
 
@@ -165,12 +166,12 @@ void RankStatus_Cache( void ) {
 UI_RankStatusMenu
 ===============
 */
-void UI_RankStatusMenu( void ) {
+void UI_RankStatusMenu(void)
+{
 
 	s_status = (grank_status_t)trap_Cvar_VariableValue("client_status");
 
-	switch( s_status )
-	{
+	switch(s_status){
 	case QGR_STATUS_NEW:
 		return;
 	case QGR_STATUS_PENDING:
@@ -204,6 +205,6 @@ void UI_RankStatusMenu( void ) {
 	}
 	RankStatus_MenuInit();
 	trap_CL_UI_RankUserReset();
-	UI_PushMenu ( &s_rankstatus.menu );
+	UI_PushMenu(&s_rankstatus.menu);
 }
 

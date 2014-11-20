@@ -36,19 +36,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ID_SPECIFYSERVERBACK	102
 #define ID_SPECIFYSERVERGO		103
 
-static char* specifyserver_artlist[] =
-{
+static char *specifyserver_artlist[] = {
 	SPECIFYSERVER_FRAMEL,
 	SPECIFYSERVER_FRAMER,
-	SPECIFYSERVER_BACK0,	
-	SPECIFYSERVER_BACK1,	
+	SPECIFYSERVER_BACK0,
+	SPECIFYSERVER_BACK1,
 	SPECIFYSERVER_FIGHT0,
 	SPECIFYSERVER_FIGHT1,
 	NULL
 };
 
-typedef struct
-{
+typedef struct {
 	menuframework_s	menu;
 	menutext_s		banner;
 	menubitmap_s	framel;
@@ -66,32 +64,30 @@ static specifyserver_t	s_specifyserver;
 SpecifyServer_Event
 =================
 */
-static void SpecifyServer_Event( void* ptr, int event )
+static void SpecifyServer_Event(void *ptr, int event)
 {
 	char	buff[256];
 
-	switch (((menucommon_s*)ptr)->id)
-	{
-		case ID_SPECIFYSERVERGO:
-			if (event != QM_ACTIVATED)
-				break;
-
-			if (s_specifyserver.domain.field.buffer[0])
-			{
-				strcpy(buff,s_specifyserver.domain.field.buffer);
-				if (s_specifyserver.port.field.buffer[0])
-					Com_sprintf( buff+strlen(buff), 128, ":%s", s_specifyserver.port.field.buffer );
-
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", buff ) );
-			}
+	switch(((menucommon_s *)ptr)->id){
+	case ID_SPECIFYSERVERGO:
+		if(event != QM_ACTIVATED)
 			break;
 
-		case ID_SPECIFYSERVERBACK:
-			if (event != QM_ACTIVATED)
-				break;
+		if(s_specifyserver.domain.field.buffer[0]){
+			strcpy(buff,s_specifyserver.domain.field.buffer);
+			if(s_specifyserver.port.field.buffer[0])
+				Com_sprintf(buff+strlen(buff), 128, ":%s", s_specifyserver.port.field.buffer);
 
-			UI_PopMenu();
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("connect %s\n", buff));
+		}
+		break;
+
+	case ID_SPECIFYSERVERBACK:
+		if(event != QM_ACTIVATED)
 			break;
+
+		UI_PopMenu();
+		break;
 	}
 }
 
@@ -100,10 +96,10 @@ static void SpecifyServer_Event( void* ptr, int event )
 SpecifyServer_MenuInit
 =================
 */
-void SpecifyServer_MenuInit( void )
+void SpecifyServer_MenuInit(void)
 {
 	// zero set all our globals
-	memset( &s_specifyserver, 0 ,sizeof(specifyserver_t) );
+	memset(&s_specifyserver, 0 ,sizeof(specifyserver_t));
 
 	SpecifyServer_Cache();
 
@@ -120,7 +116,7 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.framel.generic.type  = MTYPE_BITMAP;
 	s_specifyserver.framel.generic.name  = SPECIFYSERVER_FRAMEL;
 	s_specifyserver.framel.generic.flags = QMF_INACTIVE;
-	s_specifyserver.framel.generic.x	 = 0;  
+	s_specifyserver.framel.generic.x	 = 0;
 	s_specifyserver.framel.generic.y	 = 78;
 	s_specifyserver.framel.width  	     = 256;
 	s_specifyserver.framel.height  	     = 329;
@@ -171,15 +167,15 @@ void SpecifyServer_MenuInit( void )
 	s_specifyserver.back.height  		  = 64;
 	s_specifyserver.back.focuspic         = SPECIFYSERVER_BACK1;
 
-	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.banner );
-	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.framel );
-	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.framer );
-	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.domain );
-	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.port );
-	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.go );
-	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.back );
+	Menu_AddItem(&s_specifyserver.menu, &s_specifyserver.banner);
+	Menu_AddItem(&s_specifyserver.menu, &s_specifyserver.framel);
+	Menu_AddItem(&s_specifyserver.menu, &s_specifyserver.framer);
+	Menu_AddItem(&s_specifyserver.menu, &s_specifyserver.domain);
+	Menu_AddItem(&s_specifyserver.menu, &s_specifyserver.port);
+	Menu_AddItem(&s_specifyserver.menu, &s_specifyserver.go);
+	Menu_AddItem(&s_specifyserver.menu, &s_specifyserver.back);
 
-	Com_sprintf( s_specifyserver.port.field.buffer, 6, "%i", 27960 );
+	Com_sprintf(s_specifyserver.port.field.buffer, 6, "%i", 27960);
 }
 
 /*
@@ -187,14 +183,13 @@ void SpecifyServer_MenuInit( void )
 SpecifyServer_Cache
 =================
 */
-void SpecifyServer_Cache( void )
+void SpecifyServer_Cache(void)
 {
 	int	i;
 
 	// touch all our pics
-	for (i=0; ;i++)
-	{
-		if (!specifyserver_artlist[i])
+	for(i=0; ; i++){
+		if(!specifyserver_artlist[i])
 			break;
 		trap_R_RegisterShaderNoMip(specifyserver_artlist[i]);
 	}
@@ -205,9 +200,9 @@ void SpecifyServer_Cache( void )
 UI_SpecifyServerMenu
 =================
 */
-void UI_SpecifyServerMenu( void )
+void UI_SpecifyServerMenu(void)
 {
 	SpecifyServer_MenuInit();
-	UI_PushMenu( &s_specifyserver.menu );
+	UI_PushMenu(&s_specifyserver.menu);
 }
 

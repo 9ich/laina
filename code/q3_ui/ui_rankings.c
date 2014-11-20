@@ -37,8 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ID_LEAVE		105
 
 
-typedef struct
-{
+typedef struct {
 	menuframework_s	menu;
 	menubitmap_s	frame;
 	menutext_s		login;
@@ -65,7 +64,7 @@ static menuaction_s		s_rankings_leave;
 Rankings_DrawText
 ===============
 */
-void Rankings_DrawText( void* self )
+void Rankings_DrawText(void *self)
 {
 	menufield_s		*f;
 	qboolean		focus;
@@ -75,14 +74,14 @@ void Rankings_DrawText( void* self )
 	float			*color;
 	int				basex, x, y;
 
-	f = (menufield_s*)self;
+	f = (menufield_s *)self;
 	basex = f->generic.x;
 	y = f->generic.y + 4;
 	focus = (f->generic.parent->cursor == f->generic.menuPosition);
 
 	style = UI_LEFT|UI_SMALLFONT;
 	color = text_color_normal;
-	if( focus ) {
+	if(focus){
 		style |= UI_PULSE;
 		color = text_color_highlight;
 	}
@@ -91,24 +90,24 @@ void Rankings_DrawText( void* self )
 	txt = f->field.buffer;
 	color = g_color_table[ColorIndex(COLOR_WHITE)];
 	x = basex;
-	while ( (c = *txt) != 0 ) {
-		UI_DrawChar( x, y, c, style, color );
+	while((c = *txt) != 0){
+		UI_DrawChar(x, y, c, style, color);
 		txt++;
 		x += SMALLCHAR_WIDTH;
 	}
 
 	// draw cursor if we have focus
-	if( focus ) {
-		if ( trap_Key_GetOverstrikeMode() ) {
+	if(focus){
+		if(trap_Key_GetOverstrikeMode()){
 			c = 11;
-		} else {
+		}else{
 			c = 10;
 		}
 
 		style &= ~UI_PULSE;
 		style |= UI_BLINK;
 
-		UI_DrawChar( basex + f->field.cursor * SMALLCHAR_WIDTH, y, c, style, color_white );
+		UI_DrawChar(basex + f->field.cursor * SMALLCHAR_WIDTH, y, c, style, color_white);
 	}
 }
 
@@ -117,33 +116,30 @@ void Rankings_DrawText( void* self )
 Rankings_DrawName
 ===============
 */
-void Rankings_DrawName( void* self )
+void Rankings_DrawName(void *self)
 {
 	menufield_s		*f;
 	int				length;
-	char*			p;
-	
-	f = (menufield_s*)self;
+	char			*p;
+
+	f = (menufield_s *)self;
 
 	// GRANK_FIXME - enforce valid characters
-	for( p = f->field.buffer; *p != '\0'; p++ )
-	{
+	for(p = f->field.buffer; *p != '\0'; p++){
 		//if( ispunct(*p) || isspace(*p) )
-		if( !( ( (*p) >= '0' && (*p) <= '9') || Q_isalpha(*p)) )
-		{
+		if(!(((*p) >= '0' && (*p) <= '9') || Q_isalpha(*p))){
 			*p = '\0';
 		}
 	}
-	
-	// strip color codes
-	Q_CleanStr( f->field.buffer );
-	length = strlen( f->field.buffer );
-	if( f->field.cursor > length )
-	{
-		f->field.cursor = length;
-	}	
 
-	Rankings_DrawText( f );
+	// strip color codes
+	Q_CleanStr(f->field.buffer);
+	length = strlen(f->field.buffer);
+	if(f->field.cursor > length){
+		f->field.cursor = length;
+	}
+
+	Rankings_DrawText(f);
 }
 
 #if 0 // old version
@@ -152,21 +148,20 @@ void Rankings_DrawName( void* self )
 Rankings_DrawName
 ===============
 */
-void Rankings_DrawName( void* self )
+void Rankings_DrawName(void *self)
 {
-	menufield_s*	f;
+	menufield_s	*f;
 	int				length;
-	
-	f = (menufield_s*)self;
+
+	f = (menufield_s *)self;
 
 	// strip color codes
-	Q_CleanStr( f->field.buffer );
-	length = strlen( f->field.buffer );
-	if( f->field.cursor > length )
-	{
+	Q_CleanStr(f->field.buffer);
+	length = strlen(f->field.buffer);
+	if(f->field.cursor > length){
 		f->field.cursor = length;
 	}
-	
+
 	// show beginning of long names
 	/*
 	if( Menu_ItemAtCursor( f->generic.parent ) != f )
@@ -178,8 +173,8 @@ void Rankings_DrawName( void* self )
 		}
 	}
 	*/
-	
-	MenuField_Draw( f );
+
+	MenuField_Draw(f);
 }
 #endif
 
@@ -188,47 +183,43 @@ void Rankings_DrawName( void* self )
 Rankings_DrawPassword
 ===============
 */
-void Rankings_DrawPassword( void* self )
+void Rankings_DrawPassword(void *self)
 {
-	menufield_s*	f;
+	menufield_s	*f;
 	char			password[MAX_EDIT_LINE];
 	int				length;
 	int				i;
-	char*			p;
+	char			*p;
 
-	f = (menufield_s*)self;
-	
+	f = (menufield_s *)self;
+
 	// GRANK_FIXME - enforce valid characters
-	for( p = f->field.buffer; *p != '\0'; p++ )
-	{
+	for(p = f->field.buffer; *p != '\0'; p++){
 		//if( ispunct(*p) || isspace(*p) )
-		if( !( ( (*p) >= '0' && (*p) <= '9') || Q_isalpha(*p)) )
-		{
+		if(!(((*p) >= '0' && (*p) <= '9') || Q_isalpha(*p))){
 			*p = '\0';
 		}
 	}
-	
-	length = strlen( f->field.buffer );
-	if( f->field.cursor > length )
-	{
+
+	length = strlen(f->field.buffer);
+	if(f->field.cursor > length){
 		f->field.cursor = length;
 	}
-	
+
 	// save password
-	Q_strncpyz( password, f->field.buffer, sizeof(password) );
+	Q_strncpyz(password, f->field.buffer, sizeof(password));
 
 	// mask password with *
-	for( i = 0; i < length; i++ )
-	{
+	for(i = 0; i < length; i++){
 		f->field.buffer[i] = '*';
 	}
 
 	// draw masked password
-	Rankings_DrawText( f );
+	Rankings_DrawText(f);
 	//MenuField_Draw( f );
 
 	// restore password
-	Q_strncpyz( f->field.buffer, password, sizeof(f->field.buffer) );
+	Q_strncpyz(f->field.buffer, password, sizeof(f->field.buffer));
 }
 
 /*
@@ -236,12 +227,13 @@ void Rankings_DrawPassword( void* self )
 Rankings_MenuEvent
 ===============
 */
-static void Rankings_MenuEvent( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void Rankings_MenuEvent(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_LOGIN:
 		UI_LoginMenu();
 		break;
@@ -251,22 +243,22 @@ static void Rankings_MenuEvent( void* ptr, int event ) {
 		trap_CL_UI_RankUserRequestLogout();
 		UI_ForceMenuOff();
 		break;
-		
+
 	case ID_CREATE:
 		UI_SignupMenu();
 		break;
 
 	case ID_SPECTATE:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "cmd rank_spectate\n" );
+		trap_Cmd_ExecuteText(EXEC_APPEND, "cmd rank_spectate\n");
 		UI_ForceMenuOff();
 		break;
 
 	case ID_SETUP:
 		UI_SetupMenu();
 		break;
-		
+
 	case ID_LEAVE:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+		trap_Cmd_ExecuteText(EXEC_APPEND, "disconnect\n");
 		UI_ForceMenuOff();
 		break;
 
@@ -279,11 +271,12 @@ static void Rankings_MenuEvent( void* ptr, int event ) {
 Rankings_MenuInit
 ===============
 */
-void Rankings_MenuInit( void ) {
+void Rankings_MenuInit(void)
+{
 	grank_status_t	status;
 	int				y;
 
-	memset( &s_rankings, 0, sizeof(s_rankings) );
+	memset(&s_rankings, 0, sizeof(s_rankings));
 
 	Rankings_Cache();
 
@@ -366,34 +359,32 @@ void Rankings_MenuInit( void ) {
 	y += 20;
 
 	status = (grank_status_t)trap_Cvar_VariableValue("client_status");
-	if( (status != QGR_STATUS_NEW) && (status != QGR_STATUS_SPECTATOR) )
-	{
-		s_rankings.login.generic.flags |= QMF_HIDDEN | QMF_INACTIVE;	
+	if((status != QGR_STATUS_NEW) && (status != QGR_STATUS_SPECTATOR)){
+		s_rankings.login.generic.flags |= QMF_HIDDEN | QMF_INACTIVE;
 		s_rankings.create.generic.flags |= QMF_HIDDEN | QMF_INACTIVE;
 		s_rankings.spectate.generic.flags |= QMF_HIDDEN | QMF_INACTIVE;
 
 		s_rankings.logout.generic.flags &= ~(QMF_HIDDEN | QMF_INACTIVE);
 	}
-	
-	if ( (status == QGR_STATUS_VALIDATING) ||
-		 (status == QGR_STATUS_PENDING) ||
-		 (status == QGR_STATUS_LEAVING) )
-	{
+
+	if((status == QGR_STATUS_VALIDATING) ||
+	        (status == QGR_STATUS_PENDING) ||
+	        (status == QGR_STATUS_LEAVING)){
 		s_rankings.login.generic.flags  |= QMF_GRAYED;
 		s_rankings.create.generic.flags |= QMF_GRAYED;
 		s_rankings.logout.generic.flags |= QMF_GRAYED;
 	}
-	
+
 	//GRank FIXME -- don't need setup option any more
 	s_rankings.setup.generic.flags |= QMF_HIDDEN | QMF_INACTIVE;
 
-	Menu_AddItem( &s_rankings.menu, (void*) &s_rankings.frame );
-	Menu_AddItem( &s_rankings.menu, (void*) &s_rankings.login );
-	Menu_AddItem( &s_rankings.menu, (void*) &s_rankings.logout );
-	Menu_AddItem( &s_rankings.menu, (void*) &s_rankings.create );
-	Menu_AddItem( &s_rankings.menu, (void*) &s_rankings.spectate );
-	Menu_AddItem( &s_rankings.menu, (void*) &s_rankings.setup );
-	Menu_AddItem( &s_rankings.menu, (void*) &s_rankings.leave );
+	Menu_AddItem(&s_rankings.menu, (void *) &s_rankings.frame);
+	Menu_AddItem(&s_rankings.menu, (void *) &s_rankings.login);
+	Menu_AddItem(&s_rankings.menu, (void *) &s_rankings.logout);
+	Menu_AddItem(&s_rankings.menu, (void *) &s_rankings.create);
+	Menu_AddItem(&s_rankings.menu, (void *) &s_rankings.spectate);
+	Menu_AddItem(&s_rankings.menu, (void *) &s_rankings.setup);
+	Menu_AddItem(&s_rankings.menu, (void *) &s_rankings.leave);
 }
 
 
@@ -402,8 +393,9 @@ void Rankings_MenuInit( void ) {
 Rankings_Cache
 ===============
 */
-void Rankings_Cache( void ) {
-	trap_R_RegisterShaderNoMip( RANKINGS_FRAME );
+void Rankings_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(RANKINGS_FRAME);
 }
 
 
@@ -412,9 +404,10 @@ void Rankings_Cache( void ) {
 UI_RankingsMenu
 ===============
 */
-void UI_RankingsMenu( void ) {
+void UI_RankingsMenu(void)
+{
 	Rankings_MenuInit();
-	UI_PushMenu ( &s_rankings.menu );
+	UI_PushMenu(&s_rankings.menu);
 }
 
 

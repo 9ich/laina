@@ -78,12 +78,13 @@ static networkOptionsInfo_t	networkOptionsInfo;
 UI_NetworkOptionsMenu_Event
 =================
 */
-static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void UI_NetworkOptionsMenu_Event(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_GRAPHICS:
 		UI_PopMenu();
 		UI_GraphicsOptionsMenu();
@@ -103,20 +104,16 @@ static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
 		break;
 
 	case ID_RATE:
-		if( networkOptionsInfo.rate.curvalue == 0 ) {
-			trap_Cvar_SetValue( "rate", 2500 );
-		}
-		else if( networkOptionsInfo.rate.curvalue == 1 ) {
-			trap_Cvar_SetValue( "rate", 3000 );
-		}
-		else if( networkOptionsInfo.rate.curvalue == 2 ) {
-			trap_Cvar_SetValue( "rate", 4000 );
-		}
-		else if( networkOptionsInfo.rate.curvalue == 3 ) {
-			trap_Cvar_SetValue( "rate", 5000 );
-		}
-		else if( networkOptionsInfo.rate.curvalue == 4 ) {
-			trap_Cvar_SetValue( "rate", 25000 );
+		if(networkOptionsInfo.rate.curvalue == 0){
+			trap_Cvar_SetValue("rate", 2500);
+		}else if(networkOptionsInfo.rate.curvalue == 1){
+			trap_Cvar_SetValue("rate", 3000);
+		}else if(networkOptionsInfo.rate.curvalue == 2){
+			trap_Cvar_SetValue("rate", 4000);
+		}else if(networkOptionsInfo.rate.curvalue == 3){
+			trap_Cvar_SetValue("rate", 5000);
+		}else if(networkOptionsInfo.rate.curvalue == 4){
+			trap_Cvar_SetValue("rate", 25000);
 		}
 		break;
 
@@ -132,11 +129,12 @@ static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
 UI_NetworkOptionsMenu_Init
 ===============
 */
-static void UI_NetworkOptionsMenu_Init( void ) {
+static void UI_NetworkOptionsMenu_Init(void)
+{
 	int		y;
 	int		rate;
 
-	memset( &networkOptionsInfo, 0, sizeof(networkOptionsInfo) );
+	memset(&networkOptionsInfo, 0, sizeof(networkOptionsInfo));
 
 	UI_NetworkOptionsMenu_Cache();
 	networkOptionsInfo.menu.wrapAround = qtrue;
@@ -153,7 +151,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.framel.generic.type		= MTYPE_BITMAP;
 	networkOptionsInfo.framel.generic.name		= ART_FRAMEL;
 	networkOptionsInfo.framel.generic.flags		= QMF_INACTIVE;
-	networkOptionsInfo.framel.generic.x			= 0;  
+	networkOptionsInfo.framel.generic.x			= 0;
 	networkOptionsInfo.framel.generic.y			= 78;
 	networkOptionsInfo.framel.width				= 256;
 	networkOptionsInfo.framel.height			= 329;
@@ -227,30 +225,26 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.back.height				= 64;
 	networkOptionsInfo.back.focuspic			= ART_BACK1;
 
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.banner );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.framel );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.framer );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.graphics );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.display );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.sound );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.network );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.rate );
-	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.back );
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.banner);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.framel);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.framer);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.graphics);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.display);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.sound);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.network);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.rate);
+	Menu_AddItem(&networkOptionsInfo.menu, (void *) &networkOptionsInfo.back);
 
-	rate = trap_Cvar_VariableValue( "rate" );
-	if( rate <= 2500 ) {
+	rate = trap_Cvar_VariableValue("rate");
+	if(rate <= 2500){
 		networkOptionsInfo.rate.curvalue = 0;
-	}
-	else if( rate <= 3000 ) {
+	}else if(rate <= 3000){
 		networkOptionsInfo.rate.curvalue = 1;
-	}
-	else if( rate <= 4000 ) {
+	}else if(rate <= 4000){
 		networkOptionsInfo.rate.curvalue = 2;
-	}
-	else if( rate <= 5000 ) {
+	}else if(rate <= 5000){
 		networkOptionsInfo.rate.curvalue = 3;
-	}
-	else {
+	}else{
 		networkOptionsInfo.rate.curvalue = 4;
 	}
 }
@@ -261,11 +255,12 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 UI_NetworkOptionsMenu_Cache
 ===============
 */
-void UI_NetworkOptionsMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
+void UI_NetworkOptionsMenu_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(ART_FRAMEL);
+	trap_R_RegisterShaderNoMip(ART_FRAMER);
+	trap_R_RegisterShaderNoMip(ART_BACK0);
+	trap_R_RegisterShaderNoMip(ART_BACK1);
 }
 
 
@@ -274,8 +269,9 @@ void UI_NetworkOptionsMenu_Cache( void ) {
 UI_NetworkOptionsMenu
 ===============
 */
-void UI_NetworkOptionsMenu( void ) {
+void UI_NetworkOptionsMenu(void)
+{
 	UI_NetworkOptionsMenu_Init();
-	UI_PushMenu( &networkOptionsInfo.menu );
-	Menu_SetCursorToItem( &networkOptionsInfo.menu, &networkOptionsInfo.network );
+	UI_PushMenu(&networkOptionsInfo.menu);
+	Menu_SetCursorToItem(&networkOptionsInfo.menu, &networkOptionsInfo.network);
 }

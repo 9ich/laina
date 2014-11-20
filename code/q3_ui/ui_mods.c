@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "ui_local.h"
 
 #define ART_BACK0			"menu/art/back_0"
-#define ART_BACK1			"menu/art/back_1"	
+#define ART_BACK1			"menu/art/back_1"
 #define ART_FIGHT0			"menu/art/load_0"
 #define ART_FIGHT1			"menu/art/load_1"
 #define ART_FRAMEL			"menu/art/frame2_l"
@@ -68,15 +68,16 @@ static mods_t	s_mods;
 UI_Mods_MenuEvent
 ===============
 */
-static void UI_Mods_MenuEvent( void *ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void UI_Mods_MenuEvent(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch ( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_GO:
-		trap_Cvar_Set( "fs_game", s_mods.fs_gameList[s_mods.list.curvalue] );
-		trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+		trap_Cvar_Set("fs_game", s_mods.fs_gameList[s_mods.list.curvalue]);
+		trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart;");
 		UI_PopMenu();
 		break;
 
@@ -92,16 +93,17 @@ static void UI_Mods_MenuEvent( void *ptr, int event ) {
 UI_Mods_ParseInfos
 ===============
 */
-static void UI_Mods_ParseInfos( char *modDir, char *modDesc ) {
+static void UI_Mods_ParseInfos(char *modDir, char *modDesc)
+{
 	s_mods.fs_gameList[s_mods.list.numitems] = s_mods.fs_gamePtr;
-	Q_strncpyz( s_mods.fs_gamePtr, modDir, 16 );
+	Q_strncpyz(s_mods.fs_gamePtr, modDir, 16);
 
 	s_mods.descriptionList[s_mods.list.numitems] = s_mods.descriptionPtr;
-	Q_strncpyz( s_mods.descriptionPtr, modDesc, 48 );
+	Q_strncpyz(s_mods.descriptionPtr, modDesc, 48);
 
 	s_mods.list.itemnames[s_mods.list.numitems] = s_mods.descriptionPtr;
-	s_mods.descriptionPtr += strlen( s_mods.descriptionPtr ) + 1;
-	s_mods.fs_gamePtr += strlen( s_mods.fs_gamePtr ) + 1;
+	s_mods.descriptionPtr += strlen(s_mods.descriptionPtr) + 1;
+	s_mods.fs_gamePtr += strlen(s_mods.fs_gamePtr) + 1;
 	s_mods.list.numitems++;
 }
 
@@ -111,11 +113,12 @@ static void UI_Mods_ParseInfos( char *modDir, char *modDesc ) {
 UI_Mods_LoadMods
 ===============
 */
-static void UI_Mods_LoadMods( void ) {
+static void UI_Mods_LoadMods(void)
+{
 	int		numdirs;
 	char	dirlist[2048];
 	char	*dirptr;
-  char  *descptr;
+	char  *descptr;
 	int		i;
 	int		dirlen;
 
@@ -128,17 +131,17 @@ static void UI_Mods_LoadMods( void ) {
 	s_mods.list.itemnames[0] = s_mods.descriptionList[0] = "Quake III Arena";
 	s_mods.fs_gameList[0] = "";
 
-	numdirs = trap_FS_GetFileList( "$modlist", "", dirlist, sizeof(dirlist) );
+	numdirs = trap_FS_GetFileList("$modlist", "", dirlist, sizeof(dirlist));
 	dirptr  = dirlist;
-	for( i = 0; i < numdirs; i++ ) {
-		dirlen = strlen( dirptr ) + 1;
-    descptr = dirptr + dirlen;
-  	UI_Mods_ParseInfos( dirptr, descptr);
-    dirptr += dirlen + strlen(descptr) + 1;
+	for(i = 0; i < numdirs; i++){
+		dirlen = strlen(dirptr) + 1;
+		descptr = dirptr + dirlen;
+		UI_Mods_ParseInfos(dirptr, descptr);
+		dirptr += dirlen + strlen(descptr) + 1;
 	}
 
-	trap_Print( va( "%i mods parsed\n", s_mods.list.numitems ) );
-	if (s_mods.list.numitems > MAX_MODS) {
+	trap_Print(va("%i mods parsed\n", s_mods.list.numitems));
+	if(s_mods.list.numitems > MAX_MODS){
 		s_mods.list.numitems = MAX_MODS;
 	}
 }
@@ -149,10 +152,11 @@ static void UI_Mods_LoadMods( void ) {
 UI_Mods_MenuInit
 ===============
 */
-static void UI_Mods_MenuInit( void ) {
+static void UI_Mods_MenuInit(void)
+{
 	UI_ModsMenu_Cache();
 
-	memset( &s_mods, 0 ,sizeof(mods_t) );
+	memset(&s_mods, 0 ,sizeof(mods_t));
 	s_mods.menu.wrapAround = qtrue;
 	s_mods.menu.fullscreen = qtrue;
 
@@ -166,7 +170,7 @@ static void UI_Mods_MenuInit( void ) {
 	s_mods.framel.generic.type		= MTYPE_BITMAP;
 	s_mods.framel.generic.name		= ART_FRAMEL;
 	s_mods.framel.generic.flags		= QMF_INACTIVE;
-	s_mods.framel.generic.x			= 0;  
+	s_mods.framel.generic.x			= 0;
 	s_mods.framel.generic.y			= 78;
 	s_mods.framel.width				= 256;
 	s_mods.framel.height			= 329;
@@ -213,12 +217,12 @@ static void UI_Mods_MenuInit( void ) {
 
 	UI_Mods_LoadMods();
 
-	Menu_AddItem( &s_mods.menu, &s_mods.banner );
-	Menu_AddItem( &s_mods.menu, &s_mods.framel );
-	Menu_AddItem( &s_mods.menu, &s_mods.framer );
-	Menu_AddItem( &s_mods.menu, &s_mods.list );
-	Menu_AddItem( &s_mods.menu, &s_mods.back );
-	Menu_AddItem( &s_mods.menu, &s_mods.go );
+	Menu_AddItem(&s_mods.menu, &s_mods.banner);
+	Menu_AddItem(&s_mods.menu, &s_mods.framel);
+	Menu_AddItem(&s_mods.menu, &s_mods.framer);
+	Menu_AddItem(&s_mods.menu, &s_mods.list);
+	Menu_AddItem(&s_mods.menu, &s_mods.back);
+	Menu_AddItem(&s_mods.menu, &s_mods.go);
 }
 
 /*
@@ -226,13 +230,14 @@ static void UI_Mods_MenuInit( void ) {
 UI_Mods_Cache
 =================
 */
-void UI_ModsMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT0 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT1 );
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
+void UI_ModsMenu_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(ART_BACK0);
+	trap_R_RegisterShaderNoMip(ART_BACK1);
+	trap_R_RegisterShaderNoMip(ART_FIGHT0);
+	trap_R_RegisterShaderNoMip(ART_FIGHT1);
+	trap_R_RegisterShaderNoMip(ART_FRAMEL);
+	trap_R_RegisterShaderNoMip(ART_FRAMER);
 }
 
 
@@ -241,7 +246,8 @@ void UI_ModsMenu_Cache( void ) {
 UI_ModsMenu
 ===============
 */
-void UI_ModsMenu( void ) {
+void UI_ModsMenu(void)
+{
 	UI_Mods_MenuInit();
-	UI_PushMenu( &s_mods.menu );
+	UI_PushMenu(&s_mods.menu);
 }

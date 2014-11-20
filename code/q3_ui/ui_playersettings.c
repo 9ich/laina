@@ -104,7 +104,8 @@ static const char *handicap_items[] = {
 PlayerSettings_DrawName
 =================
 */
-static void PlayerSettings_DrawName( void *self ) {
+static void PlayerSettings_DrawName(void *self)
+{
 	menufield_s		*f;
 	qboolean		focus;
 	int				style;
@@ -115,19 +116,19 @@ static void PlayerSettings_DrawName( void *self ) {
 	int				basex, x, y;
 	char			name[32];
 
-	f = (menufield_s*)self;
+	f = (menufield_s *)self;
 	basex = f->generic.x;
 	y = f->generic.y;
 	focus = (f->generic.parent->cursor == f->generic.menuPosition);
 
 	style = UI_LEFT|UI_SMALLFONT;
 	color = text_color_normal;
-	if( focus ) {
+	if(focus){
 		style |= UI_PULSE;
 		color = text_color_highlight;
 	}
 
-	UI_DrawProportionalString( basex, y, "Name", style, color );
+	UI_DrawProportionalString(basex, y, "Name", style, color);
 
 	// draw the actual name
 	basex += 64;
@@ -135,39 +136,39 @@ static void PlayerSettings_DrawName( void *self ) {
 	txt = f->field.buffer;
 	color = g_color_table[ColorIndex(COLOR_WHITE)];
 	x = basex;
-	while ( (c = *txt) != 0 ) {
-		if ( !focus && Q_IsColorString( txt ) ) {
-			n = ColorIndex( *(txt+1) );
-			if( n == 0 ) {
+	while((c = *txt) != 0){
+		if(!focus && Q_IsColorString(txt)){
+			n = ColorIndex(*(txt+1));
+			if(n == 0){
 				n = 7;
 			}
 			color = g_color_table[n];
 			txt += 2;
 			continue;
 		}
-		UI_DrawChar( x, y, c, style, color );
+		UI_DrawChar(x, y, c, style, color);
 		txt++;
 		x += SMALLCHAR_WIDTH;
 	}
 
 	// draw cursor if we have focus
-	if( focus ) {
-		if ( trap_Key_GetOverstrikeMode() ) {
+	if(focus){
+		if(trap_Key_GetOverstrikeMode()){
 			c = 11;
-		} else {
+		}else{
 			c = 10;
 		}
 
 		style &= ~UI_PULSE;
 		style |= UI_BLINK;
 
-		UI_DrawChar( basex + f->field.cursor * SMALLCHAR_WIDTH, y, c, style, color_white );
+		UI_DrawChar(basex + f->field.cursor * SMALLCHAR_WIDTH, y, c, style, color_white);
 	}
 
 	// draw at bottom also using proportional font
-	Q_strncpyz( name, f->field.buffer, sizeof(name) );
-	Q_CleanStr( name );
-	UI_DrawProportionalString( 320, 440, name, UI_CENTER|UI_BIGFONT, text_color_normal );
+	Q_strncpyz(name, f->field.buffer, sizeof(name));
+	Q_CleanStr(name);
+	UI_DrawProportionalString(320, 440, name, UI_CENTER|UI_BIGFONT, text_color_normal);
 }
 
 
@@ -176,7 +177,8 @@ static void PlayerSettings_DrawName( void *self ) {
 PlayerSettings_DrawHandicap
 =================
 */
-static void PlayerSettings_DrawHandicap( void *self ) {
+static void PlayerSettings_DrawHandicap(void *self)
+{
 	menulist_s		*item;
 	qboolean		focus;
 	int				style;
@@ -187,13 +189,13 @@ static void PlayerSettings_DrawHandicap( void *self ) {
 
 	style = UI_LEFT|UI_SMALLFONT;
 	color = text_color_normal;
-	if( focus ) {
+	if(focus){
 		style |= UI_PULSE;
 		color = text_color_highlight;
 	}
 
-	UI_DrawProportionalString( item->generic.x, item->generic.y, "Handicap", style, color );
-	UI_DrawProportionalString( item->generic.x + 64, item->generic.y + PROP_HEIGHT, handicap_items[item->curvalue], style, color );
+	UI_DrawProportionalString(item->generic.x, item->generic.y, "Handicap", style, color);
+	UI_DrawProportionalString(item->generic.x + 64, item->generic.y + PROP_HEIGHT, handicap_items[item->curvalue], style, color);
 }
 
 
@@ -202,7 +204,8 @@ static void PlayerSettings_DrawHandicap( void *self ) {
 PlayerSettings_DrawEffects
 =================
 */
-static void PlayerSettings_DrawEffects( void *self ) {
+static void PlayerSettings_DrawEffects(void *self)
+{
 	menulist_s		*item;
 	qboolean		focus;
 	int				style;
@@ -213,15 +216,15 @@ static void PlayerSettings_DrawEffects( void *self ) {
 
 	style = UI_LEFT|UI_SMALLFONT;
 	color = text_color_normal;
-	if( focus ) {
+	if(focus){
 		style |= UI_PULSE;
 		color = text_color_highlight;
 	}
 
-	UI_DrawProportionalString( item->generic.x, item->generic.y, "Effects", style, color );
+	UI_DrawProportionalString(item->generic.x, item->generic.y, "Effects", style, color);
 
-	UI_DrawHandlePic( item->generic.x + 64, item->generic.y + PROP_HEIGHT + 8, 128, 8, s_playersettings.fxBasePic );
-	UI_DrawHandlePic( item->generic.x + 64 + item->curvalue * 16 + 8, item->generic.y + PROP_HEIGHT + 6, 16, 12, s_playersettings.fxPic[item->curvalue] );
+	UI_DrawHandlePic(item->generic.x + 64, item->generic.y + PROP_HEIGHT + 8, 128, 8, s_playersettings.fxBasePic);
+	UI_DrawHandlePic(item->generic.x + 64 + item->curvalue * 16 + 8, item->generic.y + PROP_HEIGHT + 6, 16, 12, s_playersettings.fxPic[item->curvalue]);
 }
 
 
@@ -230,24 +233,25 @@ static void PlayerSettings_DrawEffects( void *self ) {
 PlayerSettings_DrawPlayer
 =================
 */
-static void PlayerSettings_DrawPlayer( void *self ) {
+static void PlayerSettings_DrawPlayer(void *self)
+{
 	menubitmap_s	*b;
 	vec3_t			viewangles;
 	char			buf[MAX_QPATH];
 
-	trap_Cvar_VariableStringBuffer( "model", buf, sizeof( buf ) );
-	if ( strcmp( buf, s_playersettings.playerModel ) != 0 ) {
-		UI_PlayerInfo_SetModel( &s_playersettings.playerinfo, buf );
-		strcpy( s_playersettings.playerModel, buf );
+	trap_Cvar_VariableStringBuffer("model", buf, sizeof(buf));
+	if(strcmp(buf, s_playersettings.playerModel) != 0){
+		UI_PlayerInfo_SetModel(&s_playersettings.playerinfo, buf);
+		strcpy(s_playersettings.playerModel, buf);
 
 		viewangles[YAW]   = 180 - 30;
 		viewangles[PITCH] = 0;
 		viewangles[ROLL]  = 0;
-		UI_PlayerInfo_SetInfo( &s_playersettings.playerinfo, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse );
+		UI_PlayerInfo_SetInfo(&s_playersettings.playerinfo, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse);
 	}
 
-	b = (menubitmap_s*) self;
-	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, &s_playersettings.playerinfo, uis.realtime/2 );
+	b = (menubitmap_s *) self;
+	UI_DrawPlayer(b->generic.x, b->generic.y, b->width, b->height, &s_playersettings.playerinfo, uis.realtime/2);
 }
 
 
@@ -256,15 +260,16 @@ static void PlayerSettings_DrawPlayer( void *self ) {
 PlayerSettings_SaveChanges
 =================
 */
-static void PlayerSettings_SaveChanges( void ) {
+static void PlayerSettings_SaveChanges(void)
+{
 	// name
-	trap_Cvar_Set( "name", s_playersettings.name.field.buffer );
+	trap_Cvar_Set("name", s_playersettings.name.field.buffer);
 
 	// handicap
-	trap_Cvar_SetValue( "handicap", 100 - s_playersettings.handicap.curvalue * 5 );
+	trap_Cvar_SetValue("handicap", 100 - s_playersettings.handicap.curvalue * 5);
 
 	// effects color
-	trap_Cvar_SetValue( "color1", uitogamecode[s_playersettings.effects.curvalue] );
+	trap_Cvar_SetValue("color1", uitogamecode[s_playersettings.effects.curvalue]);
 }
 
 
@@ -273,11 +278,12 @@ static void PlayerSettings_SaveChanges( void ) {
 PlayerSettings_MenuKey
 =================
 */
-static sfxHandle_t PlayerSettings_MenuKey( int key ) {
-	if( key == K_MOUSE2 || key == K_ESCAPE ) {
+static sfxHandle_t PlayerSettings_MenuKey(int key)
+{
+	if(key == K_MOUSE2 || key == K_ESCAPE){
 		PlayerSettings_SaveChanges();
 	}
-	return Menu_DefaultKey( &s_playersettings.menu, key );
+	return Menu_DefaultKey(&s_playersettings.menu, key);
 }
 
 
@@ -286,33 +292,34 @@ static sfxHandle_t PlayerSettings_MenuKey( int key ) {
 PlayerSettings_SetMenuItems
 =================
 */
-static void PlayerSettings_SetMenuItems( void ) {
+static void PlayerSettings_SetMenuItems(void)
+{
 	vec3_t	viewangles;
 	int		c;
 	int		h;
 
 	// name
-	Q_strncpyz( s_playersettings.name.field.buffer, UI_Cvar_VariableString("name"), sizeof(s_playersettings.name.field.buffer) );
+	Q_strncpyz(s_playersettings.name.field.buffer, UI_Cvar_VariableString("name"), sizeof(s_playersettings.name.field.buffer));
 
 	// effects color
-	c = trap_Cvar_VariableValue( "color1" ) - 1;
-	if( c < 0 || c > 6 ) {
+	c = trap_Cvar_VariableValue("color1") - 1;
+	if(c < 0 || c > 6){
 		c = 6;
 	}
 	s_playersettings.effects.curvalue = gamecodetoui[c];
 
 	// model/skin
-	memset( &s_playersettings.playerinfo, 0, sizeof(playerInfo_t) );
-	
+	memset(&s_playersettings.playerinfo, 0, sizeof(playerInfo_t));
+
 	viewangles[YAW]   = 180 - 30;
 	viewangles[PITCH] = 0;
 	viewangles[ROLL]  = 0;
 
-	UI_PlayerInfo_SetModel( &s_playersettings.playerinfo, UI_Cvar_VariableString( "model" ) );
-	UI_PlayerInfo_SetInfo( &s_playersettings.playerinfo, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse );
+	UI_PlayerInfo_SetModel(&s_playersettings.playerinfo, UI_Cvar_VariableString("model"));
+	UI_PlayerInfo_SetInfo(&s_playersettings.playerinfo, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse);
 
 	// handicap
-	h = Com_Clamp( 5, 100, trap_Cvar_VariableValue("handicap") );
+	h = Com_Clamp(5, 100, trap_Cvar_VariableValue("handicap"));
 	s_playersettings.handicap.curvalue = 20 - h / 5;
 }
 
@@ -322,14 +329,15 @@ static void PlayerSettings_SetMenuItems( void ) {
 PlayerSettings_MenuEvent
 =================
 */
-static void PlayerSettings_MenuEvent( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void PlayerSettings_MenuEvent(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_HANDICAP:
-		trap_Cvar_Set( "handicap", va( "%i", 100 - 25 * s_playersettings.handicap.curvalue ) );
+		trap_Cvar_Set("handicap", va("%i", 100 - 25 * s_playersettings.handicap.curvalue));
 		break;
 
 	case ID_MODEL:
@@ -350,7 +358,8 @@ static void PlayerSettings_MenuEvent( void* ptr, int event ) {
 PlayerSettings_MenuInit
 =================
 */
-static void PlayerSettings_MenuInit( void ) {
+static void PlayerSettings_MenuInit(void)
+{
 	int		y;
 
 	memset(&s_playersettings,0,sizeof(playersettings_t));
@@ -460,19 +469,19 @@ static void PlayerSettings_MenuInit( void ) {
 	s_playersettings.item_null.width			= 640;
 	s_playersettings.item_null.height			= 480;
 
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.banner );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.framel );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.framer );
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.banner);
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.framel);
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.framer);
 
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.name );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.handicap );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.effects );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.model );
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.back );
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.name);
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.handicap);
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.effects);
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.model);
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.back);
 
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.player );
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.player);
 
-	Menu_AddItem( &s_playersettings.menu, &s_playersettings.item_null );
+	Menu_AddItem(&s_playersettings.menu, &s_playersettings.item_null);
 
 	PlayerSettings_SetMenuItems();
 }
@@ -483,22 +492,23 @@ static void PlayerSettings_MenuInit( void ) {
 PlayerSettings_Cache
 =================
 */
-void PlayerSettings_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_MODEL0 );
-	trap_R_RegisterShaderNoMip( ART_MODEL1 );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
+void PlayerSettings_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(ART_FRAMEL);
+	trap_R_RegisterShaderNoMip(ART_FRAMER);
+	trap_R_RegisterShaderNoMip(ART_MODEL0);
+	trap_R_RegisterShaderNoMip(ART_MODEL1);
+	trap_R_RegisterShaderNoMip(ART_BACK0);
+	trap_R_RegisterShaderNoMip(ART_BACK1);
 
-	s_playersettings.fxBasePic = trap_R_RegisterShaderNoMip( ART_FX_BASE );
-	s_playersettings.fxPic[0] = trap_R_RegisterShaderNoMip( ART_FX_RED );
-	s_playersettings.fxPic[1] = trap_R_RegisterShaderNoMip( ART_FX_YELLOW );
-	s_playersettings.fxPic[2] = trap_R_RegisterShaderNoMip( ART_FX_GREEN );
-	s_playersettings.fxPic[3] = trap_R_RegisterShaderNoMip( ART_FX_TEAL );
-	s_playersettings.fxPic[4] = trap_R_RegisterShaderNoMip( ART_FX_BLUE );
-	s_playersettings.fxPic[5] = trap_R_RegisterShaderNoMip( ART_FX_CYAN );
-	s_playersettings.fxPic[6] = trap_R_RegisterShaderNoMip( ART_FX_WHITE );
+	s_playersettings.fxBasePic = trap_R_RegisterShaderNoMip(ART_FX_BASE);
+	s_playersettings.fxPic[0] = trap_R_RegisterShaderNoMip(ART_FX_RED);
+	s_playersettings.fxPic[1] = trap_R_RegisterShaderNoMip(ART_FX_YELLOW);
+	s_playersettings.fxPic[2] = trap_R_RegisterShaderNoMip(ART_FX_GREEN);
+	s_playersettings.fxPic[3] = trap_R_RegisterShaderNoMip(ART_FX_TEAL);
+	s_playersettings.fxPic[4] = trap_R_RegisterShaderNoMip(ART_FX_BLUE);
+	s_playersettings.fxPic[5] = trap_R_RegisterShaderNoMip(ART_FX_CYAN);
+	s_playersettings.fxPic[6] = trap_R_RegisterShaderNoMip(ART_FX_WHITE);
 }
 
 
@@ -507,7 +517,8 @@ void PlayerSettings_Cache( void ) {
 UI_PlayerSettingsMenu
 =================
 */
-void UI_PlayerSettingsMenu( void ) {
+void UI_PlayerSettingsMenu(void)
+{
 	PlayerSettings_MenuInit();
-	UI_PushMenu( &s_playersettings.menu );
+	UI_PushMenu(&s_playersettings.menu);
 }

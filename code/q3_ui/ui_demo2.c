@@ -33,7 +33,7 @@ DEMOS MENU
 
 
 #define ART_BACK0			"menu/art/back_0"
-#define ART_BACK1			"menu/art/back_1"	
+#define ART_BACK1			"menu/art/back_1"
 #define ART_GO0				"menu/art/play_0"
 #define ART_GO1				"menu/art/play_1"
 #define ART_FRAMEL			"menu/art/frame2_l"
@@ -72,7 +72,7 @@ typedef struct {
 
 	int				numDemos;
 	char			names[NAMEBUFSIZE];
-	
+
 	char			*demolist[MAX_DEMOS];
 } demos_t;
 
@@ -84,16 +84,17 @@ static demos_t	s_demos;
 Demos_MenuEvent
 ===============
 */
-static void Demos_MenuEvent( void *ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void Demos_MenuEvent(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_GO:
-		UI_ForceMenuOff ();
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n",
-								s_demos.list.itemnames[s_demos.list.curvalue]) );
+		UI_ForceMenuOff();
+		trap_Cmd_ExecuteText(EXEC_APPEND, va("demo %s\n",
+		                                     s_demos.list.itemnames[s_demos.list.curvalue]));
 		break;
 
 	case ID_BACK:
@@ -101,11 +102,11 @@ static void Demos_MenuEvent( void *ptr, int event ) {
 		break;
 
 	case ID_LEFT:
-		ScrollList_Key( &s_demos.list, K_LEFTARROW );
+		ScrollList_Key(&s_demos.list, K_LEFTARROW);
 		break;
 
 	case ID_RIGHT:
-		ScrollList_Key( &s_demos.list, K_RIGHTARROW );
+		ScrollList_Key(&s_demos.list, K_RIGHTARROW);
 		break;
 	}
 }
@@ -116,13 +117,14 @@ static void Demos_MenuEvent( void *ptr, int event ) {
 Demos_MenuInit
 ===============
 */
-static void Demos_MenuInit( void ) {
+static void Demos_MenuInit(void)
+{
 	int		i, j;
 	int		len;
 	char	*demoname, extension[32];
 	int	protocol, protocolLegacy;
 
-	memset( &s_demos, 0 ,sizeof(demos_t) );
+	memset(&s_demos, 0 ,sizeof(demos_t));
 
 	Demos_Cache();
 
@@ -139,7 +141,7 @@ static void Demos_MenuInit( void ) {
 	s_demos.framel.generic.type		= MTYPE_BITMAP;
 	s_demos.framel.generic.name		= ART_FRAMEL;
 	s_demos.framel.generic.flags	= QMF_INACTIVE;
-	s_demos.framel.generic.x		= 0;  
+	s_demos.framel.generic.x		= 0;
 	s_demos.framel.generic.y		= 78;
 	s_demos.framel.width			= 256;
 	s_demos.framel.height			= 329;
@@ -227,37 +229,31 @@ static void Demos_MenuInit( void ) {
 	demoname = s_demos.names;
 	i = 0;
 
-	for(j = 0; j < 2; j++)
-	{
+	for(j = 0; j < 2; j++){
 		if(s_demos.numDemos > MAX_DEMOS)
 			s_demos.numDemos = MAX_DEMOS;
 
-		for(; i < s_demos.numDemos; i++)
-		{
+		for(; i < s_demos.numDemos; i++){
 			s_demos.list.itemnames[i] = demoname;
-		
+
 			len = strlen(demoname);
 
 			demoname += len + 1;
 		}
 
-		if(!j)
-		{
-			if(protocolLegacy > 0 && s_demos.numDemos < MAX_DEMOS)
-			{
+		if(!j){
+			if(protocolLegacy > 0 && s_demos.numDemos < MAX_DEMOS){
 				Com_sprintf(extension, sizeof(extension), ".%s%d", DEMOEXT, protocolLegacy);
 				s_demos.numDemos += trap_FS_GetFileList("demos", extension, demoname,
-									ARRAY_LEN(s_demos.names) - (demoname - s_demos.names));
-			}
-			else
+				                                        ARRAY_LEN(s_demos.names) - (demoname - s_demos.names));
+			}else
 				break;
 		}
 	}
 
 	s_demos.list.numitems = s_demos.numDemos;
 
-	if(!s_demos.numDemos)
-	{
+	if(!s_demos.numDemos){
 		s_demos.list.itemnames[0] = "No Demos Found.";
 		s_demos.list.numitems = 1;
 
@@ -265,15 +261,15 @@ static void Demos_MenuInit( void ) {
 		s_demos.go.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
 	}
 
-	Menu_AddItem( &s_demos.menu, &s_demos.banner );
-	Menu_AddItem( &s_demos.menu, &s_demos.framel );
-	Menu_AddItem( &s_demos.menu, &s_demos.framer );
-	Menu_AddItem( &s_demos.menu, &s_demos.list );
-	Menu_AddItem( &s_demos.menu, &s_demos.arrows );
-	Menu_AddItem( &s_demos.menu, &s_demos.left );
-	Menu_AddItem( &s_demos.menu, &s_demos.right );
-	Menu_AddItem( &s_demos.menu, &s_demos.back );
-	Menu_AddItem( &s_demos.menu, &s_demos.go );
+	Menu_AddItem(&s_demos.menu, &s_demos.banner);
+	Menu_AddItem(&s_demos.menu, &s_demos.framel);
+	Menu_AddItem(&s_demos.menu, &s_demos.framer);
+	Menu_AddItem(&s_demos.menu, &s_demos.list);
+	Menu_AddItem(&s_demos.menu, &s_demos.arrows);
+	Menu_AddItem(&s_demos.menu, &s_demos.left);
+	Menu_AddItem(&s_demos.menu, &s_demos.right);
+	Menu_AddItem(&s_demos.menu, &s_demos.back);
+	Menu_AddItem(&s_demos.menu, &s_demos.go);
 }
 
 /*
@@ -281,16 +277,17 @@ static void Demos_MenuInit( void ) {
 Demos_Cache
 =================
 */
-void Demos_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_GO0 );
-	trap_R_RegisterShaderNoMip( ART_GO1 );
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_ARROWS );
-	trap_R_RegisterShaderNoMip( ART_ARROWLEFT );
-	trap_R_RegisterShaderNoMip( ART_ARROWRIGHT );
+void Demos_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(ART_BACK0);
+	trap_R_RegisterShaderNoMip(ART_BACK1);
+	trap_R_RegisterShaderNoMip(ART_GO0);
+	trap_R_RegisterShaderNoMip(ART_GO1);
+	trap_R_RegisterShaderNoMip(ART_FRAMEL);
+	trap_R_RegisterShaderNoMip(ART_FRAMER);
+	trap_R_RegisterShaderNoMip(ART_ARROWS);
+	trap_R_RegisterShaderNoMip(ART_ARROWLEFT);
+	trap_R_RegisterShaderNoMip(ART_ARROWRIGHT);
 }
 
 /*
@@ -298,7 +295,8 @@ void Demos_Cache( void ) {
 UI_DemosMenu
 ===============
 */
-void UI_DemosMenu( void ) {
+void UI_DemosMenu(void)
+{
 	Demos_MenuInit();
-	UI_PushMenu( &s_demos.menu );
+	UI_PushMenu(&s_demos.menu);
 }

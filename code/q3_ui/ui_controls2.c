@@ -48,11 +48,10 @@ typedef struct {
 	int		bind2;
 } bind_t;
 
-typedef struct
-{
-	char*	name;
+typedef struct {
+	char	*name;
 	float	defaultvalue;
-	float	value;	
+	float	value;
 } configcvar_t;
 
 #define SAVE_NOOP		0
@@ -78,31 +77,31 @@ typedef struct
 
 // bindable actions
 #define ID_SHOWSCORES	0
-#define ID_USEITEM		1	
-#define ID_SPEED		2	
-#define ID_FORWARD		3	
+#define ID_USEITEM		1
+#define ID_SPEED		2
+#define ID_FORWARD		3
 #define ID_BACKPEDAL	4
 #define ID_MOVELEFT		5
 #define ID_MOVERIGHT	6
-#define ID_MOVEUP		7	
+#define ID_MOVEUP		7
 #define ID_MOVEDOWN		8
-#define ID_LEFT			9	
-#define ID_RIGHT		10	
-#define ID_STRAFE		11	
-#define ID_LOOKUP		12	
+#define ID_LEFT			9
+#define ID_RIGHT		10
+#define ID_STRAFE		11
+#define ID_LOOKUP		12
 #define ID_LOOKDOWN		13
 #define ID_MOUSELOOK	14
 #define ID_CENTERVIEW	15
 #define ID_ZOOMVIEW		16
-#define ID_WEAPON1		17	
-#define ID_WEAPON2		18	
-#define ID_WEAPON3		19	
-#define ID_WEAPON4		20	
-#define ID_WEAPON5		21	
-#define ID_WEAPON6		22	
-#define ID_WEAPON7		23	
-#define ID_WEAPON8		24	
-#define ID_WEAPON9		25	
+#define ID_WEAPON1		17
+#define ID_WEAPON2		18
+#define ID_WEAPON3		19
+#define ID_WEAPON4		20
+#define ID_WEAPON5		21
+#define ID_WEAPON6		22
+#define ID_WEAPON7		23
+#define ID_WEAPON8		24
+#define ID_WEAPON9		25
 #define ID_ATTACK		26
 #define ID_WEAPPREV		27
 #define ID_WEAPNEXT		28
@@ -150,8 +149,7 @@ typedef struct
 #define ANIM_DIE		24
 #define ANIM_CHAT		25
 
-typedef struct
-{
+typedef struct {
 	menuframework_s		menu;
 
 	menutext_s			banner;
@@ -221,14 +219,13 @@ typedef struct
 
 	menubitmap_s		back;
 	menutext_s			name;
-} controls_t; 	
+} controls_t;
 
 static controls_t s_controls;
 
 static vec4_t controls_binding_color  = {1.00f, 0.43f, 0.00f, 1.00f};
 
-static bind_t g_bindings[] = 
-{
+static bind_t g_bindings[] = {
 	{"+scores",			"show scores",		ID_SHOWSCORES,	ANIM_IDLE,		K_TAB,			-1,		-1, -1},
 	{"+button2",		"use item",			ID_USEITEM,		ANIM_IDLE,		K_ENTER,		-1,		-1, -1},
 	{"+speed", 			"run / walk",		ID_SPEED,		ANIM_RUN,		K_SHIFT,		-1,		-1,	-1},
@@ -264,11 +261,10 @@ static bind_t g_bindings[] =
 	{"messagemode3", 	"chat - target",	ID_CHAT3,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"messagemode4", 	"chat - attacker",	ID_CHAT4,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"togglemenu", 		"toggle menu",		ID_TOGGLEMENU,	ANIM_IDLE,		K_ESCAPE,		-1,		-1, -1},
-	{(char*)NULL,		(char*)NULL,		0,				0,				-1,				-1,		-1,	-1},
+	{(char *)NULL,	(char *)NULL,		0,				0,				-1,				-1,		-1,	-1},
 };
 
-static configcvar_t g_configcvars[] =
-{
+static configcvar_t g_configcvars[] = {
 	{"cl_run",			0,					0},
 	{"m_pitch",			0,					0},
 	{"cg_autoswitch",	0,					0},
@@ -280,63 +276,62 @@ static configcvar_t g_configcvars[] =
 	{NULL,				0,					0}
 };
 
-static menucommon_s *g_movement_controls[] =
-{
-	(menucommon_s *)&s_controls.alwaysrun,     
-	(menucommon_s *)&s_controls.run,            
-	(menucommon_s *)&s_controls.walkforward,
-	(menucommon_s *)&s_controls.backpedal,
-	(menucommon_s *)&s_controls.stepleft,      
-	(menucommon_s *)&s_controls.stepright,     
-	(menucommon_s *)&s_controls.moveup,        
-	(menucommon_s *)&s_controls.movedown,      
-	(menucommon_s *)&s_controls.turnleft,      
-	(menucommon_s *)&s_controls.turnright,     
-	(menucommon_s *)&s_controls.sidestep,
+static menucommon_s *g_movement_controls[] = {
+	(menucommon_s *) &s_controls.alwaysrun,
+	(menucommon_s *) &s_controls.run,
+	(menucommon_s *) &s_controls.walkforward,
+	(menucommon_s *) &s_controls.backpedal,
+	(menucommon_s *) &s_controls.stepleft,
+	(menucommon_s *) &s_controls.stepright,
+	(menucommon_s *) &s_controls.moveup,
+	(menucommon_s *) &s_controls.movedown,
+	(menucommon_s *) &s_controls.turnleft,
+	(menucommon_s *) &s_controls.turnright,
+	(menucommon_s *) &s_controls.sidestep,
 	NULL
 };
 
 static menucommon_s *g_weapons_controls[] = {
-	(menucommon_s *)&s_controls.attack,           
-	(menucommon_s *)&s_controls.nextweapon,
-	(menucommon_s *)&s_controls.prevweapon,
-	(menucommon_s *)&s_controls.autoswitch,    
-	(menucommon_s *)&s_controls.chainsaw,         
-	(menucommon_s *)&s_controls.machinegun,
-	(menucommon_s *)&s_controls.shotgun,          
-	(menucommon_s *)&s_controls.grenadelauncher,
-	(menucommon_s *)&s_controls.rocketlauncher,   
-	(menucommon_s *)&s_controls.lightning,   
-	(menucommon_s *)&s_controls.railgun,          
-	(menucommon_s *)&s_controls.plasma,           
-	(menucommon_s *)&s_controls.bfg,              
+	(menucommon_s *) &s_controls.attack,
+	(menucommon_s *) &s_controls.nextweapon,
+	(menucommon_s *) &s_controls.prevweapon,
+	(menucommon_s *) &s_controls.autoswitch,
+	(menucommon_s *) &s_controls.chainsaw,
+	(menucommon_s *) &s_controls.machinegun,
+	(menucommon_s *) &s_controls.shotgun,
+	(menucommon_s *) &s_controls.grenadelauncher,
+	(menucommon_s *) &s_controls.rocketlauncher,
+	(menucommon_s *) &s_controls.lightning,
+	(menucommon_s *) &s_controls.railgun,
+	(menucommon_s *) &s_controls.plasma,
+	(menucommon_s *) &s_controls.bfg,
 	NULL,
 };
 
 static menucommon_s *g_looking_controls[] = {
-	(menucommon_s *)&s_controls.sensitivity,
-	(menucommon_s *)&s_controls.smoothmouse,
-	(menucommon_s *)&s_controls.invertmouse,
-	(menucommon_s *)&s_controls.lookup,
-	(menucommon_s *)&s_controls.lookdown,
-	(menucommon_s *)&s_controls.mouselook,
-	(menucommon_s *)&s_controls.freelook,
-	(menucommon_s *)&s_controls.centerview,
-	(menucommon_s *)&s_controls.zoomview,
-	(menucommon_s *)&s_controls.joyenable,
-	(menucommon_s *)&s_controls.joythreshold,
+	(menucommon_s *) &s_controls.sensitivity,
+	(menucommon_s *) &s_controls.smoothmouse,
+	(menucommon_s *) &s_controls.invertmouse,
+	(menucommon_s *) &s_controls.lookup,
+	(menucommon_s *) &s_controls.lookdown,
+	(menucommon_s *) &s_controls.mouselook,
+	(menucommon_s *) &s_controls.freelook,
+	(menucommon_s *) &s_controls.centerview,
+	(menucommon_s *) &s_controls.zoomview,
+	(menucommon_s *) &s_controls.joyenable,
+	(menucommon_s *) &s_controls.joythreshold,
 	NULL,
 };
 
 static menucommon_s *g_misc_controls[] = {
-	(menucommon_s *)&s_controls.showscores, 
-	(menucommon_s *)&s_controls.useitem,
-	(menucommon_s *)&s_controls.gesture,
-	(menucommon_s *)&s_controls.chat,
-	(menucommon_s *)&s_controls.chat2,
-	(menucommon_s *)&s_controls.chat3,
-	(menucommon_s *)&s_controls.chat4,
-	(menucommon_s *)&s_controls.togglemenu,
+	(menucommon_s *) &s_controls.showscores,
+	(menucommon_s *) &s_controls.useitem,
+	(menucommon_s *) &s_controls.gesture,
+	(menucommon_s *) &s_controls.chat,
+	(menucommon_s *) &s_controls.chat2,
+	(menucommon_s *) &s_controls.chat3,
+	(menucommon_s *) &s_controls.chat4,
+	(menucommon_s *) &s_controls.togglemenu,
 	NULL,
 };
 
@@ -352,26 +347,25 @@ static menucommon_s **g_controls[] = {
 Controls_InitCvars
 =================
 */
-static void Controls_InitCvars( void )
+static void Controls_InitCvars(void)
 {
 	int				i;
-	configcvar_t*	cvarptr;
+	configcvar_t	*cvarptr;
 
 	cvarptr = g_configcvars;
-	for (i=0; ;i++,cvarptr++)
-	{
-		if (!cvarptr->name)
+	for(i=0; ; i++,cvarptr++){
+		if(!cvarptr->name)
 			break;
 
 		// get current value
-		cvarptr->value = trap_Cvar_VariableValue( cvarptr->name );
+		cvarptr->value = trap_Cvar_VariableValue(cvarptr->name);
 
 		// get default value
-		trap_Cvar_Reset( cvarptr->name );
-		cvarptr->defaultvalue = trap_Cvar_VariableValue( cvarptr->name );
+		trap_Cvar_Reset(cvarptr->name);
+		cvarptr->defaultvalue = trap_Cvar_VariableValue(cvarptr->name);
 
 		// restore current value
-		trap_Cvar_SetValue( cvarptr->name, cvarptr->value );
+		trap_Cvar_SetValue(cvarptr->name, cvarptr->value);
 	}
 }
 
@@ -380,18 +374,17 @@ static void Controls_InitCvars( void )
 Controls_GetCvarDefault
 =================
 */
-static float Controls_GetCvarDefault( char* name )
+static float Controls_GetCvarDefault(char *name)
 {
-	configcvar_t*	cvarptr;
+	configcvar_t	*cvarptr;
 	int				i;
 
 	cvarptr = g_configcvars;
-	for (i=0; ;i++,cvarptr++)
-	{
-		if (!cvarptr->name)
+	for(i=0; ; i++,cvarptr++){
+		if(!cvarptr->name)
 			return (0);
 
-		if (!strcmp(cvarptr->name,name))
+		if(!strcmp(cvarptr->name,name))
 			break;
 	}
 
@@ -403,18 +396,17 @@ static float Controls_GetCvarDefault( char* name )
 Controls_GetCvarValue
 =================
 */
-static float Controls_GetCvarValue( char* name )
+static float Controls_GetCvarValue(char *name)
 {
-	configcvar_t*	cvarptr;
+	configcvar_t	*cvarptr;
 	int				i;
 
 	cvarptr = g_configcvars;
-	for (i=0; ;i++,cvarptr++)
-	{
-		if (!cvarptr->name)
+	for(i=0; ; i++,cvarptr++){
+		if(!cvarptr->name)
 			return (0);
 
-		if (!strcmp(cvarptr->name,name))
+		if(!strcmp(cvarptr->name,name))
 			break;
 	}
 
@@ -427,9 +419,10 @@ static float Controls_GetCvarValue( char* name )
 Controls_UpdateModel
 =================
 */
-static void Controls_UpdateModel( int anim ) {
-	VectorClear( s_controls.playerViewangles );
-	VectorClear( s_controls.playerMoveangles );
+static void Controls_UpdateModel(int anim)
+{
+	VectorClear(s_controls.playerViewangles);
+	VectorClear(s_controls.playerMoveangles);
 	s_controls.playerViewangles[YAW] = 180 - 30;
 	s_controls.playerMoveangles[YAW] = s_controls.playerViewangles[YAW];
 	s_controls.playerLegs		     = LEGS_IDLE;
@@ -437,24 +430,24 @@ static void Controls_UpdateModel( int anim ) {
 	s_controls.playerWeapon			 = WP_NUM_WEAPONS;
 	s_controls.playerChat			 = qfalse;
 
-	switch( anim ) {
-	case ANIM_RUN:	
+	switch(anim){
+	case ANIM_RUN:
 		s_controls.playerLegs = LEGS_RUN;
 		break;
 
-	case ANIM_WALK:	
+	case ANIM_WALK:
 		s_controls.playerLegs = LEGS_WALK;
 		break;
 
-	case ANIM_BACK:	
+	case ANIM_BACK:
 		s_controls.playerLegs = LEGS_BACK;
 		break;
 
-	case ANIM_JUMP:	
+	case ANIM_JUMP:
 		s_controls.playerLegs = LEGS_JUMP;
 		break;
 
-	case ANIM_CROUCH:	
+	case ANIM_CROUCH:
 		s_controls.playerLegs = LEGS_IDLECR;
 		break;
 
@@ -546,7 +539,7 @@ static void Controls_UpdateModel( int anim ) {
 		break;
 	}
 
-	UI_PlayerInfo_SetInfo( &s_controls.playerinfo, s_controls.playerLegs, s_controls.playerTorso, s_controls.playerViewangles, s_controls.playerMoveangles, s_controls.playerWeapon, s_controls.playerChat );
+	UI_PlayerInfo_SetInfo(&s_controls.playerinfo, s_controls.playerLegs, s_controls.playerTorso, s_controls.playerViewangles, s_controls.playerMoveangles, s_controls.playerWeapon, s_controls.playerChat);
 }
 
 
@@ -555,7 +548,8 @@ static void Controls_UpdateModel( int anim ) {
 Controls_Update
 =================
 */
-static void Controls_Update( void ) {
+static void Controls_Update(void)
+{
 	int		i;
 	int		j;
 	int		y;
@@ -563,9 +557,9 @@ static void Controls_Update( void ) {
 	menucommon_s	*control;
 
 	// disable all controls in all groups
-	for( i = 0; i < C_MAX; i++ ) {
+	for(i = 0; i < C_MAX; i++){
 		controls = g_controls[i];
-		for( j = 0;  (control = controls[j]) ; j++ ) {
+		for(j = 0; (control = controls[j]) ; j++){
 			control->flags |= (QMF_HIDDEN|QMF_INACTIVE);
 		}
 	}
@@ -573,13 +567,13 @@ static void Controls_Update( void ) {
 	controls = g_controls[s_controls.section];
 
 	// enable controls in active group (and count number of items for vertical centering)
-	for( j = 0;  (control = controls[j]) ; j++ ) {
+	for(j = 0; (control = controls[j]) ; j++){
 		control->flags &= ~(QMF_GRAYED|QMF_HIDDEN|QMF_INACTIVE);
 	}
 
 	// position controls
-	y = ( SCREEN_HEIGHT - j * SMALLCHAR_HEIGHT ) / 2;
-	for( j = 0;	(control = controls[j]) ; j++, y += SMALLCHAR_HEIGHT ) {
+	y = (SCREEN_HEIGHT - j * SMALLCHAR_HEIGHT) / 2;
+	for(j = 0;	(control = controls[j]) ; j++, y += SMALLCHAR_HEIGHT){
 		control->x      = 320;
 		control->y      = y;
 		control->left   = 320 - 19*SMALLCHAR_WIDTH;
@@ -588,14 +582,14 @@ static void Controls_Update( void ) {
 		control->bottom = y + SMALLCHAR_HEIGHT;
 	}
 
-	if( s_controls.waitingforkey ) {
+	if(s_controls.waitingforkey){
 		// disable everybody
-		for( i = 0; i < s_controls.menu.nitems; i++ ) {
-			((menucommon_s*)(s_controls.menu.items[i]))->flags |= QMF_GRAYED;
+		for(i = 0; i < s_controls.menu.nitems; i++){
+			((menucommon_s *)(s_controls.menu.items[i]))->flags |= QMF_GRAYED;
 		}
 
 		// enable action item
-		((menucommon_s*)(s_controls.menu.items[s_controls.menu.cursor]))->flags &= ~QMF_GRAYED;
+		((menucommon_s *)(s_controls.menu.items[s_controls.menu.cursor]))->flags &= ~QMF_GRAYED;
 
 		// don't gray out player's name
 		s_controls.name.generic.flags &= ~QMF_GRAYED;
@@ -604,8 +598,8 @@ static void Controls_Update( void ) {
 	}
 
 	// enable everybody
-	for( i = 0; i < s_controls.menu.nitems; i++ ) {
-		((menucommon_s*)(s_controls.menu.items[i]))->flags &= ~QMF_GRAYED;
+	for(i = 0; i < s_controls.menu.nitems; i++){
+		((menucommon_s *)(s_controls.menu.items[i]))->flags &= ~QMF_GRAYED;
 	}
 
 	// makes sure flags are right on the group selection controls
@@ -620,21 +614,21 @@ static void Controls_Update( void ) {
 	s_controls.misc.generic.flags     |= QMF_PULSEIFFOCUS;
 
 	// set buttons
-	switch( s_controls.section ) {
+	switch(s_controls.section){
 	case C_MOVEMENT:
 		s_controls.movement.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.movement.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 		break;
-	
+
 	case C_LOOKING:
 		s_controls.looking.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.looking.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 		break;
-	
+
 	case C_WEAPONS:
 		s_controls.weapons.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.weapons.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
-		break;		
+		break;
 
 	case C_MISC:
 		s_controls.misc.generic.flags &= ~QMF_PULSEIFFOCUS;
@@ -649,9 +643,9 @@ static void Controls_Update( void ) {
 Controls_DrawKeyBinding
 =================
 */
-static void Controls_DrawKeyBinding( void *self )
+static void Controls_DrawKeyBinding(void *self)
 {
-	menuaction_s*	a;
+	menuaction_s	*a;
 	int				x;
 	int				y;
 	int				b1;
@@ -660,62 +654,51 @@ static void Controls_DrawKeyBinding( void *self )
 	char			name[32];
 	char			name2[32];
 
-	a = (menuaction_s*) self;
+	a = (menuaction_s *) self;
 
 	x =	a->generic.x;
 	y = a->generic.y;
 
-	c = (Menu_ItemAtCursor( a->generic.parent ) == a);
+	c = (Menu_ItemAtCursor(a->generic.parent) == a);
 
 	b1 = g_bindings[a->generic.id].bind1;
-	if (b1 == -1)
+	if(b1 == -1)
 		strcpy(name,"???");
-	else
-	{
-		trap_Key_KeynumToStringBuf( b1, name, 32 );
+	else{
+		trap_Key_KeynumToStringBuf(b1, name, 32);
 		Q_strupr(name);
 
 		b2 = g_bindings[a->generic.id].bind2;
-		if (b2 != -1)
-		{
-			trap_Key_KeynumToStringBuf( b2, name2, 32 );
+		if(b2 != -1){
+			trap_Key_KeynumToStringBuf(b2, name2, 32);
 			Q_strupr(name2);
 
-			strcat( name, " or " );
-			strcat( name, name2 );
+			strcat(name, " or ");
+			strcat(name, name2);
 		}
 	}
 
-	if (c)
-	{
-		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, listbar_color ); 
+	if(c){
+		UI_FillRect(a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, listbar_color);
 
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight );
-		UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight );
+		UI_DrawString(x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight);
+		UI_DrawString(x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight);
 
-		if (s_controls.waitingforkey)
-		{
-			UI_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite );
+		if(s_controls.waitingforkey){
+			UI_DrawChar(x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
+			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite);
+		}else{
+			UI_DrawChar(x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
+			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.78, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite);
+			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.82, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite);
 		}
-		else
-		{
-			UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.78, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.82, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite );
-		}
-	}
-	else
-	{
-		if (a->generic.flags & QMF_GRAYED)
-		{
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled );
-			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled );
-		}
-		else
-		{
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, controls_binding_color );
-			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, controls_binding_color );
+	}else{
+		if(a->generic.flags & QMF_GRAYED){
+			UI_DrawString(x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled);
+			UI_DrawString(x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled);
+		}else{
+			UI_DrawString(x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, controls_binding_color);
+			UI_DrawString(x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, controls_binding_color);
 		}
 	}
 }
@@ -725,9 +708,9 @@ static void Controls_DrawKeyBinding( void *self )
 Controls_StatusBar
 =================
 */
-static void Controls_StatusBar( void *self )
+static void Controls_StatusBar(void *self)
 {
-	UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Use Arrow Keys or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
+	UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Use Arrow Keys or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite);
 }
 
 
@@ -736,19 +719,20 @@ static void Controls_StatusBar( void *self )
 Controls_DrawPlayer
 =================
 */
-static void Controls_DrawPlayer( void *self ) {
+static void Controls_DrawPlayer(void *self)
+{
 	menubitmap_s	*b;
 	char			buf[MAX_QPATH];
 
-	trap_Cvar_VariableStringBuffer( "model", buf, sizeof( buf ) );
-	if ( strcmp( buf, s_controls.playerModel ) != 0 ) {
-		UI_PlayerInfo_SetModel( &s_controls.playerinfo, buf );
-		strcpy( s_controls.playerModel, buf );
-		Controls_UpdateModel( ANIM_IDLE );
+	trap_Cvar_VariableStringBuffer("model", buf, sizeof(buf));
+	if(strcmp(buf, s_controls.playerModel) != 0){
+		UI_PlayerInfo_SetModel(&s_controls.playerinfo, buf);
+		strcpy(s_controls.playerModel, buf);
+		Controls_UpdateModel(ANIM_IDLE);
 	}
 
-	b = (menubitmap_s*) self;
-	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, &s_controls.playerinfo, uis.realtime/2 );
+	b = (menubitmap_s *) self;
+	UI_DrawPlayer(b->generic.x, b->generic.y, b->width, b->height, &s_controls.playerinfo, uis.realtime/2);
 }
 
 
@@ -757,7 +741,7 @@ static void Controls_DrawPlayer( void *self ) {
 Controls_GetKeyAssignment
 =================
 */
-static void Controls_GetKeyAssignment (char *command, int *twokeys)
+static void Controls_GetKeyAssignment(char *command, int *twokeys)
 {
 	int		count;
 	int		j;
@@ -766,16 +750,15 @@ static void Controls_GetKeyAssignment (char *command, int *twokeys)
 	twokeys[0] = twokeys[1] = -1;
 	count = 0;
 
-	for ( j = 0; j < 256; j++ )
-	{
-		trap_Key_GetBindingBuf( j, b, 256 );
-		if ( *b == 0 ) {
+	for(j = 0; j < 256; j++){
+		trap_Key_GetBindingBuf(j, b, 256);
+		if(*b == 0){
 			continue;
 		}
-		if ( !Q_stricmp( b, command ) ) {
+		if(!Q_stricmp(b, command)){
 			twokeys[count] = j;
 			count++;
-			if (count == 2)
+			if(count == 2)
 				break;
 		}
 	}
@@ -786,19 +769,18 @@ static void Controls_GetKeyAssignment (char *command, int *twokeys)
 Controls_GetConfig
 =================
 */
-static void Controls_GetConfig( void )
+static void Controls_GetConfig(void)
 {
 	int		i;
 	int		twokeys[2];
-	bind_t*	bindptr;
+	bind_t	*bindptr;
 
 	// put the bindings into a local store
 	bindptr = g_bindings;
 
 	// iterate each command, get its numeric binding
-	for (i=0; ;i++,bindptr++)
-	{
-		if (!bindptr->label)
+	for(i=0; ; i++,bindptr++){
+		if(!bindptr->label)
 			break;
 
 		Controls_GetKeyAssignment(bindptr->command, twokeys);
@@ -807,14 +789,14 @@ static void Controls_GetConfig( void )
 		bindptr->bind2 = twokeys[1];
 	}
 
-	s_controls.invertmouse.curvalue  = Controls_GetCvarValue( "m_pitch" ) < 0;
-	s_controls.smoothmouse.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "m_filter" ) );
-	s_controls.alwaysrun.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_run" ) );
-	s_controls.autoswitch.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_autoswitch" ) );
-	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 30, Controls_GetCvarValue( "sensitivity" ) );
-	s_controls.joyenable.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_joystick" ) );
-	s_controls.joythreshold.curvalue = UI_ClampCvar( 0.05f, 0.75f, Controls_GetCvarValue( "joy_threshold" ) );
-	s_controls.freelook.curvalue     = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_freelook" ) );
+	s_controls.invertmouse.curvalue  = Controls_GetCvarValue("m_pitch") < 0;
+	s_controls.smoothmouse.curvalue  = UI_ClampCvar(0, 1, Controls_GetCvarValue("m_filter"));
+	s_controls.alwaysrun.curvalue    = UI_ClampCvar(0, 1, Controls_GetCvarValue("cl_run"));
+	s_controls.autoswitch.curvalue   = UI_ClampCvar(0, 1, Controls_GetCvarValue("cg_autoswitch"));
+	s_controls.sensitivity.curvalue  = UI_ClampCvar(2, 30, Controls_GetCvarValue("sensitivity"));
+	s_controls.joyenable.curvalue    = UI_ClampCvar(0, 1, Controls_GetCvarValue("in_joystick"));
+	s_controls.joythreshold.curvalue = UI_ClampCvar(0.05f, 0.75f, Controls_GetCvarValue("joy_threshold"));
+	s_controls.freelook.curvalue     = UI_ClampCvar(0, 1, Controls_GetCvarValue("cl_freelook"));
 }
 
 /*
@@ -822,42 +804,40 @@ static void Controls_GetConfig( void )
 Controls_SetConfig
 =================
 */
-static void Controls_SetConfig( void )
+static void Controls_SetConfig(void)
 {
 	int		i;
-	bind_t*	bindptr;
+	bind_t	*bindptr;
 
 	// set the bindings from the local store
 	bindptr = g_bindings;
 
 	// iterate each command, get its numeric binding
-	for (i=0; ;i++,bindptr++)
-	{
-		if (!bindptr->label)
+	for(i=0; ; i++,bindptr++){
+		if(!bindptr->label)
 			break;
 
-		if (bindptr->bind1 != -1)
-		{	
-			trap_Key_SetBinding( bindptr->bind1, bindptr->command );
+		if(bindptr->bind1 != -1){
+			trap_Key_SetBinding(bindptr->bind1, bindptr->command);
 
-			if (bindptr->bind2 != -1)
-				trap_Key_SetBinding( bindptr->bind2, bindptr->command );
+			if(bindptr->bind2 != -1)
+				trap_Key_SetBinding(bindptr->bind2, bindptr->command);
 		}
 	}
 
-	if ( s_controls.invertmouse.curvalue )
-		trap_Cvar_SetValue( "m_pitch", -fabs( trap_Cvar_VariableValue( "m_pitch" ) ) );
+	if(s_controls.invertmouse.curvalue)
+		trap_Cvar_SetValue("m_pitch", -fabs(trap_Cvar_VariableValue("m_pitch")));
 	else
-		trap_Cvar_SetValue( "m_pitch", fabs( trap_Cvar_VariableValue( "m_pitch" ) ) );
+		trap_Cvar_SetValue("m_pitch", fabs(trap_Cvar_VariableValue("m_pitch")));
 
-	trap_Cvar_SetValue( "m_filter", s_controls.smoothmouse.curvalue );
-	trap_Cvar_SetValue( "cl_run", s_controls.alwaysrun.curvalue );
-	trap_Cvar_SetValue( "cg_autoswitch", s_controls.autoswitch.curvalue );
-	trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
-	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
-	trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
-	trap_Cvar_SetValue( "cl_freelook", s_controls.freelook.curvalue );
-	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
+	trap_Cvar_SetValue("m_filter", s_controls.smoothmouse.curvalue);
+	trap_Cvar_SetValue("cl_run", s_controls.alwaysrun.curvalue);
+	trap_Cvar_SetValue("cg_autoswitch", s_controls.autoswitch.curvalue);
+	trap_Cvar_SetValue("sensitivity", s_controls.sensitivity.curvalue);
+	trap_Cvar_SetValue("in_joystick", s_controls.joyenable.curvalue);
+	trap_Cvar_SetValue("joy_threshold", s_controls.joythreshold.curvalue);
+	trap_Cvar_SetValue("cl_freelook", s_controls.freelook.curvalue);
+	trap_Cmd_ExecuteText(EXEC_APPEND, "in_restart\n");
 }
 
 /*
@@ -865,32 +845,31 @@ static void Controls_SetConfig( void )
 Controls_SetDefaults
 =================
 */
-static void Controls_SetDefaults( void )
+static void Controls_SetDefaults(void)
 {
 	int	i;
-	bind_t*	bindptr;
+	bind_t	*bindptr;
 
 	// set the bindings from the local store
 	bindptr = g_bindings;
 
 	// iterate each command, set its default binding
-	for (i=0; ;i++,bindptr++)
-	{
-		if (!bindptr->label)
+	for(i=0; ; i++,bindptr++){
+		if(!bindptr->label)
 			break;
 
 		bindptr->bind1 = bindptr->defaultbind1;
 		bindptr->bind2 = bindptr->defaultbind2;
 	}
 
-	s_controls.invertmouse.curvalue  = Controls_GetCvarDefault( "m_pitch" ) < 0;
-	s_controls.smoothmouse.curvalue  = Controls_GetCvarDefault( "m_filter" );
-	s_controls.alwaysrun.curvalue    = Controls_GetCvarDefault( "cl_run" );
-	s_controls.autoswitch.curvalue   = Controls_GetCvarDefault( "cg_autoswitch" );
-	s_controls.sensitivity.curvalue  = Controls_GetCvarDefault( "sensitivity" );
-	s_controls.joyenable.curvalue    = Controls_GetCvarDefault( "in_joystick" );
-	s_controls.joythreshold.curvalue = Controls_GetCvarDefault( "joy_threshold" );
-	s_controls.freelook.curvalue     = Controls_GetCvarDefault( "cl_freelook" );
+	s_controls.invertmouse.curvalue  = Controls_GetCvarDefault("m_pitch") < 0;
+	s_controls.smoothmouse.curvalue  = Controls_GetCvarDefault("m_filter");
+	s_controls.alwaysrun.curvalue    = Controls_GetCvarDefault("cl_run");
+	s_controls.autoswitch.curvalue   = Controls_GetCvarDefault("cg_autoswitch");
+	s_controls.sensitivity.curvalue  = Controls_GetCvarDefault("sensitivity");
+	s_controls.joyenable.curvalue    = Controls_GetCvarDefault("in_joystick");
+	s_controls.joythreshold.curvalue = Controls_GetCvarDefault("joy_threshold");
+	s_controls.freelook.curvalue     = Controls_GetCvarDefault("cl_freelook");
 }
 
 /*
@@ -898,122 +877,106 @@ static void Controls_SetDefaults( void )
 Controls_MenuKey
 =================
 */
-static sfxHandle_t Controls_MenuKey( int key )
+static sfxHandle_t Controls_MenuKey(int key)
 {
 	int			id;
 	int			i;
 	qboolean	found;
-	bind_t*		bindptr;
+	bind_t		*bindptr;
 	found = qfalse;
 
-	if (!s_controls.waitingforkey)
-	{
-		switch (key)
-		{
-			case K_BACKSPACE:
-			case K_DEL:
-			case K_KP_DEL:
-				key = -1;
-				break;
-		
-			case K_MOUSE2:
-			case K_ESCAPE:
-				if (s_controls.changesmade)
-					Controls_SetConfig();
-				goto ignorekey;	
+	if(!s_controls.waitingforkey){
+		switch(key){
+		case K_BACKSPACE:
+		case K_DEL:
+		case K_KP_DEL:
+			key = -1;
+			break;
 
-			default:
-				goto ignorekey;
-		}
-	}
-	else
-	{
-		if (key & K_CHAR_FLAG)
+		case K_MOUSE2:
+		case K_ESCAPE:
+			if(s_controls.changesmade)
+				Controls_SetConfig();
 			goto ignorekey;
 
-		switch (key)
-		{
-			case K_ESCAPE:
-				s_controls.waitingforkey = qfalse;
-				Controls_Update();
-				return (menu_out_sound);
-	
-			case '`':
-				goto ignorekey;
+		default:
+			goto ignorekey;
+		}
+	}else{
+		if(key & K_CHAR_FLAG)
+			goto ignorekey;
+
+		switch(key){
+		case K_ESCAPE:
+			s_controls.waitingforkey = qfalse;
+			Controls_Update();
+			return (menu_out_sound);
+
+		case '`':
+			goto ignorekey;
 		}
 	}
 
 	s_controls.changesmade = qtrue;
-	
-	if (key != -1)
-	{
+
+	if(key != -1){
 		// remove from any other bind
 		bindptr = g_bindings;
-		for (i=0; ;i++,bindptr++)
-		{
-			if (!bindptr->label)	
+		for(i=0; ; i++,bindptr++){
+			if(!bindptr->label)
 				break;
 
-			if (bindptr->bind2 == key)
+			if(bindptr->bind2 == key)
 				bindptr->bind2 = -1;
 
-			if (bindptr->bind1 == key)
-			{
-				bindptr->bind1 = bindptr->bind2;	
+			if(bindptr->bind1 == key){
+				bindptr->bind1 = bindptr->bind2;
 				bindptr->bind2 = -1;
 			}
 		}
 	}
 
 	// assign key to local store
-	id      = ((menucommon_s*)(s_controls.menu.items[s_controls.menu.cursor]))->id;
+	id      = ((menucommon_s *)(s_controls.menu.items[s_controls.menu.cursor]))->id;
 	bindptr = g_bindings;
-	for (i=0; ;i++,bindptr++)
-	{
-		if (!bindptr->label)	
+	for(i=0; ; i++,bindptr++){
+		if(!bindptr->label)
 			break;
-		
-		if (bindptr->id == id)
-		{
+
+		if(bindptr->id == id){
 			found = qtrue;
-			if (key == -1)
-			{
-				if( bindptr->bind1 != -1 ) {
-					trap_Key_SetBinding( bindptr->bind1, "" );
+			if(key == -1){
+				if(bindptr->bind1 != -1){
+					trap_Key_SetBinding(bindptr->bind1, "");
 					bindptr->bind1 = -1;
 				}
-				if( bindptr->bind2 != -1 ) {
-					trap_Key_SetBinding( bindptr->bind2, "" );
+				if(bindptr->bind2 != -1){
+					trap_Key_SetBinding(bindptr->bind2, "");
 					bindptr->bind2 = -1;
 				}
-			}
-			else if (bindptr->bind1 == -1) {
+			}else if(bindptr->bind1 == -1){
 				bindptr->bind1 = key;
-			}
-			else if (bindptr->bind1 != key && bindptr->bind2 == -1) {
+			}else if(bindptr->bind1 != key && bindptr->bind2 == -1){
 				bindptr->bind2 = key;
-			}
-			else
-			{
-				trap_Key_SetBinding( bindptr->bind1, "" );
-				trap_Key_SetBinding( bindptr->bind2, "" );
+			}else{
+				trap_Key_SetBinding(bindptr->bind1, "");
+				trap_Key_SetBinding(bindptr->bind2, "");
 				bindptr->bind1 = key;
 				bindptr->bind2 = -1;
-			}						
+			}
 			break;
 		}
-	}				
-		
+	}
+
 	s_controls.waitingforkey = qfalse;
 
-	if (found)
-	{	
+	if(found){
 		Controls_Update();
 		return (menu_out_sound);
 	}
 
 ignorekey:
-	return Menu_DefaultKey( &s_controls.menu, key );
+	return Menu_DefaultKey(&s_controls.menu, key);
 }
 
 /*
@@ -1021,8 +984,9 @@ ignorekey:
 Controls_ResetDefaults_Action
 =================
 */
-static void Controls_ResetDefaults_Action( qboolean result ) {
-	if( !result ) {
+static void Controls_ResetDefaults_Action(qboolean result)
+{
+	if(!result){
 		return;
 	}
 
@@ -1036,9 +1000,10 @@ static void Controls_ResetDefaults_Action( qboolean result ) {
 Controls_ResetDefaults_Draw
 =================
 */
-static void Controls_ResetDefaults_Draw( void ) {
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset all", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "controls to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow );
+static void Controls_ResetDefaults_Draw(void)
+{
+	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset all", UI_CENTER|UI_SMALLFONT, color_yellow);
+	UI_DrawProportionalString(SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "controls to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow);
 }
 
 /*
@@ -1046,86 +1011,76 @@ static void Controls_ResetDefaults_Draw( void ) {
 Controls_MenuEvent
 =================
 */
-static void Controls_MenuEvent( void* ptr, int event )
+static void Controls_MenuEvent(void *ptr, int event)
 {
-	switch (((menucommon_s*)ptr)->id)
-	{
-		case ID_MOVEMENT:
-			if (event == QM_ACTIVATED)
-			{
-				s_controls.section = C_MOVEMENT; 
-				Controls_Update();
-			}
-			break;
+	switch(((menucommon_s *)ptr)->id){
+	case ID_MOVEMENT:
+		if(event == QM_ACTIVATED){
+			s_controls.section = C_MOVEMENT;
+			Controls_Update();
+		}
+		break;
 
-		case ID_LOOKING:
-			if (event == QM_ACTIVATED)
-			{
-				s_controls.section = C_LOOKING; 
-				Controls_Update();
-			}
-			break;
+	case ID_LOOKING:
+		if(event == QM_ACTIVATED){
+			s_controls.section = C_LOOKING;
+			Controls_Update();
+		}
+		break;
 
-		case ID_WEAPONS:
-			if (event == QM_ACTIVATED)
-			{
-				s_controls.section = C_WEAPONS; 
-				Controls_Update();
-			}
-			break;
+	case ID_WEAPONS:
+		if(event == QM_ACTIVATED){
+			s_controls.section = C_WEAPONS;
+			Controls_Update();
+		}
+		break;
 
-		case ID_MISC:
-			if (event == QM_ACTIVATED)
-			{
-				s_controls.section = C_MISC; 
-				Controls_Update();
-			}
-			break;
+	case ID_MISC:
+		if(event == QM_ACTIVATED){
+			s_controls.section = C_MISC;
+			Controls_Update();
+		}
+		break;
 
-		case ID_DEFAULTS:
-			if (event == QM_ACTIVATED)
-			{
-				UI_ConfirmMenu( "SET TO DEFAULTS?", Controls_ResetDefaults_Draw, Controls_ResetDefaults_Action );
-			}
-			break;
+	case ID_DEFAULTS:
+		if(event == QM_ACTIVATED){
+			UI_ConfirmMenu("SET TO DEFAULTS?", Controls_ResetDefaults_Draw, Controls_ResetDefaults_Action);
+		}
+		break;
 
-		case ID_BACK:
-			if (event == QM_ACTIVATED)
-			{
-				if (s_controls.changesmade)
-					Controls_SetConfig();
-				UI_PopMenu();
-			}
-			break;
-
-		case ID_SAVEANDEXIT:
-			if (event == QM_ACTIVATED)
-			{
+	case ID_BACK:
+		if(event == QM_ACTIVATED){
+			if(s_controls.changesmade)
 				Controls_SetConfig();
-				UI_PopMenu();
-			}
-			break;
+			UI_PopMenu();
+		}
+		break;
 
-		case ID_EXIT:
-			if (event == QM_ACTIVATED)
-			{
-				UI_PopMenu();
-			}
-			break;
+	case ID_SAVEANDEXIT:
+		if(event == QM_ACTIVATED){
+			Controls_SetConfig();
+			UI_PopMenu();
+		}
+		break;
 
-		case ID_FREELOOK:
-		case ID_MOUSESPEED:
-		case ID_INVERTMOUSE:
-		case ID_SMOOTHMOUSE:
-		case ID_ALWAYSRUN:
-		case ID_AUTOSWITCH:
-		case ID_JOYENABLE:
-		case ID_JOYTHRESHOLD:
-			if (event == QM_ACTIVATED)
-			{
-				s_controls.changesmade = qtrue;
-			}
-			break;		
+	case ID_EXIT:
+		if(event == QM_ACTIVATED){
+			UI_PopMenu();
+		}
+		break;
+
+	case ID_FREELOOK:
+	case ID_MOUSESPEED:
+	case ID_INVERTMOUSE:
+	case ID_SMOOTHMOUSE:
+	case ID_ALWAYSRUN:
+	case ID_AUTOSWITCH:
+	case ID_JOYENABLE:
+	case ID_JOYTHRESHOLD:
+		if(event == QM_ACTIVATED){
+			s_controls.changesmade = qtrue;
+		}
+		break;
 	}
 }
 
@@ -1134,18 +1089,13 @@ static void Controls_MenuEvent( void* ptr, int event )
 Controls_ActionEvent
 =================
 */
-static void Controls_ActionEvent( void* ptr, int event )
+static void Controls_ActionEvent(void *ptr, int event)
 {
-	if (event == QM_LOSTFOCUS)
-	{
-		Controls_UpdateModel( ANIM_IDLE );
-	}
-	else if (event == QM_GOTFOCUS)
-	{
-		Controls_UpdateModel( g_bindings[((menucommon_s*)ptr)->id].anim );
-	}
-	else if ((event == QM_ACTIVATED) && !s_controls.waitingforkey)
-	{
+	if(event == QM_LOSTFOCUS){
+		Controls_UpdateModel(ANIM_IDLE);
+	}else if(event == QM_GOTFOCUS){
+		Controls_UpdateModel(g_bindings[((menucommon_s *)ptr)->id].anim);
+	}else if((event == QM_ACTIVATED) && !s_controls.waitingforkey){
 		s_controls.waitingforkey = 1;
 		Controls_Update();
 	}
@@ -1156,13 +1106,13 @@ static void Controls_ActionEvent( void* ptr, int event )
 Controls_InitModel
 =================
 */
-static void Controls_InitModel( void )
+static void Controls_InitModel(void)
 {
-	memset( &s_controls.playerinfo, 0, sizeof(playerInfo_t) );
+	memset(&s_controls.playerinfo, 0, sizeof(playerInfo_t));
 
-	UI_PlayerInfo_SetModel( &s_controls.playerinfo, UI_Cvar_VariableString( "model" ) );
+	UI_PlayerInfo_SetModel(&s_controls.playerinfo, UI_Cvar_VariableString("model"));
 
-	Controls_UpdateModel( ANIM_IDLE );
+	Controls_UpdateModel(ANIM_IDLE);
 }
 
 /*
@@ -1170,14 +1120,15 @@ static void Controls_InitModel( void )
 Controls_InitWeapons
 =================
 */
-static void Controls_InitWeapons( void ) {
-	gitem_t *	item;
+static void Controls_InitWeapons(void)
+{
+	gitem_t 	*item;
 
-	for ( item = bg_itemlist + 1 ; item->classname ; item++ ) {
-		if ( item->giType != IT_WEAPON ) {
+	for(item = bg_itemlist + 1 ; item->classname ; item++){
+		if(item->giType != IT_WEAPON){
 			continue;
 		}
-		trap_R_RegisterModel( item->world_model[0] );
+		trap_R_RegisterModel(item->world_model[0]);
 	}
 }
 
@@ -1186,12 +1137,12 @@ static void Controls_InitWeapons( void ) {
 Controls_MenuInit
 =================
 */
-static void Controls_MenuInit( void )
+static void Controls_MenuInit(void)
 {
 	static char playername[32];
 
 	// zero set all our globals
-	memset( &s_controls, 0 ,sizeof(controls_t) );
+	memset(&s_controls, 0 ,sizeof(controls_t));
 
 	Controls_Cache();
 
@@ -1568,68 +1519,68 @@ static void Controls_MenuInit( void )
 	s_controls.name.style			= UI_CENTER;
 	s_controls.name.color			= text_color_normal;
 
-	Menu_AddItem( &s_controls.menu, &s_controls.banner );
-	Menu_AddItem( &s_controls.menu, &s_controls.framel );
-	Menu_AddItem( &s_controls.menu, &s_controls.framer );
-	Menu_AddItem( &s_controls.menu, &s_controls.player );
-	Menu_AddItem( &s_controls.menu, &s_controls.name );
+	Menu_AddItem(&s_controls.menu, &s_controls.banner);
+	Menu_AddItem(&s_controls.menu, &s_controls.framel);
+	Menu_AddItem(&s_controls.menu, &s_controls.framer);
+	Menu_AddItem(&s_controls.menu, &s_controls.player);
+	Menu_AddItem(&s_controls.menu, &s_controls.name);
 
-	Menu_AddItem( &s_controls.menu, &s_controls.looking );
-	Menu_AddItem( &s_controls.menu, &s_controls.movement );
-	Menu_AddItem( &s_controls.menu, &s_controls.weapons );
-	Menu_AddItem( &s_controls.menu, &s_controls.misc );
+	Menu_AddItem(&s_controls.menu, &s_controls.looking);
+	Menu_AddItem(&s_controls.menu, &s_controls.movement);
+	Menu_AddItem(&s_controls.menu, &s_controls.weapons);
+	Menu_AddItem(&s_controls.menu, &s_controls.misc);
 
-	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
-	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
-	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
-	Menu_AddItem( &s_controls.menu, &s_controls.lookup );
-	Menu_AddItem( &s_controls.menu, &s_controls.lookdown );
-	Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
-	Menu_AddItem( &s_controls.menu, &s_controls.freelook );
-	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
-	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
-	Menu_AddItem( &s_controls.menu, &s_controls.joyenable );
-	Menu_AddItem( &s_controls.menu, &s_controls.joythreshold );
+	Menu_AddItem(&s_controls.menu, &s_controls.sensitivity);
+	Menu_AddItem(&s_controls.menu, &s_controls.smoothmouse);
+	Menu_AddItem(&s_controls.menu, &s_controls.invertmouse);
+	Menu_AddItem(&s_controls.menu, &s_controls.lookup);
+	Menu_AddItem(&s_controls.menu, &s_controls.lookdown);
+	Menu_AddItem(&s_controls.menu, &s_controls.mouselook);
+	Menu_AddItem(&s_controls.menu, &s_controls.freelook);
+	Menu_AddItem(&s_controls.menu, &s_controls.centerview);
+	Menu_AddItem(&s_controls.menu, &s_controls.zoomview);
+	Menu_AddItem(&s_controls.menu, &s_controls.joyenable);
+	Menu_AddItem(&s_controls.menu, &s_controls.joythreshold);
 
-	Menu_AddItem( &s_controls.menu, &s_controls.alwaysrun );
-	Menu_AddItem( &s_controls.menu, &s_controls.run );
-	Menu_AddItem( &s_controls.menu, &s_controls.walkforward );
-	Menu_AddItem( &s_controls.menu, &s_controls.backpedal );
-	Menu_AddItem( &s_controls.menu, &s_controls.stepleft );
-	Menu_AddItem( &s_controls.menu, &s_controls.stepright );
-	Menu_AddItem( &s_controls.menu, &s_controls.moveup );
-	Menu_AddItem( &s_controls.menu, &s_controls.movedown );
-	Menu_AddItem( &s_controls.menu, &s_controls.turnleft );
-	Menu_AddItem( &s_controls.menu, &s_controls.turnright );
-	Menu_AddItem( &s_controls.menu, &s_controls.sidestep );
+	Menu_AddItem(&s_controls.menu, &s_controls.alwaysrun);
+	Menu_AddItem(&s_controls.menu, &s_controls.run);
+	Menu_AddItem(&s_controls.menu, &s_controls.walkforward);
+	Menu_AddItem(&s_controls.menu, &s_controls.backpedal);
+	Menu_AddItem(&s_controls.menu, &s_controls.stepleft);
+	Menu_AddItem(&s_controls.menu, &s_controls.stepright);
+	Menu_AddItem(&s_controls.menu, &s_controls.moveup);
+	Menu_AddItem(&s_controls.menu, &s_controls.movedown);
+	Menu_AddItem(&s_controls.menu, &s_controls.turnleft);
+	Menu_AddItem(&s_controls.menu, &s_controls.turnright);
+	Menu_AddItem(&s_controls.menu, &s_controls.sidestep);
 
-	Menu_AddItem( &s_controls.menu, &s_controls.attack );
-	Menu_AddItem( &s_controls.menu, &s_controls.nextweapon );
-	Menu_AddItem( &s_controls.menu, &s_controls.prevweapon );
-	Menu_AddItem( &s_controls.menu, &s_controls.autoswitch );
-	Menu_AddItem( &s_controls.menu, &s_controls.chainsaw );
-	Menu_AddItem( &s_controls.menu, &s_controls.machinegun );
-	Menu_AddItem( &s_controls.menu, &s_controls.shotgun );
-	Menu_AddItem( &s_controls.menu, &s_controls.grenadelauncher );
-	Menu_AddItem( &s_controls.menu, &s_controls.rocketlauncher );
-	Menu_AddItem( &s_controls.menu, &s_controls.lightning );
-	Menu_AddItem( &s_controls.menu, &s_controls.railgun );
-	Menu_AddItem( &s_controls.menu, &s_controls.plasma );
-	Menu_AddItem( &s_controls.menu, &s_controls.bfg );
+	Menu_AddItem(&s_controls.menu, &s_controls.attack);
+	Menu_AddItem(&s_controls.menu, &s_controls.nextweapon);
+	Menu_AddItem(&s_controls.menu, &s_controls.prevweapon);
+	Menu_AddItem(&s_controls.menu, &s_controls.autoswitch);
+	Menu_AddItem(&s_controls.menu, &s_controls.chainsaw);
+	Menu_AddItem(&s_controls.menu, &s_controls.machinegun);
+	Menu_AddItem(&s_controls.menu, &s_controls.shotgun);
+	Menu_AddItem(&s_controls.menu, &s_controls.grenadelauncher);
+	Menu_AddItem(&s_controls.menu, &s_controls.rocketlauncher);
+	Menu_AddItem(&s_controls.menu, &s_controls.lightning);
+	Menu_AddItem(&s_controls.menu, &s_controls.railgun);
+	Menu_AddItem(&s_controls.menu, &s_controls.plasma);
+	Menu_AddItem(&s_controls.menu, &s_controls.bfg);
 
-	Menu_AddItem( &s_controls.menu, &s_controls.showscores );
-	Menu_AddItem( &s_controls.menu, &s_controls.useitem );
-	Menu_AddItem( &s_controls.menu, &s_controls.gesture );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat2 );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat3 );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat4 );
-	Menu_AddItem( &s_controls.menu, &s_controls.togglemenu );
+	Menu_AddItem(&s_controls.menu, &s_controls.showscores);
+	Menu_AddItem(&s_controls.menu, &s_controls.useitem);
+	Menu_AddItem(&s_controls.menu, &s_controls.gesture);
+	Menu_AddItem(&s_controls.menu, &s_controls.chat);
+	Menu_AddItem(&s_controls.menu, &s_controls.chat2);
+	Menu_AddItem(&s_controls.menu, &s_controls.chat3);
+	Menu_AddItem(&s_controls.menu, &s_controls.chat4);
+	Menu_AddItem(&s_controls.menu, &s_controls.togglemenu);
 
-	Menu_AddItem( &s_controls.menu, &s_controls.back );
+	Menu_AddItem(&s_controls.menu, &s_controls.back);
 
-	trap_Cvar_VariableStringBuffer( "name", s_controls.name.string, 16 );
-	Q_CleanStr( s_controls.name.string );
+	trap_Cvar_VariableStringBuffer("name", s_controls.name.string, 16);
+	Q_CleanStr(s_controls.name.string);
 
 	// initialize the configurable cvars
 	Controls_InitCvars();
@@ -1641,7 +1592,7 @@ static void Controls_MenuInit( void )
 	Controls_InitModel();
 
 	// intialize the weapons
-	Controls_InitWeapons ();
+	Controls_InitWeapons();
 
 	// initial default section
 	s_controls.section = C_LOOKING;
@@ -1656,11 +1607,12 @@ static void Controls_MenuInit( void )
 Controls_Cache
 =================
 */
-void Controls_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
+void Controls_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(ART_BACK0);
+	trap_R_RegisterShaderNoMip(ART_BACK1);
+	trap_R_RegisterShaderNoMip(ART_FRAMEL);
+	trap_R_RegisterShaderNoMip(ART_FRAMER);
 }
 
 
@@ -1669,7 +1621,8 @@ void Controls_Cache( void ) {
 UI_ControlsMenu
 =================
 */
-void UI_ControlsMenu( void ) {
+void UI_ControlsMenu(void)
+{
 	Controls_MenuInit();
-	UI_PushMenu( &s_controls.menu );
+	UI_PushMenu(&s_controls.menu);
 }

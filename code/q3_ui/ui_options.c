@@ -65,12 +65,13 @@ static optionsmenu_t	s_options;
 Options_Event
 =================
 */
-static void Options_Event( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void Options_Event(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_GRAPHICS:
 		UI_GraphicsOptionsMenu();
 		break;
@@ -99,11 +100,12 @@ static void Options_Event( void* ptr, int event ) {
 SystemConfig_Cache
 ===============
 */
-void SystemConfig_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
+void SystemConfig_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(ART_FRAMEL);
+	trap_R_RegisterShaderNoMip(ART_FRAMER);
+	trap_R_RegisterShaderNoMip(ART_BACK0);
+	trap_R_RegisterShaderNoMip(ART_BACK1);
 }
 
 /*
@@ -111,20 +113,20 @@ void SystemConfig_Cache( void ) {
 Options_MenuInit
 ===============
 */
-void Options_MenuInit( void ) {
+void Options_MenuInit(void)
+{
 	int				y;
 	uiClientState_t	cstate;
 
-	memset( &s_options, 0, sizeof(optionsmenu_t) );
+	memset(&s_options, 0, sizeof(optionsmenu_t));
 
 	SystemConfig_Cache();
 	s_options.menu.wrapAround = qtrue;
 
-	trap_GetClientState( &cstate );
-	if ( cstate.connState >= CA_CONNECTED ) {
+	trap_GetClientState(&cstate);
+	if(cstate.connState >= CA_CONNECTED){
 		s_options.menu.fullscreen = qfalse;
-	}
-	else {
+	}else{
 		s_options.menu.fullscreen = qtrue;
 	}
 
@@ -139,7 +141,7 @@ void Options_MenuInit( void ) {
 	s_options.framel.generic.type  = MTYPE_BITMAP;
 	s_options.framel.generic.name  = ART_FRAMEL;
 	s_options.framel.generic.flags = QMF_INACTIVE;
-	s_options.framel.generic.x	   = 8;  
+	s_options.framel.generic.x	   = 8;
 	s_options.framel.generic.y	   = 76;
 	s_options.framel.width  	   = 256;
 	s_options.framel.height  	   = 334;
@@ -207,14 +209,14 @@ void Options_MenuInit( void ) {
 	s_options.back.height  		    = 64;
 	s_options.back.focuspic         = ART_BACK1;
 
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.banner );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.framel );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.framer );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.graphics );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.display );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.sound );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.network );
-	Menu_AddItem( &s_options.menu, ( void * ) &s_options.back );
+	Menu_AddItem(&s_options.menu, (void *) &s_options.banner);
+	Menu_AddItem(&s_options.menu, (void *) &s_options.framel);
+	Menu_AddItem(&s_options.menu, (void *) &s_options.framer);
+	Menu_AddItem(&s_options.menu, (void *) &s_options.graphics);
+	Menu_AddItem(&s_options.menu, (void *) &s_options.display);
+	Menu_AddItem(&s_options.menu, (void *) &s_options.sound);
+	Menu_AddItem(&s_options.menu, (void *) &s_options.network);
+	Menu_AddItem(&s_options.menu, (void *) &s_options.back);
 }
 
 
@@ -223,7 +225,8 @@ void Options_MenuInit( void ) {
 UI_SystemConfigMenu
 ===============
 */
-void UI_SystemConfigMenu( void ) {
+void UI_SystemConfigMenu(void)
+{
 	Options_MenuInit();
-	UI_PushMenu ( &s_options.menu );
+	UI_PushMenu(&s_options.menu);
 }

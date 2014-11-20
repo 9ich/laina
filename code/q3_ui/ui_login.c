@@ -37,8 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ID_CANCEL		105
 
 
-typedef struct
-{
+typedef struct {
 	menuframework_s	menu;
 	menubitmap_s	frame;
 	menutext_s		name;
@@ -62,12 +61,13 @@ static vec4_t s_login_color_prompt  = {1.00, 0.43, 0.00, 1.00};
 Login_MenuEvent
 ===============
 */
-static void Login_MenuEvent( void* ptr, int event ) {
-	if( event != QM_ACTIVATED ) {
+static void Login_MenuEvent(void *ptr, int event)
+{
+	if(event != QM_ACTIVATED){
 		return;
 	}
 
-	switch( ((menucommon_s*)ptr)->id ) {
+	switch(((menucommon_s *)ptr)->id){
 	case ID_LOGIN:
 		// set name								``
 		//trap_Cvar_Set( "name", s_login.name_box.field.buffer );
@@ -78,12 +78,12 @@ static void Login_MenuEvent( void* ptr, int event ) {
 
 		// login
 		trap_CL_UI_RankUserLogin(
-			s_login.name_box.field.buffer, 
-			s_login.password_box.field.buffer );
+		    s_login.name_box.field.buffer,
+		    s_login.password_box.field.buffer);
 
 		UI_ForceMenuOff();
 		break;
-		
+
 	case ID_CANCEL:
 		UI_PopMenu();
 		break;
@@ -96,10 +96,11 @@ static void Login_MenuEvent( void* ptr, int event ) {
 Login_MenuInit
 ===============
 */
-void Login_MenuInit( void ) {
+void Login_MenuInit(void)
+{
 	int				y;
 
-	memset( &s_login, 0, sizeof(s_login) );
+	memset(&s_login, 0, sizeof(s_login));
 
 	Login_Cache();
 
@@ -134,7 +135,7 @@ void Login_MenuInit( void ) {
 	s_login.name_box.field.widthInChars	= 16;
 	s_login.name_box.field.maxchars		= 16;
 	y += 20;
-	
+
 	s_login.password.generic.type		= MTYPE_PTEXT;
 	s_login.password.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_INACTIVE;
 	s_login.password.generic.id			= ID_PASSWORD;
@@ -175,13 +176,13 @@ void Login_MenuInit( void ) {
 	s_login.cancel.color					= colorRed;
 	y += 20;
 
-	Menu_AddItem( &s_login.menu, (void*) &s_login.frame );
-	Menu_AddItem( &s_login.menu, (void*) &s_login.name );
-	Menu_AddItem( &s_login.menu, (void*) &s_login.name_box );
-	Menu_AddItem( &s_login.menu, (void*) &s_login.password );
-	Menu_AddItem( &s_login.menu, (void*) &s_login.password_box );
-	Menu_AddItem( &s_login.menu, (void*) &s_login.login );
-	Menu_AddItem( &s_login.menu, (void*) &s_login.cancel );
+	Menu_AddItem(&s_login.menu, (void *) &s_login.frame);
+	Menu_AddItem(&s_login.menu, (void *) &s_login.name);
+	Menu_AddItem(&s_login.menu, (void *) &s_login.name_box);
+	Menu_AddItem(&s_login.menu, (void *) &s_login.password);
+	Menu_AddItem(&s_login.menu, (void *) &s_login.password_box);
+	Menu_AddItem(&s_login.menu, (void *) &s_login.login);
+	Menu_AddItem(&s_login.menu, (void *) &s_login.cancel);
 }
 
 
@@ -190,8 +191,9 @@ void Login_MenuInit( void ) {
 Login_Cache
 ===============
 */
-void Login_Cache( void ) {
-	trap_R_RegisterShaderNoMip( LOGIN_FRAME );
+void Login_Cache(void)
+{
+	trap_R_RegisterShaderNoMip(LOGIN_FRAME);
 }
 
 
@@ -200,9 +202,10 @@ void Login_Cache( void ) {
 UI_LoginMenu
 ===============
 */
-void UI_LoginMenu( void ) {
+void UI_LoginMenu(void)
+{
 	Login_MenuInit();
-	UI_PushMenu ( &s_login.menu );
+	UI_PushMenu(&s_login.menu);
 }
 
 
