@@ -71,12 +71,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	CHAR_HEIGHT			64
 #define	TEXT_ICON_SPACE		4
 
+#define	FIELD_CHAR_SPACING	-14
+
 #define	TEAMCHAT_WIDTH		80
 #define TEAMCHAT_HEIGHT		8
 
 // very large characters
-#define	GIANT_WIDTH			64
-#define	GIANT_HEIGHT		64
+#define	GIANT_WIDTH			80
+#define	GIANT_HEIGHT		80
 
 #define	NUM_CROSSHAIRS		10
 
@@ -692,6 +694,8 @@ typedef struct {
 	qhandle_t	harvesterBlueSkin;
 	qhandle_t	harvesterNeutralModel;
 #endif
+
+	qhandle_t	tokenModel;
 
 	qhandle_t	armorModel;
 	qhandle_t	armorIcon;

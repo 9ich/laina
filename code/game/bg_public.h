@@ -199,7 +199,7 @@ void Pmove (pmove_t *pmove);
 
 // tokens <-> lives
 #define LIFE2TOK(x)	((x)*100)
-#define TOK2LIFE(x)	((x)/100)
+#define TOK2LIFE(x)	(floor((double)(x)/LIFE2TOK(1)))
 
 #define SPAWNHEALTH LIFE2TOK(2)
 
