@@ -31,19 +31,24 @@ pmove_t		*pm;
 pml_t		pml;
 
 // movement parameters
-float	pm_stopspeed = 300.0f;
+float	pm_stopspeed = 100.0f;
 float	pm_duckScale = 0.25f;
 float	pm_swimScale = 0.50f;
 
-float	pm_accelerate = 30.0f;
+float	pm_accelerate = 15.0f;
 float	pm_airaccelerate = 1.0f;
 float	pm_wateraccelerate = 4.0f;
 float	pm_flyaccelerate = 8.0f;
 
-float	pm_friction = 6.0f;
+float	pm_friction = 8.0f;
 float	pm_waterfriction = 1.0f;
 float	pm_flightfriction = 3.0f;
 float	pm_spectatorfriction = 5.0f;
+
+float	cpm_pm_airstopaccelerate = 2.5;
+float	cpm_pm_aircontrol = 150;
+float	cpm_pm_strafeaccelerate = 70;
+float	cpm_pm_wishspeed = 30;
 
 int		c_pmove = 0;
 
@@ -590,6 +595,28 @@ static void PM_FlyMove( void ) {
 	PM_StepSlideMove( qfalse );
 }
 
+static void PM_Aircontrol (pmove_t *pm, vec3_t wishdir, float wishspeed )
+{
+	float	zspeed, speed, dot, k;
+	int	i;
+
+	if ( (pm->ps->movementDir && pm->ps->movementDir !=4 && pm->ps->movementDir != -4 && pm->ps->movementDir != 12) || wishspeed == 0.0)
+		return; // can't control movement if not moving forward or backward
+	zspeed = pm->ps->velocity[2];
+	pm->ps->velocity[2] = 0;
+	speed = VectorNormalize(pm->ps->velocity);
+	dot = DotProduct(pm->ps->velocity,wishdir);
+	k = 32;
+	k *= cpm_pm_aircontrol*dot*dot*pml.frametime;
+	if (dot > 0) { // can't change direction while slowing down
+		for (i=0; i < 2; i++)
+			pm->ps->velocity[i] = pm->ps->velocity[i]*speed + wishdir[i]*k;
+		VectorNormalize(pm->ps->velocity);
+	}
+	for (i=0; i < 2; i++)
+		pm->ps->velocity[i] *=speed;
+	pm->ps->velocity[2] = zspeed;
+}
 
 /*
 ===================
@@ -604,6 +631,8 @@ static void PM_AirMove( void ) {
 	vec3_t		wishdir;
 	float		wishspeed;
 	float		scale;
+	float		accel;
+	float		wishspeed2;
 	usercmd_t	cmd;
 
 	PM_Friction();
@@ -632,8 +661,23 @@ static void PM_AirMove( void ) {
 	wishspeed = VectorNormalize(wishdir);
 	wishspeed *= scale;
 
+	wishspeed2 = wishspeed;
+	if (DotProduct(pm->ps->velocity, wishdir) < 0) {
+		accel = cpm_pm_airstopaccelerate;
+	} else {
+		accel = pm_airaccelerate;
+	}
+	if ((pm->ps->movementDir == 2 || pm->ps->movementDir == -2 || pm->ps->movementDir == 10) || 
+		(pm->ps->movementDir == 6 || pm->ps->movementDir == -6 || pm->ps->movementDir == 14)) {
+		if (wishspeed > cpm_pm_wishspeed) {
+			wishspeed = cpm_pm_wishspeed;
+		}
+		accel = cpm_pm_strafeaccelerate;
+	}
+
 	// not on ground, so little effect on velocity
-	PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);
+	PM_Accelerate (wishdir, wishspeed, accel);
+	PM_Aircontrol (pm, wishdir, wishspeed2);
 
 	// we may have a ground plane that is very steep, even
 	// though we don't have a groundentity
