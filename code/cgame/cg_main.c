@@ -868,10 +868,8 @@ static void CG_RegisterGraphics(void)
 	// powerup shaders
 	cgs.media.hastePuffShader = trap_R_RegisterShader("hasteSmokePuff");
 
-	cgs.media.armorModel = trap_R_RegisterModel("models/powerups/armor/armor_yel.md3");
-	cgs.media.armorIcon  = trap_R_RegisterShaderNoMip("icons/iconr_yellow");
-
-	cgs.media.tokenModel = trap_R_RegisterModel("models/collectables/token.iqm");
+	cgs.media.lifeModel = trap_R_RegisterModel("models/collectables/life");
+	cgs.media.tokenModel = trap_R_RegisterModel("models/collectables/token");
 
 	cgs.media.smoke2 = trap_R_RegisterModel("models/weapons2/shells/s_shell.md3");
 

@@ -529,66 +529,47 @@ static void CG_DrawStatusBar(void)
 {
 	const int margin = 20;
 	const vec4_t colour = { 1.0f, 0.4f, 0.0f, 1.0f };	// orange
-	centity_t	*cent;
-	playerState_t	*ps;
-	int			value;
-	vec3_t		angles;
-	vec3_t		origin;
+	playerState_t *ps;
+	int x, y, value;
+	vec3_t angles;
+	vec3_t origin;
 
 	if(cg_drawStatus.integer == 0){
 		return;
 	}
 
-	cent = &cg_entities[cg.snap->ps.clientNum];
 	ps = &cg.snap->ps;
 	VectorClear(angles);
 
-	// draw any 3D icons first, so the changes back to 2D are minimized
-	//
+	// draw 3D icons first, so the changes back to 2D are minimized
 	// token icon
-	//
-	origin[0] = 70;
+	origin[0] = 55;
 	origin[1] = 0;
 	origin[2] = 0;
 	angles[YAW] = (cg.time & 2047) * 360 / 2048.0;
-	CG_Draw3DModel(20, 20, ICON_SIZE, ICON_SIZE,
-	               cgs.media.tokenModel, 0, origin, angles);
+	x = margin;
+	y = margin;
+	CG_Draw3DModel(x, y, ICON_SIZE, ICON_SIZE, cgs.media.tokenModel, 0, origin, angles);
 
-	//
 	// lives icon
-	///
-	origin[0] = 90;
+	origin[0] = 40;
 	origin[1] = 0;
-	origin[2] = -10;
+	origin[2] = 0;
 	angles[YAW] = (cg.time & 2047) * 360 / 2048.0;
-	CG_Draw3DModel(SCREEN_WIDTH - ICON_SIZE - margin, margin, ICON_SIZE, ICON_SIZE,
-	               cgs.media.armorModel, 0, origin, angles);
+	x = SCREEN_WIDTH - ICON_SIZE - margin;
+	CG_Draw3DModel(x, y, ICON_SIZE, ICON_SIZE, cgs.media.lifeModel, 0, origin, angles);
 
-	//
 	// tokens
-	//
 	value = ps->stats[STAT_HEALTH] % LIFE2TOK(1);
 	trap_R_SetColor(colour);
-	CG_DrawZeroField(20 + ICON_SIZE + TEXT_ICON_SPACE, margin, 2, value);
+	x = margin + ICON_SIZE + TEXT_ICON_SPACE;
+	CG_DrawZeroField(x, y, 2, value);
 
-	// if we didn't draw a 3D icon, draw a 2D icon for ammo
-	if(!cg_draw3dIcons.integer && cg_drawIcons.integer){
-		qhandle_t	icon;
-
-		icon = cg_weapons[ cg.predictedPlayerState.weapon ].ammoIcon;
-		if(icon){
-			trap_R_SetColor(NULL);
-			CG_DrawPic(margin+CHAR_WIDTH*3 + TEXT_ICON_SPACE, margin, ICON_SIZE, ICON_SIZE, icon);
-		}
-	}
-
-	//
 	// lives
-	//
-	//value = ceil((double)ps->stats[STAT_HEALTH] / LIFE2TOK(1));
 	value = TOK2LIFE(ps->stats[STAT_HEALTH]);
 	trap_R_SetColor(colour);
-	CG_DrawField(SCREEN_WIDTH - CHAR_WIDTH*3 - ICON_SIZE - TEXT_ICON_SPACE - margin, margin, 3, value);
+	x = SCREEN_WIDTH - CHAR_WIDTH*3 - ICON_SIZE - TEXT_ICON_SPACE - margin;
+	CG_DrawField(x, y, 3, value);
 }
 #endif
 
