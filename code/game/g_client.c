@@ -27,45 +27,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static vec3_t	playerMins = {-15, -15, -24};
 static vec3_t	playerMaxs = {15, 15, 32};
 
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
-potential spawning position for deathmatch games.
+/*QUAKED playerspawn (1 0 1) (-16 -16 -24) (16 16 32) initial
+potential spawning position.
 The first time a player enters the game, they will be at an 'initial' spot.
 Targets will be fired when someone spawns in on them.
 "nobots" will prevent bots from using this spot.
 "nohumans" will prevent non-bots from using this spot.
 */
-void SP_info_player_deathmatch(gentity_t *ent)
+void SP_playerspawn(gentity_t *ent)
 {
-	int		i;
+	int i;
 
+	ent->classname = "playerspawn";
 	G_SpawnInt("nobots", "0", &i);
-	if(i){
+	if(i)
 		ent->flags |= FL_NO_BOTS;
-	}
 	G_SpawnInt("nohumans", "0", &i);
-	if(i){
+	if(i)
 		ent->flags |= FL_NO_HUMANS;
-	}
 }
-
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-equivelant to info_player_deathmatch
-*/
-void SP_info_player_start(gentity_t *ent)
-{
-	ent->classname = "info_player_deathmatch";
-	SP_info_player_deathmatch(ent);
-}
-
-/*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
-*/
-void SP_info_player_intermission(gentity_t *ent)
-{
-
-}
-
-
 
 /*
 =======================================================================
@@ -123,7 +103,7 @@ gentity_t *SelectNearestDeathmatchSpawnPoint(vec3_t from)
 	nearestSpot = NULL;
 	spot = NULL;
 
-	while((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL){
 
 		VectorSubtract(spot->s.origin, from, delta);
 		dist = VectorLength(delta);
@@ -155,7 +135,7 @@ gentity_t *SelectRandomDeathmatchSpawnPoint(qboolean isbot)
 	count = 0;
 	spot = NULL;
 
-	while((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL && count < MAX_SPAWN_POINTS){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL && count < MAX_SPAWN_POINTS){
 		if(SpotWouldTelefrag(spot))
 			continue;
 
@@ -170,7 +150,7 @@ gentity_t *SelectRandomDeathmatchSpawnPoint(qboolean isbot)
 	}
 
 	if(!count){	// no spots that won't telefrag
-		return G_Find(NULL, FOFS(classname), "info_player_deathmatch");
+		return G_Find(NULL, FOFS(classname), "playerspawn");
 	}
 
 	selection = rand() % count;
@@ -196,7 +176,7 @@ gentity_t *SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3
 	numSpots = 0;
 	spot = NULL;
 
-	while((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL){
 		if(SpotWouldTelefrag(spot))
 			continue;
 
@@ -235,7 +215,7 @@ gentity_t *SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3
 	}
 
 	if(!numSpots){
-		spot = G_Find(NULL, FOFS(classname), "info_player_deathmatch");
+		spot = G_Find(NULL, FOFS(classname), "playerspawn");
 
 		if(!spot)
 			G_Error("Couldn't find a spawn point");
@@ -310,7 +290,7 @@ gentity_t *SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 
 	spot = NULL;
 
-	while((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL){
 		if(((spot->flags & FL_NO_BOTS) && isbot) ||
 		        ((spot->flags & FL_NO_HUMANS) && !isbot)){
 			continue;

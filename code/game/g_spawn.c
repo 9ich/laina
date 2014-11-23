@@ -122,9 +122,7 @@ typedef struct {
 	void	(*spawn)(gentity_t *ent);
 } spawn_t;
 
-void SP_info_player_start(gentity_t *ent);
-void SP_info_player_deathmatch(gentity_t *ent);
-void SP_info_player_intermission(gentity_t *ent);
+void SP_playerspawn(gentity_t *ent);
 
 void SP_func_plat(gentity_t *ent);
 void SP_func_static(gentity_t *ent);
@@ -171,6 +169,10 @@ void SP_shooter_rocket(gentity_t *ent);
 void SP_shooter_plasma(gentity_t *ent);
 void SP_shooter_grenade(gentity_t *ent);
 
+void SP_breakable_box(gentity_t *ent);
+void SP_breakable_box_strong(gentity_t *ent);
+void SP_breakable_checkpoint(gentity_t *ent);
+
 void SP_team_CTF_redplayer(gentity_t *ent);
 void SP_team_CTF_blueplayer(gentity_t *ent);
 
@@ -185,11 +187,10 @@ void SP_team_neutralobelisk(gentity_t *ent);
 void SP_item_botroam(gentity_t *ent){ }
 
 spawn_t	spawns[] = {
+	{"playerspawn", SP_playerspawn},
+
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
-	{"info_player_start", SP_info_player_start},
-	{"info_player_deathmatch", SP_info_player_deathmatch},
-	{"info_player_intermission", SP_info_player_intermission},
 	{"info_null", SP_info_null},
 	{"info_notnull", SP_info_notnull},		// use target_position instead
 	{"info_camp", SP_info_camp},
