@@ -615,15 +615,28 @@ static void PM_FlyMove(void)
 
 static void PM_Aircontrol(pmove_t *pm, vec3_t wishdir, float wishspeed)
 {
-	float	zspeed, speed, dot, k;
-	int	i;
+	float zspeed, speed, dot, k;
+	int i;
 
-	if((pm->ps->movementDir && pm->ps->movementDir !=4 && pm->ps->movementDir != -4 && pm->ps->movementDir != 12) || wishspeed == 0.0)
+	speed = VectorLength(pm->ps->velocity);
+	// the player will sharply slow down in mid-air if all movement keys are released.
+	// note that this also has an effect if the player swaps turn direction mid-airstrafe.
+	if(wishspeed < 0.000001 && speed > 0.000001){
+		vec_t newspeed;
+
+		newspeed = speed - (MAX(speed, pm_stopspeed)*pm_friction*pml.frametime);
+		newspeed = MAX(newspeed, 0.0f);
+		newspeed /= speed;
+		pm->ps->velocity[0] *= newspeed;
+		pm->ps->velocity[1] *= newspeed;
+		return;
+	}
+	if((pm->ps->movementDir && pm->ps->movementDir != 4 && pm->ps->movementDir != -4 && pm->ps->movementDir != 12) || wishspeed == 0.0f)
 		return; // can't control movement if not moving forward or backward
 	zspeed = pm->ps->velocity[2];
 	pm->ps->velocity[2] = 0;
 	speed = VectorNormalize(pm->ps->velocity);
-	dot = DotProduct(pm->ps->velocity,wishdir);
+	dot = DotProduct(pm->ps->velocity, wishdir);
 	k = 32;
 	k *= cpm_pm_aircontrol*dot*dot*pml.frametime;
 	if(dot > 0){  // can't change direction while slowing down
