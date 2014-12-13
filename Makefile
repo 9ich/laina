@@ -4,36 +4,36 @@
 # GNU Make required
 #
 
-COMPILE_PLATFORM=$(shell uname|sed -e s/_.*//|tr '[:upper:]' '[:lower:]'|sed -e 's/\//_/g')
+COMPILE_PLATFORM=$(shell uname | sed s/_.*// | tr [:upper:] [:lower:] | sed s:/:_:g | sed s/32// | sed s/mingw/windows/)
 
-COMPILE_ARCH=$(shell uname -m | sed -e s/i.86/x86/)
+COMPILE_ARCH=$(shell uname -m | sed s/i.86/x86/ | sed s/\-pc//)
 
 ifeq ($(COMPILE_PLATFORM),sunos)
   # Solaris uname and GNU uname differ
-  COMPILE_ARCH=$(shell uname -p | sed -e s/i.86/x86/)
+  COMPILE_ARCH=$(shell uname -p | sed s/i.86/x86/ | sed s/\-pc//)
 endif
 ifeq ($(COMPILE_PLATFORM),darwin)
   # Apple does some things a little differently...
-  COMPILE_ARCH=$(shell uname -p | sed -e s/i.86/x86/)
+  COMPILE_ARCH=$(shell uname -p | sed s/i.86/x86/ | sed s/\-pc//)
 endif
 
 ifndef BUILD_STANDALONE
-  BUILD_STANDALONE = 1
+  BUILD_STANDALONE=1
 endif
 ifndef BUILD_CLIENT
-  BUILD_CLIENT     =
+  BUILD_CLIENT=
 endif
 ifndef BUILD_SERVER
-  BUILD_SERVER     =
+  BUILD_SERVER=
 endif
 ifndef BUILD_GAME_SO
-  BUILD_GAME_SO    =
+  BUILD_GAME_SO=
 endif
 ifndef BUILD_GAME_QVM
-  BUILD_GAME_QVM   =
+  BUILD_GAME_QVM=
 endif
 ifndef BUILD_BASEGAME
-  BUILD_BASEGAME =
+  BUILD_BASEGAME=
 endif
 ifndef BUILD_MISSIONPACK
   BUILD_MISSIONPACK=
@@ -160,7 +160,7 @@ USE_CURL=1
 endif
 
 ifndef USE_CURL_DLOPEN
-  ifeq ($(PLATFORM),mingw32)
+  ifeq ($(PLATFORM),windows)
     USE_CURL_DLOPEN=0
   else
     USE_CURL_DLOPEN=1
@@ -274,7 +274,7 @@ ifneq ($(BUILD_CLIENT),0)
     CURL_LIBS ?= $(shell pkg-config --silence-errors --libs libcurl)
     OPENAL_CFLAGS ?= $(shell pkg-config --silence-errors --cflags openal)
     OPENAL_LIBS ?= $(shell pkg-config --silence-errors --libs openal)
-    SDL_CFLAGS ?= $(shell pkg-config --silence-errors --cflags sdl2|sed 's/-Dmain=SDL_main//')
+    SDL_CFLAGS ?= $(shell pkg-config --silence-errors --cflags sdl2|sed "s/-Dmain=SDL_main//")
     SDL_LIBS ?= $(shell pkg-config --silence-errors --libs sdl2)
     FREETYPE_CFLAGS ?= $(shell pkg-config --silence-errors --cflags freetype2)
   else
@@ -501,10 +501,10 @@ else # ifeq darwin
 
 
 #############################################################################
-# SETUP AND BUILD -- MINGW32
+# SETUP AND BUILD -- WINDOWS
 #############################################################################
 
-ifeq ($(PLATFORM),mingw32)
+ifeq ($(PLATFORM),windows)
 
   ifeq ($(CROSS_COMPILING),1)
     # If CC is already set to something generic, we probably want to use
@@ -654,7 +654,7 @@ ifeq ($(PLATFORM),mingw32)
     SDLDLL=SDL2.dll
   endif
 
-else # ifeq mingw32
+else # ifeq windows
 
 #############################################################################
 # SETUP AND BUILD -- FREEBSD
@@ -907,7 +907,7 @@ else # ifeq sunos
 
 endif #Linux
 endif #darwin
-endif #mingw32
+endif #windows
 endif #FreeBSD
 endif #OpenBSD
 endif #NetBSD
@@ -1155,7 +1155,7 @@ $(Q)$(CC) $(NOTSHLIBCFLAGS) $(CFLAGS) $(BOTCFLAGS) $(OPTIMIZE) -DBOTLIB -o $@ -c
 endef
 
 ifeq ($(GENERATE_DEPENDENCIES),1)
-  DO_QVM_DEP=cat $(@:%.o=%.d) | sed -e 's/\.o/\.asm/g' >> $(@:%.o=%.d)
+  DO_QVM_DEP=cat $(@:%.o=%.d) | sed s/\.o/\.asm/g >> $(@:%.o=%.d)
 endif
 
 define DO_SHLIB_CC
@@ -1268,7 +1268,7 @@ ifneq ($(BUILD_CLIENT),0)
   $(call GENERATE_COPY_TARGETS,$(CLIENT_EXTRA_FILES))
 endif
 
-NAKED_TARGETS=$(shell echo $(TARGETS) | sed -e "s!$(B)/!!g")
+NAKED_TARGETS=$(shell echo $(TARGETS) | sed "s:$(B)/::g")
 
 print_list=@for i in $(1); \
      do \
@@ -1276,7 +1276,7 @@ print_list=@for i in $(1); \
      done
 
 ifneq ($(call bin_path, fmt),)
-  print_wrapped=@echo $(1) | fmt -w $(TERM_COLUMNS) | sed -e "s/^\(.*\)$$/    \1/"
+  print_wrapped=@echo $(1) | fmt | sed -e "s/^\(.*\)$$/    \1/"
 else
   print_wrapped=$(print_list)
 endif
@@ -1292,7 +1292,7 @@ targets: makedirs
 	@echo "  COMPILE_PLATFORM: $(COMPILE_PLATFORM)"
 	@echo "  COMPILE_ARCH: $(COMPILE_ARCH)"
 	@echo "  CC: $(CC)"
-ifeq ($(PLATFORM),mingw32)
+ifeq ($(PLATFORM),windows)
 	@echo "  WINDRES: $(WINDRES)"
 endif
 	@echo ""
@@ -1326,7 +1326,7 @@ endif
 $(B).zip: $(TARGETS)
 ifeq ($(PLATFORM),darwin)
   ifdef ARCHIVE
-	@("./make-macosx-app.sh" release $(ARCH); if [ "$$?" -eq 0 ] && [ -d "$(B)/ioquake3.app" ]; then rm -f $@; cd $(B) && zip --symlinks -r9 ../../$@ `find "ioquake3.app" -print | sed -e "s!$(B)/!!g"`; else rm -f $@; cd $(B) && zip -r9 ../../$@ $(NAKED_TARGETS); fi)
+	@("./make-macosx-app.sh" release $(ARCH); if [ "$$?" -eq 0 ] && [ -d "$(B)/ioquake3.app" ]; then rm -f $@; cd $(B) && zip --symlinks -r9 ../../$@ `find "ioquake3.app" -print | sed -e "s:$(B)/::g"`; else rm -f $@; cd $(B) && zip -r9 ../../$@ $(NAKED_TARGETS); fi)
   endif
 endif
 ifneq ($(PLATFORM),darwin)
@@ -1647,7 +1647,7 @@ Q3OBJ = \
   $(B)/client/con_log.o \
   $(B)/client/sys_main.o
 
-ifeq ($(PLATFORM),mingw32)
+ifeq ($(PLATFORM),windows)
   Q3OBJ += \
     $(B)/client/con_passive.o
 else
@@ -2091,7 +2091,7 @@ ifeq ($(HAVE_VM_COMPILED),true)
   endif
 endif
 
-ifeq ($(PLATFORM),mingw32)
+ifeq ($(PLATFORM),windows)
   Q3OBJ += \
     $(B)/client/win_resource.o \
     $(B)/client/sys_win32.o
@@ -2259,7 +2259,7 @@ ifeq ($(HAVE_VM_COMPILED),true)
   endif
 endif
 
-ifeq ($(PLATFORM),mingw32)
+ifeq ($(PLATFORM),windows)
   Q3DOBJ += \
     $(B)/ded/win_resource.o \
     $(B)/ded/sys_win32.o \
@@ -2838,7 +2838,7 @@ ifneq ($(BUILD_GAME_SO),0)
 endif
 
 clean: clean-debug clean-release
-ifeq ($(PLATFORM),mingw32)
+ifeq ($(PLATFORM),windows)
 	@$(MAKE) -C $(NSISDIR) clean
 else
 	@$(MAKE) -C $(LOKISETUPDIR) clean
@@ -2875,7 +2875,7 @@ distclean: clean toolsclean
 	@rm -rf $(BUILD_DIR)
 
 installer: release
-ifeq ($(PLATFORM),mingw32)
+ifeq ($(PLATFORM),windows)
 	@$(MAKE) VERSION=$(VERSION) -C $(NSISDIR) V=$(V) \
 		SDLDLL=$(SDLDLL) \
 		USE_RENDERER_DLOPEN=$(USE_RENDERER_DLOPEN) \
