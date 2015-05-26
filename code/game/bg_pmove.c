@@ -374,21 +374,10 @@ PM_CheckJump
 */
 static qboolean PM_CheckJump(void)
 {
-	if(pm->ps->pm_flags & PMF_RESPAWNED){
+	if(pm->ps->pm_flags & PMF_RESPAWNED)
 		return qfalse;		// don't allow jump until all buttons are up
-	}
-
-	if(pm->cmd.upmove < 10){
-		// not holding jump
-		return qfalse;
-	}
-
-	// must wait for jump to be released
-	if(pm->ps->pm_flags & PMF_JUMP_HELD){
-		// clear upmove so cmdscale doesn't lower running speed
-		pm->cmd.upmove = 0;
-		return qfalse;
-	}
+	if(pm->cmd.upmove < 10)
+		return qfalse;	// not holding jump
 
 	pml.groundPlane = qfalse;		// jumping away
 	pml.walking = qfalse;
@@ -396,6 +385,45 @@ static qboolean PM_CheckJump(void)
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 	pm->ps->velocity[2] = JUMP_VELOCITY;
+	pm->ps->njumps++;
+	PM_AddEvent(EV_JUMP);
+
+	if(pm->cmd.forwardmove >= 0){
+		PM_ForceLegsAnim(LEGS_JUMP);
+		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+	}else{
+		PM_ForceLegsAnim(LEGS_JUMPB);
+		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+	}
+
+	return qtrue;
+}
+
+// double jumps
+static qboolean PM_CheckAirJump(void)
+{
+	int i;
+	float scale;
+
+	if(pm->ps->njumps >= 2)
+		return qfalse;		// can't airjump any more times
+	if(pm->cmd.upmove < 10)
+		return qfalse;	// not holding jump
+	// must wait for jump to be released
+	if(pm->ps->pm_flags & PMF_JUMP_HELD){
+		// clear upmove so cmdscale doesn't lower move speed
+		pm->cmd.upmove = 0;
+		return qfalse;
+	}
+
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+	
+	scale = PM_CmdScale(&pm->cmd);
+	// kick the player in the dir they want
+	for(i=0 ; i<2 ; i++)
+		pm->ps->velocity[i] = 2*scale*pml.forward[i]*pm->cmd.forwardmove + 2*scale*pml.right[i]*pm->cmd.rightmove;
+	pm->ps->velocity[2] = AIRJUMP_VELOCITY;
+	pm->ps->njumps++;
 	PM_AddEvent(EV_JUMP);
 
 	if(pm->cmd.forwardmove >= 0){
@@ -666,6 +694,8 @@ static void PM_AirMove(void)
 	float		accel;
 	float		wishspeed2;
 	usercmd_t	cmd;
+	
+	PM_CheckAirJump();
 
 	PM_Friction();
 
@@ -782,7 +812,6 @@ static void PM_WalkMove(void)
 		PM_WaterMove();
 		return;
 	}
-
 
 	if(PM_CheckJump()){
 		// jumped away
@@ -1255,10 +1284,11 @@ static void PM_GroundTrace(void)
 	if(pm->ps->groundEntityNum == ENTITYNUM_NONE){
 		// just hit the ground
 		if(pm->debugLevel){
-			Com_Printf("%i:Land\n", c_pmove);
+			Com_Printf("%i:land\n", c_pmove);
 		}
 
 		PM_CrashLand();
+		pm->ps->njumps = 0;
 
 		// don't do landing time if we were just going down a slope
 		if(pml.previous_velocity[2] < -200){
