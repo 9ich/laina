@@ -258,7 +258,7 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_tracerChance, "cg_tracerchance", "0.4", CVAR_CHEAT },
 	{ &cg_tracerWidth, "cg_tracerwidth", "1", CVAR_CHEAT },
 	{ &cg_tracerLength, "cg_tracerlength", "100", CVAR_CHEAT },
-	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "140", 0 },
+	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "80", 0 },
 	{ &cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_CHEAT },
 	{ &cg_thirdPerson, "cg_thirdPerson", "1", 0 },
 	{ &cg_teamChatTime, "cg_teamChatTime", "3000", CVAR_ARCHIVE  },
