@@ -385,6 +385,10 @@ typedef enum {
 	EV_ITEM_PICKUP,			// normal item pickups are predictable
 	EV_GLOBAL_ITEM_PICKUP,	// powerup / team sounds are broadcast to everyone
 
+	EV_SMASH_BOX,
+	EV_SMASH_STRONG_BOX,
+	EV_SMASH_CHECKPOINT_BOX,
+
 	EV_NOAMMO,
 	EV_CHANGE_WEAPON,
 	EV_FIRE_WEAPON,
@@ -690,6 +694,7 @@ typedef enum {
 	ET_ITEM,
 	ET_MISSILE,
 	ET_MOVER,
+	ET_BREAKABLE,	// breakable boxes
 	ET_BEAM,
 	ET_PORTAL,
 	ET_SPEAKER,

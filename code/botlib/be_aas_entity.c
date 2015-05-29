@@ -51,7 +51,8 @@ enum {
 	ET_PLAYER,
 	ET_ITEM,
 	ET_MISSILE,
-	ET_MOVER
+	ET_MOVER,
+	ET_BREAKABLE,
 };
 
 //===========================================================================

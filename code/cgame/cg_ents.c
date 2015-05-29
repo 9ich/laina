@@ -604,6 +604,50 @@ static void CG_Mover(centity_t *cent)
 
 }
 
+// BUG: breakable models get culled when their origin exits the
+// viewing frustum
+static void CG_Breakable(centity_t *cent)
+{
+	refEntity_t ent;
+	entityState_t *s1;
+
+	s1 = &cent->currentState;
+	
+	ent.radius = 16;
+	
+	// create the render entity
+	memset(&ent, 0, sizeof(ent));
+	VectorCopy(cent->lerpOrigin, ent.origin);
+	VectorCopy(cent->lerpOrigin, ent.oldorigin);
+	AnglesToAxis(cent->lerpAngles, ent.axis);
+
+	// flicker between two skins (FIXME?)
+	ent.skinNum = (cg.time >> 6) & 1;
+
+	if(1){
+		// get the model, either as a bmodel or a modelindex
+		if(s1->solid == SOLID_BMODEL){
+			ent.hModel = cgs.inlineDrawModel[s1->modelindex];
+		}else{
+			ent.hModel = cgs.gameModels[s1->modelindex];
+		}
+	}else
+		ent.hModel = cgs.gameModels[s1->modelindex];
+	ent.reType = RT_MODEL;
+	ent.renderfx = RF_SHADOW_PLANE;
+
+	// add to refresh list
+	trap_R_AddRefEntityToScene(&ent);
+
+	// add the secondary model
+	if(s1->modelindex2){
+		ent.skinNum = 0;
+		ent.hModel = cgs.gameModels[s1->modelindex2];
+		trap_R_AddRefEntityToScene(&ent);
+	}
+
+}
+
 /*
 ===============
 CG_Beam
@@ -973,6 +1017,9 @@ static void CG_AddCEntity(centity_t *cent)
 		break;
 	case ET_MOVER:
 		CG_Mover(cent);
+		break;
+	case ET_BREAKABLE:
+		CG_Breakable(cent);
 		break;
 	case ET_BEAM:
 		CG_Beam(cent);

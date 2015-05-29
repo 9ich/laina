@@ -330,6 +330,8 @@ void	Svcmd_EntityList_f(void)
 		case ET_MOVER:
 			G_Printf("ET_MOVER            ");
 			break;
+		case ET_BREAKABLE:
+			G_Printf("ET_BREAKABLE            ");
 		case ET_BEAM:
 			G_Printf("ET_BEAM             ");
 			break;

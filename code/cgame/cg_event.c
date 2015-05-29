@@ -794,6 +794,30 @@ void CG_EntityEvent(centity_t *cent, vec3_t position)
 			}
 		}
 		break;
+	
+	//
+	// breakables
+	//
+	case EV_SMASH_BOX:
+	case EV_SMASH_STRONG_BOX:
+	case EV_SMASH_CHECKPOINT_BOX:
+		DEBUGNAME("EV_SMASH_BOX");
+		{
+			vec3_t			up = {0, 0, 1};
+
+			CG_SmokePuff(cent->lerpOrigin, up,
+			             64,
+			             1, 1, 1, 1.0f,
+			             1000,
+			             cg.time, 0,
+			             LEF_PUFF_DONT_SCALE,
+			             cgs.media.smokePuffShader);
+		}
+
+		// boing sound at origin, jump sound on player
+		trap_S_StartSound(cent->lerpOrigin, -1, CHAN_VOICE, cgs.media.jumpPadSound);
+		trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*jump1.wav"));
+		break;
 
 	//
 	// weapon events

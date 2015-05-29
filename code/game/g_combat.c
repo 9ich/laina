@@ -850,6 +850,12 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 		return;
 	}
+	// breakable boxes
+	if(targ->s.eType == ET_BREAKABLE){
+		if(targ->use)
+			targ->use(targ, inflictor, attacker);
+		return;
+	}
 #ifdef MISSIONPACK
 	if(g_gametype.integer == GT_OBELISK && CheckObeliskAttack(targ, attacker)){
 		return;
