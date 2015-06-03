@@ -439,8 +439,8 @@ void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const cha
 			len = limit;
 		}
 		count = 0;
-		glyph2 = &font->glyphs[(int) cursor];
-		while(s && *s && count < len){
+		glyph2 = &font->glyphs[cursor & 255];
+		while (s && *s && count < len) {
 			glyph = &font->glyphs[(int)*s]; // TTimo: FIXME: getting nasty warnings without the cast, hopefully this doesn't break the VM build
 			//int yadj = Assets.textFont.glyphs[text[i]].bottom + Assets.textFont.glyphs[text[i]].top;
 			//float yadj = scale * (Assets.textFont.glyphs[text[i]].imageHeight - Assets.textFont.glyphs[text[i]].height);
@@ -1319,10 +1319,10 @@ static void UI_DrawPlayerModel(rectDef_t *rect)
 	vec3_t	viewangles;
 	vec3_t	moveangles;
 
-	if(trap_Cvar_VariableValue("ui_Q3Model")){
-		strcpy(model, UI_Cvar_VariableString("model"));
-		strcpy(head, UI_Cvar_VariableString("headmodel"));
-		if(!q3Model){
+	  if (trap_Cvar_VariableValue("ui_Q3Model")) {
+		Q_strncpyz(model, UI_Cvar_VariableString("model"), sizeof(model));
+		Q_strncpyz(head, UI_Cvar_VariableString("headmodel"), sizeof(head));
+		if (!q3Model) {
 			q3Model = qtrue;
 			updateModel = qtrue;
 		}
@@ -1353,9 +1353,8 @@ static void UI_DrawPlayerModel(rectDef_t *rect)
 
 }
 
-static void UI_DrawNetSource(rectDef_t *rect, float scale, vec4_t color, int textStyle)
-{
-	if(ui_netSource.integer < 0 || ui_netSource.integer > numNetSources){
+static void UI_DrawNetSource(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
+	if (ui_netSource.integer < 0 || ui_netSource.integer >= numNetSources) {
 		ui_netSource.integer = 0;
 	}
 	Text_Paint(rect->x, rect->y, scale, color, va("Source: %s", netSources[ui_netSource.integer]), 0, 0, textStyle);
@@ -1389,9 +1388,8 @@ static void UI_DrawNetMapCinematic(rectDef_t *rect, float scale, vec4_t color)
 
 
 
-static void UI_DrawNetFilter(rectDef_t *rect, float scale, vec4_t color, int textStyle)
-{
-	if(ui_serverFilterType.integer < 0 || ui_serverFilterType.integer > numServerFilters){
+static void UI_DrawNetFilter(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
+	if (ui_serverFilterType.integer < 0 || ui_serverFilterType.integer >= numServerFilters) {
 		ui_serverFilterType.integer = 0;
 	}
 	Text_Paint(rect->x, rect->y, scale, color, va("Filter: %s", serverFilters[ui_serverFilterType.integer].description), 0, 0, textStyle);
@@ -1442,7 +1440,7 @@ static void UI_DrawTierMapName(rectDef_t *rect, float scale, vec4_t color, int t
 		i = 0;
 	}
 	j = trap_Cvar_VariableValue("ui_currentMap");
-	if(j < 0 || j > MAPS_PER_TIER){
+	if (j < 0 || j >= MAPS_PER_TIER) {
 		j = 0;
 	}
 
@@ -1457,7 +1455,7 @@ static void UI_DrawTierGameType(rectDef_t *rect, float scale, vec4_t color, int 
 		i = 0;
 	}
 	j = trap_Cvar_VariableValue("ui_currentMap");
-	if(j < 0 || j > MAPS_PER_TIER){
+	if (j < 0 || j >= MAPS_PER_TIER) {
 		j = 0;
 	}
 
@@ -1543,11 +1541,11 @@ static void UI_DrawOpponent(rectDef_t *rect)
 	char team[256];
 	vec3_t	viewangles;
 	vec3_t	moveangles;
-
-	if(updateOpponentModel){
-
-		strcpy(model, UI_Cvar_VariableString("ui_opponentModel"));
-		strcpy(headmodel, UI_Cvar_VariableString("ui_opponentModel"));
+  
+	if (updateOpponentModel) {
+		
+		Q_strncpyz(model, UI_Cvar_VariableString("ui_opponentModel"), sizeof(model));
+		Q_strncpyz(headmodel, UI_Cvar_VariableString("ui_opponentModel"), sizeof(headmodel));
 		team[0] = '\0';
 
 		memset(&info2, 0, sizeof(playerInfo_t));
@@ -1769,45 +1767,43 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale)
 			if(value >= uiInfo.aliasCount){
 				value = 0;
 			}
-			text = uiInfo.aliasList[value].name;
-		}
-		s = va("%i. %s", ownerDraw-UI_REDTEAM1 + 1, text);
-		break;
-	case UI_NETSOURCE:
-		if(ui_netSource.integer < 0 || ui_netSource.integer > numNetSources){
-			ui_netSource.integer = 0;
-		}
-		s = va("Source: %s", netSources[ui_netSource.integer]);
-		break;
-	case UI_NETFILTER:
-		if(ui_serverFilterType.integer < 0 || ui_serverFilterType.integer > numServerFilters){
-			ui_serverFilterType.integer = 0;
-		}
-		s = va("Filter: %s", serverFilters[ui_serverFilterType.integer].description);
-		break;
-	case UI_TIER:
-		break;
-	case UI_TIER_MAPNAME:
-		break;
-	case UI_TIER_GAMETYPE:
-		break;
-	case UI_ALLMAPS_SELECTION:
-		break;
-	case UI_OPPONENT_NAME:
-		break;
-	case UI_KEYBINDSTATUS:
-		if(Display_KeyBindPending()){
-			s = "Waiting for new key... Press ESCAPE to cancel";
-		}else{
-			s = "Press ENTER or CLICK to change, Press BACKSPACE to clear";
-		}
-		break;
-	case UI_SERVERREFRESHDATE:
-		s = UI_Cvar_VariableString(va("ui_lastServerRefresh_%i", ui_netSource.integer));
-		break;
-	default:
-		break;
-	}
+			s = va("%i. %s", ownerDraw-UI_REDTEAM1 + 1, text);
+      break;
+		case UI_NETSOURCE:
+			if (ui_netSource.integer < 0 || ui_netSource.integer >= numNetSources) {
+				ui_netSource.integer = 0;
+			}
+			s = va("Source: %s", netSources[ui_netSource.integer]);
+			break;
+		case UI_NETFILTER:
+			if (ui_serverFilterType.integer < 0 || ui_serverFilterType.integer >= numServerFilters) {
+				ui_serverFilterType.integer = 0;
+			}
+			s = va("Filter: %s", serverFilters[ui_serverFilterType.integer].description );
+			break;
+		case UI_TIER:
+			break;
+		case UI_TIER_MAPNAME:
+			break;
+		case UI_TIER_GAMETYPE:
+			break;
+		case UI_ALLMAPS_SELECTION:
+			break;
+		case UI_OPPONENT_NAME:
+			break;
+		case UI_KEYBINDSTATUS:
+			if (Display_KeyBindPending()) {
+				s = "Waiting for new key... Press ESCAPE to cancel";
+			} else {
+				s = "Press ENTER or CLICK to change, Press BACKSPACE to clear";
+			}
+			break;
+		case UI_SERVERREFRESHDATE:
+			s = UI_Cvar_VariableString(va("ui_lastServerRefresh_%i", ui_netSource.integer));
+			break;
+    default:
+      break;
+  }
 
 	if(s){
 		return Text_Width(s, scale, 0);
@@ -2892,7 +2888,7 @@ static void UI_StartSinglePlayer(void){
     i = 0;
   }
 	j = trap_Cvar_VariableValue("ui_currentMap");
-	if (j < 0 || j > MAPS_PER_TIER){
+	if (j < 0 || j >= MAPS_PER_TIER) {
 		j = 0;
 	}
 
@@ -3603,19 +3599,19 @@ static void UI_RunMenuScript(char **args)
 			const char *orders;
 			if(String_Parse(args, &orders)){
 				int selectedPlayer = trap_Cvar_VariableValue("cg_selectedPlayer");
-				if(selectedPlayer < uiInfo.myTeamCount){
-					strcpy(buff, orders);
-					trap_Cmd_ExecuteText(EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]));
-					trap_Cmd_ExecuteText(EXEC_APPEND, "\n");
-				}else{
+				if (selectedPlayer < uiInfo.myTeamCount) {
+					Com_sprintf( buff, sizeof( buff ), orders, uiInfo.teamClientNums[selectedPlayer] );
+					trap_Cmd_ExecuteText( EXEC_APPEND, buff );
+					trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
+				} else {
 					int i;
-					for(i = 0; i < uiInfo.myTeamCount; i++){
-						if(Q_stricmp(UI_Cvar_VariableString("name"), uiInfo.teamNames[i]) == 0){
+					for (i = 0; i < uiInfo.myTeamCount; i++) {
+						if (uiInfo.playerNumber == uiInfo.teamClientNums[i]) {
 							continue;
 						}
-						strcpy(buff, orders);
-						trap_Cmd_ExecuteText(EXEC_APPEND, va(buff, uiInfo.teamNames[i]));
-						trap_Cmd_ExecuteText(EXEC_APPEND, "\n");
+						Com_sprintf( buff, sizeof( buff ), orders, uiInfo.teamClientNums[i] );
+						trap_Cmd_ExecuteText( EXEC_APPEND, buff );
+						trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
 					}
 				}
 				trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
@@ -3640,10 +3636,10 @@ static void UI_RunMenuScript(char **args)
 			const char *orders;
 			if(String_Parse(args, &orders)){
 				int selectedPlayer = trap_Cvar_VariableValue("cg_selectedPlayer");
-				if(selectedPlayer < uiInfo.myTeamCount){
-					strcpy(buff, orders);
-					trap_Cmd_ExecuteText(EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]));
-					trap_Cmd_ExecuteText(EXEC_APPEND, "\n");
+				if (selectedPlayer < uiInfo.myTeamCount) {
+					Com_sprintf( buff, sizeof( buff ), orders, uiInfo.teamClientNums[selectedPlayer] );
+					trap_Cmd_ExecuteText( EXEC_APPEND, buff );
+					trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
 				}
 				trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
 				trap_Key_ClearStates();
@@ -4100,8 +4096,6 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 			while(p && *p){
 				if(*p == '\\')
 					*p++ = '\0';
-				if(!p)
-					break;
 				score = p;
 				p = strchr(p, ' ');
 				if(!p)
@@ -4738,38 +4732,39 @@ static qboolean Character_Parse(char **p)
 			return qfalse;
 		}
 
-		if(token[0] == '{'){
-			// two tokens per line, character name and sex
-			if(!String_Parse(p, &uiInfo.characterList[uiInfo.characterCount].name) || !String_Parse(p, &tempStr)){
-				return qfalse;
-			}
+    if (token[0] == '{') {
+      if (uiInfo.characterCount == MAX_HEADS) {
+        uiInfo.characterCount--;
+        Com_Printf("Too many characters, last character replaced!\n");
+      }
 
-			uiInfo.characterList[uiInfo.characterCount].headImage = -1;
+      // two tokens per line, character name and sex
+      if (!String_Parse(p, &uiInfo.characterList[uiInfo.characterCount].name) || !String_Parse(p, &tempStr)) {
+        return qfalse;
+      }
+    
+      uiInfo.characterList[uiInfo.characterCount].headImage = -1;
 			uiInfo.characterList[uiInfo.characterCount].imageName = String_Alloc(va("models/players/heads/%s/icon_default.tga", uiInfo.characterList[uiInfo.characterCount].name));
 
-			if(tempStr && (!Q_stricmp(tempStr, "female"))){
-				uiInfo.characterList[uiInfo.characterCount].base = String_Alloc("Janet");
-			}else if(tempStr && (!Q_stricmp(tempStr, "male"))){
-				uiInfo.characterList[uiInfo.characterCount].base = String_Alloc("James");
-			}else{
-				uiInfo.characterList[uiInfo.characterCount].base = String_Alloc(tempStr);
-			}
+	  if (tempStr && (!Q_stricmp(tempStr, "female"))) {
+        uiInfo.characterList[uiInfo.characterCount].base = String_Alloc("Janet");
+      } else if (tempStr && (!Q_stricmp(tempStr, "male"))) {
+        uiInfo.characterList[uiInfo.characterCount].base = String_Alloc("James");
+	  } else {
+        uiInfo.characterList[uiInfo.characterCount].base = String_Alloc(tempStr);
+	  }
 
-			Com_Printf("Loaded %s character %s.\n", uiInfo.characterList[uiInfo.characterCount].base, uiInfo.characterList[uiInfo.characterCount].name);
-			if(uiInfo.characterCount < MAX_HEADS){
-				uiInfo.characterCount++;
-			}else{
-				Com_Printf("Too many characters, last character replaced!\n");
-			}
+      Com_Printf("Loaded %s character %s.\n", uiInfo.characterList[uiInfo.characterCount].base, uiInfo.characterList[uiInfo.characterCount].name);
+      uiInfo.characterCount++;
+     
+      token = COM_ParseExt(p, qtrue);
+      if (token[0] != '}') {
+        return qfalse;
+      }
+    }
+  }
 
-			token = COM_ParseExt(p, qtrue);
-			if(token[0] != '}'){
-				return qfalse;
-			}
-		}
-	}
-
-	return qfalse;
+  return qfalse;
 }
 
 
@@ -4777,44 +4772,45 @@ static qboolean Alias_Parse(char **p)
 {
 	char *token;
 
-	token = COM_ParseExt(p, qtrue);
+  token = COM_ParseExt(p, qtrue);
 
-	if(token[0] != '{'){
-		return qfalse;
-	}
+  if (token[0] != '{') {
+    return qfalse;
+  }
 
-	while(1){
-		token = COM_ParseExt(p, qtrue);
+  while ( 1 ) {
+    token = COM_ParseExt(p, qtrue);
 
-		if(Q_stricmp(token, "}") == 0){
-			return qtrue;
-		}
+    if (Q_stricmp(token, "}") == 0) {
+      return qtrue;
+    }
 
-		if(!token || token[0] == 0){
-			return qfalse;
-		}
+    if ( !token || token[0] == 0 ) {
+      return qfalse;
+    }
 
-		if(token[0] == '{'){
-			// three tokens per line, character name, bot alias, and preferred action a - all purpose, d - defense, o - offense
-			if(!String_Parse(p, &uiInfo.aliasList[uiInfo.aliasCount].name) || !String_Parse(p, &uiInfo.aliasList[uiInfo.aliasCount].ai) || !String_Parse(p, &uiInfo.aliasList[uiInfo.aliasCount].action)){
-				return qfalse;
-			}
+    if (token[0] == '{') {
+      if (uiInfo.aliasCount == MAX_ALIASES) {
+        uiInfo.aliasCount--;
+        Com_Printf("Too many aliases, last alias replaced!\n");
+      }
 
-			Com_Printf("Loaded character alias %s using character ai %s.\n", uiInfo.aliasList[uiInfo.aliasCount].name, uiInfo.aliasList[uiInfo.aliasCount].ai);
-			if(uiInfo.aliasCount < MAX_ALIASES){
-				uiInfo.aliasCount++;
-			}else{
-				Com_Printf("Too many aliases, last alias replaced!\n");
-			}
+      // three tokens per line, character name, bot alias, and preferred action a - all purpose, d - defense, o - offense
+      if (!String_Parse(p, &uiInfo.aliasList[uiInfo.aliasCount].name) || !String_Parse(p, &uiInfo.aliasList[uiInfo.aliasCount].ai) || !String_Parse(p, &uiInfo.aliasList[uiInfo.aliasCount].action)) {
+        return qfalse;
+      }
+    
+      Com_Printf("Loaded character alias %s using character ai %s.\n", uiInfo.aliasList[uiInfo.aliasCount].name, uiInfo.aliasList[uiInfo.aliasCount].ai);
+      uiInfo.aliasCount++;
+     
+      token = COM_ParseExt(p, qtrue);
+      if (token[0] != '}') {
+        return qfalse;
+      }
+    }
+  }
 
-			token = COM_ParseExt(p, qtrue);
-			if(token[0] != '}'){
-				return qfalse;
-			}
-		}
-	}
-
-	return qfalse;
+  return qfalse;
 }
 
 

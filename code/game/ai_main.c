@@ -1085,28 +1085,30 @@ void BotWriteSessionData(bot_state_t *bs)
 	const char	*var;
 
 	s = va(
-	        "%i %i %i %i %i %i %i %i"
-	        " %f %f %f"
-	        " %f %f %f"
-	        " %f %f %f",
-	        bs->lastgoal_decisionmaker,
-	        bs->lastgoal_ltgtype,
-	        bs->lastgoal_teammate,
-	        bs->lastgoal_teamgoal.areanum,
-	        bs->lastgoal_teamgoal.entitynum,
-	        bs->lastgoal_teamgoal.flags,
-	        bs->lastgoal_teamgoal.iteminfo,
-	        bs->lastgoal_teamgoal.number,
-	        bs->lastgoal_teamgoal.origin[0],
-	        bs->lastgoal_teamgoal.origin[1],
-	        bs->lastgoal_teamgoal.origin[2],
-	        bs->lastgoal_teamgoal.mins[0],
-	        bs->lastgoal_teamgoal.mins[1],
-	        bs->lastgoal_teamgoal.mins[2],
-	        bs->lastgoal_teamgoal.maxs[0],
-	        bs->lastgoal_teamgoal.maxs[1],
-	        bs->lastgoal_teamgoal.maxs[2]
-	    );
+			"%i %i %i %i %i %i %i %i"
+			" %f %f %f"
+			" %f %f %f"
+			" %f %f %f"
+			" %f",
+		bs->lastgoal_decisionmaker,
+		bs->lastgoal_ltgtype,
+		bs->lastgoal_teammate,
+		bs->lastgoal_teamgoal.areanum,
+		bs->lastgoal_teamgoal.entitynum,
+		bs->lastgoal_teamgoal.flags,
+		bs->lastgoal_teamgoal.iteminfo,
+		bs->lastgoal_teamgoal.number,
+		bs->lastgoal_teamgoal.origin[0],
+		bs->lastgoal_teamgoal.origin[1],
+		bs->lastgoal_teamgoal.origin[2],
+		bs->lastgoal_teamgoal.mins[0],
+		bs->lastgoal_teamgoal.mins[1],
+		bs->lastgoal_teamgoal.mins[2],
+		bs->lastgoal_teamgoal.maxs[0],
+		bs->lastgoal_teamgoal.maxs[1],
+		bs->lastgoal_teamgoal.maxs[2],
+		bs->formation_dist
+		);
 
 	var = va("botsession%i", bs->client);
 
@@ -1127,28 +1129,30 @@ void BotReadSessionData(bot_state_t *bs)
 	trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
 
 	sscanf(s,
-	       "%i %i %i %i %i %i %i %i"
-	       " %f %f %f"
-	       " %f %f %f"
-	       " %f %f %f",
-	       &bs->lastgoal_decisionmaker,
-	       &bs->lastgoal_ltgtype,
-	       &bs->lastgoal_teammate,
-	       &bs->lastgoal_teamgoal.areanum,
-	       &bs->lastgoal_teamgoal.entitynum,
-	       &bs->lastgoal_teamgoal.flags,
-	       &bs->lastgoal_teamgoal.iteminfo,
-	       &bs->lastgoal_teamgoal.number,
-	       &bs->lastgoal_teamgoal.origin[0],
-	       &bs->lastgoal_teamgoal.origin[1],
-	       &bs->lastgoal_teamgoal.origin[2],
-	       &bs->lastgoal_teamgoal.mins[0],
-	       &bs->lastgoal_teamgoal.mins[1],
-	       &bs->lastgoal_teamgoal.mins[2],
-	       &bs->lastgoal_teamgoal.maxs[0],
-	       &bs->lastgoal_teamgoal.maxs[1],
-	       &bs->lastgoal_teamgoal.maxs[2]
-	      );
+			"%i %i %i %i %i %i %i %i"
+			" %f %f %f"
+			" %f %f %f"
+			" %f %f %f"
+			" %f",
+		&bs->lastgoal_decisionmaker,
+		&bs->lastgoal_ltgtype,
+		&bs->lastgoal_teammate,
+		&bs->lastgoal_teamgoal.areanum,
+		&bs->lastgoal_teamgoal.entitynum,
+		&bs->lastgoal_teamgoal.flags,
+		&bs->lastgoal_teamgoal.iteminfo,
+		&bs->lastgoal_teamgoal.number,
+		&bs->lastgoal_teamgoal.origin[0],
+		&bs->lastgoal_teamgoal.origin[1],
+		&bs->lastgoal_teamgoal.origin[2],
+		&bs->lastgoal_teamgoal.mins[0],
+		&bs->lastgoal_teamgoal.mins[1],
+		&bs->lastgoal_teamgoal.mins[2],
+		&bs->lastgoal_teamgoal.maxs[0],
+		&bs->lastgoal_teamgoal.maxs[1],
+		&bs->lastgoal_teamgoal.maxs[2],
+		&bs->formation_dist
+		);
 }
 
 /*
