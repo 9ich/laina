@@ -1,6 +1,7 @@
 #include "g_local.h"
 
 static void breakable_box_use(gentity_t *self, gentity_t *other, gentity_t *activator);
+static void breakable_box_touch(gentity_t *self, gentity_t *other, trace_t *trace);
 
 /*
 A breakable box which usually contains an item.
@@ -9,7 +10,7 @@ Breaks open when damaged or jumped on.
 SUSPENDED	no drop to floor
 
 "contents"	what's in the box? (item_token default)
-"count"		number of items in box (1 default)
+"count"		number of items in box (5 default)
 "target"		smashing this box will trigger the entity this points to
 "wait"		time before respawning (-1 default, -1 = never respawn)
 */
@@ -28,11 +29,12 @@ void SP_breakable_box(gentity_t *ent)
 	}
 	if(ent->boxcontents == NULL)
 		G_Printf(S_COLOR_YELLOW "WARNING: bad item %s in breakable_box\n", contents);
-	G_SpawnInt("count", "1", &ent->count);
+	G_SpawnInt("count", "5", &ent->count);
 
 	ent->model = "models/breakables/box.md3";
 	ent->physicsBounce = 0.2;
 	ent->use = breakable_box_use;
+	ent->touch = breakable_box_touch;
 	ent->nextthink = -1;
 	ent->takedamage = qtrue;
 	ent->s.eType = ET_BREAKABLE;
@@ -66,4 +68,14 @@ static void breakable_box_use(gentity_t *self, gentity_t *other, gentity_t *acti
 	tent->s.otherEntityNum = activator->s.number;
 	trap_UnlinkEntity(self);
 	G_FreeEntity(self);
+}
+
+static void breakable_box_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+{
+	if(other->client == NULL)
+		return;
+	if(other->s.groundEntityNum != self->s.number)
+		return;
+	BG_Squish(&other->client->ps, &self->s);
+	self->use(self, NULL, other);
 }

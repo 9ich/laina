@@ -374,6 +374,8 @@ typedef enum {
 	EV_FALL_MEDIUM,
 	EV_FALL_FAR,
 
+	EV_SQUISH,			// landed on something squishable
+
 	EV_JUMP_PAD,			// boing sound at origin, jump sound on player
 
 	EV_JUMP,
@@ -717,6 +719,8 @@ void	BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
 void	BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerState_t *ps);
 
 void	BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad);
+void	BG_Squish(playerState_t *ps, entityState_t *squishable);
+
 
 void	BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap);
 void	BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int time, qboolean snap);

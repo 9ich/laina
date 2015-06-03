@@ -674,6 +674,10 @@ void CG_EntityEvent(centity_t *cent, vec3_t position)
 		trap_S_StartSound(cent->lerpOrigin, -1, CHAN_VOICE, cgs.media.jumpPadSound);
 		trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*jump1.wav"));
 		break;
+	case EV_SQUISH:
+		DEBUGNAME("EV_SQUISH");
+		CG_Printf( "EV_SQUISH w/effect #%i\n", es->eventParm );
+		break;
 
 	case EV_JUMP:
 		DEBUGNAME("EV_JUMP");

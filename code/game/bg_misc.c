@@ -493,6 +493,7 @@ char *eventnames[] = {
 	"EV_FALL_FAR",
 
 	"EV_JUMP_PAD",			// boing sound at origin", jump sound on player
+	"EV_SQUISH",			// player landed on something breakable
 
 	"EV_JUMP",
 	"EV_WATER_TOUCH",	// foot touches
@@ -656,6 +657,24 @@ void BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad)
 	ps->jumppad_frame = ps->pmove_framecount;
 	// give the player the velocity from the jumppad
 	VectorCopy(jumppad->origin2, ps->velocity);
+}
+
+// Player landed on something after jumping.
+// A squishable entity is a breakable or a regular enemy.
+void BG_Squish(playerState_t *ps, entityState_t *squishable)
+{
+	if(ps->pm_type != PM_NORMAL)
+		return;	// spectators don't break things
+	if(ps->powerups[PW_FLIGHT])
+		return;	// flying characters don't squish
+
+	if(ps->jumppad_ent != squishable->number)
+		BG_AddPredictableEventToPlayerstate(EV_SQUISH, 0, ps);
+	// remember hitting this squishable this frame (recycle jumppad fields)
+	ps->jumppad_ent = squishable->number;
+	ps->jumppad_frame = ps->pmove_framecount;
+	// bounce
+	ps->velocity[2] = 360;
 }
 
 /*
