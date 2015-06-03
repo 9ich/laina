@@ -65,11 +65,17 @@ void CG_BuildSolidList(void)
 
 		if(ent->eType == ET_ITEM 
 		|| ent->eType == ET_PUSH_TRIGGER
-		|| ent->eType == ET_TELEPORT_TRIGGER
-		|| ent->eType == ET_BREAKABLE){
+		|| ent->eType == ET_TELEPORT_TRIGGER){
 			cg_triggerEntities[cg_numTriggerEntities] = cent;
 			cg_numTriggerEntities++;
 			continue;
+		}
+		// for prediction, breakables are considered both as triggers
+		// and solids when landed on
+		if(ent->eType == ET_BREAKABLE
+		&& ent->number == cg.predictedPlayerState.groundEntityNum){
+			cg_triggerEntities[cg_numTriggerEntities] = cent;
+			cg_numTriggerEntities++;
 		}
 
 		if(cent->nextState.solid){
@@ -362,6 +368,10 @@ static void CG_TouchTriggerPrediction(void)
 		}
 
 		if(ent->solid != SOLID_BMODEL){
+			if(ent->eType == ET_BREAKABLE
+			&& ent->number == cg.predictedPlayerState.groundEntityNum){
+				BG_Squish(&cg.predictedPlayerState, ent);
+			}
 			continue;
 		}
 
@@ -370,9 +380,9 @@ static void CG_TouchTriggerPrediction(void)
 			continue;
 		}
 
-		trap_CM_BoxTrace(&trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin,
-		                 cg_pmove.mins, cg_pmove.maxs, cmodel, -1);
-
+		trap_CM_BoxTrace(&trace, cg.predictedPlayerState.origin, 
+			cg.predictedPlayerState.origin, cg_pmove.mins, 
+			cg_pmove.maxs, cmodel, -1);
 		if(!trace.startsolid){
 			continue;
 		}
@@ -381,11 +391,6 @@ static void CG_TouchTriggerPrediction(void)
 			cg.hyperspace = qtrue;
 		}else if(ent->eType == ET_PUSH_TRIGGER){
 			BG_TouchJumpPad(&cg.predictedPlayerState, ent);
-		}
-		
-		if(ent->eType == ET_BREAKABLE){
-			if(ent->number == cg.predictedPlayerState.groundEntityNum)
-				BG_Squish(&cg.predictedPlayerState, ent);
 		}
 	}
 

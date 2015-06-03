@@ -41,7 +41,7 @@ void SP_breakable_box(gentity_t *ent)
 	ent->s.modelindex = G_ModelIndex(ent->model);
 	G_SetOrigin(ent, ent->s.origin);
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);
-	ent->r.contents = CONTENTS_SOLID;
+	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 	VectorSet(ent->r.mins, -16, -16, -16);
 	VectorSet(ent->r.maxs, 16, 16, 16);
 	trap_LinkEntity(ent);
