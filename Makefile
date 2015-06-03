@@ -53,7 +53,7 @@ endif
 -include Config.mk
 
 ifeq ($(COMPILE_PLATFORM),cygwin)
-  PLATFORM=mingw32
+  PLATFORM=windows
 endif
 
 ifndef PLATFORM
