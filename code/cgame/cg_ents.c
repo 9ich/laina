@@ -613,27 +613,19 @@ static void CG_Breakable(centity_t *cent)
 
 	s1 = &cent->currentState;
 	
-	ent.radius = 16;
-	
 	// create the render entity
 	memset(&ent, 0, sizeof(ent));
 	VectorCopy(cent->lerpOrigin, ent.origin);
 	VectorCopy(cent->lerpOrigin, ent.oldorigin);
 	AnglesToAxis(cent->lerpAngles, ent.axis);
+	ent.nonNormalizedAxes = qfalse;
 
-	// flicker between two skins (FIXME?)
-	ent.skinNum = (cg.time >> 6) & 1;
-
-	if(1){
-		// get the model, either as a bmodel or a modelindex
-		if(s1->solid == SOLID_BMODEL){
-			ent.hModel = cgs.inlineDrawModel[s1->modelindex];
-		}else{
-			ent.hModel = cgs.gameModels[s1->modelindex];
-		}
-	}else
+	// get the model, either as a bmodel or a modelindex
+	if(s1->solid == SOLID_BMODEL){
+		ent.hModel = cgs.inlineDrawModel[s1->modelindex];
+	}else{
 		ent.hModel = cgs.gameModels[s1->modelindex];
-	ent.reType = RT_MODEL;
+	}
 	ent.renderfx = RF_SHADOW_PLANE;
 
 	// add to refresh list
@@ -645,7 +637,6 @@ static void CG_Breakable(centity_t *cent)
 		ent.hModel = cgs.gameModels[s1->modelindex2];
 		trap_R_AddRefEntityToScene(&ent);
 	}
-
 }
 
 /*
