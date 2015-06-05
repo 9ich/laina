@@ -534,6 +534,9 @@ ifeq ($(PLATFORM),windows)
       WINDRES=$(strip $(foreach MINGW_PREFIX, $(MINGW_PREFIXES), \
          $(call bin_path, $(MINGW_PREFIX)-windres)))
     endif
+    ifeq ($(WINDRES),)
+      WINDRES=windres
+    endif
   else
     # Some MinGW installations define CC to cc, but don't actually provide cc,
     # so check that CC points to a real binary and use gcc if it doesn't
@@ -549,7 +552,7 @@ ifeq ($(PLATFORM),windows)
   ifeq ($(ARCH),x86)
     WINDRES_FLAGS=-Fpe-i386
   endif
-  ifeq ($(ARCH),amd64)
+  ifeq ($(ARCH),x86_64)
     WINDRES_FLAGS=-Fpe-x86-64
   endif
 
