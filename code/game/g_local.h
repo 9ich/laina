@@ -331,7 +331,6 @@ typedef struct {
 	struct gclient_s	*clients;		// [maxclients]
 
 	struct gentity_s	*gentities;
-	int			gentitySize;
 	int			num_entities;		// MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 
 	int			warmupTime;			// restart match at this time
@@ -387,6 +386,9 @@ typedef struct {
 	char		*spawnVars[MAX_SPAWN_VARS][2];	// key / value pairs
 	int			numSpawnVarChars;
 	char		spawnVarChars[MAX_SPAWN_VARS_CHARS];
+
+	// last checkpoint unlocked
+	int		checkpoint;
 
 	// intermission state
 	int			intermissionQueued;		// intermission was qualified, but

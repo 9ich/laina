@@ -428,6 +428,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart)
 	memset(&level, 0, sizeof(level));
 	level.time = levelTime;
 	level.startTime = levelTime;
+	level.checkpoint = ENTITYNUM_NONE;
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 

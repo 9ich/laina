@@ -1143,7 +1143,7 @@ typedef struct playerState_s {
 									// changed by spawns, rotating objects, and teleporters
 
 	int			groundEntityNum;// ENTITYNUM_NONE = in air
-	
+
 	int			njumps;		// number of jumps since last touched ground (for doublejump)
 
 	int			legsTimer;		// don't change low priority animations until this runs out

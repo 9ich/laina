@@ -190,6 +190,7 @@ spawn_t	spawns[] = {
 	{"playerspawn", SP_playerspawn},
 
 	{"breakable_box", SP_breakable_box},
+	{"breakable_checkpoint", SP_breakable_checkpoint},
 
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes

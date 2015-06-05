@@ -245,6 +245,15 @@ Chooses a player start, deathmatch start, etc
 */
 gentity_t *SelectSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot)
 {
+	gentity_t *spot;
+
+	if(level.checkpoint != ENTITYNUM_NONE){
+		spot = &g_entities[level.checkpoint];
+		VectorCopy(spot->s.origin, origin);
+		origin[2] += 9;
+		VectorCopy(spot->s.angles, angles);
+		return spot;
+	}
 	return SelectRandomFurthestSpawnPoint(avoidPoint, origin, angles, isbot);
 
 	/*
@@ -289,6 +298,14 @@ gentity_t *SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 	gentity_t	*spot;
 
 	spot = NULL;
+
+	if(level.checkpoint != ENTITYNUM_NONE){
+		spot = &g_entities[level.checkpoint];
+		VectorCopy(spot->s.origin, origin);
+		origin[2] += 9;
+		VectorCopy(spot->s.angles, angles);
+		return spot;
+	}
 
 	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL){
 		if(((spot->flags & FL_NO_BOTS) && isbot) ||
@@ -1056,12 +1073,11 @@ void ClientSpawn(gentity_t *ent)
 		if(!client->pers.initialSpawn && client->pers.localClient){
 			client->pers.initialSpawn = qtrue;
 			spawnPoint = SelectInitialSpawnPoint(spawn_origin, spawn_angles,
-			                                     !!(ent->r.svFlags & SVF_BOT));
+				!!(ent->r.svFlags & SVF_BOT));
 		}else{
 			// don't spawn near existing origin if possible
-			spawnPoint = SelectSpawnPoint(
-			                 client->ps.origin,
-			                 spawn_origin, spawn_angles, !!(ent->r.svFlags & SVF_BOT));
+			spawnPoint = SelectSpawnPoint(client->ps.origin, spawn_origin, 
+				spawn_angles, !!(ent->r.svFlags & SVF_BOT));
 		}
 	}
 	client->pers.teamState.state = TEAM_ACTIVE;
