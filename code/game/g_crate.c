@@ -97,7 +97,7 @@ void SP_crate_bouncy(gentity_t *ent)
 	G_SetOrigin(ent, ent->s.origin);
 	VectorSet(ent->r.mins, -16, -16, -16);
 	VectorSet(ent->r.maxs, 16, 16, 16);
-	ent->model = "models/crates/checkpoint.md3";
+	ent->model = "models/crates/bouncy.md3";
 	ent->s.modelindex = G_ModelIndex(ent->model);
 	ent->physicsBounce = 0.2;
 	ent->touch = crate_bouncy_touch;
