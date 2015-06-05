@@ -802,10 +802,10 @@ void CG_EntityEvent(centity_t *cent, vec3_t position)
 	//
 	// breakables
 	//
-	case EV_SMASH_BOX:
-	case EV_SMASH_STRONG_BOX:
-	case EV_SMASH_CHECKPOINT_BOX:
-		DEBUGNAME("EV_SMASH_BOX");
+	case EV_SMASH_CRATE:
+	case EV_SMASH_STRONG_CRATE:
+	case EV_SMASH_CHECKPOINT_CRATE:
+		DEBUGNAME("EV_SMASH_CRATE");
 		{
 			vec3_t			up = {0, 0, 1};
 

@@ -169,9 +169,9 @@ void SP_shooter_rocket(gentity_t *ent);
 void SP_shooter_plasma(gentity_t *ent);
 void SP_shooter_grenade(gentity_t *ent);
 
-void SP_breakable_box(gentity_t *ent);
-void SP_breakable_box_strong(gentity_t *ent);
-void SP_breakable_checkpoint(gentity_t *ent);
+void SP_crate(gentity_t *ent);
+void SP_crate_strong(gentity_t *ent);
+void SP_crate_checkpoint(gentity_t *ent);
 void SP_crate_bouncy(gentity_t *ent);
 
 void SP_team_CTF_redplayer(gentity_t *ent);
@@ -190,8 +190,8 @@ void SP_item_botroam(gentity_t *ent){ }
 spawn_t	spawns[] = {
 	{"playerspawn", SP_playerspawn},
 
-	{"breakable_box", SP_breakable_box},
-	{"breakable_checkpoint", SP_breakable_checkpoint},
+	{"crate_crate", SP_crate},
+	{"crate_checkpoint", SP_crate_checkpoint},
 	{"crate_bouncy", SP_crate_bouncy},
 
 	// info entities don't do anything at all, but provide positional

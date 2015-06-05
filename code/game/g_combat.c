@@ -851,7 +851,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 	// breakable boxes
-	if(targ->s.eType == ET_BREAKABLE){
+	if(targ->s.eType == ET_CRATE){
 		if(targ->use)
 			targ->use(targ, inflictor, attacker);
 		return;

@@ -7,14 +7,14 @@
 extern void trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace);
 extern void AimAtTarget(gentity_t *self);
 
-static void breakable_box_use(gentity_t*, gentity_t*, gentity_t*);
-static void breakable_box_touch(gentity_t*, gentity_t*, trace_t*);
-static void breakable_checkpoint_use(gentity_t*, gentity_t*, gentity_t*);
-static void breakable_checkpoint_touch(gentity_t*, gentity_t*, trace_t*);
+static void crate_use(gentity_t*, gentity_t*, gentity_t*);
+static void crate_touch(gentity_t*, gentity_t*, trace_t*);
+static void crate_checkpoint_use(gentity_t*, gentity_t*, gentity_t*);
+static void crate_checkpoint_touch(gentity_t*, gentity_t*, trace_t*);
 static void crate_bouncy_touch(gentity_t*, gentity_t*, trace_t*);
 
 /*
-A breakable box which usually contains items.
+A breakable crate which usually contains items.
 Breaks open when damaged or jumped on.
 
 SUSPENDED	no drop to floor
@@ -24,7 +24,7 @@ SUSPENDED	no drop to floor
 "target"	target ents to trigger when the box is smashed
 "wait"		time before respawning (-1 default, -1 = never respawn)
 */
-void SP_breakable_box(gentity_t *ent)
+void SP_crate(gentity_t *ent)
 {
 	char *contents;
 	gitem_t *item;
@@ -41,13 +41,13 @@ void SP_breakable_box(gentity_t *ent)
 		G_Printf(S_COLOR_YELLOW "WARNING: bad item %s in breakable_box\n", contents);
 	G_SpawnInt("count", "5", &ent->count);
 
-	ent->model = "models/breakables/box.md3";
+	ent->model = "models/crates/crate.md3";
 	ent->physicsBounce = 0.2;
-	ent->use = breakable_box_use;
-	ent->touch = breakable_box_touch;
+	ent->use = crate_use;
+	ent->touch = crate_touch;
 	ent->nextthink = -1;
 	ent->takedamage = qtrue;
-	ent->s.eType = ET_BREAKABLE;
+	ent->s.eType = ET_CRATE;
 	ent->s.modelindex = G_ModelIndex(ent->model);
 	G_SetOrigin(ent, ent->s.origin);
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);
@@ -58,22 +58,22 @@ void SP_breakable_box(gentity_t *ent)
 }
 
 /*
-A breakable box that acts as a checkpoint for all players after
+A breakable crate that acts as a checkpoint for all players after
 being broken.
 
 SUSPENDED	no drop to floor
 
 "target"	target ents to trigger when the box is smashed
 */
-void SP_breakable_checkpoint(gentity_t *ent)
+void SP_crate_checkpoint(gentity_t *ent)
 {
-	ent->model = "models/breakables/checkpoint.md3";
+	ent->model = "models/crates/checkpoint.md3";
 	ent->physicsBounce = 0.2;
-	ent->use = breakable_checkpoint_use;
-	ent->touch = breakable_checkpoint_touch;
+	ent->use = crate_checkpoint_use;
+	ent->touch = crate_checkpoint_touch;
 	ent->nextthink = -1;
 	ent->takedamage = qtrue;
-	ent->s.eType = ET_BREAKABLE;
+	ent->s.eType = ET_CRATE;
 	ent->s.modelindex = G_ModelIndex(ent->model);
 	G_SetOrigin(ent, ent->s.origin);
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);
@@ -97,7 +97,7 @@ void SP_crate_bouncy(gentity_t *ent)
 	G_SetOrigin(ent, ent->s.origin);
 	VectorSet(ent->r.mins, -16, -16, -16);
 	VectorSet(ent->r.maxs, 16, 16, 16);
-	ent->model = "models/breakables/checkpoint.md3";
+	ent->model = "models/crates/checkpoint.md3";
 	ent->s.modelindex = G_ModelIndex(ent->model);
 	ent->physicsBounce = 0.2;
 	ent->touch = crate_bouncy_touch;
@@ -110,7 +110,7 @@ void SP_crate_bouncy(gentity_t *ent)
 	trap_LinkEntity(ent);
 }
 
-static void breakable_box_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+static void crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	gentity_t *tent;
 	vec3_t vel;
@@ -124,14 +124,14 @@ static void breakable_box_use(gentity_t *self, gentity_t *other, gentity_t *acti
 		vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
 		LaunchItem(self->boxcontents, self->s.pos.trBase, vel);
 	}
-	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_BOX);
+	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
 	G_UseTargets(self, activator);
 	trap_UnlinkEntity(self);
 	G_FreeEntity(self);
 }
 
-static void breakable_box_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+static void crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == NULL)
 		return;
@@ -141,18 +141,18 @@ static void breakable_box_touch(gentity_t *self, gentity_t *other, trace_t *trac
 	self->use(self, NULL, other);
 }
 
-static void breakable_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+static void crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	gentity_t *tent;
 
 	level.checkpoint = self->s.number;
-	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_BOX);
+	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
 	G_UseTargets(self, activator);
 	trap_UnlinkEntity(self);
 }
 
-static void breakable_checkpoint_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+static void crate_checkpoint_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == NULL)
 		return;
