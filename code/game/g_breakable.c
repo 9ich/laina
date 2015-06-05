@@ -16,7 +16,7 @@ SUSPENDED	no drop to floor
 
 "contents"	what's in the box? (item_token default)
 "count"		number of items in box (5 default)
-"target"		smashing this box will trigger the entity this points to
+"target"	target ents to trigger when the box is smashed
 "wait"		time before respawning (-1 default, -1 = never respawn)
 */
 void SP_breakable_box(gentity_t *ent)
@@ -57,6 +57,8 @@ A breakable box that acts as a checkpoint for all players after
 being broken.
 
 SUSPENDED	no drop to floor
+
+"target"	target ents to trigger when the box is smashed
 */
 void SP_breakable_checkpoint(gentity_t *ent)
 {
@@ -92,6 +94,7 @@ static void breakable_box_use(gentity_t *self, gentity_t *other, gentity_t *acti
 	}
 	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_BOX);
 	tent->s.otherEntityNum = activator->s.number;
+	G_UseTargets(self, activator);
 	trap_UnlinkEntity(self);
 	G_FreeEntity(self);
 }
@@ -113,6 +116,7 @@ static void breakable_checkpoint_use(gentity_t *self, gentity_t *other, gentity_
 	level.checkpoint = self->s.number;
 	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_BOX);
 	tent->s.otherEntityNum = activator->s.number;
+	G_UseTargets(self, activator);
 	trap_UnlinkEntity(self);
 }
 
