@@ -190,7 +190,7 @@ void SP_item_botroam(gentity_t *ent){ }
 spawn_t	spawns[] = {
 	{"playerspawn", SP_playerspawn},
 
-	{"crate_crate", SP_crate},
+	{"crate_", SP_crate},	// underscore for radiant menu
 	{"crate_checkpoint", SP_crate_checkpoint},
 	{"crate_bouncy", SP_crate_bouncy},
 
