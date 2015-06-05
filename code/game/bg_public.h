@@ -697,6 +697,7 @@ typedef enum {
 	ET_MISSILE,
 	ET_MOVER,
 	ET_BREAKABLE,	// breakable boxes
+	ET_CRATE_BOUNCY,
 	ET_BEAM,
 	ET_PORTAL,
 	ET_SPEAKER,

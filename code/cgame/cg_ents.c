@@ -1010,6 +1010,7 @@ static void CG_AddCEntity(centity_t *cent)
 		CG_Mover(cent);
 		break;
 	case ET_BREAKABLE:
+	case ET_CRATE_BOUNCY:
 		CG_Breakable(cent);
 		break;
 	case ET_BEAM:

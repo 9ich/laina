@@ -3,10 +3,15 @@
 #define BOX_CONTENTS_SPEED 200.0f
 #define BOX_CONTENTS_JUMP 100.f
 
+// g_trigger.c jump pad recycling
+extern void trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace);
+extern void AimAtTarget(gentity_t *self);
+
 static void breakable_box_use(gentity_t*, gentity_t*, gentity_t*);
 static void breakable_box_touch(gentity_t*, gentity_t*, trace_t*);
 static void breakable_checkpoint_use(gentity_t*, gentity_t*, gentity_t*);
 static void breakable_checkpoint_touch(gentity_t*, gentity_t*, trace_t*);
+static void crate_bouncy_touch(gentity_t*, gentity_t*, trace_t*);
 
 /*
 A breakable box which usually contains items.
@@ -78,6 +83,33 @@ void SP_breakable_checkpoint(gentity_t *ent)
 	trap_LinkEntity(ent);
 }
 
+/*
+An indestructible box which acts just like a jump pad.
+
+SUSPENDED	no drop to floor
+"target"	a target_position, which will be the apex of the leap
+*/
+void SP_crate_bouncy(gentity_t *ent)
+{
+	ent->r.svFlags &= ~SVF_NOCLIENT;
+	// make sure the client precaches this sound
+	G_SoundIndex("sound/world/jumppad.wav");
+	G_SetOrigin(ent, ent->s.origin);
+	VectorSet(ent->r.mins, -16, -16, -16);
+	VectorSet(ent->r.maxs, 16, 16, 16);
+	ent->model = "models/breakables/checkpoint.md3";
+	ent->s.modelindex = G_ModelIndex(ent->model);
+	ent->physicsBounce = 0.2;
+	ent->touch = crate_bouncy_touch;
+	ent->think = AimAtTarget;
+	ent->nextthink = level.time + FRAMETIME;
+	ent->takedamage = qfalse;
+	ent->s.eType = ET_CRATE_BOUNCY;
+	VectorCopy(ent->s.angles, ent->s.apos.trBase);
+	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
+	trap_LinkEntity(ent);
+}
+
 static void breakable_box_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	gentity_t *tent;
@@ -128,4 +160,13 @@ static void breakable_checkpoint_touch(gentity_t *self, gentity_t *other, trace_
 		return;
 	BG_Squish(&other->client->ps, &self->s);
 	self->use(self, NULL, other);
+}
+
+static void crate_bouncy_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+{
+	if(other->client == NULL)
+		return;
+	if(other->s.groundEntityNum != self->s.number)
+		return;
+	trigger_push_touch(self, other, trace);
 }

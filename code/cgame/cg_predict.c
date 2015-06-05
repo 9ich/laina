@@ -73,6 +73,7 @@ void CG_BuildSolidList(void)
 		// for prediction, breakables are considered both as triggers
 		// and solids when landed on
 		if(ent->eType == ET_BREAKABLE
+		&& ent->eType == ET_CRATE_BOUNCY
 		&& ent->number == cg.predictedPlayerState.groundEntityNum){
 			cg_triggerEntities[cg_numTriggerEntities] = cent;
 			cg_numTriggerEntities++;
@@ -371,6 +372,9 @@ static void CG_TouchTriggerPrediction(void)
 			if(ent->eType == ET_BREAKABLE
 			&& ent->number == cg.predictedPlayerState.groundEntityNum){
 				BG_Squish(&cg.predictedPlayerState, ent);
+			}else if(ent->eType == ET_CRATE_BOUNCY
+			&& ent->number == cg.predictedPlayerState.groundEntityNum){
+				BG_TouchJumpPad(&cg.predictedPlayerState, ent);
 			}
 			continue;
 		}

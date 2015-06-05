@@ -172,6 +172,7 @@ void SP_shooter_grenade(gentity_t *ent);
 void SP_breakable_box(gentity_t *ent);
 void SP_breakable_box_strong(gentity_t *ent);
 void SP_breakable_checkpoint(gentity_t *ent);
+void SP_crate_bouncy(gentity_t *ent);
 
 void SP_team_CTF_redplayer(gentity_t *ent);
 void SP_team_CTF_blueplayer(gentity_t *ent);
@@ -191,6 +192,7 @@ spawn_t	spawns[] = {
 
 	{"breakable_box", SP_breakable_box},
 	{"breakable_checkpoint", SP_breakable_checkpoint},
+	{"crate_bouncy", SP_crate_bouncy},
 
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
