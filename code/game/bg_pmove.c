@@ -385,7 +385,6 @@ static qboolean PM_CheckJump(void)
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 	pm->ps->velocity[2] = JUMP_VELOCITY;
-	pm->ps->njumps++;
 	PM_AddEvent(EV_JUMP);
 
 	if(pm->cmd.forwardmove >= 0){
@@ -400,15 +399,13 @@ static qboolean PM_CheckJump(void)
 }
 
 // double jumps
-static qboolean PM_CheckAirJump(void)
+static qboolean PM_CheckAirjump(void)
 {
 	int i;
 	float scale;
 
-	if(pm->ps->njumps >= 2)
-		return qfalse;		// can't airjump any more times
-	if(pm->cmd.upmove < 10)
-		return qfalse;	// not holding jump
+	if(pm->ps->nAirjumps >= 1 || pm->cmd.upmove < 10)
+		return qfalse;
 	// must wait for jump to be released
 	if(pm->ps->pm_flags & PMF_JUMP_HELD){
 		// clear upmove so cmdscale doesn't lower move speed
@@ -423,7 +420,7 @@ static qboolean PM_CheckAirJump(void)
 	for(i=0 ; i<2 ; i++)
 		pm->ps->velocity[i] = 2*scale*pml.forward[i]*pm->cmd.forwardmove + 2*scale*pml.right[i]*pm->cmd.rightmove;
 	pm->ps->velocity[2] = AIRJUMP_VELOCITY;
-	pm->ps->njumps++;
+	pm->ps->nAirjumps++;
 	PM_AddEvent(EV_JUMP);
 
 	if(pm->cmd.forwardmove >= 0){
@@ -433,7 +430,6 @@ static qboolean PM_CheckAirJump(void)
 		PM_ForceLegsAnim(LEGS_JUMPB);
 		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
 	}
-
 	return qtrue;
 }
 
@@ -695,7 +691,7 @@ static void PM_AirMove(void)
 	float		wishspeed2;
 	usercmd_t	cmd;
 	
-	PM_CheckAirJump();
+	PM_CheckAirjump();
 
 	PM_Friction();
 
@@ -1288,7 +1284,7 @@ static void PM_GroundTrace(void)
 		}
 
 		PM_CrashLand();
-		pm->ps->njumps = 0;
+		pm->ps->nAirjumps = 0;
 
 		// don't do landing time if we were just going down a slope
 		if(pml.previous_velocity[2] < -200){

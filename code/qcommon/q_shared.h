@@ -1144,7 +1144,7 @@ typedef struct playerState_s {
 
 	int			groundEntityNum;// ENTITYNUM_NONE = in air
 
-	int			njumps;		// number of jumps since last touched ground (for doublejump)
+	int			nAirjumps;		// number of jumps since last touched ground (for doublejump)
 
 	int			legsTimer;		// don't change low priority animations until this runs out
 	int			legsAnim;		// mask off ANIM_TOGGLEBIT

@@ -1116,7 +1116,7 @@ netField_t	playerStateFields[] =
 { PSF(events[1]), 8 },
 { PSF(pm_flags), 16 },
 { PSF(groundEntityNum), GENTITYNUM_BITS },
-{ PSF(njumps), 2 },
+{ PSF(nAirjumps), 2 },
 { PSF(weaponstate), 4 },
 { PSF(eFlags), 16 },
 { PSF(externalEvent), 10 },
