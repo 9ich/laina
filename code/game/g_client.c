@@ -1129,6 +1129,7 @@ void ClientSpawn(gentity_t *ent)
 	client->ps.eFlags = flags;
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
+	ent->s.headEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[index];
 	ent->takedamage = qtrue;
 	ent->inuse = qtrue;

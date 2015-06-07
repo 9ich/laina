@@ -1143,6 +1143,7 @@ typedef struct playerState_s {
 									// changed by spawns, rotating objects, and teleporters
 
 	int			groundEntityNum;// ENTITYNUM_NONE = in air
+	int			headEntityNum;
 
 	int			nAirjumps;		// number of jumps since last touched ground (for doublejump)
 
@@ -1287,6 +1288,7 @@ typedef struct entityState_s {
 	int		otherEntityNum2;
 
 	int		groundEntityNum;	// ENTITYNUM_NONE = in air
+	int		headEntityNum;
 
 	int		constantLight;	// r + (g<<8) + (b<<16) + (intensity<<24)
 	int		loopSound;		// constantly loop this sound

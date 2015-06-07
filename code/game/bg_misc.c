@@ -742,6 +742,7 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 
 	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
+	s->headEntityNum = ps->headEntityNum;
 
 	s->powerups = 0;
 	for(i = 0 ; i < MAX_POWERUPS ; i++){
@@ -823,6 +824,7 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 
 	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
+	s->headEntityNum = ps->headEntityNum;
 
 	s->powerups = 0;
 	for(i = 0 ; i < MAX_POWERUPS ; i++){

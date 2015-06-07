@@ -384,6 +384,7 @@ static qboolean PM_CheckJump(void)
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+	pm->ps->headEntityNum = ENTITYNUM_NONE;
 	pm->ps->velocity[2] = JUMP_VELOCITY;
 	PM_AddEvent(EV_JUMP);
 
@@ -1162,6 +1163,36 @@ static int PM_CorrectAllSolid(trace_t *trace)
 	return qfalse;
 }
 
+static int PM_CorrectHeadAllSolid(trace_t *trace)
+{
+	int i, j, k;
+	vec3_t point;
+
+	if(pm->debugLevel)
+		Com_Printf("%i:head allsolid\n", c_pmove);
+	// jitter around
+	for(i = 1; i >= -1; i--){
+		for(j = 1; j >= -1; j--){
+			for(k = 1; k >= -1; k--){
+				VectorCopy(pm->ps->origin, point);
+				point[0] -= (float) i;
+				point[1] -= (float) j;
+				point[2] -= (float) k;
+				pm->trace(trace, point, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
+				if(!trace->allsolid){
+					point[0] = pm->ps->origin[0];
+					point[1] = pm->ps->origin[1];
+					point[2] = pm->ps->origin[2] + 0.25;
+					pm->trace(trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
+					return qtrue;
+				}
+			}
+		}
+	}
+	pm->ps->headEntityNum = ENTITYNUM_NONE;
+	return qfalse;
+}
+
 
 /*
 =============
@@ -1201,6 +1232,16 @@ static void PM_GroundTraceMissed(void)
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 	pml.groundPlane = qfalse;
 	pml.walking = qfalse;
+}
+
+static void PM_HeadTraceMissed(void)
+{
+	if(pm->ps->headEntityNum != ENTITYNUM_NONE){
+		// falling from entity
+		if(pm->debugLevel)
+			Com_Printf("%i:head away\n", c_pmove);
+	}
+	pm->ps->headEntityNum = ENTITYNUM_NONE;
 }
 
 
@@ -1302,6 +1343,52 @@ static void PM_GroundTrace(void)
 	PM_AddTouchEnt(trace.entityNum);
 }
 
+// for headbutting things. stands to reason, dunnit?
+static void PM_HeadTrace(void)
+{
+	vec3_t point;
+	trace_t trace;
+
+	point[0] = pm->ps->origin[0];
+	point[1] = pm->ps->origin[1];
+	point[2] = pm->ps->origin[2] + 0.25;
+
+	pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
+
+	// do something corrective if the trace starts in a solid...
+	if(trace.allsolid){
+		if(!PM_CorrectHeadAllSolid(&trace))
+			return;
+	}
+	if(trace.fraction == 1.0){
+		PM_HeadTraceMissed();
+		return;
+	}
+
+	Com_Printf("%i:head contact?\n", c_pmove);
+
+	// check if falling away
+	if(pm->ps->velocity[2] < 0 && DotProduct(pm->ps->velocity, trace.plane.normal) > 10){
+		if(pm->debugLevel)
+			Com_Printf("%i:headoff\n", c_pmove);
+		pm->ps->headEntityNum = ENTITYNUM_NONE;
+		return;
+	}
+	// slopes that are too steep will not be considered headbuttable
+	if(trace.plane.normal[2] < MIN_WALK_NORMAL){
+		if(pm->debugLevel)
+			Com_Printf("%i:head steep\n", c_pmove);
+		pm->ps->headEntityNum = ENTITYNUM_NONE;
+		return;
+	}
+	if(pm->ps->headEntityNum == ENTITYNUM_NONE){
+		// just hit the thing
+		if(pm->debugLevel)
+			Com_Printf("%i:headbutt\n", c_pmove);
+	}
+	pm->ps->headEntityNum = trace.entityNum;
+	PM_AddTouchEnt(trace.entityNum);
+}
 
 /*
 =============
@@ -2045,6 +2132,7 @@ void PmoveSingle(pmove_t *pmove)
 
 	// set groundentity
 	PM_GroundTrace();
+	PM_HeadTrace();
 
 	if(pm->ps->pm_type == PM_DEAD){
 		PM_DeadMove();
@@ -2081,6 +2169,7 @@ void PmoveSingle(pmove_t *pmove)
 
 	// set groundentity, watertype, and waterlevel
 	PM_GroundTrace();
+	PM_HeadTrace();
 	PM_SetWaterLevel();
 
 	// weapons
