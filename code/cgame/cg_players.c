@@ -2009,7 +2009,7 @@ Returns the Z component of the surface being shadowed
   should it return a full plane instead of a Z?
 ===============
 */
-#define	SHADOW_DISTANCE		128
+#define	SHADOW_DISTANCE		500
 static qboolean CG_PlayerShadow(centity_t *cent, float *shadowPlane)
 {
 	vec3_t		end, mins = {-15, -15, 0}, maxs = {15, 15, 2};
