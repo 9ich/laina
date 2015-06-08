@@ -336,16 +336,16 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu"))
     -pipe -DUSE_ICON
   CLIENT_CFLAGS += $(SDL_CFLAGS)
 
-  OPTIMIZEVM = -O3
+  OPTIMIZEVM = -O2
   OPTIMIZE = $(OPTIMIZEVM) -ffast-math
 
   ifeq ($(ARCH),x86_64)
-    OPTIMIZEVM = -O3
+    OPTIMIZEVM = -O2
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED = true
   else
   ifeq ($(ARCH),x86)
-    OPTIMIZEVM = -O3 -march=i586
+    OPTIMIZEVM = -O2 -march=i586
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED=true
   else
@@ -423,7 +423,7 @@ ifeq ($(PLATFORM),darwin)
 
   ifeq ($(ARCH),ppc)
     BASE_CFLAGS += -arch ppc -faltivec
-    OPTIMIZEVM += -O3
+    OPTIMIZEVM += -O2
   endif
   ifeq ($(ARCH),ppc64)
     BASE_CFLAGS += -arch ppc64 -faltivec
@@ -574,12 +574,12 @@ ifeq ($(PLATFORM),windows)
   endif
 
   ifeq ($(ARCH),x86_64)
-    OPTIMIZEVM = -O3
+    OPTIMIZEVM = -O2
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED = true
   endif
   ifeq ($(ARCH),x86)
-    OPTIMIZEVM = -O3 -march=i586
+    OPTIMIZEVM = -O2 -march=i586
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED = true
   endif
@@ -677,7 +677,7 @@ ifeq ($(PLATFORM),freebsd)
   CLIENT_CFLAGS += $(SDL_CFLAGS)
   HAVE_VM_COMPILED = true
 
-  OPTIMIZEVM = -O3
+  OPTIMIZEVM = -O2
   OPTIMIZE = $(OPTIMIZEVM) -ffast-math
 
   SHLIBEXT=so
@@ -730,16 +730,16 @@ ifeq ($(PLATFORM),openbsd)
     -pipe -DUSE_ICON -DMAP_ANONYMOUS=MAP_ANON
   CLIENT_CFLAGS += $(SDL_CFLAGS)
 
-  OPTIMIZEVM = -O3
+  OPTIMIZEVM = -O2
   OPTIMIZE = $(OPTIMIZEVM) -ffast-math
 
   ifeq ($(ARCH),x86_64)
-    OPTIMIZEVM = -O3
+    OPTIMIZEVM = -O2
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED = true
   else
   ifeq ($(ARCH),x86)
-    OPTIMIZEVM = -O3 -march=i586
+    OPTIMIZEVM = -O2 -march=i586
     OPTIMIZE = $(OPTIMIZEVM) -ffast-math
     HAVE_VM_COMPILED=true
   else
@@ -832,7 +832,7 @@ ifeq ($(PLATFORM),irix64)
   BASE_CFLAGS=-Dstricmp=strcasecmp -Xcpluscomm -woff 1185 \
     -I. -I$(ROOT)/usr/include
   CLIENT_CFLAGS += $(SDL_CFLAGS)
-  OPTIMIZE = -O3
+  OPTIMIZE = -O2
 
   SHLIBEXT=so
   SHLIBCFLAGS=
@@ -867,10 +867,10 @@ ifeq ($(PLATFORM),sunos)
     -pipe -DUSE_ICON
   CLIENT_CFLAGS += $(SDL_CFLAGS)
 
-  OPTIMIZEVM = -O3 -funroll-loops
+  OPTIMIZEVM = -O2 -funroll-loops
 
   ifeq ($(ARCH),sparc)
-    OPTIMIZEVM += -O3 \
+    OPTIMIZEVM += -O2 \
       -fstrength-reduce -falign-functions=2 \
       -mtune=ultrasparc3 -mv8plus -mno-faster-structs
     HAVE_VM_COMPILED=true
@@ -905,7 +905,7 @@ else # ifeq sunos
 # SETUP AND BUILD -- GENERIC
 #############################################################################
   BASE_CFLAGS=
-  OPTIMIZE = -O3
+  OPTIMIZE = -O2
 
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
