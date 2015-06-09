@@ -1128,11 +1128,11 @@ BASE_CFLAGS += -Wstrict-aliasing=2 -Wmissing-format-attribute
 BASE_CFLAGS += -Wdisabled-optimization
 BASE_CFLAGS += -Werror-implicit-function-declaration
 
-ifndef OPTFLAGS
-  OPTFLAGS = $(OPTIMIZE)
-endif
 ifndef OPTVMFLAGS
   OPTVMFLAGS = $(OPTIMIZEVM)
+endif
+ifndef OPTFLAGS
+  OPTFLAGS = $(OPTIMIZE)
 endif
 
 ifeq ($(V),1)
@@ -1386,7 +1386,7 @@ ifndef TOOLS_CC
   TOOLS_CC = gcc
 endif
 
-TOOLS_OPTIMIZE = -g -Wall -fno-strict-aliasing
+TOOLS_OPTIMIZE = -O2 -Wall -fno-strict-aliasing
 TOOLS_CFLAGS += $(TOOLS_OPTIMIZE) \
                 -DTEMPDIR=\"$(TEMPDIR)\" -DSYSTEM=\"\" \
                 -I$(Q3LCCSRCDIR) \
