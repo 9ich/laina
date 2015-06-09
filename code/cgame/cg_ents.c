@@ -86,7 +86,51 @@ void CG_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t *paren
 	MatrixMultiply(tempAxis, ((refEntity_t *)parent)->axis, entity->axis);
 }
 
+/*
+======================
+Returns the Z component of the surface being shadowed.
 
+  should it return a full plane instead of a Z?
+======================
+*/
+#define	SHADOW_DISTANCE		300
+qboolean CG_EntityShadow(centity_t *cent, float *shadowPlane)
+{
+	vec3_t end, mins = {-15, -15, 0}, maxs = {15, 15, 2};
+	trace_t trace;
+	float alpha, size;
+
+	*shadowPlane = 0;
+
+	if(cg_shadows.integer == 0)
+		return qfalse;
+	// no shadows when invisible
+	if(cent->currentState.powerups & (1 << PW_INVIS))
+		return qfalse;
+
+	// send a trace down from the entity to the ground
+	VectorCopy(cent->lerpOrigin, end);
+	end[2] -= SHADOW_DISTANCE;
+	trap_CM_BoxTrace(&trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID);
+	// no shadow if too high
+	if(trace.fraction == 1.0f || trace.startsolid || trace.allsolid)
+		return qfalse;
+	*shadowPlane = trace.endpos[2] + 1.0f;
+
+	// no mark for stencil or projection shadows
+	if(cg_shadows.integer != 1)
+		return qtrue;
+
+	// fade out and expand the shadow blob with height
+	alpha = 1.0f - trace.fraction;
+	size = 24.0f + 15.0f*trace.fraction;
+
+	// add the mark as a temporary, so it goes directly to the renderer
+	// without taking a spot in the cg_marks array
+	CG_ImpactMark(cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
+	              cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, size, qtrue);
+	return qtrue;
+}
 
 /*
 ==========================================================================
@@ -604,10 +648,11 @@ static void CG_Mover(centity_t *cent)
 
 }
 
-static void CG_Breakable(centity_t *cent)
+static void CG_Crate(centity_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
+	float shadowplane;
 
 	s1 = &cent->currentState;
 	
@@ -624,7 +669,9 @@ static void CG_Breakable(centity_t *cent)
 	}else{
 		ent.hModel = cgs.gameModels[s1->modelindex];
 	}
-	ent.renderfx = RF_SHADOW_PLANE;
+
+	CG_EntityShadow(cent, &shadowplane);
+	ent.shadowPlane = shadowplane;
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
@@ -1009,7 +1056,7 @@ static void CG_AddCEntity(centity_t *cent)
 		break;
 	case ET_CRATE:
 	case ET_CRATE_BOUNCY:
-		CG_Breakable(cent);
+		CG_Crate(cent);
 		break;
 	case ET_BEAM:
 		CG_Beam(cent);
