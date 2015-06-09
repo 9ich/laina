@@ -122,7 +122,7 @@ qboolean CG_EntityShadow(centity_t *cent, float *shadowPlane)
 		return qtrue;
 
 	// fade out and expand the shadow blob with height
-	alpha = 1.0f - trace.fraction;
+	alpha = 0.5f - 0.5f*trace.fraction;
 	size = 24.0f + 15.0f*trace.fraction;
 
 	// add the mark as a temporary, so it goes directly to the renderer
