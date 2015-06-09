@@ -604,8 +604,6 @@ static void CG_Mover(centity_t *cent)
 
 }
 
-// BUG: breakable models get culled when their origin exits the
-// viewing frustum
 static void CG_Breakable(centity_t *cent)
 {
 	refEntity_t ent;
