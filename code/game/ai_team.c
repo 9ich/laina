@@ -96,7 +96,6 @@ int BotNumTeamMates(bot_state_t *bs)
 		if(!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) continue;
 		//skip spectators
 		if(atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) continue;
-		//
 		if(BotSameTeam(bs, i)){
 			numplayers++;
 		}
@@ -163,11 +162,8 @@ int BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxtea
 		if(!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) continue;
 		//skip spectators
 		if(atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) continue;
-		//
 		if(BotSameTeam(bs, i) && goal){
-			//
 			traveltime = BotClientTravelTimeToGoal(i, goal);
-			//
 			for(j = 0; j < numteammates; j++){
 				if(traveltime < traveltimes[j]){
 					for(k = numteammates; k > j; k--){
@@ -380,7 +376,6 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs)
 				BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWFLAGCARRIER);
 			}
 		}else{
-			//
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayVoiceTeamOrder(bs, other, VOICECHAT_GETFLAG);
 		}
@@ -402,11 +397,9 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs)
 		if(bs->flagcarrier != -1){
 			ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 			for(i = 0; i < defenders; i++){
-				//
 				if(teammates[i] == bs->flagcarrier){
 					continue;
 				}
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				if(bs->flagcarrier == bs->client){
 					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
@@ -419,11 +412,9 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs)
 			}
 		}else{
 			for(i = 0; i < defenders; i++){
-				//
 				if(teammates[i] == bs->flagcarrier){
 					continue;
 				}
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_GETFLAG);
@@ -431,17 +422,14 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs)
 			}
 		}
 		for(i = 0; i < attackers; i++){
-			//
 			if(teammates[numteammates - i - 1] == bs->flagcarrier){
 				continue;
 			}
-			//
 			ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_RETURNFLAG);
 		}
-		//
 		break;
 	}
 	}
@@ -472,7 +460,6 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-			//
 			ClientName(teammates[1], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
@@ -490,7 +477,6 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -504,20 +490,17 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.6 + 0.5;
 			if(attackers > 6) attackers = 6;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -532,7 +515,6 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_GETFLAG);
-			//
 			ClientName(teammates[1], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
@@ -545,12 +527,10 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_GETFLAG);
-			//
 			ClientName(teammates[1], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -564,20 +544,17 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.7 + 0.5;
 			if(attackers > 7) attackers = 7;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -636,7 +613,6 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs)
 		attackers = (int)(float) numteammates * 0.3 + 0.5;
 		if(attackers > 3) attackers = 3;
 		for(i = 0; i < defenders; i++){
-			//
 			if(teammates[i] == bs->flagcarrier){
 				continue;
 			}
@@ -649,11 +625,9 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs)
 		if(bs->flagcarrier != -1){
 			ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 			for(i = 0; i < attackers; i++){
-				//
 				if(teammates[numteammates - i - 1] == bs->flagcarrier){
 					continue;
 				}
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				if(bs->flagcarrier == bs->client){
 					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
@@ -666,18 +640,15 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs)
 			}
 		}else{
 			for(i = 0; i < attackers; i++){
-				//
 				if(teammates[numteammates - i - 1] == bs->flagcarrier){
 					continue;
 				}
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			}
 		}
-		//
 		break;
 	}
 	}
@@ -742,20 +713,17 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.4 + 0.5;
 			if(attackers > 4) attackers = 4;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -788,7 +756,6 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -801,20 +768,17 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.5 + 0.5;
 			if(attackers > 5) attackers = 5;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -830,10 +794,8 @@ void BotCTFOrders(bot_state_t *bs)
 {
 	int flagstatus;
 
-	//
 	if(BotTeam(bs) == TEAM_RED) flagstatus = bs->redflagstatus * 2 + bs->blueflagstatus;
 	else flagstatus = bs->blueflagstatus * 2 + bs->redflagstatus;
-	//
 	switch(flagstatus){
 	case 0:
 		BotCTFOrders_BothFlagsAtBase(bs);
@@ -898,13 +860,11 @@ void BotTeamOrders(bot_state_t *bs)
 		if(!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) continue;
 		//skip spectators
 		if(atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) continue;
-		//
 		if(BotSameTeam(bs, i)){
 			teammates[numteammates] = i;
 			numteammates++;
 		}
 	}
-	//
 	switch(numteammates){
 	case 1:
 		break;
@@ -1002,20 +962,17 @@ void Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.4 + 0.5;
 			if(attackers > 4) attackers = 4;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -1048,7 +1005,6 @@ void Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -1063,20 +1019,17 @@ void Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.6 + 0.5;
 			if(attackers > 6) attackers = 6;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -1138,7 +1091,6 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 					BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWFLAGCARRIER);
 				}
 			}else{
-				//
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayVoiceTeamOrder(bs, other, VOICECHAT_GETFLAG);
 			}
@@ -1153,7 +1105,6 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.7 + 0.5;
 			if(attackers > 7) attackers = 7;
 			for(i = 0; i < defenders; i++){
-				//
 				if(teammates[i] == bs->flagcarrier){
 					continue;
 				}
@@ -1165,11 +1116,9 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 			if(bs->flagcarrier != -1){
 				ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 				for(i = 0; i < attackers; i++){
-					//
 					if(teammates[numteammates - i - 1] == bs->flagcarrier){
 						continue;
 					}
-					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					if(bs->flagcarrier == bs->client){
 						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
@@ -1182,18 +1131,15 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 				}
 			}else{
 				for(i = 0; i < attackers; i++){
-					//
 					if(teammates[numteammates - i - 1] == bs->flagcarrier){
 						continue;
 					}
-					//
 					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 				}
 			}
-			//
 			break;
 		}
 		}
@@ -1243,7 +1189,6 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.8 + 0.5;
 			if(attackers > 8) attackers = 8;
 			for(i = 0; i < defenders; i++){
-				//
 				if(teammates[i] == bs->flagcarrier){
 					continue;
 				}
@@ -1254,11 +1199,9 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 			}
 			ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 			for(i = 0; i < attackers; i++){
-				//
 				if(teammates[numteammates - i - 1] == bs->flagcarrier){
 					continue;
 				}
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				if(bs->flagcarrier == bs->client){
 					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
@@ -1269,7 +1212,6 @@ void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs)
 				}
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			}
-			//
 			break;
 		}
 		}
@@ -1305,7 +1247,6 @@ void Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-			//
 			ClientName(teammates[1], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
@@ -1338,20 +1279,17 @@ void Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.1 + 0.5;
 			if(attackers > 1) attackers = 1;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -1384,7 +1322,6 @@ void Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -1399,20 +1336,17 @@ void Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.2 + 0.5;
 			if(attackers > 2) attackers = 2;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -1481,20 +1415,17 @@ void Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.4 + 0.5;
 			if(attackers > 4) attackers = 4;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -1527,7 +1458,6 @@ void Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -1542,20 +1472,17 @@ void Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.6 + 0.5;
 			if(attackers > 6) attackers = 6;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
 			}
-			//
 			break;
 		}
 		}
@@ -1647,20 +1574,17 @@ void BotObeliskOrders(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.4 + 0.5;
 			if(attackers > 4) attackers = 4;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
 			}
-			//
 			break;
 		}
 		}
@@ -1693,7 +1617,6 @@ void BotObeliskOrders(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -1708,20 +1631,17 @@ void BotObeliskOrders(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.7 + 0.5;
 			if(attackers > 7) attackers = 7;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
 			}
-			//
 			break;
 		}
 		}
@@ -1790,20 +1710,17 @@ void BotHarvesterOrders(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.4 + 0.5;
 			if(attackers > 4) attackers = 4;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
 			}
-			//
 			break;
 		}
 		}
@@ -1836,7 +1753,6 @@ void BotHarvesterOrders(bot_state_t *bs)
 			BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-			//
 			ClientName(teammates[2], name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
@@ -1851,20 +1767,17 @@ void BotHarvesterOrders(bot_state_t *bs)
 			attackers = (int)(float) numteammates * 0.7 + 0.5;
 			if(attackers > 7) attackers = 7;
 			for(i = 0; i < defenders; i++){
-				//
 				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			for(i = 0; i < attackers; i++){
-				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
 			}
-			//
 			break;
 		}
 		}
@@ -1914,14 +1827,11 @@ void BotTeamAI(bot_state_t *bs)
 	int numteammates;
 	char netname[MAX_NETNAME];
 
-	//
 	if(gametype < GT_TEAM)
 		return;
 	// make sure we've got a valid team leader
 	if(!BotValidTeamLeader(bs)){
-		//
 		if(!FindHumanTeamLeader(bs)){
-			//
 			if(!bs->askteamleader_time && !bs->becometeamleader_time){
 				if(bs->entergame_time + 10 > FloatTime()){
 					bs->askteamleader_time = FloatTime() + 5 + random() * 10;
@@ -1954,7 +1864,6 @@ void BotTeamAI(bot_state_t *bs)
 	//return if this bot is NOT the team leader
 	ClientName(bs->client, netname, sizeof(netname));
 	if(Q_stricmp(netname, bs->teamleader) != 0) return;
-	//
 	numteammates = BotNumTeamMates(bs);
 	//give orders
 	switch(gametype){
@@ -1993,7 +1902,6 @@ void BotTeamAI(bot_state_t *bs)
 		//if it's time to give orders
 		if(bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 3){
 			BotCTFOrders(bs);
-			//
 			bs->teamgiveorders_time = 0;
 		}
 		break;
@@ -2018,7 +1926,6 @@ void BotTeamAI(bot_state_t *bs)
 		//if it's time to give orders
 		if(bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 2){
 			Bot1FCTFOrders(bs);
-			//
 			bs->teamgiveorders_time = 0;
 		}
 		break;
