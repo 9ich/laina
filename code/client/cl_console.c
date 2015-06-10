@@ -635,6 +635,7 @@ void Con_DrawSolidConsole( float frac ) {
 //	qhandle_t		conShader;
 	int				currentColor;
 	vec4_t			color;
+	static vec4_t		versioncolour = {1.0f, 0.4f, 0.0f, 1.0f};
 
 	lines = cls.glconfig.vidHeight * frac;
 	if (lines <= 0)
@@ -656,16 +657,16 @@ void Con_DrawSolidConsole( float frac ) {
 		SCR_DrawPic( 0, 0, SCREEN_WIDTH, y, cls.consoleShader );
 	}
 
-	color[0] = 1;
-	color[1] = 0;
-	color[2] = 0;
-	color[3] = 1;
+	color[0] = 0.0f;
+	color[1] = 1.0f;
+	color[2] = 0.572f;
+	color[3] = 1.0f;
 	SCR_FillRect( 0, y, SCREEN_WIDTH, 2, color );
 
 
 	// draw the version number
 
-	re.SetColor( g_color_table[ColorIndex(COLOR_RED)] );
+	re.SetColor(versioncolour);
 
 	i = strlen( Q3_VERSION );
 
