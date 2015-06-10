@@ -501,10 +501,6 @@ void G_InitGame(int levelTime, int randomSeed, int restart)
 
 	G_Printf("-----------------------------------\n");
 
-	if(g_gametype.integer == GT_SINGLE_PLAYER || trap_Cvar_VariableIntegerValue("com_buildScript")){
-		G_ModelIndex(SP_PODIUM_MODEL);
-	}
-
 	if(trap_Cvar_VariableIntegerValue("bot_enable")){
 		BotAISetup(restart);
 		BotAILoadMap(restart);
@@ -1036,14 +1032,9 @@ void BeginIntermission(void)
 	}
 #else
 	// if single player game
-	if(g_gametype.integer == GT_SINGLE_PLAYER){
-		UpdateTournamentInfo();
-		SpawnModelsOnVictoryPads();
-	}
 #endif
 	// send the current scoring to all clients
 	SendScoreboardMessageToAllClients();
-
 }
 
 

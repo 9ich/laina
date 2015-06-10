@@ -1877,21 +1877,34 @@ static void CG_DrawWarmup(void)
 #endif
 		}
 	}else{
-		if(cgs.gametype == GT_FFA){
+		switch(cgs.gametype){
+		case GT_COOP:
+			s = "Co-op";
+			break;
+		case GT_SINGLE_PLAYER:
+			s = "Single Player";
+			break;
+		case GT_FFA:
 			s = "Free For All";
-		}else if(cgs.gametype == GT_TEAM){
+			break;
+		case GT_TEAM:
 			s = "Team Deathmatch";
-		}else if(cgs.gametype == GT_CTF){
+			break;
+		case GT_CTF:
 			s = "Capture the Flag";
+			break;
 #ifdef MISSIONPACK
-		}else if(cgs.gametype == GT_1FCTF){
+		case GT_1FCTF:
 			s = "One Flag CTF";
-		}else if(cgs.gametype == GT_OBELISK){
+			break;
+		case GT_OBELISK:
 			s = "Overload";
-		}else if(cgs.gametype == GT_HARVESTER){
+			break;
+		case GT_HARVESTER:
 			s = "Harvester";
+			break;
 #endif
-		}else{
+		default:
 			s = "";
 		}
 #ifdef MISSIONPACK

@@ -157,7 +157,6 @@ int serverStatusCount;
 
 static int noGameRestart = qfalse;
 
-extern void SV_BotFrame( int time );
 void CL_CheckForResend( void );
 void CL_ShowIP_f(void);
 void CL_ServerStatus_f(void);
@@ -255,8 +254,6 @@ void CL_Voip_f( void )
 		reason = "Speex not initialized";
 	else if (!clc.voipEnabled)
 		reason = "Server doesn't support VoIP";
-	else if (!clc.demoplaying && (Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER || Cvar_VariableValue("ui_singlePlayerActive")))
-		reason = "running in single-player mode";
 
 	if (reason != NULL) {
 		Com_Printf("VoIP: command ignored: %s\n", reason);

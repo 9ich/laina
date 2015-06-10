@@ -90,9 +90,10 @@ typedef struct campspot_s
 
 //FIXME: these are game specific
 typedef enum {
+	GT_COOP,
+	GT_SINGLE_PLAYER,
 	GT_FFA,				// free for all
 	GT_TOURNAMENT,		// one on one tournament
-	GT_SINGLE_PLAYER,	// single player tournament
 
 	//-- team games go after this --
 
