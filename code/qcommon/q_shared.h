@@ -1121,12 +1121,12 @@ typedef struct {
 // to predict player motion and actions
 // nothing outside of pmove should modify these, or some degree of prediction error
 // will occur
-
-// you can't add anything to this without modifying the code in msg.c
-
+//
 // playerState_t is a full superset of entityState_t as it is used by players,
 // so if a playerState_t is transmitted, the entityState_t can be fully derived
 // from it.
+//
+// any changes to playerState_t must be mirrored in msg.c:/playerStateFields.*=/
 typedef struct playerState_s {
 	int			commandTime;	// cmd->serverTime of last executed command
 	int			pm_type;
@@ -1266,7 +1266,8 @@ typedef struct {
 // Different eTypes may use the information in different ways
 // The messages are delta compressed, so it doesn't really matter if
 // the structure size is fairly large
-
+//
+// any changes to entityState_t must be mirrored in msg.c:/entityStateFields.*=/
 typedef struct entityState_s {
 	int		number;			// entity index
 	int		eType;			// entityType_t
