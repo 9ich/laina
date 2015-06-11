@@ -1155,6 +1155,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	int				persistantbits;
 	int				ammobits;
 	int				powerupbits;
+	int				doorKeybits;
 	int				numFields;
 	netField_t		*field;
 	int				*fromF, *toF;
@@ -1242,10 +1243,16 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 			powerupbits |= 1<<i;
 		}
 	}
+	doorKeybits = 0;
+	for (i=0; i<MAX_DOORKEYS; i++) {
+		if (to->doorKeys[i] != from->doorKeys[i]) {
+			doorKeybits |= 1<<i;
+		}
+	}
 
-	if (!statsbits && !persistantbits && !ammobits && !powerupbits) {
+	if (!statsbits && !persistantbits && !ammobits && !powerupbits && !doorKeybits) {
 		MSG_WriteBits( msg, 0, 1 );	// no change
-		oldsize += 4;
+		oldsize += 5;
 		return;
 	}
 	MSG_WriteBits( msg, 1, 1 );	// changed
@@ -1260,7 +1267,6 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
 
-
 	if ( persistantbits ) {
 		MSG_WriteBits( msg, 1, 1 );	// changed
 		MSG_WriteBits( msg, persistantbits, MAX_PERSISTANT );
@@ -1270,7 +1276,6 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	} else {
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
-
 
 	if ( ammobits ) {
 		MSG_WriteBits( msg, 1, 1 );	// changed
@@ -1282,13 +1287,22 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
 
-
 	if ( powerupbits ) {
 		MSG_WriteBits( msg, 1, 1 );	// changed
 		MSG_WriteBits( msg, powerupbits, MAX_POWERUPS );
 		for (i=0 ; i<MAX_POWERUPS ; i++)
 			if (powerupbits & (1<<i) )
 				MSG_WriteLong( msg, to->powerups[i] );
+	} else {
+		MSG_WriteBits( msg, 0, 1 );	// no change
+	}
+	
+	if ( doorKeybits ) {
+		MSG_WriteBits( msg, 1, 1 );	// changed
+		MSG_WriteBits( msg, doorKeybits, MAX_DOORKEYS );
+		for (i=0 ; i<MAX_DOORKEYS ; i++)
+			if (doorKeybits & (1<<i) )
+				MSG_WriteLong( msg, to->doorKeys[i] );
 	} else {
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
@@ -1424,6 +1438,17 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 			for (i=0 ; i<MAX_POWERUPS ; i++) {
 				if (bits & (1<<i) ) {
 					to->powerups[i] = MSG_ReadLong(msg);
+				}
+			}
+		}
+
+		// parse keys
+		if ( MSG_ReadBits( msg, 1 ) ) {
+			LOG("PS_DOORKEYS");
+			bits = MSG_ReadBits (msg, MAX_DOORKEYS);
+			for (i=0 ; i<MAX_DOORKEYS ; i++) {
+				if (bits & (1<<i) ) {
+					to->doorKeys[i] = MSG_ReadLong(msg);
 				}
 			}
 		}

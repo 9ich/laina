@@ -298,8 +298,15 @@ typedef enum {
 	PW_INVULNERABILITY,
 
 	PW_NUM_POWERUPS
-
 } powerup_t;
+
+typedef enum {
+	KEY_JADE,
+	KEY_RUBY,
+	KEY_SAPPHIRE,
+
+	KEY_NUMKEYS
+} doorKey_t;
 
 typedef enum {
 	HI_NONE,
@@ -638,7 +645,8 @@ typedef enum {
 	// EFX: rotate + bob
 	IT_PERSISTANT_POWERUP,
 	IT_TEAM,
-	IT_LIFE
+	IT_LIFE,
+	IT_KEY
 } itemType_t;
 
 #define MAX_ITEM_MODELS 4

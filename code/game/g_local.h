@@ -139,6 +139,7 @@ struct gentity_s {
 
 	int			pain_debounce_time;
 	int			fly_sound_debounce_time;	// wind tunnel
+	int			keyDebounceTime;		// "you need the key"
 	int			last_move_time;
 
 	int			health;
@@ -159,6 +160,8 @@ struct gentity_s {
 	gentity_t	*activator;
 	gentity_t	*teamchain;		// next entity in team
 	gentity_t	*teammaster;	// master of the team
+
+	int			doorKey;	// bg_itemlist index
 
 #ifdef MISSIONPACK
 	int			kamikazeTime;

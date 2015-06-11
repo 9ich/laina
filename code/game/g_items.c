@@ -43,6 +43,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	RESPAWN_HOLDABLE	60
 #define	RESPAWN_MEGAHEALTH	35//120
 #define	RESPAWN_POWERUP		120
+#define	RESPAWN_KEY		-1
 
 
 //======================================================================
@@ -302,6 +303,12 @@ int Pickup_Life(gentity_t *ent, gentity_t *other)
 	return RESPAWN_HEALTH;
 }
 
+int Pickup_Key(gentity_t *ent, gentity_t *other)
+{
+	other->client->ps.doorKeys[ent->item->giTag]++;
+	return RESPAWN_KEY;
+}
+
 int Pickup_Armor(gentity_t *ent, gentity_t *other)
 {
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
@@ -434,6 +441,9 @@ void Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace)
 	case IT_POWERUP:
 		respawn = Pickup_Powerup(ent, other);
 		predict = qfalse;
+		break;
+	case IT_KEY:
+		respawn = Pickup_Key(ent, other);
 		break;
 #ifdef MISSIONPACK
 	case IT_PERSISTANT_POWERUP:

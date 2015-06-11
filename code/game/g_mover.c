@@ -872,7 +872,26 @@ Touch_DoorTrigger
 */
 void Touch_DoorTrigger(gentity_t *ent, gentity_t *other, trace_t *trace)
 {
-	if(other->client && other->client->sess.sessionTeam == TEAM_SPECTATOR){
+	gitem_t *key;
+	int keytype;
+
+	if(other->client != NULL && ent->doorKey > 0 && ent->doorKey < bg_numItems){
+		key = &bg_itemlist[ent->doorKey];
+		keytype = key->giTag;
+		if(other->client->ps.doorKeys[keytype] <= 0){
+			if(level.time > other->keyDebounceTime){
+				char s[128];
+
+				Com_sprintf(s, sizeof s, "You need the %s", key->pickup_name);
+				trap_SendServerCommand(other-g_entities, va("cp \"%s\"", s));
+				other->keyDebounceTime = level.time + 3000;
+			}
+			return;
+		}
+		other->client->ps.doorKeys[ent->doorKey]--;
+		ent->doorKey = -1;	// permanently unlock door
+	}
+	if(other->client != NULL && other->client->sess.sessionTeam == TEAM_SPECTATOR){
 		// if the door is not open and not opening
 		if(ent->parent->moverState != MOVER_1TO2 &&
 		        ent->parent->moverState != MOVER_POS2){
@@ -929,6 +948,7 @@ void Think_SpawnNewDoorTrigger(gentity_t *ent)
 	// create a trigger with this size
 	other = G_Spawn();
 	other->classname = "door_trigger";
+	other->doorKey = ent->doorKey;
 	VectorCopy(mins, other->r.mins);
 	VectorCopy(maxs, other->r.maxs);
 	other->parent = ent;
@@ -952,6 +972,7 @@ TOGGLE		wait in both the start and end states for a trigger event.
 START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
 NOMONSTER	monsters will not trigger this door
 
+"key"	the item classname that must be in the activating player's inventory to unlock this door, such as as key
 "model2"	.md3 model to also draw
 "angle"		determines the opening direction
 "targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
@@ -965,10 +986,12 @@ NOMONSTER	monsters will not trigger this door
 */
 void SP_func_door(gentity_t *ent)
 {
-	vec3_t	abs_movedir;
-	float	distance;
-	vec3_t	size;
-	float	lip;
+	vec3_t abs_movedir;
+	float distance;
+	vec3_t size;
+	float lip;
+	char *keyclass;
+	int i;
 
 	ent->sound1to2 = ent->sound2to1 = G_SoundIndex("sound/movers/doors/dr1_strt.wav");
 	ent->soundPos1 = ent->soundPos2 = G_SoundIndex("sound/movers/doors/dr1_end.wav");
@@ -989,6 +1012,18 @@ void SP_func_door(gentity_t *ent)
 
 	// default damage of 2 points
 	G_SpawnInt("dmg", "2", &ent->damage);
+
+	// pick the key itemnum
+	ent->doorKey = -1;
+	G_SpawnString("key", "", &keyclass);
+	for(i = 0; i < bg_numItems; i++){
+		if(Q_stricmp(bg_itemlist[i].classname, keyclass) == 0){
+			ent->doorKey = i;
+			break;
+		}
+	}
+	if(ent->doorKey == -1 && Q_stricmp(keyclass, "") == 0)
+		G_Printf("%s: bad item classname for door key\n", keyclass);
 
 	// first position at start
 	VectorCopy(ent->s.origin, ent->pos1);

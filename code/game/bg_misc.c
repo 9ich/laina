@@ -62,14 +62,14 @@ gitem_t	bg_itemlist[] = {
 	//
 	// collectables
 	//
-	/*QUAKED item_token (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-	*/
+
+	// QUAKED item_token (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	{
 		"item_token",
 		"sound/items/token",
 		{
 			"models/collectables/token",
-			NULL, NULL
+			NULL, NULL, NULL
 		},
 		/* icon */		"icons/token",
 		/* pickup */	"Token",
@@ -80,14 +80,13 @@ gitem_t	bg_itemlist[] = {
 		/* sounds */ ""
 	},
 
-	/*QUAKED item_token_large (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-	*/
+	// QUAKED item_token_large (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	{
 		"item_token_large",
 		"sound/items/token",
 		{
 			"models/collectables/token",
-			NULL, NULL
+			NULL, NULL, NULL
 		},
 		/* icon */		"icons/token_large",
 		/* pickup */	"Big Token",
@@ -98,14 +97,13 @@ gitem_t	bg_itemlist[] = {
 		/* sounds */ ""
 	},
 
-	/*QUAKED item_life (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-	*/
+	// QUAKED item_life (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	{
 		"item_life",
 		"sound/items/life",
 		{
 			"models/collectables/life",
-			NULL, NULL
+			NULL, NULL, NULL
 		},
 		/* icon */		"icons/life",
 		/* pickup */	"Extra Life",
@@ -116,7 +114,57 @@ gitem_t	bg_itemlist[] = {
 		/* sounds */ ""
 	},
 
-	
+	// QUAKED item_key_jade (1 1 1) (-6 -6 -6) (6 6 6) suspended
+	{
+		"item_key_jade",
+		"sound/items/key_jade",
+		{
+			"models/items/key_jade",
+			NULL, NULL, NULL
+		},
+		"icons/key_jade",	// icon	
+		"Jade Key",		// pickup
+		1,
+		IT_KEY,
+		KEY_JADE,
+		"",				// precache
+		""				// sounds
+	},
+
+	// QUAKED item_key_ruby (1 1 1) (-6 -6 -6) (6 6 6) suspended
+	{
+		"item_key_ruby",
+		"sound/items/key_ruby",
+		{
+			"models/items/key_ruby",
+			NULL, NULL, NULL
+		},
+		"icons/key_ruby",	// icon	
+		"Ruby Key",		// pickup
+		1,
+		IT_KEY,
+		KEY_RUBY,
+		"",				// precache
+		""				// sounds
+	},
+
+	// QUAKED item_key_sapphire (1 1 1) (-6 -6 -6) (6 6 6) suspended
+	{
+		"item_key_sapphire",
+		"sound/items/key_sapphire",
+		{
+			"models/items/key_sapphire",
+			NULL, NULL, NULL
+		},
+		"icons/key_sapphire",	// icon	
+		"Sapphire Key",		// pickup
+		1,
+		IT_KEY,
+		KEY_SAPPHIRE,
+		"",				// precache
+		""				// sounds
+	},
+
 	//
 	// WEAPONS
 	//
@@ -300,6 +348,9 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 		return qtrue;
 
 	case IT_POWERUP:
+		return qtrue;
+
+	case IT_KEY:
 		return qtrue;
 
 #ifdef MISSIONPACK
