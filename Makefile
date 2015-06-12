@@ -4,6 +4,10 @@
 # GNU Make required
 #
 
+ifndef SHELL
+  SHELL=sh
+endif
+
 COMPILE_PLATFORM=$(shell uname | sed s/_.*// | tr [:upper:] [:lower:] | sed s:/:_:g | sed s/32// | sed s/mingw/windows/)
 
 COMPILE_ARCH=$(shell uname -m | sed s/i.86/x86/ | sed s/\-pc//)
