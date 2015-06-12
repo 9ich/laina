@@ -68,7 +68,7 @@ gitem_t	bg_itemlist[] = {
 		"item_token",
 		"sound/items/token",
 		{
-			"models/collectables/token",
+			"models/items/token",
 			NULL, NULL, NULL
 		},
 		/* icon */		"icons/token",
@@ -85,7 +85,7 @@ gitem_t	bg_itemlist[] = {
 		"item_token_large",
 		"sound/items/token",
 		{
-			"models/collectables/token",
+			"models/items/token",
 			NULL, NULL, NULL
 		},
 		/* icon */		"icons/token_large",
@@ -102,7 +102,7 @@ gitem_t	bg_itemlist[] = {
 		"item_life",
 		"sound/items/life",
 		{
-			"models/collectables/life",
+			"models/items/life",
 			NULL, NULL, NULL
 		},
 		/* icon */		"icons/life",
