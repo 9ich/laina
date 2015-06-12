@@ -868,8 +868,8 @@ static void CG_RegisterGraphics(void)
 	// powerup shaders
 	cgs.media.hastePuffShader = trap_R_RegisterShader("hasteSmokePuff");
 
-	cgs.media.lifeModel = trap_R_RegisterModel("models/collectables/life");
-	cgs.media.tokenModel = trap_R_RegisterModel("models/collectables/token");
+	cgs.media.lifeModel = trap_R_RegisterModel("models/items/life");
+	cgs.media.tokenModel = trap_R_RegisterModel("models/items/token");
 
 	cgs.media.smoke2 = trap_R_RegisterModel("models/weapons2/shells/s_shell.md3");
 
