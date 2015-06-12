@@ -27,10 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // A user mod should never modify this file
 
 #ifdef STANDALONE
-  #define PRODUCT_NAME			"iofoo3"
+  #define PRODUCT_NAME			"bunny"
   #define BASEGAME			"foobar"
-  #define CLIENT_WINDOW_TITLE     	"changeme"
-  #define CLIENT_WINDOW_MIN_TITLE 	"changeme2"
+  #define CLIENT_WINDOW_TITLE     	"bunny"
+  #define CLIENT_WINDOW_MIN_TITLE 	"bunny?"
   #define HOMEPATH_NAME_UNIX		".foo"
   #define HOMEPATH_NAME_WIN		"FooBar"
   #define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
@@ -59,7 +59,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BASETA				"missionpack"
 
 #ifndef PRODUCT_VERSION
-  #define PRODUCT_VERSION "1.36"
+  #define PRODUCT_VERSION "0"
 #endif
 
 #define Q3_VERSION PRODUCT_NAME " " PRODUCT_VERSION

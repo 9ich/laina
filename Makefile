@@ -100,7 +100,7 @@ endif
 export CROSS_COMPILING
 
 ifndef VERSION
-VERSION=1.36
+VERSION=0
 endif
 
 ifndef CLIENTBIN
@@ -294,17 +294,6 @@ ifneq ($(BUILD_CLIENT),0)
     endif
   endif
 endif
-
-# Add git version info
-USE_GIT=
-ifeq ($(wildcard .git),.git)
-  GIT_REV=$(shell git show -s --pretty=format:%h-%ad --date=short)
-  ifneq ($(GIT_REV),)
-    VERSION:=$(VERSION)_GIT_$(GIT_REV)
-    USE_GIT=1
-  endif
-endif
-
 
 #############################################################################
 # SETUP AND BUILD -- LINUX
@@ -1250,12 +1239,6 @@ release:
 	@$(MAKE) targets B=$(BR) CFLAGS="$(CFLAGS) $(BASE_CFLAGS) $(DEPEND_CFLAGS)" \
 	  OPTFLAGS="-DNDEBUG $(OPTFLAGS)" OPTVMFLAGS="-DNDEBUG $(OPTVMFLAGS)" \
 	  CLIENT_CFLAGS="$(CLIENT_CFLAGS)" SERVER_CFLAGS="$(SERVER_CFLAGS)" V=$(V)
-
-ifneq ($(call bin_path, tput),)
-  TERM_COLUMNS=$(shell echo $$((`tput cols`-4)))
-else
-  TERM_COLUMNS=76
-endif
 
 define ADD_COPY_TARGET
 TARGETS += $2
@@ -2700,14 +2683,6 @@ $(B)/ded/%.o: $(SYSDIR)/%.rc
 
 $(B)/ded/%.o: $(NDIR)/%.c
 	$(DO_DED_CC)
-
-# Extra dependencies to ensure the git version is incorporated
-ifeq ($(USE_GIT),1)
-  $(B)/client/cl_console.o : .git/index
-  $(B)/client/common.o : .git/index
-  $(B)/ded/common.o : .git/index
-endif
-
 
 #############################################################################
 ## GAME MODULE RULES
