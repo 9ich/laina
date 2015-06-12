@@ -221,6 +221,7 @@ typedef struct {
 
 typedef struct {
 	menucommon_s generic;
+	float			*focuscolor;
 } menuaction_s;
 
 typedef struct {
@@ -244,6 +245,7 @@ typedef struct {
 	char			*string;
 	int				style;
 	float			*color;
+	float			*focuscolor;
 } menutext_s;
 
 extern void			Menu_Cache(void);
@@ -267,6 +269,7 @@ extern sfxHandle_t	menu_buzz_sound;
 extern sfxHandle_t	menu_null_sound;
 extern sfxHandle_t	weaponChangeSound;
 extern vec4_t		menu_text_color;
+extern vec4_t		menu_highlight_color;
 extern vec4_t		menu_grayed_color;
 extern vec4_t		menu_dark_color;
 extern vec4_t		menu_highlight_color;

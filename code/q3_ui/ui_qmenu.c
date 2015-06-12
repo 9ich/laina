@@ -21,9 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //
 /**********************************************************************
-	UI_QMENU.C
-
-	Quake's menu framework system.
+	Quake's menu framework.
 **********************************************************************/
 #include "ui_local.h"
 
@@ -39,6 +37,7 @@ static qhandle_t	sliderButton_0;
 static qhandle_t	sliderButton_1;
 
 vec4_t menu_text_color	    = {1.0f, 1.0f, 1.0f, 1.0f};
+vec4_t menu_highlight_color	    = {1.0f, 0.5f, 0.0f, 1.0f};
 vec4_t menu_dim_color       = {0.0f, 0.0f, 0.0f, 0.75f};
 vec4_t color_black	    = {0.00f, 0.00f, 0.00f, 1.00f};
 vec4_t color_white	    = {1.00f, 1.00f, 1.00f, 1.00f};
@@ -226,8 +225,12 @@ static void PText_Draw(menutext_s *t)
 		}else{
 			style |= UI_INVERSE;
 		}
+	}else if(t->generic.flags & QMF_HIGHLIGHT_IF_FOCUS){
+		if(Menu_ItemAtCursor(t->generic.parent) == t){
+			style |= UI_HIGHLIGHT;
+			color = t->focuscolor;
+		}
 	}
-
 	UI_DrawProportionalString(x, y, t->string, style, color);
 }
 
@@ -385,6 +388,11 @@ static void Action_Draw(menuaction_s *a)
 	}else if(a->generic.flags & QMF_BLINK){
 		style = UI_BLINK;
 		color = text_color_highlight;
+	}else if((a->generic.flags & QMF_HIGHLIGHT) || ((a->generic.flags & QMF_HIGHLIGHT_IF_FOCUS) && (Menu_ItemAtCursor(a->generic.parent) == a))){
+		if(a->focuscolor){
+			style = UI_HIGHLIGHT;
+			color = a->focuscolor;
+		}
 	}
 
 	x = a->generic.x;

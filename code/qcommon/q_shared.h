@@ -310,6 +310,7 @@ typedef enum {
 #define UI_BLINK		0x00001000
 #define UI_INVERSE		0x00002000
 #define UI_PULSE		0x00004000
+#define UI_HIGHLIGHT		0x00008000
 
 #if !defined(NDEBUG) && !defined(BSPC)
 	#define HUNK_DEBUG
