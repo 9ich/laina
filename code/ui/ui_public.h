@@ -163,6 +163,7 @@ typedef enum {
 //	void	UI_Shutdown( void );
 
 	UI_KEY_EVENT,
+	UI_CHAR_EVENT,
 //	void	UI_KeyEvent( int key );
 
 	UI_MOUSE_EVENT,

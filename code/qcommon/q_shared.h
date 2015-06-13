@@ -268,7 +268,7 @@ typedef enum {
 #define PROP_GAP_WIDTH			3
 #define PROP_SPACE_WIDTH		8
 #define PROP_HEIGHT				27
-#define PROP_SMALL_SIZE_SCALE	0.75
+#define PROP_SMALL_SIZE_SCALE	0.5
 
 #define BLINK_DIVISOR			200
 #define PULSE_DIVISOR			75

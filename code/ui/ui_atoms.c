@@ -19,15 +19,23 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
-/**********************************************************************
-	UI_ATOMS.C
 
-	User interface building blocks and support functions.
-**********************************************************************/
+/*
+User interface building blocks and support functions.
+Coordinates are 640*480 virtual values
+*/
+
 #include "ui_local.h"
 
-qboolean		m_entersound;		// after a frame, so caching won't disrupt the sound
+uiStatic_t uis;
+
+char *Argv(int arg)
+{
+	static char buffer[MAX_STRING_CHARS];
+
+	trap_Argv(arg, buffer, sizeof(buffer));
+	return buffer;
+}
 
 void QDECL Com_Error(int level, const char *error, ...)
 {
@@ -53,14 +61,14 @@ void QDECL Com_Printf(const char *msg, ...)
 	trap_Print(text);
 }
 
-qboolean newUI = qfalse;
+char *UI_Cvar_VariableString(const char *var_name)
+{
+	static char buffer[MAX_STRING_CHARS];
 
+	trap_Cvar_VariableStringBuffer(var_name, buffer, sizeof(buffer));
+	return buffer;
+}
 
-/*
-=================
-UI_ClampCvar
-=================
-*/
 float UI_ClampCvar(float min, float max, float value)
 {
 	if(value < min) return min;
@@ -68,392 +76,712 @@ float UI_ClampCvar(float min, float max, float value)
 	return value;
 }
 
-/*
-=================
-UI_StartDemoLoop
-=================
-*/
-void UI_StartDemoLoop(void)
+void startdemoloop(void)
 {
 	trap_Cmd_ExecuteText(EXEC_APPEND, "d1\n");
 }
 
-
-#ifndef MISSIONPACK
-static void NeedCDAction(qboolean result)
+void lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t)
 {
-	if(!result){
-		trap_Cmd_ExecuteText(EXEC_APPEND, "quit\n");
-	}
-}
-#endif // MISSIONPACK
+	int i;
 
-#ifndef MISSIONPACK
-static void NeedCDKeyAction(qboolean result)
-{
-	if(!result){
-		trap_Cmd_ExecuteText(EXEC_APPEND, "quit\n");
-	}
-}
-#endif // MISSIONPACK
-
-char *UI_Argv(int arg)
-{
-	static char	buffer[MAX_STRING_CHARS];
-
-	trap_Argv(arg, buffer, sizeof(buffer));
-
-	return buffer;
-}
-
-
-char *UI_Cvar_VariableString(const char *var_name)
-{
-	static char	buffer[MAX_STRING_CHARS];
-
-	trap_Cvar_VariableStringBuffer(var_name, buffer, sizeof(buffer));
-
-	return buffer;
-}
-
-
-
-void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame)
-{
-	trap_Cvar_Set("ui_scoreAccuracy",     va("%i%%", newInfo->accuracy));
-	trap_Cvar_Set("ui_scoreImpressives",	va("%i", newInfo->impressives));
-	trap_Cvar_Set("ui_scoreExcellents", 	va("%i", newInfo->excellents));
-	trap_Cvar_Set("ui_scoreDefends", 			va("%i", newInfo->defends));
-	trap_Cvar_Set("ui_scoreAssists", 			va("%i", newInfo->assists));
-	trap_Cvar_Set("ui_scoreGauntlets", 		va("%i", newInfo->gauntlets));
-	trap_Cvar_Set("ui_scoreScore", 				va("%i", newInfo->score));
-	trap_Cvar_Set("ui_scorePerfect",	 		va("%i", newInfo->perfects));
-	trap_Cvar_Set("ui_scoreTeam",					va("%i to %i", newInfo->redScore, newInfo->blueScore));
-	trap_Cvar_Set("ui_scoreBase",					va("%i", newInfo->baseScore));
-	trap_Cvar_Set("ui_scoreTimeBonus",		va("%i", newInfo->timeBonus));
-	trap_Cvar_Set("ui_scoreSkillBonus",		va("%i", newInfo->skillBonus));
-	trap_Cvar_Set("ui_scoreShutoutBonus",	va("%i", newInfo->shutoutBonus));
-	trap_Cvar_Set("ui_scoreTime",					va("%02i:%02i", newInfo->time / 60, newInfo->time % 60));
-	trap_Cvar_Set("ui_scoreCaptures",		va("%i", newInfo->captures));
-	if(postGame){
-		trap_Cvar_Set("ui_scoreAccuracy2",     va("%i%%", newInfo->accuracy));
-		trap_Cvar_Set("ui_scoreImpressives2",	va("%i", newInfo->impressives));
-		trap_Cvar_Set("ui_scoreExcellents2", 	va("%i", newInfo->excellents));
-		trap_Cvar_Set("ui_scoreDefends2", 			va("%i", newInfo->defends));
-		trap_Cvar_Set("ui_scoreAssists2", 			va("%i", newInfo->assists));
-		trap_Cvar_Set("ui_scoreGauntlets2", 		va("%i", newInfo->gauntlets));
-		trap_Cvar_Set("ui_scoreScore2", 				va("%i", newInfo->score));
-		trap_Cvar_Set("ui_scorePerfect2",	 		va("%i", newInfo->perfects));
-		trap_Cvar_Set("ui_scoreTeam2",					va("%i to %i", newInfo->redScore, newInfo->blueScore));
-		trap_Cvar_Set("ui_scoreBase2",					va("%i", newInfo->baseScore));
-		trap_Cvar_Set("ui_scoreTimeBonus2",		va("%i", newInfo->timeBonus));
-		trap_Cvar_Set("ui_scoreSkillBonus2",		va("%i", newInfo->skillBonus));
-		trap_Cvar_Set("ui_scoreShutoutBonus2",	va("%i", newInfo->shutoutBonus));
-		trap_Cvar_Set("ui_scoreTime2",					va("%02i:%02i", newInfo->time / 60, newInfo->time % 60));
-		trap_Cvar_Set("ui_scoreCaptures2",		va("%i", newInfo->captures));
+	// lerp and clamp each component
+	for(i=0; i<4; i++){
+		c[i] = a[i] + t*(b[i]-a[i]);
+		if(c[i] < 0)
+			c[i] = 0;
+		else if(c[i] > 1.0)
+			c[i] = 1.0;
 	}
 }
 
-void UI_LoadBestScores(const char *map, int game)
-{
-	char		fileName[MAX_QPATH];
-	fileHandle_t f;
-	postGameInfo_t newInfo;
-	int protocol, protocolLegacy;
+// proportional font
+static int	propMap[128][3] = {
+	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 
-	memset(&newInfo, 0, sizeof(postGameInfo_t));
-	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
-	if(trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0){
-		int size = 0;
-		trap_FS_Read(&size, sizeof(int), f);
-		if(size == sizeof(postGameInfo_t)){
-			trap_FS_Read(&newInfo, sizeof(postGameInfo_t), f);
+	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+
+	{0, 0, PROP_SPACE_WIDTH},		// SPACE
+	{11, 122, 7},	// !
+	{154, 181, 14},	// "
+	{55, 122, 17},	// #
+	{79, 122, 18},	// $
+	{101, 122, 23},	// %
+	{153, 122, 18},	// &
+	{9, 93, 7},		// '
+	{207, 122, 8},	// (
+	{230, 122, 9},	// )
+	{177, 122, 18},	// *
+	{30, 152, 18},	// +
+	{85, 181, 7},	// ,
+	{34, 93, 11},	// -
+	{110, 181, 6},	// .
+	{130, 152, 14},	// /
+
+	{22, 64, 17},	// 0
+	{41, 64, 12},	// 1
+	{58, 64, 17},	// 2
+	{78, 64, 18},	// 3
+	{98, 64, 19},	// 4
+	{120, 64, 18},	// 5
+	{141, 64, 18},	// 6
+	{204, 64, 16},	// 7
+	{162, 64, 17},	// 8
+	{182, 64, 18},	// 9
+	{59, 181, 7},	// :
+	{35,181, 7},	// ;
+	{203, 152, 14},	// <
+	{56, 93, 14},	// =
+	{228, 152, 14},	// >
+	{177, 181, 18},	// ?
+
+	{28, 122, 22},	// @
+	{5, 4, 18},		// A
+	{27, 4, 18},	// B
+	{48, 4, 18},	// C
+	{69, 4, 17},	// D
+	{90, 4, 13},	// E
+	{106, 4, 13},	// F
+	{121, 4, 18},	// G
+	{143, 4, 17},	// H
+	{164, 4, 8},	// I
+	{175, 4, 16},	// J
+	{195, 4, 18},	// K
+	{216, 4, 12},	// L
+	{230, 4, 23},	// M
+	{6, 34, 18},	// N
+	{27, 34, 18},	// O
+
+	{48, 34, 18},	// P
+	{68, 34, 18},	// Q
+	{90, 34, 17},	// R
+	{110, 34, 18},	// S
+	{130, 34, 14},	// T
+	{146, 34, 18},	// U
+	{166, 34, 19},	// V
+	{185, 34, 29},	// W
+	{215, 34, 18},	// X
+	{234, 34, 18},	// Y
+	{5, 64, 14},	// Z
+	{60, 152, 7},	// [
+	{106, 151, 13},	// '\'
+	{83, 152, 7},	// ]
+	{128, 122, 17},	// ^
+	{4, 152, 21},	// _
+
+	{134, 181, 5},	// '
+	{5, 4, 18},		// A
+	{27, 4, 18},	// B
+	{48, 4, 18},	// C
+	{69, 4, 17},	// D
+	{90, 4, 13},	// E
+	{106, 4, 13},	// F
+	{121, 4, 18},	// G
+	{143, 4, 17},	// H
+	{164, 4, 8},	// I
+	{175, 4, 16},	// J
+	{195, 4, 18},	// K
+	{216, 4, 12},	// L
+	{230, 4, 23},	// M
+	{6, 34, 18},	// N
+	{27, 34, 18},	// O
+
+	{48, 34, 18},	// P
+	{68, 34, 18},	// Q
+	{90, 34, 17},	// R
+	{110, 34, 18},	// S
+	{130, 34, 14},	// T
+	{146, 34, 18},	// U
+	{166, 34, 19},	// V
+	{185, 34, 29},	// W
+	{215, 34, 18},	// X
+	{234, 34, 18},	// Y
+	{5, 64, 14},	// Z
+	{153, 152, 13},	// {
+	{11, 181, 5},	// |
+	{180, 152, 13},	// }
+	{79, 93, 17},	// ~
+	{0, 0, -1}		// DEL
+};
+
+static int propMapB[26][3] = {
+	{11, 12, 33},
+	{49, 12, 31},
+	{85, 12, 31},
+	{120, 12, 30},
+	{156, 12, 21},
+	{183, 12, 21},
+	{207, 12, 32},
+
+	{13, 55, 30},
+	{49, 55, 13},
+	{66, 55, 29},
+	{101, 55, 31},
+	{135, 55, 21},
+	{158, 55, 40},
+	{204, 55, 32},
+
+	{12, 97, 31},
+	{48, 97, 31},
+	{82, 97, 30},
+	{118, 97, 30},
+	{153, 97, 30},
+	{185, 97, 25},
+	{213, 97, 30},
+
+	{11, 139, 32},
+	{42, 139, 51},
+	{93, 139, 32},
+	{126, 139, 31},
+	{158, 139, 25},
+};
+
+#define PROPB_GAP_WIDTH		4
+#define PROPB_SPACE_WIDTH	12
+#define PROPB_HEIGHT		36
+
+static void drawbannerstring2(int x, int y, const char *str, vec4_t color)
+{
+	const char *s;
+	unsigned char	ch;
+	float	ax;
+	float	ay;
+	float	aw;
+	float	ah;
+	float	frow;
+	float	fcol;
+	float	fwidth;
+	float	fheight;
+
+	// draw the colored text
+	trap_R_SetColor(color);
+
+	ax = x * uis.xscale + uis.bias;
+	ay = y * uis.yscale;
+
+	s = str;
+	while(*s){
+		ch = *s & 127;
+		if(ch == ' '){
+			ax += ((float)PROPB_SPACE_WIDTH + (float)PROPB_GAP_WIDTH)* uis.xscale;
+		}else if(ch >= 'A' && ch <= 'Z'){
+			ch -= 'A';
+			fcol = (float)propMapB[ch][0] / 256.0f;
+			frow = (float)propMapB[ch][1] / 256.0f;
+			fwidth = (float)propMapB[ch][2] / 256.0f;
+			fheight = (float)PROPB_HEIGHT / 256.0f;
+			aw = (float)propMapB[ch][2] * uis.xscale;
+			ah = (float)PROPB_HEIGHT * uis.yscale;
+			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, uis.charsetPropB);
+			ax += (aw + (float)PROPB_GAP_WIDTH * uis.xscale);
 		}
-		trap_FS_FCloseFile(f);
+		s++;
 	}
-	UI_SetBestScores(&newInfo, qfalse);
 
-	uiInfo.demoAvailable = qfalse;
-
-	protocolLegacy = trap_Cvar_VariableValue("com_legacyprotocol");
-	protocol = trap_Cvar_VariableValue("com_protocol");
-
-	if(!protocol)
-		protocol = trap_Cvar_VariableValue("protocol");
-	if(protocolLegacy == protocol)
-		protocolLegacy = 0;
-
-	Com_sprintf(fileName, MAX_QPATH, "demos/%s_%d.%s%d", map, game, DEMOEXT, protocol);
-	if(trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0){
-		uiInfo.demoAvailable = qtrue;
-		trap_FS_FCloseFile(f);
-	}else if(protocolLegacy > 0){
-		Com_sprintf(fileName, MAX_QPATH, "demos/%s_%d.%s%d", map, game, DEMOEXT, protocolLegacy);
-		if(trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0){
-			uiInfo.demoAvailable = qtrue;
-			trap_FS_FCloseFile(f);
-		}
-	}
+	trap_R_SetColor(NULL);
 }
 
 /*
-===============
-UI_ClearScores
-===============
+Find the width of the drawn text.
 */
-void UI_ClearScores(void)
+void drawbannerstring(int x, int y, const char *str, int style, vec4_t color)
 {
-	char	gameList[4096];
-	char *gameFile;
-	int		i, len, count, size;
-	fileHandle_t f;
-	postGameInfo_t newInfo;
+	const char *s;
+	int ch;
+	int width;
+	vec4_t drawcolor;
 
-	count = trap_FS_GetFileList("games", "game", gameList, sizeof(gameList));
+	s = str;
+	width = 0;
+	while(*s){
+		ch = *s;
+		if(ch == ' '){
+			width += PROPB_SPACE_WIDTH;
+		}else if(ch >= 'A' && ch <= 'Z'){
+			width += propMapB[ch - 'A'][2] + PROPB_GAP_WIDTH;
+		}
+		s++;
+	}
+	width -= PROPB_GAP_WIDTH;
 
-	size = sizeof(postGameInfo_t);
-	memset(&newInfo, 0, size);
+	switch(style & UI_FORMATMASK){
+	case UI_CENTER:
+		x -= width / 2;
+		break;
 
-	if(count > 0){
-		gameFile = gameList;
-		for(i = 0; i < count; i++){
-			len = strlen(gameFile);
-			if(trap_FS_FOpenFile(va("games/%s",gameFile), &f, FS_WRITE) >= 0){
-				trap_FS_Write(&size, sizeof(int), f);
-				trap_FS_Write(&newInfo, size, f);
-				trap_FS_FCloseFile(f);
+	case UI_RIGHT:
+		x -= width;
+		break;
+
+	case UI_LEFT:
+	default:
+		break;
+	}
+
+	if(style & UI_DROPSHADOW){
+		drawcolor[0] = drawcolor[1] = drawcolor[2] = 0;
+		drawcolor[3] = color[3];
+		drawbannerstring2(x+2, y+2, str, drawcolor);
+	}
+
+	drawbannerstring2(x, y, str, color);
+}
+
+/*
+Sliceend=-1 means up to the terminating \0.
+*/
+int propstrwidth(const char *str, int slicebegin, int sliceend)
+{
+	int ch, charWidth, width, i;
+
+	width = 0;
+	for(i = slicebegin; i < sliceend || (sliceend == -1 && str[i] != '\0'); i++){
+		ch = str[i] & 127;
+		charWidth = propMap[ch][2];
+		if(charWidth != -1){
+			width += charWidth;
+			width += PROP_GAP_WIDTH;
+		}
+	}
+	width -= PROP_GAP_WIDTH;
+	return width;
+}
+
+static void drawpropstr2(int x, int y, const char *str, vec4_t color, float sizeScale, qhandle_t charset)
+{
+	const char *s;
+	unsigned char	ch;
+	float	ax, ay, aw, ah;
+	float	frow, fcol, fwidth, fheight;
+
+	// draw the colored text
+	trap_R_SetColor(color);
+
+	ax = x * uis.xscale + uis.bias;
+	ay = y * uis.yscale;
+	aw = 0;
+
+	s = str;
+	while(*s){
+		ch = *s & 127;
+		if(ch == ' '){
+			aw = (float)PROP_SPACE_WIDTH * uis.xscale * sizeScale;
+		}else if(propMap[ch][2] != -1){
+			fcol = (float)propMap[ch][0] / 256.0f;
+			frow = (float)propMap[ch][1] / 256.0f;
+			fwidth = (float)propMap[ch][2] / 256.0f;
+			fheight = (float)PROP_HEIGHT / 256.0f;
+			aw = (float)propMap[ch][2] * uis.xscale * sizeScale;
+			ah = (float)PROP_HEIGHT * uis.yscale * sizeScale;
+			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, charset);
+		}
+		ax += (aw + (float)PROP_GAP_WIDTH * uis.xscale * sizeScale);
+		s++;
+	}
+	trap_R_SetColor(NULL);
+}
+
+float propstrsizescale(int style)
+{
+	if(style & UI_SMALLFONT){
+		return PROP_SMALL_SIZE_SCALE;
+	}
+	return 1.00;
+}
+
+void drawpropstr(int x, int y, const char *str, int style, vec4_t color)
+{
+	vec4_t	drawcolor;
+	int		width;
+	float	sizeScale;
+
+	sizeScale = propstrsizescale(style);
+
+	switch(style & UI_FORMATMASK){
+	case UI_CENTER:
+		width = propstrwidth(str, 0, -1) * sizeScale;
+		x -= width / 2;
+		break;
+	case UI_RIGHT:
+		width = propstrwidth(str, 0, -1) * sizeScale;
+		x -= width;
+		break;
+	case UI_LEFT:
+	default:
+		break;
+	}
+	if(style & UI_DROPSHADOW){
+		drawcolor[0] = drawcolor[1] = drawcolor[2] = 0;
+		drawcolor[3] = color[3];
+		drawpropstr2(x+2, y+2, str, drawcolor, sizeScale, uis.charsetProp);
+	}
+	if(style & UI_INVERSE){
+		drawcolor[0] = color[0] * 0.7;
+		drawcolor[1] = color[1] * 0.7;
+		drawcolor[2] = color[2] * 0.7;
+		drawcolor[3] = color[3];
+		drawpropstr2(x, y, str, drawcolor, sizeScale, uis.charsetProp);
+		return;
+	}
+	if(style & UI_PULSE){
+		drawcolor[0] = color[0] * 0.7;
+		drawcolor[1] = color[1] * 0.7;
+		drawcolor[2] = color[2] * 0.7;
+		drawcolor[3] = color[3];
+		drawpropstr2(x, y, str, color, sizeScale, uis.charsetProp);
+
+		drawcolor[0] = color[0];
+		drawcolor[1] = color[1];
+		drawcolor[2] = color[2];
+		drawcolor[3] = 0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR);
+		drawpropstr2(x, y, str, drawcolor, sizeScale, uis.charsetPropGlow);
+		return;
+	}
+	drawpropstr2(x, y, str, color, sizeScale, uis.charsetProp);
+}
+
+void drawpropstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, vec4_t color)
+{
+	int width;
+	char *s1,*s2,*s3;
+	char c_bcp;
+	char buf[1024];
+	float sizeScale;
+
+	if(!str || str[0]=='\0')
+		return;
+
+	sizeScale = propstrsizescale(style);
+
+	Q_strncpyz(buf, str, sizeof(buf));
+	s1 = s2 = s3 = buf;
+
+	while(1){
+		do {
+			s3++;
+		} while(*s3!=' ' && *s3!='\0');
+		c_bcp = *s3;
+		*s3 = '\0';
+		width = propstrwidth(s1, 0, -1) * sizeScale;
+		*s3 = c_bcp;
+		if(width > xmax){
+			if(s1==s2){
+				// fuck, don't have a clean cut, we'll overflow
+				s2 = s3;
 			}
-			gameFile += len + 1;
+			*s2 = '\0';
+			drawpropstr(x, y, s1, style, color);
+			y += ystep;
+			if(c_bcp == '\0'){
+				// that was the last word
+				// we could start a new loop, but that wouldn't be much use
+				// even if the word is too long, we would overflow it (see above)
+				// so just print it now if needed
+				s2++;
+				if(*s2 != '\0')  // if we are printing an overflowing line we have s2 == s3
+					drawpropstr(x, y, s2, style, color);
+				break;
+			}
+			s2++;
+			s1 = s2;
+			s3 = s2;
+		}else{
+			s2 = s3;
+			if(c_bcp == '\0'){ // we reached the end
+				drawpropstr(x, y, s1, style, color);
+				break;
+			}
 		}
 	}
-
-	UI_SetBestScores(&newInfo, qfalse);
-
 }
 
-
-
-static void	UI_Cache_f(void)
+static void drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 {
-	Display_CacheAll();
+	const char *s;
+	char	ch;
+	int forceColor = qfalse; //APSFIXME;
+	vec4_t	tempcolor;
+	float	ax;
+	float	ay;
+	float	aw;
+	float	ah;
+	float	frow;
+	float	fcol;
+
+	if(y < -charh)
+		// offscreen
+		return;
+
+	// draw the colored text
+	trap_R_SetColor(color);
+
+	ax = x * uis.xscale + uis.bias;
+	ay = y * uis.yscale;
+	aw = charw * uis.xscale;
+	ah = charh * uis.yscale;
+
+	s = str;
+	while(*s){
+		if(Q_IsColorString(s)){
+			if(!forceColor){
+				memcpy(tempcolor, g_color_table[ColorIndex(s[1])], sizeof(tempcolor));
+				tempcolor[3] = color[3];
+				trap_R_SetColor(tempcolor);
+			}
+			s += 2;
+			continue;
+		}
+		ch = *s & 255;
+		if(ch != ' '){
+			frow = (ch>>4)*0.0625;
+			fcol = (ch&15)*0.0625;
+			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, uis.charset);
+		}
+		ax += aw;
+		s++;
+	}
+	trap_R_SetColor(NULL);
+}
+
+void drawstr(int x, int y, const char *str, int style, vec4_t color)
+{
+	int len;
+	int charw;
+	int charh;
+	vec4_t newcolor;
+	vec4_t lowlight;
+	float *drawcolor;
+	vec4_t dropcolor;
+
+	if(!str)
+		return;
+
+	if((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
+		return;
+
+	if(style & UI_SMALLFONT){
+		charw = SMALLCHAR_WIDTH;
+		charh = SMALLCHAR_HEIGHT;
+	}else if(style & UI_GIANTFONT){
+		charw = GIANTCHAR_WIDTH;
+		charh = GIANTCHAR_HEIGHT;
+	}else{
+		charw = BIGCHAR_WIDTH;
+		charh = BIGCHAR_HEIGHT;
+	}
+
+	if(style & UI_PULSE){
+		lowlight[0] = 0.8*color[0];
+		lowlight[1] = 0.8*color[1];
+		lowlight[2] = 0.8*color[2];
+		lowlight[3] = 0.8*color[3];
+		lerpcolour(color,lowlight,newcolor,0.5+0.5*sin(uis.realtime/PULSE_DIVISOR));
+		drawcolor = newcolor;
+	}else
+		drawcolor = color;
+
+	switch(style & UI_FORMATMASK){
+	case UI_CENTER:
+		len = strlen(str);
+		x   = x - len*charw/2;
+		break;
+	case UI_RIGHT:
+		len = strlen(str);
+		x   = x - len*charw;
+		break;
+	default:
+		break;
+	}
+	if(style & UI_DROPSHADOW){
+		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
+		dropcolor[3] = drawcolor[3];
+		drawstr2(x+2,y+2,str,dropcolor,charw,charh);
+	}
+	drawstr2(x,y,str,drawcolor,charw,charh);
+}
+
+void drawchar(int x, int y, int ch, int style, vec4_t color)
+{
+	char	buff[2];
+
+	buff[0] = ch;
+	buff[1] = '\0';
+	drawstr(x, y, buff, style, color);
 }
 
 /*
-=======================
-UI_CalcPostGameStats
-=======================
+This should be the ONLY way the menu system is brought up.
 */
-static void UI_CalcPostGameStats(void)
+void setactivemenu(uiMenuCommand_t menu)
 {
-	char		map[MAX_QPATH];
-	char		fileName[MAX_QPATH];
-	char		info[MAX_INFO_STRING];
-	fileHandle_t f;
-	int size, game, time, adjustedTime;
-	postGameInfo_t oldInfo;
-	postGameInfo_t newInfo;
-	qboolean newHigh = qfalse;
+	cacheui();
 
-	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
-	Q_strncpyz(map, Info_ValueForKey(info, "mapname"), sizeof(map));
-	game = atoi(Info_ValueForKey(info, "g_gametype"));
-
-	// compose file name
-	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
-	// see if we have one already
-	memset(&oldInfo, 0, sizeof(postGameInfo_t));
-	if(trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0){
-		// if so load it
-		size = 0;
-		trap_FS_Read(&size, sizeof(int), f);
-		if(size == sizeof(postGameInfo_t)){
-			trap_FS_Read(&oldInfo, sizeof(postGameInfo_t), f);
-		}
-		trap_FS_FCloseFile(f);
+	switch(menu){
+	case UIMENU_NONE:
+		dismissui();
+		return;
+	case UIMENU_MAIN:
+		uis.sp = -1;
+		push(mainmenu);
+		return;
+	case UIMENU_INGAME:
+		trap_Cvar_Set("cl_paused", "1");
+		uis.sp = -1;
+		push(ingamemenu);
+		return;
+	default:
+#ifndef NDEBUG
+		Com_Printf("setactivemenu: bad enum %d\n", menu);
+#endif
+		break;
 	}
-
-	newInfo.accuracy = atoi(UI_Argv(3));
-	newInfo.impressives = atoi(UI_Argv(4));
-	newInfo.excellents = atoi(UI_Argv(5));
-	newInfo.defends = atoi(UI_Argv(6));
-	newInfo.assists = atoi(UI_Argv(7));
-	newInfo.gauntlets = atoi(UI_Argv(8));
-	newInfo.baseScore = atoi(UI_Argv(9));
-	newInfo.perfects = atoi(UI_Argv(10));
-	newInfo.redScore = atoi(UI_Argv(11));
-	newInfo.blueScore = atoi(UI_Argv(12));
-	time = atoi(UI_Argv(13));
-	newInfo.captures = atoi(UI_Argv(14));
-
-	newInfo.time = (time - trap_Cvar_VariableValue("ui_matchStartTime")) / 1000;
-	adjustedTime = uiInfo.mapList[ui_currentMap.integer].timeToBeat[game];
-	if(newInfo.time < adjustedTime){
-		newInfo.timeBonus = (adjustedTime - newInfo.time) * 10;
-	}else{
-		newInfo.timeBonus = 0;
-	}
-
-	if(newInfo.redScore > newInfo.blueScore && newInfo.blueScore <= 0){
-		newInfo.shutoutBonus = 100;
-	}else{
-		newInfo.shutoutBonus = 0;
-	}
-
-	newInfo.skillBonus = trap_Cvar_VariableValue("g_spSkill");
-	if(newInfo.skillBonus <= 0){
-		newInfo.skillBonus = 1;
-	}
-	newInfo.score = newInfo.baseScore + newInfo.shutoutBonus + newInfo.timeBonus;
-	newInfo.score *= newInfo.skillBonus;
-
-	// see if the score is higher for this one
-	newHigh = (newInfo.redScore > newInfo.blueScore && newInfo.score > oldInfo.score);
-
-	if(newHigh){
-		// if so write out the new one
-		uiInfo.newHighScoreTime = uiInfo.uiDC.realTime + 20000;
-		if(trap_FS_FOpenFile(fileName, &f, FS_WRITE) >= 0){
-			size = sizeof(postGameInfo_t);
-			trap_FS_Write(&size, sizeof(int), f);
-			trap_FS_Write(&newInfo, sizeof(postGameInfo_t), f);
-			trap_FS_FCloseFile(f);
-		}
-	}
-
-	if(newInfo.time < oldInfo.time){
-		uiInfo.newBestTime = uiInfo.uiDC.realTime + 20000;
-	}
-
-	// put back all the ui overrides
-	trap_Cvar_Set("capturelimit", UI_Cvar_VariableString("ui_saveCaptureLimit"));
-	trap_Cvar_Set("fraglimit", UI_Cvar_VariableString("ui_saveFragLimit"));
-	trap_Cvar_Set("cg_drawTimer", UI_Cvar_VariableString("ui_drawTimer"));
-	trap_Cvar_Set("g_doWarmup", UI_Cvar_VariableString("ui_doWarmup"));
-	trap_Cvar_Set("g_Warmup", UI_Cvar_VariableString("ui_Warmup"));
-	trap_Cvar_Set("sv_pure", UI_Cvar_VariableString("ui_pure"));
-	trap_Cvar_Set("g_friendlyFire", UI_Cvar_VariableString("ui_friendlyFire"));
-
-	UI_SetBestScores(&newInfo, qtrue);
-	UI_ShowPostGame(newHigh);
-
-
 }
 
+void keyevent(int key, int down)
+{
+	if(key < 0 || key >= MAX_KEYS)
+		return;
+	uis.keys[key] = down;
+}
 
-/*
-=================
-UI_ConsoleCommand
-=================
-*/
-qboolean UI_ConsoleCommand(int realTime)
+void charevent(int ch)
+{
+	if(uis.texti < TEXTLEN-2)
+		uis.text[uis.texti++] = ch;
+	uis.text[TEXTLEN-1] = '\0';
+	uis.keys[tolower(ch)] = qtrue;
+}
+
+void mouseevent(int dx, int dy)
+{
+	uis.cursorx += dx;
+	if(uis.cursorx < -uis.bias)
+		uis.cursorx = -uis.bias;
+	else if(uis.cursorx > SCREEN_WIDTH+uis.bias)
+		uis.cursorx = SCREEN_WIDTH+uis.bias;
+	uis.cursory += dy;
+	if(uis.cursory < 0)
+		uis.cursory = 0;
+	else if(uis.cursory > SCREEN_HEIGHT)
+		uis.cursory = SCREEN_HEIGHT;
+}
+
+void cacheui(void)
+{
+	uis.charset			= trap_R_RegisterShaderNoMip("gfx/2d/bigchars");
+	uis.charsetProp		= trap_R_RegisterShaderNoMip("menu/art/font1_prop.tga");
+	uis.charsetPropGlow	= trap_R_RegisterShaderNoMip("menu/art/font1_prop_glo.tga");
+	uis.charsetPropB	= trap_R_RegisterShaderNoMip("menu/art/font2_prop.tga");
+	uis.cursor          = trap_R_RegisterShaderNoMip("menu/art/3_cursor2");
+	uis.rb_on           = trap_R_RegisterShaderNoMip("menu/art/switch_on");
+	uis.rb_off          = trap_R_RegisterShaderNoMip("menu/art/switch_off");
+	uis.whiteShader	= trap_R_RegisterShaderNoMip("white");
+	uis.menuBackShader	= trap_R_RegisterShaderNoMip("menuback");
+	uis.fieldUpdateSound	= trap_S_RegisterSound("sound/misc/menu2", qfalse);
+}
+
+qboolean consolecommand(int realTime)
 {
 	char	*cmd;
 
-	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;
-	uiInfo.uiDC.realTime = realTime;
+	uis.frametime = realTime - uis.realtime;
+	uis.realtime = realTime;
 
-	cmd = UI_Argv(0);
-
-	// ensure minimum menu data is available
-	//Menu_Cache();
-
-	if(Q_stricmp(cmd, "ui_test") == 0){
-		UI_ShowPostGame(qtrue);
-		return qtrue;
-	}
-
-	if(Q_stricmp(cmd, "ui_report") == 0){
-		UI_Report();
-		return qtrue;
-	}
-
-	if(Q_stricmp(cmd, "ui_load") == 0){
-		UI_Load();
-		return qtrue;
-	}
-
-	if(Q_stricmp(cmd, "remapShader") == 0){
-		if(trap_Argc() == 4){
-			char shader1[MAX_QPATH];
-			char shader2[MAX_QPATH];
-			char shader3[MAX_QPATH];
-
-			Q_strncpyz(shader1, UI_Argv(1), sizeof(shader1));
-			Q_strncpyz(shader2, UI_Argv(2), sizeof(shader2));
-			Q_strncpyz(shader3, UI_Argv(3), sizeof(shader3));
-
-			trap_R_RemapShader(shader1, shader2, shader3);
-			return qtrue;
-		}
-	}
-
-	if(Q_stricmp(cmd, "postgame") == 0){
-		UI_CalcPostGameStats();
-		return qtrue;
-	}
+	cmd = Argv(0);
 
 	if(Q_stricmp(cmd, "ui_cache") == 0){
-		UI_Cache_f();
+		cacheui();
 		return qtrue;
 	}
-
-	if(Q_stricmp(cmd, "ui_teamOrders") == 0){
-		//UI_TeamOrdersMenu_f();
-		return qtrue;
-	}
-
-
-	if(Q_stricmp(cmd, "ui_cdkey") == 0){
-		//UI_CDKeyMenu_f();
-		return qtrue;
-	}
-
 	return qfalse;
 }
 
-/*
-=================
-UI_Shutdown
-=================
-*/
-void UI_Shutdown(void)
+void push(menuFn_t f)
+{
+	if(uis.sp >= NSTACK)
+		Com_Error(ERR_FATAL, "ui stack overflow");
+	uis.sp++;
+	uis.stk[uis.sp] = f;
+	idcpy(uis.focus, "");
+	trap_Key_SetCatcher(KEYCATCH_UI);
+}
+
+void pop(void)
+{
+	if(uis.sp < 0)
+		Com_Error(ERR_FATAL, "ui stack underflow");
+	uis.sp--;
+	if(uis.sp < 0)
+		dismissui();
+}
+
+menuFn_t peek(void)
+{
+	if(uis.sp < 0)
+		return NULL;
+	return uis.stk[uis.sp];
+}
+
+void dismissui(void)
+{
+	uis.sp = -1;
+	trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
+	trap_Key_ClearStates();
+	trap_Cvar_Set("cl_paused", 0);
+}
+
+void shutdown(void)
 {
 }
 
-/*
-================
-UI_AdjustFrom640
+void init(void)
+{
+	registercvars();
 
-Adjusted for resolution and screen aspect ratio
-================
+	//initGameinfo();
+
+	trap_GetGlconfig(&uis.glconfig);
+
+	// for 640x480 virtualized screen
+	uis.xscale = uis.glconfig.vidWidth * (1.0/640.0);
+	uis.yscale = uis.glconfig.vidHeight * (1.0/480.0);
+	if(uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640){
+		// widescreen
+		uis.bias = 0.5 * (uis.glconfig.vidWidth - (uis.glconfig.vidHeight * (640.0/480.0)));
+		uis.xscale = uis.yscale;
+	}else{
+		uis.bias = 0;
+	}
+	cacheui();
+	uis.firstdraw = qtrue;
+	uis.sp = -1;
+	uis.fullscreen = qfalse;
+}
+
+/*
+Adjust for resolution and screen aspect ratio
 */
-void UI_AdjustFrom640(float *x, float *y, float *w, float *h)
+void adjustcoords(float *x, float *y, float *w, float *h)
 {
 	// expect valid pointers
-#if 0
-	*x = *x * uiInfo.uiDC.scale + uiInfo.uiDC.bias;
-	*y *= uiInfo.uiDC.scale;
-	*w *= uiInfo.uiDC.scale;
-	*h *= uiInfo.uiDC.scale;
-#endif
-
-	*x *= uiInfo.uiDC.xscale;
-	*y *= uiInfo.uiDC.yscale;
-	*w *= uiInfo.uiDC.xscale;
-	*h *= uiInfo.uiDC.yscale;
-
+	*x = *x * uis.xscale + uis.bias;
+	*y *= uis.yscale;
+	*w *= uis.xscale;
+	*h *= uis.yscale;
 }
 
-void UI_DrawNamedPic(float x, float y, float width, float height, const char *picname)
+void drawnamedpic(float x, float y, float width, float height, const char *picname)
 {
 	qhandle_t	hShader;
 
 	hShader = trap_R_RegisterShaderNoMip(picname);
-	UI_AdjustFrom640(&x, &y, &width, &height);
+	adjustcoords(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
 
-void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader)
+void drawpic(float x, float y, float w, float h, qhandle_t hShader)
 {
 	float	s0;
 	float	s1;
@@ -478,81 +806,123 @@ void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader)
 		t1 = 1;
 	}
 
-	UI_AdjustFrom640(&x, &y, &w, &h);
+	adjustcoords(&x, &y, &w, &h);
 	trap_R_DrawStretchPic(x, y, w, h, s0, t0, s1, t1, hShader);
 }
 
-/*
-================
-UI_FillRect
-
-Coordinates are 640*480 virtual values
-=================
-*/
-void UI_FillRect(float x, float y, float width, float height, const float *color)
+void fillrect(float x, float y, float width, float height, const float *color)
 {
 	trap_R_SetColor(color);
 
-	UI_AdjustFrom640(&x, &y, &width, &height);
-	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
+	adjustcoords(&x, &y, &width, &height);
+	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 0, 0, uis.whiteShader);
 
 	trap_R_SetColor(NULL);
 }
 
-void UI_DrawSides(float x, float y, float w, float h)
-{
-	UI_AdjustFrom640(&x, &y, &w, &h);
-	trap_R_DrawStretchPic(x, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
-	trap_R_DrawStretchPic(x + w - 1, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
-}
-
-void UI_DrawTopBottom(float x, float y, float w, float h)
-{
-	UI_AdjustFrom640(&x, &y, &w, &h);
-	trap_R_DrawStretchPic(x, y, w, 1, 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
-	trap_R_DrawStretchPic(x, y + h - 1, w, 1, 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
-}
-/*
-================
-UI_DrawRect
-
-Coordinates are 640*480 virtual values
-=================
-*/
-void UI_DrawRect(float x, float y, float width, float height, const float *color)
+void drawrect(float x, float y, float width, float height, const float *color)
 {
 	trap_R_SetColor(color);
 
-	UI_DrawTopBottom(x, y, width, height);
-	UI_DrawSides(x, y, width, height);
+	adjustcoords(&x, &y, &width, &height);
+
+	trap_R_DrawStretchPic(x, y, width, 1, 0, 0, 0, 0, uis.whiteShader);
+	trap_R_DrawStretchPic(x, y, 1, height, 0, 0, 0, 0, uis.whiteShader);
+	trap_R_DrawStretchPic(x, y + height - 1, width, 1, 0, 0, 0, 0, uis.whiteShader);
+	trap_R_DrawStretchPic(x + width - 1, y, 1, height, 0, 0, 0, 0, uis.whiteShader);
 
 	trap_R_SetColor(NULL);
 }
 
-void UI_SetColor(const float *rgba)
+void setcolour(const float *rgba)
 {
 	trap_R_SetColor(rgba);
 }
 
-void UI_UpdateScreen(void)
+void updatescreen(void)
 {
 	trap_UpdateScreen();
 }
 
-
-void UI_DrawTextBox(int x, int y, int width, int lines)
+static void drawfps(void)
 {
-	UI_FillRect(x + BIGCHAR_WIDTH/2, y + BIGCHAR_HEIGHT/2, (width + 1) * BIGCHAR_WIDTH, (lines + 1) * BIGCHAR_HEIGHT, colorBlack);
-	UI_DrawRect(x + BIGCHAR_WIDTH/2, y + BIGCHAR_HEIGHT/2, (width + 1) * BIGCHAR_WIDTH, (lines + 1) * BIGCHAR_HEIGHT, colorWhite);
+	enum { FRAMES = 4 };
+	static int prevtimes[FRAMES], index, previous;
+	int i, total, t, frametime, fps;
+	char s[16];
+
+	t = trap_Milliseconds();
+	frametime = t - previous;
+	previous = t;
+	prevtimes[index % FRAMES] = frametime;
+	index++;
+	if(index > FRAMES){
+		total = 0;
+		for(i = 0; i < FRAMES; i++)
+			total += prevtimes[i];
+		if(total <= 0)
+			total = 1;
+		fps = 1000 * FRAMES / total;
+		Com_sprintf(s, sizeof s, "%ifps", fps);
+		drawstr(638, 2, s, UI_RIGHT|UI_SMALLFONT, color_white);
+	}
 }
 
-qboolean UI_CursorInRect(int x, int y, int width, int height)
+void refresh(int realtime)
 {
-	if(uiInfo.uiDC.cursorx < x ||
-	        uiInfo.uiDC.cursory < y ||
-	        uiInfo.uiDC.cursorx > x+width ||
-	        uiInfo.uiDC.cursory > y+height)
-		return qfalse;
+	uis.frametime = realtime - uis.realtime;
+	uis.realtime  = realtime;
 
+	if(!(trap_Key_GetCatcher() & KEYCATCH_UI)){
+		uis.fullscreen = qfalse;
+		return;
+	}
+	if(uis.firstdraw){
+		mouseevent(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+		uis.firstdraw = qfalse;
+	}
+	uis.fullscreen = qfalse;
+
+	updatecvars();
+
+	if(uis.sp >= 0)
+		uis.stk[uis.sp]();
+
+	if(ui_drawfps.integer)
+		drawfps();
+
+	// draw cursor
+	setcolour(NULL);
+	drawpic(uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
+
+#ifndef NDEBUG
+	if(uis.debug){
+		// cursor coordinates
+		drawstr(0, 0, va("(%d,%d)",uis.cursorx,uis.cursory), UI_LEFT|UI_SMALLFONT, colorRed);
+	}
+#endif
+
+	// finish the frame
+	if(!uis.keys[K_MOUSE1])
+		idcpy(uis.active, "");
+	else if(idcmp(uis.active, ""))
+		idcpy(uis.active, "minusone");
+	memset(uis.text, 0, TEXTLEN);
+	memset(uis.keys+'0', 0, '0'+'9');
+	memset(uis.keys+'A', 0, 'A'+'Z');
+	uis.texti = 0;
+}
+
+void drawtextbox(int x, int y, int width, int lines)
+{
+	fillrect(x + BIGCHAR_WIDTH/2, y + BIGCHAR_HEIGHT/2, (width + 1) * BIGCHAR_WIDTH, (lines + 1) * BIGCHAR_HEIGHT, colorBlack);
+	drawrect(x + BIGCHAR_WIDTH/2, y + BIGCHAR_HEIGHT/2, (width + 1) * BIGCHAR_WIDTH, (lines + 1) * BIGCHAR_HEIGHT, colorWhite);
+}
+
+qboolean mouseover(int x, int y, int w, int h)
+{
+	if(uis.cursorx < x || uis.cursory < y ||
+	   uis.cursorx > x+w || uis.cursory > y+h)
+		return qfalse;
 	return qtrue;
 }
