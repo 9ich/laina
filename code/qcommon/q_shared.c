@@ -23,6 +23,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // q_shared.c -- stateless support routines that are included in each code dll
 #include "q_shared.h"
 
+int Q_strlcat(char *dst, const char *src, int dstsz)
+{
+	const char *d, *s;
+	int n, dlen;
+
+	d = dst;
+	s = src;
+	n = dstsz;
+
+	while(n-- != 0 && *dst != '\0')
+		dst++;
+	dlen = dst - d;
+	n = dstsz - dlen;
+	if(n-- == 0)
+		return(dlen + strlen(src));
+	while(*src != '\0'){
+		if(n != 0){
+			*dst++ = *src;
+			n--;
+		}
+		src++;
+	}
+	*dst = '\0';
+	return (dlen + (src - s));
+}
+
 float Com_Clamp( float min, float max, float value ) {
 	if ( value < min ) {
 		return min;
