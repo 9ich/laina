@@ -330,15 +330,17 @@ qboolean textspinner(const char *id, int x, int y, int just, char **opts, int *i
 	updated = qfalse;
 	justify(just, &x, w);
 
-	Com_sprintf(bid, sizeof bid, "%s.prev", id);
-	if(spinnerbutton(bid, x, y, "menu/art/left")){
-		*i = (*i <= 0) ? nopts-1 : *i-1;
-		updated = qtrue;
-	}
-	Com_sprintf(bid, sizeof bid, "%s.next", id);
-	if(spinnerbutton(bid, x+bsz+w, y, "menu/art/right")){
-		*i = (*i + 1) % nopts;
-		updated = qtrue;
+	if(nopts > 1){
+		Com_sprintf(bid, sizeof bid, "%s.prev", id);
+		if(spinnerbutton(bid, x, y, "menu/art/left")){
+			*i = (*i <= 0) ? nopts-1 : *i-1;
+			updated = qtrue;
+		}
+		Com_sprintf(bid, sizeof bid, "%s.next", id);
+		if(spinnerbutton(bid, x+bsz+w, y, "menu/art/right")){
+			*i = (*i + 1) % nopts;
+			updated = qtrue;
+		}
 	}
 
 	if(idcmp(uis.focus, ""))
