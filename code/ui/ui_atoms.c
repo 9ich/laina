@@ -671,12 +671,10 @@ void mouseevent(int dx, int dy)
 void cacheui(void)
 {
 	uis.charset			= trap_R_RegisterShaderNoMip("gfx/2d/bigchars");
-	uis.charsetProp		= trap_R_RegisterShaderNoMip("menu/art/font1_prop.tga");
-	uis.charsetPropGlow	= trap_R_RegisterShaderNoMip("menu/art/font1_prop_glo.tga");
-	uis.charsetPropB	= trap_R_RegisterShaderNoMip("menu/art/font2_prop.tga");
-	uis.cursor          = trap_R_RegisterShaderNoMip("menu/art/3_cursor2");
-	uis.rb_on           = trap_R_RegisterShaderNoMip("menu/art/switch_on");
-	uis.rb_off          = trap_R_RegisterShaderNoMip("menu/art/switch_off");
+	uis.charsetProp		= trap_R_RegisterShaderNoMip("menu/art/font1_prop");
+	uis.charsetPropGlow	= trap_R_RegisterShaderNoMip("menu/art/font1_prop_glo");
+	uis.charsetPropB	= trap_R_RegisterShaderNoMip("menu/art/font2_prop");
+	uis.cursor          = trap_R_RegisterShaderNoMip("menu/art/cursor");
 	uis.whiteShader	= trap_R_RegisterShaderNoMip("white");
 	uis.menuBackShader	= trap_R_RegisterShaderNoMip("menuback");
 	uis.fieldUpdateSound	= trap_S_RegisterSound("sound/misc/menu2", qfalse);
@@ -698,40 +696,6 @@ qboolean consolecommand(int realTime)
 	return qfalse;
 }
 
-void push(menuFn_t f)
-{
-	if(uis.sp >= NSTACK)
-		Com_Error(ERR_FATAL, "ui stack overflow");
-	uis.sp++;
-	uis.stk[uis.sp] = f;
-	idcpy(uis.focus, "");
-	trap_Key_SetCatcher(KEYCATCH_UI);
-}
-
-void pop(void)
-{
-	if(uis.sp < 0)
-		Com_Error(ERR_FATAL, "ui stack underflow");
-	uis.sp--;
-	if(uis.sp < 0)
-		dismissui();
-}
-
-menuFn_t peek(void)
-{
-	if(uis.sp < 0)
-		return NULL;
-	return uis.stk[uis.sp];
-}
-
-void dismissui(void)
-{
-	uis.sp = -1;
-	trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
-	trap_Key_ClearStates();
-	trap_Cvar_Set("cl_paused", 0);
-}
-
 void shutdown(void)
 {
 }
@@ -739,8 +703,6 @@ void shutdown(void)
 void init(void)
 {
 	registercvars();
-
-	//initGameinfo();
 
 	trap_GetGlconfig(&uis.glconfig);
 
@@ -866,6 +828,33 @@ static void drawfps(void)
 		Com_sprintf(s, sizeof s, "%ifps", fps);
 		drawstr(638, 2, s, UI_RIGHT|UI_SMALLFONT, color_white);
 	}
+}
+
+void push(menuFn_t f)
+{
+	if(uis.sp >= NSTACK)
+		Com_Error(ERR_FATAL, "ui stack overflow");
+	uis.sp++;
+	uis.stk[uis.sp] = f;
+	idcpy(uis.focus, "");
+	trap_Key_SetCatcher(KEYCATCH_UI);
+}
+
+void pop(void)
+{
+	if(uis.sp < 0)
+		Com_Error(ERR_FATAL, "ui stack underflow");
+	uis.sp--;
+	if(uis.sp < 0)
+		dismissui();
+}
+
+void dismissui(void)
+{
+	uis.sp = -1;
+	trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
+	trap_Key_ClearStates();
+	trap_Cvar_Set("cl_paused", 0);
 }
 
 void refresh(int realtime)

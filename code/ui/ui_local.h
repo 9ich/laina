@@ -37,20 +37,7 @@ extern vmCvar_t	ui_marks;
 extern vmCvar_t	ui_drawfps;
 
 // ui_widgets.c
-extern sfxHandle_t	menu_in_sound;
-extern sfxHandle_t	menu_move_sound;
-extern sfxHandle_t	menu_out_sound;
-extern sfxHandle_t	menu_buzz_sound;
-extern sfxHandle_t	menu_null_sound;
-extern sfxHandle_t	weaponChangeSound;
 extern vec4_t		menu_text_color;
-extern vec4_t		menu_highlight_color;
-extern vec4_t		menu_grayed_color;
-extern vec4_t		menu_dark_color;
-extern vec4_t		menu_highlight_color;
-extern vec4_t		menu_red_color;
-extern vec4_t		menu_black_color;
-extern vec4_t		menu_dim_color;
 extern vec4_t		color_black;
 extern vec4_t		color_white;
 extern vec4_t		color_yellow;
@@ -59,11 +46,6 @@ extern vec4_t		color_orange;
 extern vec4_t		color_red;
 extern vec4_t		color_dim;
 extern vec4_t		name_color;
-extern vec4_t		list_color;
-extern vec4_t		listbar_color;
-extern vec4_t		text_color_disabled;
-extern vec4_t		text_color_normal;
-extern vec4_t		text_color_highlight;
 
 qboolean idcmp(const char *a, const char *b);
 void idcpy(char *dst, const char *src);
