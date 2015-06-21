@@ -153,6 +153,7 @@ void quitmenu(void);
 void videomenu(void);
 void soundmenu(void);
 void ctlmenu(void);
+void errormenu(void);
 void placeholder(void);
 
 // ui_syscalls.c

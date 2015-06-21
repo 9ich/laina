@@ -397,6 +397,25 @@ void videomenu(void)
 	}
 }
 
+void errormenu(void)
+{
+	int i;
+	char buf[MAX_STRING_CHARS], msg[MAX_STRING_CHARS];
+
+	for(i = 0; i < ARRAY_LEN(uis.keys); i++)
+		if(uis.keys[i]){
+			trap_Cvar_Set("com_errormessage", "");
+			pop();
+			push(mainmenu);
+			return;
+		}
+	uis.fullscreen = qtrue;
+	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
+	Com_sprintf(msg, sizeof msg, "error: %s", buf);
+	drawstr(320, 220, msg, UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_red);
+}
+
 void mainmenu(void)
 {
 	const float spc = 35;

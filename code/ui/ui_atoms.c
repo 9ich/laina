@@ -622,10 +622,17 @@ void setactivemenu(uiMenuCommand_t menu)
 	case UIMENU_NONE:
 		dismissui();
 		return;
-	case UIMENU_MAIN:
+	case UIMENU_MAIN: {
+		char buf[MAX_STRING_CHARS];
+
 		uis.sp = -1;
-		push(mainmenu);
+		trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
+		if(strlen(buf) > 0)
+			push(errormenu);
+		else
+			push(mainmenu);
 		return;
+	}
 	case UIMENU_INGAME:
 		trap_Cvar_Set("cl_paused", "1");
 		uis.sp = -1;
