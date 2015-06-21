@@ -102,8 +102,8 @@ GLimp_CompareModes
 static int GLimp_CompareModes( const void *a, const void *b )
 {
 	const float ASPECT_EPSILON = 0.001f;
-	SDL_Rect *modeA = (SDL_Rect *)a;
-	SDL_Rect *modeB = (SDL_Rect *)b;
+	const SDL_DisplayMode *modeA = a;
+	const SDL_DisplayMode *modeB = b;
 	float aspectA = (float)modeA->w / (float)modeA->h;
 	float aspectB = (float)modeB->w / (float)modeB->h;
 	int areaA = modeA->w * modeA->h;
@@ -116,6 +116,8 @@ static int GLimp_CompareModes( const void *a, const void *b )
 		return 1;
 	else if( aspectDiffsDiff < -ASPECT_EPSILON )
 		return -1;
+	else if( areaA - areaB == 0 )
+			return modeA->refresh_rate - modeB->refresh_rate;
 	else
 		return areaA - areaB;
 }
@@ -128,9 +130,9 @@ GLimp_DetectAvailableModes
 */
 static void GLimp_DetectAvailableModes(void)
 {
-	int i, j;
+	int i;
 	char buf[ MAX_STRING_CHARS ] = { 0 };
-	SDL_Rect modes[ 128 ];
+	SDL_DisplayMode modes[ 128 ];
 	int numModes = 0;
 
 	int display = SDL_GetWindowDisplayIndex( SDL_window );
@@ -158,33 +160,21 @@ static void GLimp_DetectAvailableModes(void)
 		if( windowMode.format != mode.format )
 			continue;
 
-		// SDL can give the same resolution with different refresh rates.
-		// Only list resolution once.
-		for( j = 0; j < numModes; j++ )
-		{
-			if( mode.w == modes[ j ].w && mode.h == modes[ j ].h )
-				break;
-		}
-
-		if( j != numModes )
-			continue;
-
-		modes[ numModes ].w = mode.w;
-		modes[ numModes ].h = mode.h;
+		modes[ numModes ] = mode;
 		numModes++;
 	}
 
 	if( numModes > 1 )
-		qsort( modes, numModes, sizeof( SDL_Rect ), GLimp_CompareModes );
+		qsort( modes, numModes, sizeof( modes[0] ), GLimp_CompareModes );
 
 	for( i = 0; i < numModes; i++ )
 	{
-		const char *newModeString = va( "%ux%u ", modes[ i ].w, modes[ i ].h );
+		const char *newModeString = va( "%ux%u@%u ", modes[ i ].w, modes[ i ].h, modes[ i ].refresh_rate );
 
 		if( strlen( newModeString ) < (int)sizeof( buf ) - strlen( buf ) )
 			Q_strcat( buf, sizeof( buf ), newModeString );
 		else
-			ri.Printf( PRINT_WARNING, "Skipping mode %ux%u, buffer too small\n", modes[ i ].w, modes[ i ].h );
+			ri.Printf( PRINT_WARNING, "Skipping mode %ux%u@%u, buffer too small\n", modes[ i ].w, modes[ i ].h, modes[ i ].refresh_rate );
 	}
 
 	if( *buf )

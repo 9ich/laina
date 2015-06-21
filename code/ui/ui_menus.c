@@ -2,7 +2,7 @@
 
 enum {NRES = 32};
 
-static char *builtinres[ ] = {
+static char *builtinres[] = {
 	"320x240",
 	"400x300",
 	"512x384",
@@ -17,6 +17,8 @@ static char *builtinres[ ] = {
 	"856x480",
 	NULL
 };
+
+static char *builtinhz[] = {"60"};
 
 static struct {
 	float r;
@@ -39,7 +41,9 @@ static char *ratios[NRES];
 static char ratiobuf[NRES][16];
 static char resbuf[512];
 static char *detectedres[NRES];
+static char *detectedhz[NRES];
 static char **resolutions = builtinres;
+static char **refreshrates = builtinhz;
 
 // video options
 static struct {
@@ -48,8 +52,8 @@ static struct {
 	int nres, resi;
 	char *ratlist[ARRAY_LEN(knownratios) + 1];
 	int nrat, rati;
-	char hz[5];
-	int hzcaret;
+	char *hzlist[NRES];
+	int nhz, hzi;
 	qboolean fullscr;
 	qboolean vsync;
 	float fov;
@@ -59,23 +63,35 @@ static struct {
 	float gamma;
 } vo;
 
-static void getresolutions(void)
+static void getmodes(void)
 {
 	unsigned int i;
 	char *p;
 
-	Q_strncpyz(resbuf, UI_Cvar_VariableString("r_availableModes"), sizeof resbuf);
+	Q_strncpyz(resbuf, UI_Cvar_VariableString("r_availablemodes"), sizeof resbuf);
 	if(*resbuf == '\0')
 		return;
 	for(p = resbuf, i = 0; p != NULL && i < ARRAY_LEN(detectedres)-1;){
+		// XxY
 		detectedres[i++] = p;
+
+		// @Hz
+		p = strchr(p, '@');
+		if(p != NULL)
+			*p++ = '\0';
+		detectedhz[i] = p;
+
+		// next
 		p = strchr(p, ' ');
 		if(p != NULL)
 			*p++ = '\0';
 	}
 	detectedres[i] = NULL;
-	if(i > 0)
+	detectedhz[i] = NULL;
+	if(i > 0){
 		resolutions = detectedres;
+		refreshrates = detectedhz;
+	}
 }
 
 static void calcratios(void)
@@ -152,19 +168,38 @@ static void optionsbuttons(void)
 	}
 }
 
-static void initvideomenu(void)
+/*
+Builds list of supported resolutions & refresh rates for the current aspect ratio.
+*/
+static void mkmodelists(const char *ratio)
 {
-	int w, h;
 	int i, j;
-	char resstr[16];
-	char *ratio;
+
+	for(i = 0; resolutions[i] != NULL; i++){
+		if(Q_stricmp(ratios[i], ratio) != 0)
+			continue;
+		for(j = 0; j < vo.nres; j++)
+			if(Q_stricmp(vo.reslist[j], resolutions[i]) == 0)
+				break;	// res already in list
+		if(j == vo.nres)
+			vo.reslist[vo.nres++] = resolutions[i];
+
+		for(j = 0; j < vo.nhz; i++)
+			if(Q_stricmp(vo.hzlist[j], refreshrates[i]) == 0)
+				break;	// refresh rate already in list
+		if(j == vo.nhz)
+			vo.hzlist[vo.nhz++] = refreshrates[i];
+	}
+}
+
+/*
+Builds list of aspect ratios
+*/
+static void mkratlist(void)
+{
+	int i, j;
 	qboolean present;
 
-	memset(&vo, 0, sizeof vo);
-	vo.initialized = qtrue;
-	getresolutions();
-	calcratios();
-	// build list of supported aspect ratios
 	for(i = 0; ratios[i] != NULL; i++){
 		present = qfalse;
 		for(j = 0; vo.ratlist[j] != NULL; j++)
@@ -181,31 +216,46 @@ static void initvideomenu(void)
 				break;
 			}
 	}
+}
 
-	// grab the current res
+static void initvideomenu(void)
+{
+	int i, w, h, hz;
+	char resstr[16], hzstr[16];
+	char *ratio;
+
+	memset(&vo, 0, sizeof vo);
+	ratio = NULL;
+	vo.initialized = qtrue;
+	getmodes();
+	calcratios();
+	mkratlist();
+
+	// grab the current mode
 	w = trap_Cvar_VariableValue("r_customwidth");
 	h = trap_Cvar_VariableValue("r_customheight");
+	hz = trap_Cvar_VariableValue("r_displayrefresh");
 	Com_sprintf(resstr, sizeof resstr, "%dx%d", w, h);
+	Com_sprintf(hzstr, sizeof hzstr, "%d", hz);
 	for(i = 0; resolutions[i] != NULL; i++)
 		if(Q_stricmp(resolutions[i], resstr) == 0)
 			ratio = ratios[i];
-	
-	// build list of supported resolutions for the current aspect ratio
-	for(i = 0, j = 0; resolutions[i] != NULL; i++)
-		if(Q_stricmp(ratios[i], ratio) == 0){
-			vo.reslist[j++] = resolutions[i];
-			vo.nres++;
-		}
+
+	mkmodelists(ratio);
 
 	// init menu values
 	vo.resi = 0;
 	vo.rati = 0;
+	vo.hzi = 0;
 	for(i = 0; vo.reslist[i] != NULL; i++)
 		if(Q_stricmp(vo.reslist[i], resstr) == 0)
 			vo.resi = i;
 	for(i = 0; vo.ratlist[i] != NULL; i++)
 		if(Q_stricmp(vo.ratlist[i], ratio) == 0)
 			vo.rati = i;
+	for(i = 0; vo.hzlist[i] != NULL; i++)
+		if(Q_stricmp(vo.hzlist[i], hzstr) == 0)
+			vo.hzi = i;
 	vo.texquality = 0;
 	if(trap_Cvar_VariableValue("r_texturebits") == 16)
 		vo.texquality = 1;
@@ -278,6 +328,7 @@ void videomenu(void)
 
 	drawstr(x, y, "Aspect ratio", UI_RIGHT|UI_DROPSHADOW, color_white);
 	if(textspinner(".v.rat", xx, y, 0, vo.ratlist, &vo.rati, vo.nrat)){
+		// show resolutions for this aspect ratio
 		int w, h;
 		char resstr[16];
 
@@ -300,7 +351,7 @@ void videomenu(void)
 	y += spc;
 
 	drawstr(x, y, "Refresh rate", UI_RIGHT|UI_DROPSHADOW, color_white);
-	if(textfield(".v.hz", xx, y, 0, 4, vo.hz, &vo.hzcaret, sizeof vo.hz))
+	if(textspinner(".v.hz", xx, y, 0, vo.hzlist, &vo.hzi, vo.nhz))
 		vo.needrestart = qtrue;
 	y += spc;
 
