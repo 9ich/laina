@@ -77,8 +77,8 @@ qboolean button(const char *id, int x, int y, int just, const char *label)
 			idcpy(uis.active, id);
 	}
 
-	if(idcmp(uis.focus, id) && !yieldfocus(id))
-		fillrect(x-2, y-2, w+4, h+4, color_blue);
+	yieldfocus(id);
+
 	if(hot)
 		if(idcmp(uis.active, id))
 			fillrect(x, y, w, h, colour_active);
@@ -125,8 +125,9 @@ qboolean slider(const char *id, int x, int y, int just, float min, float max, fl
 		updated = (*val != v);
 		*val = v;
 	}
-	if(idcmp(uis.focus, id) && !yieldfocus(id))
-		fillrect(x-2, y-2, w+4, h+4, color_red);
+
+	yieldfocus(id);
+
 	fillrect(x, y, w, h, color_blue);
 	knobpos = (iw * *val) / max;
 	*val = scalef(*val, 0, max, min, max);
@@ -163,8 +164,8 @@ qboolean checkbox(const char *id, int x, int y, int just, qboolean *state)
 		}
 	}
 
-	if(idcmp(uis.focus, id) && !yieldfocus(id))
-		fillrect(x-2, y-2, w+4, h+4, color_blue);
+	yieldfocus(id);
+
 	fillrect(x, y, w, h, color_blue);
 	drawrect(x, y, w, h, oncolour);
 	if(*state){
@@ -344,18 +345,8 @@ qboolean textspinner(const char *id, int x, int y, int just, char **opts, int *i
 		}
 	}
 
-	if(idcmp(uis.focus, id) && !yieldfocus(id)){
-		if(uis.keys[K_LEFTARROW]){
-			*i = (*i <= 0) ? nopts-1 : *i-1;
-			updated = qtrue;
-			uis.keys[K_LEFTARROW] = qfalse;
-		}
-		if(uis.keys[K_RIGHTARROW]){
-			*i = (*i + 1) % nopts;
-			updated = qtrue;
-			uis.keys[K_RIGHTARROW] = qfalse;
-		}
-	}
+	yieldfocus(id);
+
 	fillrect(x+bsz, y, w, h, color_blue);
 	drawstr(x+bsz+w/2, y, opts[*i], UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_orange);
 	return updated;
