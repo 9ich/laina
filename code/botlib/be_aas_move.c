@@ -45,8 +45,6 @@ extern botlib_import_t botimport;
 
 aas_settings_t aassettings;
 
-//#define AAS_MOVE_DEBUG
-
 //===========================================================================
 //
 // Parameter:			-
@@ -641,13 +639,13 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move,
 			//trace a bounding box
 			trace = AAS_TraceClientBBox(org, end, presencetype, entnum);
 			//
-//#ifdef AAS_MOVE_DEBUG
+#ifdef AAS_MOVE_DEBUG
 			if (visualize)
 			{
 				if (trace.startsolid) botimport.Print(PRT_MESSAGE, "PredictMovement: start solid\n");
 				AAS_DebugLine(org, trace.endpos, LINECOLOR_RED);
 			} //end if
-//#endif //AAS_MOVE_DEBUG
+#endif //AAS_MOVE_DEBUG
 			//
 			if (stopevent & (SE_ENTERAREA|SE_TOUCHJUMPPAD|SE_TOUCHTELEPORTER|SE_TOUCHCLUSTERPORTAL))
 			{
@@ -786,7 +784,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move,
 							VectorSubtract(end, steptrace.endpos, left_test_vel);
 							left_test_vel[2] = 0;
 							frame_test_vel[2] = 0;
-//#ifdef AAS_MOVE_DEBUG
+#ifdef AAS_MOVE_DEBUG
 							if (visualize)
 							{
 								if (steptrace.endpos[2] - org[2] > 0.125)
@@ -796,7 +794,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move,
 									AAS_DebugLine(org, start, LINECOLOR_BLUE);
 								} //end if
 							} //end if
-//#endif //AAS_MOVE_DEBUG
+#endif //AAS_MOVE_DEBUG
 							org[2] = steptrace.endpos[2];
 							step = qtrue;
 						} //end if
