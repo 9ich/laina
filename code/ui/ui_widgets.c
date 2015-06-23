@@ -23,11 +23,6 @@ void idcpy(char *dst, const char *src)
 	Q_strncpyz(dst, src, MAXIDLEN);
 }
 
-float scalef(float x, float min, float max, float newmin, float newmax)
-{
-	return newmin + (newmax-newmin) * (x-min) / (max-min);
-}
-
 static void justify(int just, int *x, int w)
 {
 	switch(just){
@@ -112,7 +107,7 @@ qboolean slider(const char *id, int x, int y, int just, float min, float max, fl
 		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1])
 			idcpy(uis.active, id);
 	}
-	*val = scalef(*val, min, max, 0, max);
+	*val = Com_Scale(*val, min, max, 0, max);
 	if(idcmp(uis.active, id)){
 		float v;
 
@@ -130,7 +125,7 @@ qboolean slider(const char *id, int x, int y, int just, float min, float max, fl
 
 	fillrect(x, y, w, h, color_blue);
 	knobpos = (iw * *val) / max;
-	*val = scalef(*val, 0, max, min, max);
+	*val = Com_Scale(*val, 0, max, min, max);
 	if(hot || idcmp(uis.active, id))
 		fillrect(ix + knobpos - knobw/2, y + h/2 - knobh/2, knobw, knobh, color_orange);
 	else

@@ -59,6 +59,10 @@ float Com_Clamp( float min, float max, float value ) {
 	return value;
 }
 
+float Com_Scale(float x, float min, float max, float newmin, float newmax)
+{
+	return newmin + (newmax-newmin) * (x-min) / (max-min);
+}
 
 /*
 ============

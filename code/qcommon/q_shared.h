@@ -695,6 +695,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 int Q_strlcat(char *dst, const char *src, int dstsz);
 
 float Com_Clamp( float min, float max, float value );
+float Com_Scale(float x, float min, float max, float newmin, float newmax);
 
 char	*COM_SkipPath( char *pathname );
 const char	*COM_GetExtension( const char *name );
