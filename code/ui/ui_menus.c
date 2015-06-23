@@ -35,7 +35,7 @@ static struct {
 
 static char *qualitylist[] = {"N64", "PS1"};
 static char *gqualitylist[] = {"Low", "High"};
-static char *squalitylist[] = {"Low", "Normal", "Silly"};
+static char *sndqualitylist[] = {"Default", "Low", "Normal", "Silly"};
 
 static char *ratios[NRES];
 static char ratiobuf[NRES][16];
@@ -62,6 +62,15 @@ static struct {
 	int gquality;
 	float gamma;
 } vo;
+
+// sound options
+static struct {
+	qboolean initialized, dirty, needrestart;
+	int qual;
+	float vol;
+	float muvol;
+	qboolean doppler;
+} so;
 
 static void getmodes(void)
 {
@@ -153,8 +162,11 @@ static void optionsbuttons(void)
 		push(videomenu);
 	}
 	y += spc;
-	if(button(".o.s", x, y, UI_RIGHT, "Sound"))
-		push(placeholder);
+	if(button(".o.s", x, y, UI_RIGHT, "Sound")){
+		pop();
+		so.initialized = qfalse;
+		push(soundmenu);
+	}
 	y += spc;
 	if(button(".o.c", x, y, UI_RIGHT, "Controls"))
 		push(placeholder);
@@ -164,6 +176,7 @@ static void optionsbuttons(void)
 	y += spc;
 	if(button(".o.bk", 10, SCREEN_HEIGHT-30, UI_LEFT, "Back")){
 		vo.initialized = qfalse;
+		so.initialized = qfalse;
 		pop();
 	}
 }
@@ -226,7 +239,6 @@ static void initvideomenu(void)
 
 	memset(&vo, 0, sizeof vo);
 	ratio = NULL;
-	vo.initialized = qtrue;
 	getmodes();
 	calcratios();
 	mkratlist();
@@ -264,6 +276,7 @@ static void initvideomenu(void)
 	vo.drawfps = trap_Cvar_VariableValue("cg_drawfps");
 	vo.fullscr = (qboolean)trap_Cvar_VariableValue("r_fullscreen");
 	vo.gamma = trap_Cvar_VariableValue("r_gamma");
+	vo.initialized = qtrue;
 }
 
 static void savevideochanges(void)
@@ -395,6 +408,94 @@ void videomenu(void)
 			pop();
 		}
 	}
+}
+
+static void initsoundmenu(void)
+{
+	int freq;
+
+	memset(&so, 0, sizeof so);
+	freq = (int)trap_Cvar_VariableValue("s_sdlspeed");
+	switch(freq){
+	case 11025:
+		so.qual = 1;
+		break;
+	case 22050:
+		so.qual = 2;
+		break;
+	case 44100:
+		so.qual = 3;
+		break;
+	default:
+		so.qual = 0;
+	}
+	so.vol = trap_Cvar_VariableValue("s_volume");
+	so.muvol = trap_Cvar_VariableValue("s_musicvolume");
+	so.doppler = (qboolean)trap_Cvar_VariableValue("s_doppler");
+	so.initialized = qtrue;
+}
+
+static void savesoundchanges(void)
+{
+	switch(so.qual){
+	case 0:
+		trap_Cvar_SetValue("s_sdlspeed", 0);
+		break;
+	case 1:
+		trap_Cvar_SetValue("s_sdlspeed", 11025);
+		break;
+	case 2:
+		trap_Cvar_SetValue("s_sdlspeed", 22050);
+		break;
+	default:
+		trap_Cvar_SetValue("s_sdlspeed", 44100);
+	}
+	trap_Cvar_SetValue("s_doppler", (float)so.doppler);
+	if(so.needrestart)
+		trap_Cmd_ExecuteText(EXEC_APPEND, "snd_restart");
+	so.initialized = qfalse;
+}
+
+void soundmenu(void)
+{
+	const float spc = 24;
+	float x, xx, y;
+
+	if(!so.initialized)
+		initsoundmenu();
+	
+	uis.fullscreen = qtrue;
+	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	optionsbuttons();
+	x = 420;
+	xx = 440;
+	y = 100;
+
+	drawstr(x, y, "Quality", UI_RIGHT|UI_DROPSHADOW, color_white);
+	if(textspinner(".s.qual", xx, y, 0, sndqualitylist, &so.qual, ARRAY_LEN(sndqualitylist)))
+		so.needrestart = qtrue;
+	y += spc;
+
+	drawstr(x, y, "Effects volume", UI_RIGHT|UI_DROPSHADOW, color_white);
+	if(slider(".s.vol", xx, y, 0, 0.0f, 1.0f, &so.vol, "%.2f"))
+		trap_Cvar_SetValue("s_volume", so.vol);
+	y += spc;
+
+	drawstr(x, y, "Music volume", UI_RIGHT|UI_DROPSHADOW, color_white);
+	if(slider(".s.muvol", xx, y, 0, 0.0f, 1.0f, &so.muvol, "%.2f"))
+		trap_Cvar_SetValue("s_musicvolume", so.muvol);
+	y += spc;
+
+	drawstr(x, y, "Doppler effect", UI_RIGHT|UI_DROPSHADOW, color_white);
+	if(checkbox(".s.dop", xx, y, 0, &so.doppler))
+		so.dirty = qtrue;
+	y += spc;
+
+	if(so.dirty || so.needrestart)
+		if(button(".s.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
+			savesoundchanges();
+			pop();
+		}
 }
 
 void errormenu(void)
