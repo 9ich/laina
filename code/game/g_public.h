@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 // g_public.h -- game module information visible to server
 
@@ -101,9 +100,7 @@ typedef struct {
 
 //===============================================================
 
-//
 // system traps provided by the main engine
-//
 typedef enum {
 	//============== general Quake services ==================
 
@@ -392,9 +389,7 @@ typedef enum {
 } gameImport_t;
 
 
-//
 // functions exported by the game subsystem
-//
 typedef enum {
 	GAME_INIT,	// ( int levelTime, int randomSeed, int restart );
 	// init and shutdown will be called every single level

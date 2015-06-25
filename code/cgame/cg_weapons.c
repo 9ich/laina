@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_weapons.c -- events and effects dealing with weapons
 #include "cg_local.h"
 
@@ -857,9 +856,7 @@ void CG_RegisterItemVisuals(int itemNum)
 		CG_RegisterWeapon(item->giTag);
 	}
 
-	//
 	// powerups have an accompanying ring or sphere
-	//
 	if(item->giType == IT_POWERUP || item->giType == IT_HEALTH ||
 	        item->giType == IT_ARMOR || item->giType == IT_HOLDABLE){
 		if(item->world_model[1]){
@@ -1921,9 +1918,7 @@ void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, imp
 		trap_S_StartSound(origin, ENTITYNUM_WORLD, CHAN_AUTO, sfx);
 	}
 
-	//
 	// create the explosion
-	//
 	if(mod){
 		le = CG_MakeExplosion(origin, dir,
 		                      mod,	shader,
@@ -1940,9 +1935,7 @@ void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, imp
 		}
 	}
 
-	//
 	// impact mark
-	//
 	alphaFade = (mark == cgs.media.energyMarkShader);	// plasma fades alpha, all others fade color
 	if(weapon == WP_RAILGUN){
 		float	*color;

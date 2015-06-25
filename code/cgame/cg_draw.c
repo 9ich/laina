@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_draw.c -- draw all of the graphical elements during
 // active (after loading) gameplay
 
@@ -1174,9 +1173,7 @@ static void CG_DrawLagometer(void)
 		return;
 	}
 
-	//
 	// draw the graph
-	//
 #ifdef MISSIONPACK
 	x = 640 - 48;
 	y = 480 - 144;

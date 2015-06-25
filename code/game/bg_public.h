@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // bg_public.h -- definitions shared by both the server game and client game modules
 
 // because games can change separately from the main system version, we need a
@@ -58,10 +57,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	CROUCH_VIEWHEIGHT	12
 #define	DEAD_VIEWHEIGHT		-16
 
-//
 // config strings are a general means of communicating variable length strings
 // from the server to all connected clients.
-//
 
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 #define	CS_MUSIC				2
@@ -696,9 +693,7 @@ qboolean	BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 #define	MASK_SHOT				(CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE)
 
 
-//
 // entityState_t->eType
-//
 typedef enum {
 	ET_GENERAL,
 	ET_PLAYER,

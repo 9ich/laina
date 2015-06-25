@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 
 /*****************************************************************************
  * name:		ai_dmq3.c
@@ -41,14 +40,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../botlib/be_ai_goal.h"
 #include "../botlib/be_ai_move.h"
 #include "../botlib/be_ai_weap.h"
-//
 #include "ai_main.h"
 #include "ai_dmq3.h"
 #include "ai_chat.h"
 #include "ai_cmd.h"
 #include "ai_dmnet.h"
 #include "ai_team.h"
-//
 #include "chars.h"				//characteristics
 #include "inv.h"				//indexes into the inventory
 #include "syn.h"				//synonyms
@@ -66,7 +63,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define IDEAL_ATTACKDIST			140
 
 #define MAX_WAYPOINTS		128
-//
 bot_waypoint_t botai_waypoints[MAX_WAYPOINTS];
 bot_waypoint_t *botai_freewaypoints;
 
@@ -2985,7 +2981,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy)
 		if(!EntityCarriesFlag(&entinfo)){
 			//if this enemy is further away than the current one
 			if(curenemy >= 0 && squaredist > cursquaredist) continue;
-		} //end if
+		}
 		//if the bot has no
 		if(squaredist > Square(900.0 + alertness * 4000.0)) continue;
 		//if on the same team
@@ -3828,7 +3824,7 @@ int BotFuncButtonActivateGoal(bot_state_t *bs, int bspent, bot_activategoal_t *a
 				for(i = 0; i < 3; i++){
 					if(movedir[i] < 0) activategoal->goal.maxs[i] += fabs(movedir[i]) * fabs(extramaxs[i]);
 					else activategoal->goal.mins[i] += fabs(movedir[i]) * fabs(extramins[i]);
-				} //end for
+				}
 				activategoal->goal.entitynum = entitynum;
 				activategoal->goal.number = 0;
 				activategoal->goal.flags = 0;
@@ -3863,7 +3859,7 @@ int BotFuncButtonActivateGoal(bot_state_t *bs, int bspent, bot_activategoal_t *a
 			for(i = 0; i < 3; i++){
 				if(movedir[i] < 0) activategoal->goal.maxs[i] += fabs(movedir[i]) * fabs(extramaxs[i]);
 				else activategoal->goal.mins[i] += fabs(movedir[i]) * fabs(extramins[i]);
-			} //end for
+			}
 			activategoal->goal.entitynum = entitynum;
 			activategoal->goal.number = 0;
 			activategoal->goal.flags = 0;

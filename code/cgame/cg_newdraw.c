@@ -1027,7 +1027,6 @@ qboolean CG_YourTeamHasFlag(void)
 }
 
 // THINKABOUTME: should these be exclusive or inclusive..
-//
 qboolean CG_OwnerDrawVisible(int flags)
 {
 
@@ -1555,7 +1554,6 @@ void CG_DrawMedal(int ownerDraw, rectDef_t *rect, float scale, vec4_t color, qha
 }
 
 
-//
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle)
 {
 	rectDef_t rect;

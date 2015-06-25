@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_scoreboard -- draw the scoreboard on top of the game screen
 #include "cg_local.h"
 
@@ -60,14 +59,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SB_NAME_X			(SB_SCORELINE_X + 22 * BIGCHAR_WIDTH) // width 15
 
 // The new and improved score board
-//
 // In cases where the number of clients is high, the score board heads are interleaved
 // here's the layout
 
-//
 //	0   32   80  112  144   240  320  400   <-- pixel position
 //  bot head bot head score ping time name
-//
 //  wins/losses are drawn on bot icon now
 
 static qboolean localClient; // true if local client has been displayed
@@ -362,9 +358,7 @@ qboolean CG_DrawOldScoreboard(void)
 	localClient = qfalse;
 
 	if(cgs.gametype >= GT_TEAM){
-		//
 		// teamplay scoreboard
-		//
 		y += lineHeight/2;
 
 		if(cg.teamScores[0] >= cg.teamScores[1]){
@@ -390,9 +384,7 @@ qboolean CG_DrawOldScoreboard(void)
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 
 	}else{
-		//
 		// free for all scoreboard
-		//
 		n1 = CG_TeamScoreboard(y, TEAM_FREE, fade, maxClients, lineHeight);
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 		n2 = CG_TeamScoreboard(y, TEAM_SPECTATOR, fade, maxClients - n1, lineHeight);
@@ -495,9 +487,7 @@ void CG_DrawOldTourneyScoreboard(void)
 
 	y = 160;
 	if(cgs.gametype >= GT_TEAM){
-		//
 		// teamplay scoreboard
-		//
 		CG_DrawStringExt(8, y, "Red Team", color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
 		s = va("%i", cg.teamScores[0]);
 		CG_DrawStringExt(632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
@@ -508,9 +498,7 @@ void CG_DrawOldTourneyScoreboard(void)
 		s = va("%i", cg.teamScores[1]);
 		CG_DrawStringExt(632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
 	}else{
-		//
 		// free for all scoreboard
-		//
 		for(i = 0 ; i < MAX_CLIENTS ; i++){
 			ci = &cgs.clientinfo[i];
 			if(!ci->infoValid){

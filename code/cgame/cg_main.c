@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_main.c -- initialization and primary entry point for cgame
 #include "cg_local.h"
 
@@ -1042,11 +1041,9 @@ char *CG_GetMenuBuffer(const char *filename)
 	return buf;
 }
 
-//
 // ==============================
 // new hud stuff ( mission pack )
 // ==============================
-//
 qboolean CG_Asset_Parse(int handle)
 {
 	pc_token_t token;

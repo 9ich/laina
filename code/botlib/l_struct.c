@@ -52,7 +52,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif //BSPC
 
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -64,11 +63,10 @@ fielddef_t *FindField(fielddef_t *defs, char *name)
 	for (i = 0; defs[i].name; i++)
 	{
 		if (!strcmp(defs[i].name, name)) return &defs[i];
-	} //end for
+	}
 	return NULL;
-} //end of the function FindField
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -89,23 +87,23 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 		{
 			SourceError(source, "expected unsigned value, found %s", token.string);
 			return 0;
-		} //end if
+		}
 		//if not a minus sign
 		if (strcmp(token.string, "-"))
 		{
 			SourceError(source, "unexpected punctuation %s", token.string);
 			return 0;
-		} //end if
+		}
 		negative = qtrue;
 		//read the number
 		if (!PC_ExpectAnyToken(source, &token)) return 0;
-	} //end if
+	}
 	//check if it is a number
 	if (token.type != TT_NUMBER)
 	{
 		SourceError(source, "expected number, found %s", token.string);
 		return 0;
-	} //end if
+	}
 	//check for a float value
 	if (token.subtype & TT_FLOAT)
 	{
@@ -113,7 +111,7 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 		{
 			SourceError(source, "unexpected float");
 			return 0;
-		} //end if
+		}
 		floatval = token.floatvalue;
 		if (negative) floatval = -floatval;
 		if (fd->type & FT_BOUNDED)
@@ -122,12 +120,11 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 			{
 				SourceError(source, "float out of range [%f, %f]", fd->floatmin, fd->floatmax);
 				return 0;
-			} //end if
-		} //end if
+			}
+		}
 		*(float *) p = (float) floatval;
 		return 1;
-	} //end if
-	//
+	}
 	intval = token.intvalue;
 	if (negative) intval = -intval;
 	//check bounds
@@ -135,25 +132,25 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 	{
 		if (fd->type & FT_UNSIGNED) {intmin = 0; intmax = 255;}
 		else {intmin = -128; intmax = 127;}
-	} //end if
+	}
 	if ((fd->type & FT_TYPE) == FT_INT)
 	{
 		if (fd->type & FT_UNSIGNED) {intmin = 0; intmax = 65535;}
 		else {intmin = -32768; intmax = 32767;}
-	} //end else if
+	}
 	if ((fd->type & FT_TYPE) == FT_CHAR || (fd->type & FT_TYPE) == FT_INT)
 	{
 		if (fd->type & FT_BOUNDED)
 		{
 			intmin = Maximum(intmin, fd->floatmin);
 			intmax = Minimum(intmax, fd->floatmax);
-		} //end if
+		}
 		if (intval < intmin || intval > intmax)
 		{
 			SourceError(source, "value %ld out of range [%ld, %ld]", intval, intmin, intmax);
 			return 0;
-		} //end if
-	} //end if
+		}
+	}
 	else if ((fd->type & FT_TYPE) == FT_FLOAT)
 	{
 		if (fd->type & FT_BOUNDED)
@@ -162,28 +159,27 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 			{
 				SourceError(source, "value %ld out of range [%f, %f]", intval, fd->floatmin, fd->floatmax);
 				return 0;
-			} //end if
-		} //end if
-	} //end else if
+			}
+		}
+	}
 	//store the value
 	if ((fd->type & FT_TYPE) == FT_CHAR)
 	{
 		if (fd->type & FT_UNSIGNED) *(unsigned char *) p = (unsigned char) intval;
 		else *(char *) p = (char) intval;
-	} //end if
+	}
 	else if ((fd->type & FT_TYPE) == FT_INT)
 	{
 		if (fd->type & FT_UNSIGNED) *(unsigned int *) p = (unsigned int) intval;
 		else *(int *) p = (int) intval;
-	} //end else
+	}
 	else if ((fd->type & FT_TYPE) == FT_FLOAT)
 	{
 		*(float *) p = (float) intval;
-	} //end else
+	}
 	return 1;
-} //end of the function ReadNumber
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -199,16 +195,15 @@ qboolean ReadChar(source_t *source, fielddef_t *fd, void *p)
 	{
 		StripSingleQuotes(token.string);
 		*(char *) p = token.string[0];
-	} //end if
+	}
 	else
 	{
 		PC_UnreadLastToken(source);
 		if (!ReadNumber(source, fd, p)) return 0;
-	} //end if
+	}
 	return 1;
-} //end of the function ReadChar
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -224,11 +219,9 @@ int ReadString(source_t *source, fielddef_t *fd, void *p)
 	strncpy((char *) p, token.string, MAX_STRINGFIELD);
 	//make sure the string is closed with a zero
 	((char *)p)[MAX_STRINGFIELD-1] = '\0';
-	//
 	return 1;
-} //end of the function ReadString
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -252,23 +245,23 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 		{
 			SourceError(source, "unknown structure field %s", token.string);
 			return qfalse;
-		} //end if
+		}
 		if (fd->type & FT_ARRAY)
 		{
 			num = fd->maxarray;
 			if (!PC_ExpectTokenString(source, "{")) return qfalse;
-		} //end if
+		}
 		else
 		{
 			num = 1;
-		} //end else
+		}
 		p = (void *)(structure + fd->offset);
 		while (num-- > 0)
 		{
 			if (fd->type & FT_ARRAY)
 			{
 				if (PC_CheckTokenString(source, "}")) break;
-			} //end if
+			}
 			switch(fd->type & FT_TYPE)
 			{
 				case FT_CHAR:
@@ -301,7 +294,7 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 					{
 						SourceError(source, "BUG: no sub structure defined");
 						return qfalse;
-					} //end if
+					}
 					ReadStructure(source, fd->substruct, (char *) p);
 					p = (char *) p + fd->substruct->size;
 					break;
@@ -315,14 +308,13 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 				{
 					SourceError(source, "expected a comma, found %s", token.string);
 					return qfalse;
-				} //end if
-			} //end if
-		} //end while
-	} //end while
+				}
+			}
+		}
+	}
 	return qtrue;
-} //end of the function ReadStructure
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -332,11 +324,10 @@ int WriteIndent(FILE *fp, int indent)
 	while(indent-- > 0)
 	{
 		if (fprintf(fp, "\t") < 0) return qfalse;
-	} //end while
+	}
 	return qtrue;
-} //end of the function WriteIndent
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -356,15 +347,14 @@ int WriteFloat(FILE *fp, float value)
 		{
 			buf[l] = 0;
 			break;
-		} //end if
+		}
 		buf[l] = 0;
-	} //end while
+	}
 	//write the float to file
 	if (fprintf(fp, "%s", buf) < 0) return 0;
 	return 1;
-} //end of the function WriteFloat
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -389,11 +379,11 @@ int WriteStructWithIndent(FILE *fp, structdef_t *def, char *structure, int inden
 		{
 			num = fd->maxarray;
 			if (fprintf(fp, "{") < 0) return qfalse;
-		} //end if
+		}
 		else
 		{
 			num = 1;
-		} //end else
+		}
 		while(num-- > 0)
 		{
 			switch(fd->type & FT_TYPE)
@@ -434,23 +424,22 @@ int WriteStructWithIndent(FILE *fp, structdef_t *def, char *structure, int inden
 				if (num > 0)
 				{
 					if (fprintf(fp, ",") < 0) return qfalse;
-				} //end if
+				}
 				else
 				{
 					if (fprintf(fp, "}") < 0) return qfalse;
-				} //end else
-			} //end if
-		} //end while
+				}
+			}
+		}
 		if (fprintf(fp, "\r\n") < 0) return qfalse;
-	} //end for
+	}
 	indent--;
 
 	if (!WriteIndent(fp, indent)) return qfalse;
 	if (fprintf(fp, "}\r\n") < 0) return qfalse;
 	return qtrue;
-} //end of the function WriteStructWithIndent
+}
 //===========================================================================
-//
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -458,5 +447,5 @@ int WriteStructWithIndent(FILE *fp, structdef_t *def, char *structure, int inden
 int WriteStructure(FILE *fp, structdef_t *def, char *structure)
 {
 	return WriteStructWithIndent(fp, def, structure, 0);
-} //end of the function WriteStructure
+}
 

@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // cg_consolecmds.c -- text commands typed in at the local console, or
 // executed by a key binding
 
@@ -267,7 +266,6 @@ static void CG_PrevTeamMember_f(void)
 }
 
 // ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, CAMP is last
-//
 static void CG_NextOrder_f(void)
 {
 	clientInfo_t *ci = cgs.clientinfo + cg.snap->ps.clientNum;
@@ -581,10 +579,8 @@ void CG_InitConsoleCommands(void)
 		trap_AddCommand(commands[i].cmd);
 	}
 
-	//
 	// the game server will interpret these commands, which will be automatically
 	// forwarded to the server after they are not recognized locally
-	//
 	trap_AddCommand("kill");
 	trap_AddCommand("say");
 	trap_AddCommand("say_team");

@@ -19,7 +19,6 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-//
 // bg_misc.c -- both games misc functions, all completely stateless
 
 #include "../qcommon/q_shared.h"
@@ -59,9 +58,7 @@ gitem_t	bg_itemlist[] = {
 		/* sounds */ ""
 	},	// leave index 0 alone
 
-	//
 	// collectables
-	//
 
 	// QUAKED item_token (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	{
@@ -165,9 +162,7 @@ gitem_t	bg_itemlist[] = {
 		""				// sounds
 	},
 
-	//
 	// WEAPONS
-	//
 
 	/*QUAKED weapon_gauntlet (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	*/
