@@ -27,198 +27,199 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "ui_public.h"
 //redefine to old API version
 #undef UI_API_VERSION
-#define UI_API_VERSION	6
+#define UI_API_VERSION 6
 #include "../client/keycodes.h"
 #include "../game/bg_public.h"
 
-extern vmCvar_t	ui_drawCrosshair;
-extern vmCvar_t	ui_drawCrosshairNames;
-extern vmCvar_t	ui_marks;
-extern vmCvar_t	ui_drawfps;
+extern vmCvar_t ui_drawCrosshair;
+extern vmCvar_t ui_drawCrosshairNames;
+extern vmCvar_t ui_marks;
+extern vmCvar_t ui_drawfps;
 
 // ui_widgets.c
-extern vec4_t		menu_text_color;
-extern vec4_t		color_black;
-extern vec4_t		color_white;
-extern vec4_t		color_yellow;
-extern vec4_t		color_blue;
-extern vec4_t		color_orange;
-extern vec4_t		color_red;
-extern vec4_t		color_dim;
-extern vec4_t		name_color;
+extern vec4_t menu_text_color;
+extern vec4_t color_black;
+extern vec4_t color_white;
+extern vec4_t color_yellow;
+extern vec4_t color_blue;
+extern vec4_t color_orange;
+extern vec4_t color_red;
+extern vec4_t color_dim;
+extern vec4_t name_color;
 
-qboolean idcmp(const char *a, const char *b);
-void idcpy(char *dst, const char *src);
-qboolean button(const char *id, int x, int y, int just, const char *label);
-qboolean checkbox(const char *id, int x, int y, int just, qboolean *state);
-qboolean slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt);
-qboolean textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz);
-qboolean textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts);
+qboolean	idcmp(const char *a, const char *b);
+void		idcpy(char *dst, const char *src);
+qboolean	button(const char *id, int x, int y, int just, const char *label);
+qboolean	checkbox(const char *id, int x, int y, int just, qboolean *state);
+qboolean	slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt);
+qboolean	textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz);
+qboolean	textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts);
 
 // ui_main.c
-extern void cacheui(void);
-extern void registercvars(void);
-extern void updatecvars(void);
+extern void	cacheui(void);
+extern void	registercvars(void);
+extern void	updatecvars(void);
 
 // ui_connect.c
-extern void drawconnectscreen(qboolean overlay);
+extern void	drawconnectscreen(qboolean overlay);
 
 // ui_atoms.c
-enum {
-	MAXIDLEN	= 128,
-	TEXTLEN		= 64,
-	NSTACK		= 64
- };
+enum
+{
+	MAXIDLEN    = 128,
+	TEXTLEN             = 64,
+	NSTACK              = 64
+};
 
-typedef struct {
-	int					frametime;
-	int					realtime;
-	int					cursorx;
-	int					cursory;
-	glconfig_t			glconfig;
-	qboolean			debug;
-	qboolean		fullscreen;
-	qboolean		keys[MAX_KEYS];		// keys down this refresh
-	char			text[TEXTLEN];			// text entered this refresh
-	int			texti;				// text index
-	char			hot[MAXIDLEN];		// id hovered over
-	char			active[MAXIDLEN];		// active id
-	char			focus[MAXIDLEN];		// id with keyboard focus
-	char			lastfocus[MAXIDLEN];	// last focused id
-	void			(*stk[NSTACK])(void);	// menu drawing stack
-	int			sp;					// stack pointer
+typedef struct
+{
+	int		frametime;
+	int		realtime;
+	int		cursorx;
+	int		cursory;
+	glconfig_t	glconfig;
+	qboolean	debug;
+	qboolean	fullscreen;
+	qboolean	keys[MAX_KEYS];		// keys down this refresh
+	char		text[TEXTLEN];		// text entered this refresh
+	int		texti;			// text index
+	char		hot[MAXIDLEN];		// id hovered over
+	char		active[MAXIDLEN];	// active id
+	char		focus[MAXIDLEN];	// id with keyboard focus
+	char		lastfocus[MAXIDLEN];	// last focused id
+	void(*stk[NSTACK])(void);		// menu drawing stack
+	int		sp;			// stack pointer
 
-	qhandle_t			whiteShader;
-	qhandle_t			menuBackShader;
-	qhandle_t			charset;
-	qhandle_t			charsetProp;
-	qhandle_t			charsetPropGlow;
-	qhandle_t			charsetPropB;
-	qhandle_t			cursor;
-	qhandle_t			rb_on;
-	qhandle_t			rb_off;
-	sfxHandle_t		fieldUpdateSound;
-	float				xscale;
-	float				yscale;
-	float				bias;
-	qboolean			demoversion;
-	qboolean			firstdraw;
+	qhandle_t	whiteShader;
+	qhandle_t	menuBackShader;
+	qhandle_t	charset;
+	qhandle_t	charsetProp;
+	qhandle_t	charsetPropGlow;
+	qhandle_t	charsetPropB;
+	qhandle_t	cursor;
+	qhandle_t	rb_on;
+	qhandle_t	rb_off;
+	sfxHandle_t	fieldUpdateSound;
+	float		xscale;
+	float		yscale;
+	float		bias;
+	qboolean	demoversion;
+	qboolean	firstdraw;
 } uiStatic_t;
 
 typedef void (*menuFn_t)(void);
 
-extern void			init(void);
-extern void			shutdown(void);
-extern void			keyevent(int key, int down);
-extern void			charevent(int key);
-extern void			mouseevent(int dx, int dy);
-extern void			refresh(int realtime);
-extern qboolean		consolecommand(int realTime);
-extern float		UI_ClampCvar(float min, float max, float value);
-extern void			drawnamedpic(float x, float y, float w, float h, const char *picname);
-extern void			drawpic(float x, float y, float w, float h, qhandle_t hShader);
-extern void			fillrect(float x, float y, float width, float height, const float *color);
-extern void			drawrect(float x, float y, float width, float height, const float *color);
-extern void			updatescreen(void);
-extern void			setcolour(const float *rgba);
-extern void			lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t);
-extern void			drawbannerstr(int x, int y, const char *str, int style, vec4_t color);
-extern float		propsizescale(int style);
-extern void			drawpropstr(int x, int y, const char *str, int style, vec4_t color);
-extern void			drawpropstrwrapped(int x, int ystart, int xmax, int ystep, const char *str, int style, vec4_t color);
-extern int			propstrwidth(const char *str, int slicebegin, int sliceend);
-extern float		propstrsizescale(int style);
-extern void			drawstr(int x, int y, const char *str, int style, vec4_t color);
-extern void			drawchar(int x, int y, int ch, int style, vec4_t color);
-extern qboolean 	mouseover(int x, int y, int width, int height);
-extern void			adjustcoords(float *x, float *y, float *w, float *h);
-extern void			drawtextbox(int x, int y, int width, int lines);
-extern void			setactivemenu(uiMenuCommand_t menu);
-extern void			push(void (*drawfunc)(void));
-extern void			pop(void);
-extern menuFn_t		peek(void);
-extern void			dismissui(void);
-extern char			*Argv(int arg);
-extern char			*UI_Cvar_VariableString(const char *var_name);
-extern void			refresh(int time);
-extern void			startdemoloop(void);
+extern void	init(void);
+extern void	shutdown(void);
+extern void	keyevent(int key, int down);
+extern void	charevent(int key);
+extern void	mouseevent(int dx, int dy);
+extern void	refresh(int realtime);
+extern qboolean consolecommand(int realTime);
+extern float	UI_ClampCvar(float min, float max, float value);
+extern void	drawnamedpic(float x, float y, float w, float h, const char *picname);
+extern void	drawpic(float x, float y, float w, float h, qhandle_t hShader);
+extern void	fillrect(float x, float y, float width, float height, const float *color);
+extern void	drawrect(float x, float y, float width, float height, const float *color);
+extern void	updatescreen(void);
+extern void	setcolour(const float *rgba);
+extern void	lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t);
+extern void	drawbannerstr(int x, int y, const char *str, int style, vec4_t color);
+extern float	propsizescale(int style);
+extern void	drawpropstr(int x, int y, const char *str, int style, vec4_t color);
+extern void	drawpropstrwrapped(int x, int ystart, int xmax, int ystep, const char *str, int style, vec4_t color);
+extern int	propstrwidth(const char *str, int slicebegin, int sliceend);
+extern float	propstrsizescale(int style);
+extern void	drawstr(int x, int y, const char *str, int style, vec4_t color);
+extern void	drawchar(int x, int y, int ch, int style, vec4_t color);
+extern qboolean mouseover(int x, int y, int width, int height);
+extern void	adjustcoords(float *x, float *y, float *w, float *h);
+extern void	drawtextbox(int x, int y, int width, int lines);
+extern void	setactivemenu(uiMenuCommand_t menu);
+extern void	push(void (*drawfunc)(void));
+extern void	pop(void);
+extern menuFn_t peek(void);
+extern void	dismissui(void);
+extern char	*Argv(int arg);
+extern char	*UI_Cvar_VariableString(const char *var_name);
+extern void	refresh(int time);
+extern void	startdemoloop(void);
 
 extern qboolean m_entersound;
 extern uiStatic_t uis;
 
 // ui_menus.c
-void mainmenu(void);
-void ingamemenu(void);
-void quitmenu(void);
-void videomenu(void);
-void soundmenu(void);
-void ctlmenu(void);
-void errormenu(void);
-void placeholder(void);
+void		mainmenu(void);
+void		ingamemenu(void);
+void		quitmenu(void);
+void		videomenu(void);
+void		soundmenu(void);
+void		ctlmenu(void);
+void		errormenu(void);
+void		placeholder(void);
 
 // ui_syscalls.c
-void			trap_Print(const char *string);
-void			trap_Error(const char *string) __attribute__((noreturn));
-int				trap_Milliseconds(void);
-void			trap_Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags);
-void			trap_Cvar_Update(vmCvar_t *vmCvar);
-void			trap_Cvar_Set(const char *var_name, const char *value);
-float			trap_Cvar_VariableValue(const char *var_name);
-void			trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
-void			trap_Cvar_SetValue(const char *var_name, float value);
-void			trap_Cvar_Reset(const char *name);
-void			trap_Cvar_Create(const char *var_name, const char *var_value, int flags);
-void			trap_Cvar_InfoStringBuffer(int bit, char *buffer, int bufsize);
-int				trap_Argc(void);
-void			trap_Argv(int n, char *buffer, int bufferLength);
-void			trap_Cmd_ExecuteText(int exec_when, const char *text);	// don't use EXEC_NOW!
-int				trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode);
-void			trap_FS_Read(void *buffer, int len, fileHandle_t f);
-void			trap_FS_Write(const void *buffer, int len, fileHandle_t f);
-void			trap_FS_FCloseFile(fileHandle_t f);
-int				trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize);
-int				trap_FS_Seek(fileHandle_t f, long offset, int origin);   // fsOrigin_t
-qhandle_t		trap_R_RegisterModel(const char *name);
-qhandle_t		trap_R_RegisterSkin(const char *name);
-qhandle_t		trap_R_RegisterShaderNoMip(const char *name);
-void			trap_R_ClearScene(void);
-void			trap_R_AddRefEntityToScene(const refEntity_t *re);
-void			trap_R_AddPolyToScene(qhandle_t hShader , int numVerts, const polyVert_t *verts);
-void			trap_R_AddLightToScene(const vec3_t org, float intensity, float r, float g, float b);
-void			trap_R_RenderScene(const refdef_t *fd);
-void			trap_R_SetColor(const float *rgba);
-void			trap_R_DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader);
-void			trap_UpdateScreen(void);
-int				trap_CM_LerpTag(orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame, float frac, const char *tagName);
-void			trap_S_StartLocalSound(sfxHandle_t sfx, int channelNum);
+void		trap_Print(const char *string);
+void		trap_Error(const char *string) __attribute__((noreturn));
+int		trap_Milliseconds(void);
+void		trap_Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags);
+void		trap_Cvar_Update(vmCvar_t *vmCvar);
+void		trap_Cvar_Set(const char *var_name, const char *value);
+float		trap_Cvar_VariableValue(const char *var_name);
+void		trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
+void		trap_Cvar_SetValue(const char *var_name, float value);
+void		trap_Cvar_Reset(const char *name);
+void		trap_Cvar_Create(const char *var_name, const char *var_value, int flags);
+void		trap_Cvar_InfoStringBuffer(int bit, char *buffer, int bufsize);
+int		trap_Argc(void);
+void		trap_Argv(int n, char *buffer, int bufferLength);
+void		trap_Cmd_ExecuteText(int exec_when, const char *text);	// don't use EXEC_NOW!
+int		trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode);
+void		trap_FS_Read(void *buffer, int len, fileHandle_t f);
+void		trap_FS_Write(const void *buffer, int len, fileHandle_t f);
+void		trap_FS_FCloseFile(fileHandle_t f);
+int		trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize);
+int		trap_FS_Seek(fileHandle_t f, long offset, int origin);	// fsOrigin_t
+qhandle_t	trap_R_RegisterModel(const char *name);
+qhandle_t	trap_R_RegisterSkin(const char *name);
+qhandle_t	trap_R_RegisterShaderNoMip(const char *name);
+void		trap_R_ClearScene(void);
+void		trap_R_AddRefEntityToScene(const refEntity_t *re);
+void		trap_R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t *verts);
+void		trap_R_AddLightToScene(const vec3_t org, float intensity, float r, float g, float b);
+void		trap_R_RenderScene(const refdef_t *fd);
+void		trap_R_SetColor(const float *rgba);
+void		trap_R_DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader);
+void		trap_UpdateScreen(void);
+int		trap_CM_LerpTag(orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame, float frac, const char *tagName);
+void		trap_S_StartLocalSound(sfxHandle_t sfx, int channelNum);
 sfxHandle_t	trap_S_RegisterSound(const char *sample, qboolean compressed);
-void			trap_Key_KeynumToStringBuf(int keynum, char *buf, int buflen);
-void			trap_Key_GetBindingBuf(int keynum, char *buf, int buflen);
-void			trap_Key_SetBinding(int keynum, const char *binding);
-qboolean		trap_Key_IsDown(int keynum);
-qboolean		trap_Key_GetOverstrikeMode(void);
-void			trap_Key_SetOverstrikeMode(qboolean state);
-void			trap_Key_ClearStates(void);
-int				trap_Key_GetCatcher(void);
-void			trap_Key_SetCatcher(int catcher);
-void			trap_GetClipboardData(char *buf, int bufsize);
-void			trap_GetClientState(uiClientState_t *state);
-void			trap_GetGlconfig(glconfig_t *glconfig);
-int				trap_GetConfigString(int index, char *buff, int buffsize);
-int				trap_LAN_GetServerCount(int source);
-void			trap_LAN_GetServerAddressString(int source, int n, char *buf, int buflen);
-void			trap_LAN_GetServerInfo(int source, int n, char *buf, int buflen);
-int				trap_LAN_GetPingQueueCount(void);
-int				trap_LAN_ServerStatus(const char *serverAddress, char *serverStatus, int maxLen);
-void			trap_LAN_ClearPing(int n);
-void			trap_LAN_GetPing(int n, char *buf, int buflen, int *pingtime);
-void			trap_LAN_GetPingInfo(int n, char *buf, int buflen);
-int				trap_MemoryRemaining(void);
-void			trap_GetCDKey(char *buf, int buflen);
-void			trap_SetCDKey(char *buf);
+void		trap_Key_KeynumToStringBuf(int keynum, char *buf, int buflen);
+void		trap_Key_GetBindingBuf(int keynum, char *buf, int buflen);
+void		trap_Key_SetBinding(int keynum, const char *binding);
+qboolean	trap_Key_IsDown(int keynum);
+qboolean	trap_Key_GetOverstrikeMode(void);
+void		trap_Key_SetOverstrikeMode(qboolean state);
+void		trap_Key_ClearStates(void);
+int		trap_Key_GetCatcher(void);
+void		trap_Key_SetCatcher(int catcher);
+void		trap_GetClipboardData(char *buf, int bufsize);
+void		trap_GetClientState(uiClientState_t *state);
+void		trap_GetGlconfig(glconfig_t *glconfig);
+int		trap_GetConfigString(int index, char *buff, int buffsize);
+int		trap_LAN_GetServerCount(int source);
+void		trap_LAN_GetServerAddressString(int source, int n, char *buf, int buflen);
+void		trap_LAN_GetServerInfo(int source, int n, char *buf, int buflen);
+int		trap_LAN_GetPingQueueCount(void);
+int		trap_LAN_ServerStatus(const char *serverAddress, char *serverStatus, int maxLen);
+void		trap_LAN_ClearPing(int n);
+void		trap_LAN_GetPing(int n, char *buf, int buflen, int *pingtime);
+void		trap_LAN_GetPingInfo(int n, char *buf, int buflen);
+int		trap_MemoryRemaining(void);
+void		trap_GetCDKey(char *buf, int buflen);
+void		trap_SetCDKey(char *buf);
 
-qboolean               trap_VerifyCDKey(const char *key, const char *chksum);
+qboolean	trap_VerifyCDKey(const char *key, const char *chksum);
 
-void			trap_SetPbClStatus(int status);
-
+void		trap_SetPbClStatus(int status);
 #endif

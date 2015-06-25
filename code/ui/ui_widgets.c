@@ -1,29 +1,32 @@
 #include "ui_local.h"
 
-vec4_t menu_text_color	    = {1.0f, 1.0f, 1.0f, 1.0f};
-vec4_t color_black	    = {0.00f, 0.00f, 0.00f, 1.00f};
-vec4_t color_white	    = {1.00f, 1.00f, 1.00f, 1.00f};
-vec4_t color_yellow	    = {1.00f, 1.00f, 0.00f, 1.00f};
-vec4_t color_blue	    = {0.20f, 0.20f, 1.00f, 1.00f};
-vec4_t color_lightOrange    = {1.00f, 0.68f, 0.00f, 1.00f };
-vec4_t color_orange	    = {1.00f, 0.43f, 0.00f, 1.00f};
-vec4_t color_red	    = {1.00f, 0.00f, 0.00f, 1.00f};
-vec4_t color_dim	    = {0.00f, 0.00f, 0.00f, 0.25f};
+vec4_t menu_text_color = {1.0f, 1.0f, 1.0f, 1.0f};
+vec4_t color_black = {0.00f, 0.00f, 0.00f, 1.00f};
+vec4_t color_white = {1.00f, 1.00f, 1.00f, 1.00f};
+vec4_t color_yellow = {1.00f, 1.00f, 0.00f, 1.00f};
+vec4_t color_blue = {0.20f, 0.20f, 1.00f, 1.00f};
+vec4_t color_lightOrange = {1.00f, 0.68f, 0.00f, 1.00f};
+vec4_t color_orange = {1.00f, 0.43f, 0.00f, 1.00f};
+vec4_t color_red = {1.00f, 0.00f, 0.00f, 1.00f};
+vec4_t color_dim = {0.00f, 0.00f, 0.00f, 0.25f};
 
 vec4_t colour_hot = {0.788f, 0.988f, 0.705f, 0.5f};
 vec4_t colour_active = {0.8f, 0.976f, 0.976f, 1.0f};
 
-qboolean idcmp(const char *a, const char *b)
+qboolean
+idcmp(const char *a, const char *b)
 {
 	return strcmp(a, b) == 0;
 }
 
-void idcpy(char *dst, const char *src)
+void
+idcpy(char *dst, const char *src)
 {
 	Q_strncpyz(dst, src, MAXIDLEN);
 }
 
-static void justify(int just, int *x, int w)
+static void
+justify(int just, int *x, int w)
 {
 	switch(just){
 	case UI_CENTER:
@@ -36,7 +39,8 @@ static void justify(int just, int *x, int w)
 }
 
 // Focus occurs by draw order.
-static qboolean yieldfocus(const char *id)
+static qboolean
+yieldfocus(const char *id)
 {
 	if(!uis.keys[K_TAB])
 		return qfalse;
@@ -49,7 +53,8 @@ static qboolean yieldfocus(const char *id)
 	return qtrue;
 }
 
-qboolean button(const char *id, int x, int y, int just, const char *label)
+qboolean
+button(const char *id, int x, int y, int just, const char *label)
 {
 	float w = 48, h = 28;
 	vec4_t colour = {0.996, 0.984, 0.623, 1.0};
@@ -83,10 +88,11 @@ qboolean button(const char *id, int x, int y, int just, const char *label)
 		//fillrect(x, y, w, h, colour);
 		;
 	drawpropstr(x+w/2, y, label, UI_CENTER|UI_DROPSHADOW, labelcolour);
-	return (!uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id));
+	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);
 }
 
-qboolean slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt)
+qboolean
+slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt)
 {
 	float w = 120, pad = 2, h = 12, knobw = 6, knobh = 18, ix, iy, iw;
 	qboolean hot, updated;
@@ -96,7 +102,8 @@ qboolean slider(const char *id, int x, int y, int just, float min, float max, fl
 	hot = qfalse;
 	updated = qfalse;
 	justify(just, &x, w);
-	ix = x+pad; iy = y+pad;
+	ix = x+pad;
+	iy = y+pad;
 	iw = w - 2*pad;
 
 	if(idcmp(uis.focus, ""))
@@ -138,7 +145,8 @@ qboolean slider(const char *id, int x, int y, int just, float min, float max, fl
 	return updated;
 }
 
-qboolean checkbox(const char *id, int x, int y, int just, qboolean *state)
+qboolean
+checkbox(const char *id, int x, int y, int just, qboolean *state)
 {
 	const float w = 16, h = 16;
 	vec4_t offcolour = {0.0, 1.0, 0.0, 1.0};
@@ -169,10 +177,11 @@ qboolean checkbox(const char *id, int x, int y, int just, qboolean *state)
 		drawnamedpic(x, y, w, h, "menu/art/tick");
 		setcolour(nil);
 	}
-	return (!uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id));
+	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);
 }
 
-static qboolean updatefield(char *buf, int *caret, int sz)
+static qboolean
+updatefield(char *buf, int *caret, int sz)
 {
 	char *p;
 	int i;
@@ -242,7 +251,8 @@ static qboolean updatefield(char *buf, int *caret, int sz)
 	return updated;
 }
 
-qboolean textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz)
+qboolean
+textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz)
 {
 	const float w = width*SMALLCHAR_WIDTH;
 	const float h = 16, pad = 4;
@@ -284,7 +294,8 @@ qboolean textfield(const char *id, int x, int y, int just, int width, char *buf,
 	return updated;
 }
 
-static qboolean spinnerbutton(const char *id, int x, int y, const char *shader)
+static qboolean
+spinnerbutton(const char *id, int x, int y, const char *shader)
 {
 	const float sz = 18;
 	vec4_t colour = {0.0, 1.0, 0.8, 1.0};
@@ -303,10 +314,11 @@ static qboolean spinnerbutton(const char *id, int x, int y, const char *shader)
 		setcolour(color_orange);
 	drawnamedpic(x, y, sz, sz, shader);
 	setcolour(nil);
-	return (!uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id));
+	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);
 }
 
-qboolean textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts)
+qboolean
+textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts)
 {
 	const float w = 14*SMALLCHAR_WIDTH, h = 18, bsz = 18;
 	qboolean hot, updated;

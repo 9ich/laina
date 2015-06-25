@@ -29,13 +29,14 @@ CG_AdjustFrom640
 Adjusted for resolution and screen aspect ratio
 ================
 */
-void CG_AdjustFrom640(float *x, float *y, float *w, float *h)
+void
+CG_AdjustFrom640(float *x, float *y, float *w, float *h)
 {
 #if 0
 	// adjust for wide screens
-	if(cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640){
+	if(cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640)
 		*x += 0.5 * (cgs.glconfig.vidWidth - (cgs.glconfig.vidHeight * 640 / 480));
-	}
+
 #endif
 	// scale for screen sizes
 	*x *= cgs.screenXScale;
@@ -51,7 +52,8 @@ CG_FillRect
 Coordinates are 640*480 virtual values
 =================
 */
-void CG_FillRect(float x, float y, float width, float height, const float *color)
+void
+CG_FillRect(float x, float y, float width, float height, const float *color)
 {
 	trap_R_SetColor(color);
 
@@ -68,7 +70,8 @@ CG_DrawSides
 Coords are virtual 640x480
 ================
 */
-void CG_DrawSides(float x, float y, float w, float h, float size)
+void
+CG_DrawSides(float x, float y, float w, float h, float size)
 {
 	CG_AdjustFrom640(&x, &y, &w, &h);
 	size *= cgs.screenXScale;
@@ -76,13 +79,15 @@ void CG_DrawSides(float x, float y, float w, float h, float size)
 	trap_R_DrawStretchPic(x + w - size, y, size, h, 0, 0, 0, 0, cgs.media.whiteShader);
 }
 
-void CG_DrawTopBottom(float x, float y, float w, float h, float size)
+void
+CG_DrawTopBottom(float x, float y, float w, float h, float size)
 {
 	CG_AdjustFrom640(&x, &y, &w, &h);
 	size *= cgs.screenYScale;
 	trap_R_DrawStretchPic(x, y, w, size, 0, 0, 0, 0, cgs.media.whiteShader);
 	trap_R_DrawStretchPic(x, y + h - size, w, size, 0, 0, 0, 0, cgs.media.whiteShader);
 }
+
 /*
 ================
 UI_DrawRect
@@ -90,7 +95,8 @@ UI_DrawRect
 Coordinates are 640*480 virtual values
 =================
 */
-void CG_DrawRect(float x, float y, float width, float height, float size, const float *color)
+void
+CG_DrawRect(float x, float y, float width, float height, float size, const float *color)
 {
 	trap_R_SetColor(color);
 
@@ -100,8 +106,6 @@ void CG_DrawRect(float x, float y, float width, float height, float size, const 
 	trap_R_SetColor(nil);
 }
 
-
-
 /*
 ================
 CG_DrawPic
@@ -109,13 +113,12 @@ CG_DrawPic
 Coordinates are 640*480 virtual values
 =================
 */
-void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader)
+void
+CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader)
 {
 	CG_AdjustFrom640(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
-
-
 
 /*
 ===============
@@ -124,18 +127,18 @@ CG_DrawChar
 Coordinates and size in 640*480 virtual screen size
 ===============
 */
-void CG_DrawChar(int x, int y, int width, int height, int ch)
+void
+CG_DrawChar(int x, int y, int width, int height, int ch)
 {
 	int row, col;
 	float frow, fcol;
 	float size;
-	float	ax, ay, aw, ah;
+	float ax, ay, aw, ah;
 
 	ch &= 255;
 
-	if(ch == ' '){
+	if(ch == ' ')
 		return;
-	}
 
 	ax = x;
 	ay = y;
@@ -151,11 +154,10 @@ void CG_DrawChar(int x, int y, int width, int height, int ch)
 	size = 0.0625;
 
 	trap_R_DrawStretchPic(ax, ay, aw, ah,
-	                      fcol, frow,
-	                      fcol + size, frow + size,
-	                      cgs.media.charsetShader);
+			      fcol, frow,
+			      fcol + size, frow + size,
+			      cgs.media.charsetShader);
 }
-
 
 /*
 ==================
@@ -167,16 +169,17 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void CG_DrawStringExt(int x, int y, const char *string, const float *setColor,
-                      qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars)
+void
+CG_DrawStringExt(int x, int y, const char *string, const float *setColor,
+		 qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars)
 {
-	vec4_t		color;
-	const char	*s;
-	int			xx;
-	int			cnt;
+	vec4_t color;
+	const char *s;
+	int xx;
+	int cnt;
 
 	if(maxChars <= 0)
-		maxChars = 32767; // do them all!
+		maxChars = 32767;	// do them all!
 
 	// draw the drop shadow
 	if(shadow){
@@ -221,30 +224,34 @@ void CG_DrawStringExt(int x, int y, const char *string, const float *setColor,
 	trap_R_SetColor(nil);
 }
 
-void CG_DrawBigString(int x, int y, const char *s, float alpha)
+void
+CG_DrawBigString(int x, int y, const char *s, float alpha)
 {
-	float	color[4];
+	float color[4];
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
 	CG_DrawStringExt(x, y, s, color, qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0);
 }
 
-void CG_DrawBigStringColor(int x, int y, const char *s, vec4_t color)
+void
+CG_DrawBigStringColor(int x, int y, const char *s, vec4_t color)
 {
 	CG_DrawStringExt(x, y, s, color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0);
 }
 
-void CG_DrawSmallString(int x, int y, const char *s, float alpha)
+void
+CG_DrawSmallString(int x, int y, const char *s, float alpha)
 {
-	float	color[4];
+	float color[4];
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
 	CG_DrawStringExt(x, y, s, color, qfalse, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0);
 }
 
-void CG_DrawSmallStringColor(int x, int y, const char *s, vec4_t color)
+void
+CG_DrawSmallStringColor(int x, int y, const char *s, vec4_t color)
 {
 	CG_DrawStringExt(x, y, s, color, qtrue, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0);
 }
@@ -256,15 +263,16 @@ CG_DrawStrlen
 Returns character count, skiping color escape codes
 =================
 */
-int CG_DrawStrlen(const char *str)
+int
+CG_DrawStrlen(const char *str)
 {
 	const char *s = str;
 	int count = 0;
 
 	while(*s){
-		if(Q_IsColorString(s)){
+		if(Q_IsColorString(s))
 			s += 2;
-		}else{
+		else{
 			count++;
 			s++;
 		}
@@ -281,9 +289,10 @@ This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
 =============
 */
-static void CG_TileClearBox(int x, int y, int w, int h, qhandle_t hShader)
+static void
+CG_TileClearBox(int x, int y, int w, int h, qhandle_t hShader)
 {
-	float	s1, t1, s2, t2;
+	float s1, t1, s2, t2;
 
 	s1 = x/64.0;
 	t1 = y/64.0;
@@ -292,8 +301,6 @@ static void CG_TileClearBox(int x, int y, int w, int h, qhandle_t hShader)
 	trap_R_DrawStretchPic(x, y, w, h, s1, t1, s2, t2, hShader);
 }
 
-
-
 /*
 ==============
 CG_TileClear
@@ -301,18 +308,18 @@ CG_TileClear
 Clear around a sized down screen
 ==============
 */
-void CG_TileClear(void)
+void
+CG_TileClear(void)
 {
-	int		top, bottom, left, right;
-	int		w, h;
+	int top, bottom, left, right;
+	int w, h;
 
 	w = cgs.glconfig.vidWidth;
 	h = cgs.glconfig.vidHeight;
 
 	if(cg.refdef.x == 0 && cg.refdef.y == 0 &&
-	        cg.refdef.width == w && cg.refdef.height == h){
-		return;		// full screen rendering
-	}
+	   cg.refdef.width == w && cg.refdef.height == h)
+		return;	// full screen rendering
 
 	top = cg.refdef.y;
 	bottom = top + cg.refdef.height-1;
@@ -332,51 +339,47 @@ void CG_TileClear(void)
 	CG_TileClearBox(right, top, w - right, bottom - top + 1, cgs.media.backTileShader);
 }
 
-
-
 /*
 ================
 CG_FadeColor
 ================
 */
-float *CG_FadeColor(int startMsec, int totalMsec)
+float *
+CG_FadeColor(int startMsec, int totalMsec)
 {
-	static vec4_t		color;
-	int			t;
+	static vec4_t color;
+	int t;
 
-	if(startMsec == 0){
+	if(startMsec == 0)
 		return nil;
-	}
 
 	t = cg.time - startMsec;
 
-	if(t >= totalMsec){
+	if(t >= totalMsec)
 		return nil;
-	}
 
 	// fade out
-	if(totalMsec - t < FADE_TIME){
+	if(totalMsec - t < FADE_TIME)
 		color[3] = (totalMsec - t) * 1.0/FADE_TIME;
-	}else{
+	else
 		color[3] = 1.0;
-	}
 	color[0] = color[1] = color[2] = 1;
 
 	return color;
 }
-
 
 /*
 ================
 CG_TeamColor
 ================
 */
-float *CG_TeamColor(int team)
+float *
+CG_TeamColor(int team)
 {
-	static vec4_t	red = {1, 0.2f, 0.2f, 1};
-	static vec4_t	blue = {0.2f, 0.2f, 1, 1};
-	static vec4_t	other = {1, 1, 1, 1};
-	static vec4_t	spectator = {0.7f, 0.7f, 0.7f, 1};
+	static vec4_t red = {1, 0.2f, 0.2f, 1};
+	static vec4_t blue = {0.2f, 0.2f, 1, 1};
+	static vec4_t other = {1, 1, 1, 1};
+	static vec4_t spectator = {0.7f, 0.7f, 0.7f, 1};
 
 	switch(team){
 	case TEAM_RED:
@@ -390,17 +393,16 @@ float *CG_TeamColor(int team)
 	}
 }
 
-
-
 /*
 =================
 CG_GetColorForHealth
 =================
 */
-void CG_GetColorForHealth(int health, int armor, vec4_t hcolor)
+void
+CG_GetColorForHealth(int health, int armor, vec4_t hcolor)
 {
-	int		count;
-	int		max;
+	int count;
+	int max;
 
 	// calculate the total points of damage that can
 	// be sustained at the current health / armor level
@@ -411,29 +413,26 @@ void CG_GetColorForHealth(int health, int armor, vec4_t hcolor)
 	}
 	count = armor;
 	max = health * ARMOR_PROTECTION / (1.0 - ARMOR_PROTECTION);
-	if(max < count){
+	if(max < count)
 		count = max;
-	}
 	health += count;
 
 	// set the color based on health
 	hcolor[0] = 1.0;
 	hcolor[3] = 1.0;
-	if(health >= 100){
+	if(health >= 100)
 		hcolor[2] = 1.0;
-	}else if(health < 66){
+	else if(health < 66)
 		hcolor[2] = 0;
-	}else{
+	else
 		hcolor[2] = (health - 66) / 33.0;
-	}
 
-	if(health > 60){
+	if(health > 60)
 		hcolor[1] = 1.0;
-	}else if(health < 30){
+	else if(health < 30)
 		hcolor[1] = 0;
-	}else{
+	else
 		hcolor[1] = (health - 30) / 30.0;
-	}
 }
 
 /*
@@ -441,127 +440,126 @@ void CG_GetColorForHealth(int health, int armor, vec4_t hcolor)
 CG_ColorForHealth
 =================
 */
-void CG_ColorForHealth(vec4_t hcolor)
+void
+CG_ColorForHealth(vec4_t hcolor)
 {
-
 	CG_GetColorForHealth(cg.snap->ps.stats[STAT_HEALTH],
-	                     cg.snap->ps.stats[STAT_ARMOR], hcolor);
+			     cg.snap->ps.stats[STAT_ARMOR], hcolor);
 }
-
 
 /*
 =================
 UI_DrawProportionalString2
 =================
 */
-static int	propMap[128][3] = {
+static int propMap[128][3] = {
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 
-	{0, 0, PROP_SPACE_WIDTH},		// SPACE
-	{11, 122, 7},	// !
-	{154, 181, 14},	// "
-	{55, 122, 17},	// #
-	{79, 122, 18},	// $
-	{101, 122, 23},	// %
-	{153, 122, 18},	// &
-	{9, 93, 7},		// '
-	{207, 122, 8},	// (
-	{230, 122, 9},	// )
-	{177, 122, 18},	// *
-	{30, 152, 18},	// +
-	{85, 181, 7},	// ,
-	{34, 93, 11},	// -
-	{110, 181, 6},	// .
-	{130, 152, 14},	// /
+	{0, 0, PROP_SPACE_WIDTH},	// SPACE
+	{11, 122, 7},			// !
+	{154, 181, 14},			// "
+	{55, 122, 17},			// #
+	{79, 122, 18},			// $
+	{101, 122, 23},			// %
+	{153, 122, 18},			// &
+	{9, 93, 7},			// '
+	{207, 122, 8},			// (
+	{230, 122, 9},			// )
+	{177, 122, 18},			// *
+	{30, 152, 18},			// +
+	{85, 181, 7},			// ,
+	{34, 93, 11},			// -
+	{110, 181, 6},			// .
+	{130, 152, 14},			// /
 
-	{22, 64, 17},	// 0
-	{41, 64, 12},	// 1
-	{58, 64, 17},	// 2
-	{78, 64, 18},	// 3
-	{98, 64, 19},	// 4
-	{120, 64, 18},	// 5
-	{141, 64, 18},	// 6
-	{204, 64, 16},	// 7
-	{162, 64, 17},	// 8
-	{182, 64, 18},	// 9
-	{59, 181, 7},	// :
-	{35,181, 7},	// ;
-	{203, 152, 14},	// <
-	{56, 93, 14},	// =
-	{228, 152, 14},	// >
-	{177, 181, 18},	// ?
+	{22, 64, 17},			// 0
+	{41, 64, 12},			// 1
+	{58, 64, 17},			// 2
+	{78, 64, 18},			// 3
+	{98, 64, 19},			// 4
+	{120, 64, 18},			// 5
+	{141, 64, 18},			// 6
+	{204, 64, 16},			// 7
+	{162, 64, 17},			// 8
+	{182, 64, 18},			// 9
+	{59, 181, 7},			// :
+	{35, 181, 7},			// ;
+	{203, 152, 14},			// <
+	{56, 93, 14},			// =
+	{228, 152, 14},			// >
+	{177, 181, 18},			// ?
 
-	{28, 122, 22},	// @
-	{5, 4, 18},		// A
-	{27, 4, 18},	// B
-	{48, 4, 18},	// C
-	{69, 4, 17},	// D
-	{90, 4, 13},	// E
-	{106, 4, 13},	// F
-	{121, 4, 18},	// G
-	{143, 4, 17},	// H
-	{164, 4, 8},	// I
-	{175, 4, 16},	// J
-	{195, 4, 18},	// K
-	{216, 4, 12},	// L
-	{230, 4, 23},	// M
-	{6, 34, 18},	// N
-	{27, 34, 18},	// O
+	{28, 122, 22},			// @
+	{5, 4, 18},			// A
+	{27, 4, 18},			// B
+	{48, 4, 18},			// C
+	{69, 4, 17},			// D
+	{90, 4, 13},			// E
+	{106, 4, 13},			// F
+	{121, 4, 18},			// G
+	{143, 4, 17},			// H
+	{164, 4, 8},			// I
+	{175, 4, 16},			// J
+	{195, 4, 18},			// K
+	{216, 4, 12},			// L
+	{230, 4, 23},			// M
+	{6, 34, 18},			// N
+	{27, 34, 18},			// O
 
-	{48, 34, 18},	// P
-	{68, 34, 18},	// Q
-	{90, 34, 17},	// R
-	{110, 34, 18},	// S
-	{130, 34, 14},	// T
-	{146, 34, 18},	// U
-	{166, 34, 19},	// V
-	{185, 34, 29},	// W
-	{215, 34, 18},	// X
-	{234, 34, 18},	// Y
-	{5, 64, 14},	// Z
-	{60, 152, 7},	// [
-	{106, 151, 13},	// '\'
-	{83, 152, 7},	// ]
-	{128, 122, 17},	// ^
-	{4, 152, 21},	// _
+	{48, 34, 18},			// P
+	{68, 34, 18},			// Q
+	{90, 34, 17},			// R
+	{110, 34, 18},			// S
+	{130, 34, 14},			// T
+	{146, 34, 18},			// U
+	{166, 34, 19},			// V
+	{185, 34, 29},			// W
+	{215, 34, 18},			// X
+	{234, 34, 18},			// Y
+	{5, 64, 14},			// Z
+	{60, 152, 7},			// [
+	{106, 151, 13},			// '\'
+	{83, 152, 7},			// ]
+	{128, 122, 17},			// ^
+	{4, 152, 21},			// _
 
-	{134, 181, 5},	// '
-	{5, 4, 18},		// A
-	{27, 4, 18},	// B
-	{48, 4, 18},	// C
-	{69, 4, 17},	// D
-	{90, 4, 13},	// E
-	{106, 4, 13},	// F
-	{121, 4, 18},	// G
-	{143, 4, 17},	// H
-	{164, 4, 8},	// I
-	{175, 4, 16},	// J
-	{195, 4, 18},	// K
-	{216, 4, 12},	// L
-	{230, 4, 23},	// M
-	{6, 34, 18},	// N
-	{27, 34, 18},	// O
+	{134, 181, 5},			// '
+	{5, 4, 18},			// A
+	{27, 4, 18},			// B
+	{48, 4, 18},			// C
+	{69, 4, 17},			// D
+	{90, 4, 13},			// E
+	{106, 4, 13},			// F
+	{121, 4, 18},			// G
+	{143, 4, 17},			// H
+	{164, 4, 8},			// I
+	{175, 4, 16},			// J
+	{195, 4, 18},			// K
+	{216, 4, 12},			// L
+	{230, 4, 23},			// M
+	{6, 34, 18},			// N
+	{27, 34, 18},			// O
 
-	{48, 34, 18},	// P
-	{68, 34, 18},	// Q
-	{90, 34, 17},	// R
-	{110, 34, 18},	// S
-	{130, 34, 14},	// T
-	{146, 34, 18},	// U
-	{166, 34, 19},	// V
-	{185, 34, 29},	// W
-	{215, 34, 18},	// X
-	{234, 34, 18},	// Y
-	{5, 64, 14},	// Z
-	{153, 152, 13},	// {
-	{11, 181, 5},	// |
-	{180, 152, 13},	// }
-	{79, 93, 17},	// ~
-	{0, 0, -1}		// DEL
+	{48, 34, 18},			// P
+	{68, 34, 18},			// Q
+	{90, 34, 17},			// R
+	{110, 34, 18},			// S
+	{130, 34, 14},			// T
+	{146, 34, 18},			// U
+	{166, 34, 19},			// V
+	{185, 34, 29},			// W
+	{215, 34, 18},			// X
+	{234, 34, 18},			// Y
+	{5, 64, 14},			// Z
+	{153, 152, 13},			// {
+	{11, 181, 5},			// |
+	{180, 152, 13},			// }
+	{79, 93, 17},			// ~
+	{0, 0, -1}			// DEL
 };
 
 static int propMapB[26][3] = {
@@ -605,18 +603,19 @@ static int propMapB[26][3] = {
 UI_DrawBannerString
 =================
 */
-static void UI_DrawBannerString2(int x, int y, const char *str, vec4_t color)
+static void
+UI_DrawBannerString2(int x, int y, const char *str, vec4_t color)
 {
 	const char *s;
-	uchar	ch;
-	float	ax;
-	float	ay;
-	float	aw;
-	float	ah;
-	float	frow;
-	float	fcol;
-	float	fwidth;
-	float	fheight;
+	uchar ch;
+	float ax;
+	float ay;
+	float aw;
+	float ah;
+	float frow;
+	float fcol;
+	float fwidth;
+	float fheight;
 
 	// draw the colored text
 	trap_R_SetColor(color);
@@ -627,9 +626,9 @@ static void UI_DrawBannerString2(int x, int y, const char *str, vec4_t color)
 	s = str;
 	while(*s){
 		ch = *s & 127;
-		if(ch == ' '){
+		if(ch == ' ')
 			ax += ((float)PROPB_SPACE_WIDTH + (float)PROPB_GAP_WIDTH)* cgs.screenXScale;
-		}else if(ch >= 'A' && ch <= 'Z'){
+		else if(ch >= 'A' && ch <= 'Z'){
 			ch -= 'A';
 			fcol = (float)propMapB[ch][0] / 256.0f;
 			frow = (float)propMapB[ch][1] / 256.0f;
@@ -646,23 +645,23 @@ static void UI_DrawBannerString2(int x, int y, const char *str, vec4_t color)
 	trap_R_SetColor(nil);
 }
 
-void UI_DrawBannerString(int x, int y, const char *str, int style, vec4_t color)
+void
+UI_DrawBannerString(int x, int y, const char *str, int style, vec4_t color)
 {
-	const char 	*s;
-	int				ch;
-	int				width;
-	vec4_t			drawcolor;
+	const char *s;
+	int ch;
+	int width;
+	vec4_t drawcolor;
 
 	// find the width of the drawn text
 	s = str;
 	width = 0;
 	while(*s){
 		ch = *s;
-		if(ch == ' '){
+		if(ch == ' ')
 			width += PROPB_SPACE_WIDTH;
-		}else if(ch >= 'A' && ch <= 'Z'){
+		else if(ch >= 'A' && ch <= 'Z')
 			width += propMapB[ch - 'A'][2] + PROPB_GAP_WIDTH;
-		}
 		s++;
 	}
 	width -= PROPB_GAP_WIDTH;
@@ -690,13 +689,13 @@ void UI_DrawBannerString(int x, int y, const char *str, int style, vec4_t color)
 	UI_DrawBannerString2(x, y, str, color);
 }
 
-
-int UI_ProportionalStringWidth(const char *str)
+int
+UI_ProportionalStringWidth(const char *str)
 {
-	const char 	*s;
-	int				ch;
-	int				charWidth;
-	int				width;
+	const char *s;
+	int ch;
+	int charWidth;
+	int width;
 
 	s = str;
 	width = 0;
@@ -714,18 +713,19 @@ int UI_ProportionalStringWidth(const char *str)
 	return width;
 }
 
-static void UI_DrawProportionalString2(int x, int y, const char *str, vec4_t color, float sizeScale, qhandle_t charset)
+static void
+UI_DrawProportionalString2(int x, int y, const char *str, vec4_t color, float sizeScale, qhandle_t charset)
 {
 	const char *s;
-	uchar	ch;
-	float	ax;
-	float	ay;
-	float	aw;
-	float	ah;
-	float	frow;
-	float	fcol;
-	float	fwidth;
-	float	fheight;
+	uchar ch;
+	float ax;
+	float ay;
+	float aw;
+	float ah;
+	float frow;
+	float fcol;
+	float fwidth;
+	float fheight;
 
 	// draw the colored text
 	trap_R_SetColor(color);
@@ -736,9 +736,9 @@ static void UI_DrawProportionalString2(int x, int y, const char *str, vec4_t col
 	s = str;
 	while(*s){
 		ch = *s & 127;
-		if(ch == ' '){
+		if(ch == ' ')
 			aw = (float)PROP_SPACE_WIDTH * cgs.screenXScale * sizeScale;
-		}else if(propMap[ch][2] != -1){
+		else if(propMap[ch][2] != -1){
 			fcol = (float)propMap[ch][0] / 256.0f;
 			frow = (float)propMap[ch][1] / 256.0f;
 			fwidth = (float)propMap[ch][2] / 256.0f;
@@ -746,9 +746,8 @@ static void UI_DrawProportionalString2(int x, int y, const char *str, vec4_t col
 			aw = (float)propMap[ch][2] * cgs.screenXScale * sizeScale;
 			ah = (float)PROP_HEIGHT * cgs.screenYScale * sizeScale;
 			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, charset);
-		}else{
+		}else
 			aw = 0;
-		}
 
 		ax += (aw + (float)PROP_GAP_WIDTH * cgs.screenXScale * sizeScale);
 		s++;
@@ -762,26 +761,26 @@ static void UI_DrawProportionalString2(int x, int y, const char *str, vec4_t col
 UI_ProportionalSizeScale
 =================
 */
-float UI_ProportionalSizeScale(int style)
+float
+UI_ProportionalSizeScale(int style)
 {
-	if(style & UI_SMALLFONT){
+	if(style & UI_SMALLFONT)
 		return 0.75;
-	}
 
 	return 1.00;
 }
-
 
 /*
 =================
 UI_DrawProportionalString
 =================
 */
-void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t color)
+void
+UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t color)
 {
-	vec4_t	drawcolor;
-	int		width;
-	float	sizeScale;
+	vec4_t drawcolor;
+	int width;
+	float sizeScale;
 
 	sizeScale = UI_ProportionalSizeScale(style);
 

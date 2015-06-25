@@ -1,17 +1,17 @@
 #include "g_local.h"
 
-#define BOX_CONTENTS_SPEED 200.0f
-#define BOX_CONTENTS_JUMP 100.f
+#define BOX_CONTENTS_SPEED	200.0f
+#define BOX_CONTENTS_JUMP	100.f
 
 // g_trigger.c jump pad recycling
-extern void trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace);
-extern void AimAtTarget(gentity_t *self);
+extern void	trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace);
+extern void	AimAtTarget(gentity_t *self);
 
-static void crate_use(gentity_t*, gentity_t*, gentity_t*);
-static void crate_touch(gentity_t*, gentity_t*, trace_t*);
-static void crate_checkpoint_use(gentity_t*, gentity_t*, gentity_t*);
-static void crate_checkpoint_touch(gentity_t*, gentity_t*, trace_t*);
-static void crate_bouncy_touch(gentity_t*, gentity_t*, trace_t*);
+static void	crate_use(gentity_t*, gentity_t*, gentity_t*);
+static void	crate_touch(gentity_t*, gentity_t*, trace_t*);
+static void	crate_checkpoint_use(gentity_t*, gentity_t*, gentity_t*);
+static void	crate_checkpoint_touch(gentity_t*, gentity_t*, trace_t*);
+static void	crate_bouncy_touch(gentity_t*, gentity_t*, trace_t*);
 
 /*
 A breakable crate which usually contains items.
@@ -24,19 +24,19 @@ SUSPENDED	no drop to floor
 "target"	target ents to trigger when the box is smashed
 "wait"		time before respawning (-1 default, -1 = never respawn)
 */
-void SP_crate(gentity_t *ent)
+void
+SP_crate(gentity_t *ent)
 {
 	char *contents;
 	gitem_t *item;
 
 	// prepare the contents as a gitem_t*
 	G_SpawnString("contents", "item_token", &contents);
-	for(item=bg_itemlist+1 ; item->classname ; item++){
+	for(item = bg_itemlist+1; item->classname; item++)
 		if(strcmp(item->classname, contents) == 0){
 			ent->boxcontents = item;
 			break;
 		}
-	}
 	if(ent->boxcontents == nil)
 		G_Printf(S_COLOR_YELLOW "WARNING: bad item %s in breakable_box\n", contents);
 	G_SpawnInt("count", "5", &ent->count);
@@ -65,7 +65,8 @@ SUSPENDED	no drop to floor
 
 "target"	target ents to trigger when the box is smashed
 */
-void SP_crate_checkpoint(gentity_t *ent)
+void
+SP_crate_checkpoint(gentity_t *ent)
 {
 	ent->model = "models/crates/checkpoint.md3";
 	ent->physicsBounce = 0.2;
@@ -89,7 +90,8 @@ An indestructible box which acts just like a jump pad.
 SUSPENDED	no drop to floor
 "target"	a target_position, which will be the apex of the leap
 */
-void SP_crate_bouncy(gentity_t *ent)
+void
+SP_crate_bouncy(gentity_t *ent)
 {
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 	// make sure the client precaches this sound
@@ -110,12 +112,13 @@ void SP_crate_bouncy(gentity_t *ent)
 	trap_LinkEntity(ent);
 }
 
-static void crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+static void
+crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	gentity_t *tent;
 	vec3_t vel;
 	int i;
-	
+
 	if(self->boxcontents == nil)
 		return;
 	for(i = 0; i < self->count; i++){
@@ -131,7 +134,8 @@ static void crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 	G_FreeEntity(self);
 }
 
-static void crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+static void
+crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;
@@ -141,7 +145,8 @@ static void crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 	self->use(self, nil, other);
 }
 
-static void crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+static void
+crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	gentity_t *tent;
 
@@ -152,7 +157,8 @@ static void crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *a
 	trap_UnlinkEntity(self);
 }
 
-static void crate_checkpoint_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+static void
+crate_checkpoint_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;
@@ -162,7 +168,8 @@ static void crate_checkpoint_touch(gentity_t *self, gentity_t *other, trace_t *t
 	self->use(self, nil, other);
 }
 
-static void crate_bouncy_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+static void
+crate_bouncy_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;

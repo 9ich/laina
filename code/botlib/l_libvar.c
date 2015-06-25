@@ -36,118 +36,113 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //list with library variables
 libvar_t *libvarlist = nil;
 
-float LibVarStringValue(char *string)
+float
+LibVarStringValue(char *string)
 {
 	int dotfound = 0;
 	float value = 0;
 
-	while(*string)
-	{
-		if (*string < '0' || *string > '9')
-		{
-			if (dotfound || *string != '.')
-			{
+	while(*string){
+		if(*string < '0' || *string > '9'){
+			if(dotfound || *string != '.')
 				return 0;
-			}
-			else
-			{
+			else{
 				dotfound = 10;
 				string++;
 			}
 		}
-		if (dotfound)
-		{
-			value = value + (float) (*string - '0') / (float) dotfound;
+		if(dotfound){
+			value = value + (float)(*string - '0') / (float)dotfound;
 			dotfound *= 10;
-		}
-		else
-		{
-			value = value * 10.0 + (float) (*string - '0');
-		}
+		}else
+			value = value * 10.0 + (float)(*string - '0');
 		string++;
 	}
 	return value;
 }
-libvar_t *LibVarAlloc(char *var_name)
+
+libvar_t *
+LibVarAlloc(char *var_name)
 {
 	libvar_t *v;
 
-	v = (libvar_t *) GetMemory(sizeof(libvar_t));
+	v = (libvar_t*)GetMemory(sizeof(libvar_t));
 	Com_Memset(v, 0, sizeof(libvar_t));
-	v->name = (char *) GetMemory(strlen(var_name)+1);
+	v->name = (char*)GetMemory(strlen(var_name)+1);
 	strcpy(v->name, var_name);
 	//add the variable in the list
 	v->next = libvarlist;
 	libvarlist = v;
 	return v;
 }
-void LibVarDeAlloc(libvar_t *v)
+
+void
+LibVarDeAlloc(libvar_t *v)
 {
-	if (v->string) FreeMemory(v->string);
+	if(v->string) FreeMemory(v->string)
+		;
 	FreeMemory(v->name);
 	FreeMemory(v);
 }
-void LibVarDeAllocAll(void)
+
+void
+LibVarDeAllocAll(void)
 {
 	libvar_t *v;
 
-	for (v = libvarlist; v; v = libvarlist)
-	{
+	for(v = libvarlist; v; v = libvarlist){
 		libvarlist = libvarlist->next;
 		LibVarDeAlloc(v);
 	}
 	libvarlist = nil;
 }
-libvar_t *LibVarGet(char *var_name)
+
+libvar_t *
+LibVarGet(char *var_name)
 {
 	libvar_t *v;
 
-	for (v = libvarlist; v; v = v->next)
-	{
-		if (!Q_stricmp(v->name, var_name))
-		{
+	for(v = libvarlist; v; v = v->next)
+		if(!Q_stricmp(v->name, var_name))
 			return v;
-		}
-	}
 	return nil;
 }
-char *LibVarGetString(char *var_name)
+
+char *
+LibVarGetString(char *var_name)
 {
 	libvar_t *v;
 
 	v = LibVarGet(var_name);
-	if (v)
-	{
+	if(v)
 		return v->string;
-	}
 	else
-	{
 		return "";
-	}
 }
-float LibVarGetValue(char *var_name)
+
+float
+LibVarGetValue(char *var_name)
 {
 	libvar_t *v;
 
 	v = LibVarGet(var_name);
-	if (v)
-	{
+	if(v)
 		return v->value;
-	}
 	else
-	{
 		return 0;
-	}
 }
-libvar_t *LibVar(char *var_name, char *value)
+
+libvar_t *
+LibVar(char *var_name, char *value)
 {
 	libvar_t *v;
 	v = LibVarGet(var_name);
-	if (v) return v;
+	if(v)
+		return v;
 	//create new variable
 	v = LibVarAlloc(var_name);
 	//variable string
-	v->string = (char *) GetMemory(strlen(value) + 1);
+	v->string = (char*)GetMemory(strlen(value) + 1);
 	strcpy(v->string, value);
 	//the value
 	v->value = LibVarStringValue(v->string);
@@ -155,62 +150,62 @@ libvar_t *LibVar(char *var_name, char *value)
 	v->modified = qtrue;
 	return v;
 }
-char *LibVarString(char *var_name, char *value)
+
+char *
+LibVarString(char *var_name, char *value)
 {
 	libvar_t *v;
 
 	v = LibVar(var_name, value);
 	return v->string;
 }
-float LibVarValue(char *var_name, char *value)
+
+float
+LibVarValue(char *var_name, char *value)
 {
 	libvar_t *v;
 
 	v = LibVar(var_name, value);
 	return v->value;
 }
-void LibVarSet(char *var_name, char *value)
+
+void
+LibVarSet(char *var_name, char *value)
 {
 	libvar_t *v;
 
 	v = LibVarGet(var_name);
-	if (v)
-	{
+	if(v)
 		FreeMemory(v->string);
-	}
 	else
-	{
 		v = LibVarAlloc(var_name);
-	}
 	//variable string
-	v->string = (char *) GetMemory(strlen(value) + 1);
+	v->string = (char*)GetMemory(strlen(value) + 1);
 	strcpy(v->string, value);
 	//the value
 	v->value = LibVarStringValue(v->string);
 	//variable is modified
 	v->modified = qtrue;
 }
-qboolean LibVarChanged(char *var_name)
+
+qboolean
+LibVarChanged(char *var_name)
 {
 	libvar_t *v;
 
 	v = LibVarGet(var_name);
-	if (v)
-	{
+	if(v)
 		return v->modified;
-	}
 	else
-	{
 		return qfalse;
-	}
 }
-void LibVarSetNotModified(char *var_name)
+
+void
+LibVarSetNotModified(char *var_name)
 {
 	libvar_t *v;
 
 	v = LibVarGet(var_name);
-	if (v)
-	{
+	if(v)
 		v->modified = qfalse;
-	}
 }

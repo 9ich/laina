@@ -27,33 +27,33 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef MISSIONPACK
 #include "../../ui/menudef.h"
 
-typedef struct {
-	const char *order;
-	int taskNum;
+typedef struct
+{
+	const char	*order;
+	int		taskNum;
 } orderTask_t;
 
 static const orderTask_t validOrders[] = {
-	{ VOICECHAT_GETFLAG,						TEAMTASK_OFFENSE },
-	{ VOICECHAT_OFFENSE,						TEAMTASK_OFFENSE },
-	{ VOICECHAT_DEFEND,							TEAMTASK_DEFENSE },
-	{ VOICECHAT_DEFENDFLAG,					TEAMTASK_DEFENSE },
-	{ VOICECHAT_PATROL,							TEAMTASK_PATROL },
-	{ VOICECHAT_CAMP,								TEAMTASK_CAMP },
-	{ VOICECHAT_FOLLOWME,						TEAMTASK_FOLLOW },
-	{ VOICECHAT_RETURNFLAG,					TEAMTASK_RETRIEVE },
-	{ VOICECHAT_FOLLOWFLAGCARRIER,	TEAMTASK_ESCORT }
+	{VOICECHAT_GETFLAG, TEAMTASK_OFFENSE},
+	{VOICECHAT_OFFENSE, TEAMTASK_OFFENSE},
+	{VOICECHAT_DEFEND, TEAMTASK_DEFENSE},
+	{VOICECHAT_DEFENDFLAG, TEAMTASK_DEFENSE},
+	{VOICECHAT_PATROL, TEAMTASK_PATROL},
+	{VOICECHAT_CAMP, TEAMTASK_CAMP},
+	{VOICECHAT_FOLLOWME, TEAMTASK_FOLLOW},
+	{VOICECHAT_RETURNFLAG, TEAMTASK_RETRIEVE},
+	{VOICECHAT_FOLLOWFLAGCARRIER, TEAMTASK_ESCORT}
 };
 
 static const int numValidOrders = ARRAY_LEN(validOrders);
 
-static int CG_ValidOrder(const char *p)
+static int
+CG_ValidOrder(const char *p)
 {
 	int i;
-	for(i = 0; i < numValidOrders; i++){
-		if(Q_stricmp(p, validOrders[i].order) == 0){
+	for(i = 0; i < numValidOrders; i++)
+		if(Q_stricmp(p, validOrders[i].order) == 0)
 			return validOrders[i].taskNum;
-		}
-	}
 	return -1;
 }
 #endif
@@ -64,20 +64,20 @@ CG_ParseScores
 
 =================
 */
-static void CG_ParseScores(void)
+static void
+CG_ParseScores(void)
 {
-	int		i, powerups;
+	int i, powerups;
 
 	cg.numScores = atoi(CG_Argv(1));
-	if(cg.numScores > MAX_CLIENTS){
+	if(cg.numScores > MAX_CLIENTS)
 		cg.numScores = MAX_CLIENTS;
-	}
 
 	cg.teamScores[0] = atoi(CG_Argv(2));
 	cg.teamScores[1] = atoi(CG_Argv(3));
 
 	memset(cg.scores, 0, sizeof(cg.scores));
-	for(i = 0 ; i < cg.numScores ; i++){
+	for(i = 0; i < cg.numScores; i++){
 		cg.scores[i].client = atoi(CG_Argv(i * 14 + 4));
 		cg.scores[i].score = atoi(CG_Argv(i * 14 + 5));
 		cg.scores[i].ping = atoi(CG_Argv(i * 14 + 6));
@@ -93,18 +93,16 @@ static void CG_ParseScores(void)
 		cg.scores[i].perfect = atoi(CG_Argv(i * 14 + 16));
 		cg.scores[i].captures = atoi(CG_Argv(i * 14 + 17));
 
-		if(cg.scores[i].client < 0 || cg.scores[i].client >= MAX_CLIENTS){
+		if(cg.scores[i].client < 0 || cg.scores[i].client >= MAX_CLIENTS)
 			cg.scores[i].client = 0;
-		}
-		cgs.clientinfo[ cg.scores[i].client ].score = cg.scores[i].score;
-		cgs.clientinfo[ cg.scores[i].client ].powerups = powerups;
+		cgs.clientinfo[cg.scores[i].client].score = cg.scores[i].score;
+		cgs.clientinfo[cg.scores[i].client].powerups = powerups;
 
 		cg.scores[i].team = cgs.clientinfo[cg.scores[i].client].team;
 	}
 #ifdef MISSIONPACK
 	CG_SetScoreSelection(nil);
 #endif
-
 }
 
 /*
@@ -113,19 +111,20 @@ CG_ParseTeamInfo
 
 =================
 */
-static void CG_ParseTeamInfo(void)
+static void
+CG_ParseTeamInfo(void)
 {
-	int		i;
-	int		client;
+	int i;
+	int client;
 
 	numSortedTeamPlayers = atoi(CG_Argv(1));
 	if(numSortedTeamPlayers < 0 || numSortedTeamPlayers > TEAM_MAXOVERLAY){
 		CG_Error("CG_ParseTeamInfo: numSortedTeamPlayers out of range (%d)",
-		         numSortedTeamPlayers);
+			 numSortedTeamPlayers);
 		return;
 	}
 
-	for(i = 0 ; i < numSortedTeamPlayers ; i++){
+	for(i = 0; i < numSortedTeamPlayers; i++){
 		client = atoi(CG_Argv(i * 6 + 2));
 		if(client < 0 || client >= MAX_CLIENTS){
 			CG_Error("CG_ParseTeamInfo: bad client number: %d", client);
@@ -134,14 +133,13 @@ static void CG_ParseTeamInfo(void)
 
 		sortedTeamPlayers[i] = client;
 
-		cgs.clientinfo[ client ].location = atoi(CG_Argv(i * 6 + 3));
-		cgs.clientinfo[ client ].health = atoi(CG_Argv(i * 6 + 4));
-		cgs.clientinfo[ client ].armor = atoi(CG_Argv(i * 6 + 5));
-		cgs.clientinfo[ client ].curWeapon = atoi(CG_Argv(i * 6 + 6));
-		cgs.clientinfo[ client ].powerups = atoi(CG_Argv(i * 6 + 7));
+		cgs.clientinfo[client].location = atoi(CG_Argv(i * 6 + 3));
+		cgs.clientinfo[client].health = atoi(CG_Argv(i * 6 + 4));
+		cgs.clientinfo[client].armor = atoi(CG_Argv(i * 6 + 5));
+		cgs.clientinfo[client].curWeapon = atoi(CG_Argv(i * 6 + 6));
+		cgs.clientinfo[client].powerups = atoi(CG_Argv(i * 6 + 7));
 	}
 }
-
 
 /*
 ================
@@ -151,10 +149,11 @@ This is called explicitly when the gamestate is first received,
 and whenever the server updates any serverinfo flagged cvars
 ================
 */
-void CG_ParseServerinfo(void)
+void
+CG_ParseServerinfo(void)
 {
-	const char	*info;
-	char	*mapname;
+	const char *info;
+	char *mapname;
 
 	info = CG_ConfigString(CS_SERVERINFO);
 	cgs.gametype = atoi(Info_ValueForKey(info, "g_gametype"));
@@ -178,10 +177,11 @@ void CG_ParseServerinfo(void)
 CG_ParseWarmup
 ==================
 */
-static void CG_ParseWarmup(void)
+static void
+CG_ParseWarmup(void)
 {
-	const char	*info;
-	int			warmup;
+	const char *info;
+	int warmup;
 
 	info = CG_ConfigString(CS_WARMUP);
 
@@ -189,12 +189,11 @@ static void CG_ParseWarmup(void)
 	cg.warmupCount = -1;
 
 	if(warmup == 0 && cg.warmup){
-
 	}else if(warmup > 0 && cg.warmup <= 0){
 #ifdef MISSIONPACK
-		if(cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER){
+		if(cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER)
 			trap_S_StartLocalSound(cgs.media.countPrepareTeamSound, CHAN_ANNOUNCER);
-		}else
+		else
 #endif
 		{
 			trap_S_StartLocalSound(cgs.media.countPrepareSound, CHAN_ANNOUNCER);
@@ -211,7 +210,8 @@ CG_SetConfigValues
 Called on load to set the initial values from configure strings
 ================
 */
-void CG_SetConfigValues(void)
+void
+CG_SetConfigValues(void)
 {
 	const char *s;
 
@@ -237,13 +237,14 @@ void CG_SetConfigValues(void)
 CG_ShaderStateChanged
 =====================
 */
-void CG_ShaderStateChanged(void)
+void
+CG_ShaderStateChanged(void)
 {
 	char originalShader[MAX_QPATH];
 	char newShader[MAX_QPATH];
 	char timeOffset[16];
 	const char *o;
-	char *n,*t;
+	char *n, *t;
 
 	o = CG_ConfigString(CS_SHADERSTATE);
 	while(o && *o){
@@ -256,9 +257,8 @@ void CG_ShaderStateChanged(void)
 			if(t && *t){
 				strncpy(newShader, n, t-n);
 				newShader[t-n] = 0;
-			}else{
+			}else
 				break;
-			}
 			t++;
 			o = strstr(t, "@");
 			if(o){
@@ -267,9 +267,8 @@ void CG_ShaderStateChanged(void)
 				o++;
 				trap_R_RemapShader(originalShader, newShader, timeOffset);
 			}
-		}else{
+		}else
 			break;
-		}
 	}
 }
 
@@ -279,10 +278,11 @@ CG_ConfigStringModified
 
 ================
 */
-static void CG_ConfigStringModified(void)
+static void
+CG_ConfigStringModified(void)
 {
-	const char	*str;
-	int		num;
+	const char *str;
+	int num;
 
 	num = atoi(CG_Argv(1));
 
@@ -294,19 +294,19 @@ static void CG_ConfigStringModified(void)
 	str = CG_ConfigString(num);
 
 	// do something with it if necessary
-	if(num == CS_MUSIC){
+	if(num == CS_MUSIC)
 		CG_StartMusic();
-	}else if(num == CS_SERVERINFO){
+	else if(num == CS_SERVERINFO)
 		CG_ParseServerinfo();
-	}else if(num == CS_WARMUP){
+	else if(num == CS_WARMUP)
 		CG_ParseWarmup();
-	}else if(num == CS_SCORES1){
+	else if(num == CS_SCORES1)
 		cgs.scores1 = atoi(str);
-	}else if(num == CS_SCORES2){
+	else if(num == CS_SCORES2)
 		cgs.scores2 = atoi(str);
-	}else if(num == CS_LEVEL_START_TIME){
+	else if(num == CS_LEVEL_START_TIME)
 		cgs.levelStartTime = atoi(str);
-	}else if(num == CS_VOTE_TIME){
+	else if(num == CS_VOTE_TIME){
 		cgs.voteTime = atoi(str);
 		cgs.voteModified = qtrue;
 	}else if(num == CS_VOTE_YES){
@@ -319,7 +319,7 @@ static void CG_ConfigStringModified(void)
 		Q_strncpyz(cgs.voteString, str, sizeof(cgs.voteString));
 #ifdef MISSIONPACK
 		trap_S_StartLocalSound(cgs.media.voteNow, CHAN_ANNOUNCER);
-#endif //MISSIONPACK
+#endif	//MISSIONPACK
 	}else if(num >= CS_TEAMVOTE_TIME && num <= CS_TEAMVOTE_TIME + 1){
 		cgs.teamVoteTime[num-CS_TEAMVOTE_TIME] = atoi(str);
 		cgs.teamVoteModified[num-CS_TEAMVOTE_TIME] = qtrue;
@@ -334,14 +334,13 @@ static void CG_ConfigStringModified(void)
 #ifdef MISSIONPACK
 		trap_S_StartLocalSound(cgs.media.voteNow, CHAN_ANNOUNCER);
 #endif
-	}else if(num == CS_INTERMISSION){
+	}else if(num == CS_INTERMISSION)
 		cg.intermissionStarted = atoi(str);
-	}else if(num >= CS_MODELS && num < CS_MODELS+MAX_MODELS){
-		cgs.gameModels[ num-CS_MODELS ] = trap_R_RegisterModel(str);
-	}else if(num >= CS_SOUNDS && num < CS_SOUNDS+MAX_SOUNDS){
-		if(str[0] != '*'){	// player specific sounds don't register here
-			cgs.gameSounds[ num-CS_SOUNDS] = trap_S_RegisterSound(str, qfalse);
-		}
+	else if(num >= CS_MODELS && num < CS_MODELS+MAX_MODELS)
+		cgs.gameModels[num-CS_MODELS] = trap_R_RegisterModel(str);
+	else if(num >= CS_SOUNDS && num < CS_SOUNDS+MAX_SOUNDS){
+		if(str[0] != '*')	// player specific sounds don't register here
+			cgs.gameSounds[num-CS_SOUNDS] = trap_S_RegisterSound(str, qfalse);
 	}else if(num >= CS_PLAYERS && num < CS_PLAYERS+MAX_CLIENTS){
 		CG_NewClientInfo(num - CS_PLAYERS);
 		CG_BuildSpectatorString();
@@ -352,16 +351,14 @@ static void CG_ConfigStringModified(void)
 			cgs.blueflag = str[1] - '0';
 		}
 #ifdef MISSIONPACK
-		else if(cgs.gametype == GT_1FCTF){
+		else if(cgs.gametype == GT_1FCTF)
 			cgs.flagStatus = str[0] - '0';
-		}
+
 #endif
-	}else if(num == CS_SHADERSTATE){
+	}else if(num == CS_SHADERSTATE)
 		CG_ShaderStateChanged();
-	}
 
 }
-
 
 /*
 =======================
@@ -369,18 +366,18 @@ CG_AddToTeamChat
 
 =======================
 */
-static void CG_AddToTeamChat(const char *str)
+static void
+CG_AddToTeamChat(const char *str)
 {
 	int len;
 	char *p, *ls;
 	int lastcolor;
 	int chatHeight;
 
-	if(cg_teamChatHeight.integer < TEAMCHAT_HEIGHT){
+	if(cg_teamChatHeight.integer < TEAMCHAT_HEIGHT)
 		chatHeight = cg_teamChatHeight.integer;
-	}else{
+	else
 		chatHeight = TEAMCHAT_HEIGHT;
-	}
 
 	if(chatHeight <= 0 || cg_teamChatTime.integer <= 0){
 		// team chat disabled, dump into normal chat
@@ -422,9 +419,8 @@ static void CG_AddToTeamChat(const char *str)
 			*p++ = *str++;
 			continue;
 		}
-		if(*str == ' '){
+		if(*str == ' ')
 			ls = p;
-		}
 		*p++ = *str++;
 		len++;
 	}
@@ -448,11 +444,11 @@ A tournement restart will clear everything, but doesn't
 require a reload of all the media
 ===============
 */
-static void CG_MapRestart(void)
+static void
+CG_MapRestart(void)
 {
-	if(cg_showmiss.integer){
+	if(cg_showmiss.integer)
 		CG_Printf("CG_MapRestart\n");
-	}
 
 	CG_InitLocalEntities();
 	CG_InitMarkPolys();
@@ -485,9 +481,8 @@ static void CG_MapRestart(void)
 #ifdef MISSIONPACK
 	if(cg_singlePlayerActive.integer){
 		trap_Cvar_Set("ui_matchStartTime", va("%i", cg.time));
-		if(cg_recordSPDemo.integer && cg_recordSPDemoName.string && *cg_recordSPDemoName.string){
+		if(cg_recordSPDemo.integer && cg_recordSPDemoName.string && *cg_recordSPDemoName.string)
 			trap_SendConsoleCommand(va("set g_synchronousclients 1 ; record %s \n", cg_recordSPDemoName.string));
-		}
 	}
 #endif
 	trap_Cvar_Set("cg_thirdPerson", "0");
@@ -502,23 +497,26 @@ static void CG_MapRestart(void)
 #define MAX_CHATSIZE		64
 #define MAX_HEADMODELS		64
 
-typedef struct voiceChat_s {
-	char id[64];
-	int numSounds;
-	sfxHandle_t sounds[MAX_VOICESOUNDS];
-	char chats[MAX_VOICESOUNDS][MAX_CHATSIZE];
+typedef struct voiceChat_s
+{
+	char		id[64];
+	int		numSounds;
+	sfxHandle_t	sounds[MAX_VOICESOUNDS];
+	char		chats[MAX_VOICESOUNDS][MAX_CHATSIZE];
 } voiceChat_t;
 
-typedef struct voiceChatList_s {
-	char name[64];
-	int gender;
-	int numVoiceChats;
-	voiceChat_t voiceChats[MAX_VOICECHATS];
+typedef struct voiceChatList_s
+{
+	char		name[64];
+	int		gender;
+	int		numVoiceChats;
+	voiceChat_t	voiceChats[MAX_VOICECHATS];
 } voiceChatList_t;
 
-typedef struct headModelVoiceChat_s {
-	char headmodel[64];
-	int voiceChatNum;
+typedef struct headModelVoiceChat_s
+{
+	char	headmodel[64];
+	int	voiceChatNum;
 } headModelVoiceChat_t;
 
 voiceChatList_t voiceChatLists[MAX_VOICEFILES];
@@ -529,9 +527,10 @@ headModelVoiceChat_t headModelVoiceChat[MAX_HEADMODELS];
 CG_ParseVoiceChats
 =================
 */
-int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int maxVoiceChats)
+int
+CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int maxVoiceChats)
 {
-	int	len, i;
+	int len, i;
 	fileHandle_t f;
 	char buf[MAX_VOICEFILESIZE];
 	char **p, *ptr;
@@ -541,9 +540,8 @@ int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int
 	sfxHandle_t sound;
 
 	compress = qtrue;
-	if(cg_buildScript.integer){
+	if(cg_buildScript.integer)
 		compress = qfalse;
-	}
 
 	len = trap_FS_FOpenFile(filename, &f, FS_READ);
 	if(!f){
@@ -565,20 +563,18 @@ int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int
 
 	Com_sprintf(voiceChatList->name, sizeof(voiceChatList->name), "%s", filename);
 	voiceChats = voiceChatList->voiceChats;
-	for(i = 0; i < maxVoiceChats; i++){
+	for(i = 0; i < maxVoiceChats; i++)
 		voiceChats[i].id[0] = 0;
-	}
 	token = COM_ParseExt(p, qtrue);
-	if(!token || token[0] == 0){
+	if(!token || token[0] == 0)
 		return qtrue;
-	}
-	if(!Q_stricmp(token, "female")){
+	if(!Q_stricmp(token, "female"))
 		voiceChatList->gender = GENDER_FEMALE;
-	}else if(!Q_stricmp(token, "male")){
+	else if(!Q_stricmp(token, "male"))
 		voiceChatList->gender = GENDER_MALE;
-	}else if(!Q_stricmp(token, "neuter")){
+	else if(!Q_stricmp(token, "neuter"))
 		voiceChatList->gender = GENDER_NEUTER;
-	}else{
+	else{
 		trap_Print(va(S_COLOR_RED "expected gender not found in voice chat file: %s\n", filename));
 		return qfalse;
 	}
@@ -586,9 +582,8 @@ int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int
 	voiceChatList->numVoiceChats = 0;
 	while(1){
 		token = COM_ParseExt(p, qtrue);
-		if(!token || token[0] == 0){
+		if(!token || token[0] == 0)
 			return qtrue;
-		}
 		Com_sprintf(voiceChats[voiceChatList->numVoiceChats].id, sizeof(voiceChats[voiceChatList->numVoiceChats].id), "%s", token);
 		token = COM_ParseExt(p, qtrue);
 		if(Q_stricmp(token, "{")){
@@ -598,19 +593,17 @@ int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int
 		voiceChats[voiceChatList->numVoiceChats].numSounds = 0;
 		while(1){
 			token = COM_ParseExt(p, qtrue);
-			if(!token || token[0] == 0){
+			if(!token || token[0] == 0)
 				return qtrue;
-			}
 			if(!Q_stricmp(token, "}"))
 				break;
 			sound = trap_S_RegisterSound(token, compress);
 			voiceChats[voiceChatList->numVoiceChats].sounds[voiceChats[voiceChatList->numVoiceChats].numSounds] = sound;
 			token = COM_ParseExt(p, qtrue);
-			if(!token || token[0] == 0){
+			if(!token || token[0] == 0)
 				return qtrue;
-			}
 			Com_sprintf(voiceChats[voiceChatList->numVoiceChats].chats[
-			                voiceChats[voiceChatList->numVoiceChats].numSounds], MAX_CHATSIZE, "%s", token);
+					    voiceChats[voiceChatList->numVoiceChats].numSounds], MAX_CHATSIZE, "%s", token);
 			if(sound)
 				voiceChats[voiceChatList->numVoiceChats].numSounds++;
 			if(voiceChats[voiceChatList->numVoiceChats].numSounds >= MAX_VOICESOUNDS)
@@ -628,7 +621,8 @@ int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int
 CG_LoadVoiceChats
 =================
 */
-void CG_LoadVoiceChats(void)
+void
+CG_LoadVoiceChats(void)
 {
 	int size;
 
@@ -649,19 +643,19 @@ void CG_LoadVoiceChats(void)
 CG_HeadModelVoiceChats
 =================
 */
-int CG_HeadModelVoiceChats(char *filename)
+int
+CG_HeadModelVoiceChats(char *filename)
 {
-	int	len, i;
+	int len, i;
 	fileHandle_t f;
 	char buf[MAX_VOICEFILESIZE];
 	char **p, *ptr;
 	char *token;
 
 	len = trap_FS_FOpenFile(filename, &f, FS_READ);
-	if(!f){
+	if(!f)
 		//trap_Print( va( "voice chat file not found: %s\n", filename ) );
 		return -1;
-	}
 	if(len >= MAX_VOICEFILESIZE){
 		trap_Print(va(S_COLOR_RED "voice chat file too large: %s is %i, max allowed is %i\n", filename, len, MAX_VOICEFILESIZE));
 		trap_FS_FCloseFile(f);
@@ -676,39 +670,35 @@ int CG_HeadModelVoiceChats(char *filename)
 	p = &ptr;
 
 	token = COM_ParseExt(p, qtrue);
-	if(!token || token[0] == 0){
+	if(!token || token[0] == 0)
 		return -1;
-	}
 
-	for(i = 0; i < MAX_VOICEFILES; i++){
-		if(!Q_stricmp(token, voiceChatLists[i].name)){
+	for(i = 0; i < MAX_VOICEFILES; i++)
+		if(!Q_stricmp(token, voiceChatLists[i].name))
 			return i;
-		}
-	}
 
 	//FIXME: maybe try to load the .voice file which name is stored in token?
 
 	return -1;
 }
 
-
 /*
 =================
 CG_GetVoiceChat
 =================
 */
-int CG_GetVoiceChat(voiceChatList_t *voiceChatList, const char *id, sfxHandle_t *snd, char **chat)
+int
+CG_GetVoiceChat(voiceChatList_t *voiceChatList, const char *id, sfxHandle_t *snd, char **chat)
 {
 	int i, rnd;
 
-	for(i = 0; i < voiceChatList->numVoiceChats; i++){
+	for(i = 0; i < voiceChatList->numVoiceChats; i++)
 		if(!Q_stricmp(id, voiceChatList->voiceChats[i].id)){
 			rnd = random() * voiceChatList->voiceChats[i].numSounds;
 			*snd = voiceChatList->voiceChats[i].sounds[rnd];
 			*chat = voiceChatList->voiceChats[i].chats[rnd];
 			return qtrue;
 		}
-	}
 	return qfalse;
 }
 
@@ -717,72 +707,64 @@ int CG_GetVoiceChat(voiceChatList_t *voiceChatList, const char *id, sfxHandle_t 
 CG_VoiceChatListForClient
 =================
 */
-voiceChatList_t *CG_VoiceChatListForClient(int clientNum)
+voiceChatList_t *
+CG_VoiceChatListForClient(int clientNum)
 {
 	clientInfo_t *ci;
 	int voiceChatNum, i, j, k, gender;
 	char filename[MAX_QPATH], headModelName[MAX_QPATH];
 
-	if(clientNum < 0 || clientNum >= MAX_CLIENTS){
+	if(clientNum < 0 || clientNum >= MAX_CLIENTS)
 		clientNum = 0;
-	}
-	ci = &cgs.clientinfo[ clientNum ];
+	ci = &cgs.clientinfo[clientNum];
 
 	for(k = 0; k < 2; k++){
 		if(k == 0){
-			if(ci->headModelName[0] == '*'){
+			if(ci->headModelName[0] == '*')
 				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", ci->headModelName+1, ci->headSkinName);
-			}else{
+			else
 				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", ci->headModelName, ci->headSkinName);
-			}
 		}else{
-			if(ci->headModelName[0] == '*'){
+			if(ci->headModelName[0] == '*')
 				Com_sprintf(headModelName, sizeof(headModelName), "%s", ci->headModelName+1);
-			}else{
+			else
 				Com_sprintf(headModelName, sizeof(headModelName), "%s", ci->headModelName);
-			}
 		}
 		// find the voice file for the head model the client uses
-		for(i = 0; i < MAX_HEADMODELS; i++){
-			if(!Q_stricmp(headModelVoiceChat[i].headmodel, headModelName)){
+		for(i = 0; i < MAX_HEADMODELS; i++)
+			if(!Q_stricmp(headModelVoiceChat[i].headmodel, headModelName))
 				break;
-			}
-		}
-		if(i < MAX_HEADMODELS){
+		if(i < MAX_HEADMODELS)
 			return &voiceChatLists[headModelVoiceChat[i].voiceChatNum];
-		}
 		// find a <headmodelname>.vc file
-		for(i = 0; i < MAX_HEADMODELS; i++){
+		for(i = 0; i < MAX_HEADMODELS; i++)
 			if(!strlen(headModelVoiceChat[i].headmodel)){
 				Com_sprintf(filename, sizeof(filename), "scripts/%s.vc", headModelName);
 				voiceChatNum = CG_HeadModelVoiceChats(filename);
 				if(voiceChatNum == -1)
 					break;
 				Com_sprintf(headModelVoiceChat[i].headmodel, sizeof(headModelVoiceChat[i].headmodel),
-				            "%s", headModelName);
+					    "%s", headModelName);
 				headModelVoiceChat[i].voiceChatNum = voiceChatNum;
 				return &voiceChatLists[headModelVoiceChat[i].voiceChatNum];
 			}
-		}
 	}
 	gender = ci->gender;
 	for(k = 0; k < 2; k++){
 		// just pick the first with the right gender
 		for(i = 0; i < MAX_VOICEFILES; i++){
-			if(strlen(voiceChatLists[i].name)){
+			if(strlen(voiceChatLists[i].name))
 				if(voiceChatLists[i].gender == gender){
 					// store this head model with voice chat for future reference
-					for(j = 0; j < MAX_HEADMODELS; j++){
+					for(j = 0; j < MAX_HEADMODELS; j++)
 						if(!strlen(headModelVoiceChat[j].headmodel)){
 							Com_sprintf(headModelVoiceChat[j].headmodel, sizeof(headModelVoiceChat[j].headmodel),
-							            "%s", headModelName);
+								    "%s", headModelName);
 							headModelVoiceChat[j].voiceChatNum = i;
 							break;
 						}
-					}
 					return &voiceChatLists[i];
 				}
-			}
 		}
 		// fall back to male gender because we don't have neuter in the mission pack
 		if(gender == GENDER_MALE)
@@ -790,26 +772,26 @@ voiceChatList_t *CG_VoiceChatListForClient(int clientNum)
 		gender = GENDER_MALE;
 	}
 	// store this head model with voice chat for future reference
-	for(j = 0; j < MAX_HEADMODELS; j++){
+	for(j = 0; j < MAX_HEADMODELS; j++)
 		if(!strlen(headModelVoiceChat[j].headmodel)){
 			Com_sprintf(headModelVoiceChat[j].headmodel, sizeof(headModelVoiceChat[j].headmodel),
-			            "%s", headModelName);
+				    "%s", headModelName);
 			headModelVoiceChat[j].voiceChatNum = 0;
 			break;
 		}
-	}
 	// just return the first voice chat list
 	return &voiceChatLists[0];
 }
 
-#define MAX_VOICECHATBUFFER		32
+#define MAX_VOICECHATBUFFER 32
 
-typedef struct bufferedVoiceChat_s {
-	int clientNum;
-	sfxHandle_t snd;
-	int voiceOnly;
-	char cmd[MAX_SAY_TEXT];
-	char message[MAX_SAY_TEXT];
+typedef struct bufferedVoiceChat_s
+{
+	int		clientNum;
+	sfxHandle_t	snd;
+	int		voiceOnly;
+	char		cmd[MAX_SAY_TEXT];
+	char		message[MAX_SAY_TEXT];
 } bufferedVoiceChat_t;
 
 bufferedVoiceChat_t voiceChatBuffer[MAX_VOICECHATBUFFER];
@@ -819,13 +801,13 @@ bufferedVoiceChat_t voiceChatBuffer[MAX_VOICECHATBUFFER];
 CG_PlayVoiceChat
 =================
 */
-void CG_PlayVoiceChat(bufferedVoiceChat_t *vchat)
+void
+CG_PlayVoiceChat(bufferedVoiceChat_t *vchat)
 {
 #ifdef MISSIONPACK
 	// if we are going into the intermission, don't start any voices
-	if(cg.intermissionStarted){
+	if(cg.intermissionStarted)
 		return;
-	}
 
 	if(!cg_noVoiceChats.integer){
 		trap_S_StartLocalSound(vchat->snd, CHAN_VOICE);
@@ -854,16 +836,17 @@ void CG_PlayVoiceChat(bufferedVoiceChat_t *vchat)
 CG_PlayBufferedVoieChats
 =====================
 */
-void CG_PlayBufferedVoiceChats(void)
+void
+CG_PlayBufferedVoiceChats(void)
 {
 #ifdef MISSIONPACK
-	if(cg.voiceChatTime < cg.time){
+	if(cg.voiceChatTime < cg.time)
 		if(cg.voiceChatBufferOut != cg.voiceChatBufferIn && voiceChatBuffer[cg.voiceChatBufferOut].snd){
 			CG_PlayVoiceChat(&voiceChatBuffer[cg.voiceChatBufferOut]);
 			cg.voiceChatBufferOut = (cg.voiceChatBufferOut + 1) % MAX_VOICECHATBUFFER;
 			cg.voiceChatTime = cg.time + 1000;
 		}
-	}
+
 #endif
 }
 
@@ -872,13 +855,13 @@ void CG_PlayBufferedVoiceChats(void)
 CG_AddBufferedVoiceChat
 =====================
 */
-void CG_AddBufferedVoiceChat(bufferedVoiceChat_t *vchat)
+void
+CG_AddBufferedVoiceChat(bufferedVoiceChat_t *vchat)
 {
 #ifdef MISSIONPACK
 	// if we are going into the intermission, don't start any voices
-	if(cg.intermissionStarted){
+	if(cg.intermissionStarted)
 		return;
-	}
 
 	memcpy(&voiceChatBuffer[cg.voiceChatBufferIn], vchat, sizeof(bufferedVoiceChat_t));
 	cg.voiceChatBufferIn = (cg.voiceChatBufferIn + 1) % MAX_VOICECHATBUFFER;
@@ -894,7 +877,8 @@ void CG_AddBufferedVoiceChat(bufferedVoiceChat_t *vchat)
 CG_VoiceChatLocal
 =================
 */
-void CG_VoiceChatLocal(int mode, qboolean voiceOnly, int clientNum, int color, const char *cmd)
+void
+CG_VoiceChatLocal(int mode, qboolean voiceOnly, int clientNum, int color, const char *cmd)
 {
 #ifdef MISSIONPACK
 	char *chat;
@@ -904,35 +888,32 @@ void CG_VoiceChatLocal(int mode, qboolean voiceOnly, int clientNum, int color, c
 	bufferedVoiceChat_t vchat;
 
 	// if we are going into the intermission, don't start any voices
-	if(cg.intermissionStarted){
+	if(cg.intermissionStarted)
 		return;
-	}
 
-	if(clientNum < 0 || clientNum >= MAX_CLIENTS){
+	if(clientNum < 0 || clientNum >= MAX_CLIENTS)
 		clientNum = 0;
-	}
-	ci = &cgs.clientinfo[ clientNum ];
+	ci = &cgs.clientinfo[clientNum];
 
 	cgs.currentVoiceClient = clientNum;
 
 	voiceChatList = CG_VoiceChatListForClient(clientNum);
 
-	if(CG_GetVoiceChat(voiceChatList, cmd, &snd, &chat)){
+	if(CG_GetVoiceChat(voiceChatList, cmd, &snd, &chat))
 		if(mode == SAY_TEAM || !cg_teamChatsOnly.integer){
 			vchat.clientNum = clientNum;
 			vchat.snd = snd;
 			vchat.voiceOnly = voiceOnly;
 			Q_strncpyz(vchat.cmd, cmd, sizeof(vchat.cmd));
-			if(mode == SAY_TELL){
+			if(mode == SAY_TELL)
 				Com_sprintf(vchat.message, sizeof(vchat.message), "[%s]: %c%c%s", ci->name, Q_COLOR_ESCAPE, color, chat);
-			}else if(mode == SAY_TEAM){
+			else if(mode == SAY_TEAM)
 				Com_sprintf(vchat.message, sizeof(vchat.message), "(%s): %c%c%s", ci->name, Q_COLOR_ESCAPE, color, chat);
-			}else{
+			else
 				Com_sprintf(vchat.message, sizeof(vchat.message), "%s: %c%c%s", ci->name, Q_COLOR_ESCAPE, color, chat);
-			}
 			CG_AddBufferedVoiceChat(&vchat);
 		}
-	}
+
 #endif
 }
 
@@ -941,7 +922,8 @@ void CG_VoiceChatLocal(int mode, qboolean voiceOnly, int clientNum, int color, c
 CG_VoiceChat
 =================
 */
-void CG_VoiceChat(int mode)
+void
+CG_VoiceChat(int mode)
 {
 	const char *cmd;
 	int clientNum, color;
@@ -952,13 +934,11 @@ void CG_VoiceChat(int mode)
 	color = atoi(CG_Argv(3));
 	cmd = CG_Argv(4);
 
-	if(cg_noTaunt.integer != 0){
+	if(cg_noTaunt.integer != 0)
 		if(!strcmp(cmd, VOICECHAT_KILLINSULT)  || !strcmp(cmd, VOICECHAT_TAUNT) || \
-		        !strcmp(cmd, VOICECHAT_DEATHINSULT) || !strcmp(cmd, VOICECHAT_KILLGAUNTLET) || \
-		        !strcmp(cmd, VOICECHAT_PRAISE)){
+		   !strcmp(cmd, VOICECHAT_DEATHINSULT) || !strcmp(cmd, VOICECHAT_KILLGAUNTLET) || \
+		   !strcmp(cmd, VOICECHAT_PRAISE))
 			return;
-		}
-	}
 
 	CG_VoiceChatLocal(mode, voiceOnly, clientNum, color, cmd);
 }
@@ -969,7 +949,8 @@ void CG_VoiceChat(int mode)
 CG_RemoveChatEscapeChar
 =================
 */
-static void CG_RemoveChatEscapeChar(char *text)
+static void
+CG_RemoveChatEscapeChar(char *text)
 {
 	int i, l;
 
@@ -990,17 +971,17 @@ The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
-static void CG_ServerCommand(void)
+static void
+CG_ServerCommand(void)
 {
-	const char	*cmd;
-	char		text[MAX_SAY_TEXT];
+	const char *cmd;
+	char text[MAX_SAY_TEXT];
 
 	cmd = CG_Argv(0);
 
-	if(!cmd[0]){
+	if(!cmd[0])
 		// server claimed the command
 		return;
-	}
 
 	if(!strcmp(cmd, "cp")){
 		CG_CenterPrint(CG_Argv(1), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
@@ -1015,13 +996,13 @@ static void CG_ServerCommand(void)
 	if(!strcmp(cmd, "print")){
 		CG_Printf("%s", CG_Argv(1));
 #ifdef MISSIONPACK
-		cmd = CG_Argv(1);			// yes, this is obviously a hack, but so is the way we hear about
+		cmd = CG_Argv(1);	// yes, this is obviously a hack, but so is the way we hear about
 		// votes passing or failing
-		if(!Q_stricmpn(cmd, "vote failed", 11) || !Q_stricmpn(cmd, "team vote failed", 16)){
+		if(!Q_stricmpn(cmd, "vote failed", 11) || !Q_stricmpn(cmd, "team vote failed", 16))
 			trap_S_StartLocalSound(cgs.media.voteFailed, CHAN_ANNOUNCER);
-		}else if(!Q_stricmpn(cmd, "vote passed", 11) || !Q_stricmpn(cmd, "team vote passed", 16)){
+		else if(!Q_stricmpn(cmd, "vote passed", 11) || !Q_stricmpn(cmd, "team vote passed", 16))
 			trap_S_StartLocalSound(cgs.media.votePassed, CHAN_ANNOUNCER);
-		}
+
 #endif
 		return;
 	}
@@ -1109,7 +1090,6 @@ static void CG_ServerCommand(void)
 	CG_Printf("Unknown client game command: %s\n", cmd);
 }
 
-
 /*
 ====================
 CG_ExecuteNewServerCommands
@@ -1118,11 +1098,10 @@ Execute all of the server commands that were received along
 with this this snapshot.
 ====================
 */
-void CG_ExecuteNewServerCommands(int latestSequence)
+void
+CG_ExecuteNewServerCommands(int latestSequence)
 {
-	while(cgs.serverCommandSequence < latestSequence){
-		if(trap_GetServerCommand(++cgs.serverCommandSequence)){
+	while(cgs.serverCommandSequence < latestSequence)
+		if(trap_GetServerCommand(++cgs.serverCommandSequence))
 			CG_ServerCommand();
-		}
-	}
 }

@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-
 /*
 ==============================================================================
 
@@ -58,36 +57,38 @@ still, you should rely on PB for banning instead
 ==============================================================================
 */
 
-typedef struct ipFilter_s {
+typedef struct ipFilter_s
+{
 	unsigned	mask;
 	unsigned	compare;
 } ipFilter_t;
 
-#define	MAX_IPFILTERS	1024
+#define MAX_IPFILTERS 1024
 
-static ipFilter_t	ipFilters[MAX_IPFILTERS];
-static int			numIPFilters;
+static ipFilter_t ipFilters[MAX_IPFILTERS];
+static int numIPFilters;
 
 /*
 =================
 StringToFilter
 =================
 */
-static qboolean StringToFilter(char *s, ipFilter_t *f)
+static qboolean
+StringToFilter(char *s, ipFilter_t *f)
 {
-	char	num[128];
-	int		i, j;
-	byte	b[4];
-	byte	m[4];
+	char num[128];
+	int i, j;
+	byte b[4];
+	byte m[4];
 
-	for(i=0 ; i<4 ; i++){
+	for(i = 0; i<4; i++){
 		b[i] = 0;
 		m[i] = 0;
 	}
 
-	for(i=0 ; i<4 ; i++){
+	for(i = 0; i<4; i++){
 		if(*s < '0' || *s > '9'){
-			if(*s == '*'){ // 'match any'
+			if(*s == '*'){	// 'match any'
 				// b[i] and m[i] to 0
 				s++;
 				if(!*s)
@@ -100,9 +101,8 @@ static qboolean StringToFilter(char *s, ipFilter_t *f)
 		}
 
 		j = 0;
-		while(*s >= '0' && *s <= '9'){
+		while(*s >= '0' && *s <= '9')
 			num[j++] = *s++;
-		}
 		num[j] = 0;
 		b[i] = atoi(num);
 		m[i] = 255;
@@ -112,8 +112,8 @@ static qboolean StringToFilter(char *s, ipFilter_t *f)
 		s++;
 	}
 
-	f->mask = *(unsigned *)m;
-	f->compare = *(unsigned *)b;
+	f->mask = *(unsigned*)m;
+	f->compare = *(unsigned*)b;
 
 	return qtrue;
 }
@@ -123,32 +123,33 @@ static qboolean StringToFilter(char *s, ipFilter_t *f)
 UpdateIPBans
 =================
 */
-static void UpdateIPBans(void)
+static void
+UpdateIPBans(void)
 {
-	byte	b[4] = {0};
-	byte	m[4] = {0};
-	int		i,j;
-	char	iplist_final[MAX_CVAR_VALUE_STRING] = {0};
-	char	ip[64] = {0};
+	byte b[4] = {0};
+	byte m[4] = {0};
+	int i, j;
+	char iplist_final[MAX_CVAR_VALUE_STRING] = {0};
+	char ip[64] = {0};
 
 	*iplist_final = 0;
-	for(i = 0 ; i < numIPFilters ; i++){
+	for(i = 0; i < numIPFilters; i++){
 		if(ipFilters[i].compare == 0xffffffff)
 			continue;
 
-		*(unsigned *)b = ipFilters[i].compare;
-		*(unsigned *)m = ipFilters[i].mask;
+		*(unsigned*)b = ipFilters[i].compare;
+		*(unsigned*)m = ipFilters[i].mask;
 		*ip = 0;
-		for(j = 0 ; j < 4 ; j++){
+		for(j = 0; j < 4; j++){
 			if(m[j]!=255)
 				Q_strcat(ip, sizeof(ip), "*");
 			else
 				Q_strcat(ip, sizeof(ip), va("%i", b[j]));
 			Q_strcat(ip, sizeof(ip), (j<3) ? "." : " ");
 		}
-		if(strlen(iplist_final)+strlen(ip) < MAX_CVAR_VALUE_STRING){
+		if(strlen(iplist_final)+strlen(ip) < MAX_CVAR_VALUE_STRING)
 			Q_strcat(iplist_final, sizeof(iplist_final), ip);
-		}else{
+		else{
 			Com_Printf("g_banIPs overflowed at MAX_CVAR_VALUE_STRING\n");
 			break;
 		}
@@ -162,10 +163,11 @@ static void UpdateIPBans(void)
 G_FilterPacket
 =================
 */
-qboolean G_FilterPacket(char *from)
+qboolean
+G_FilterPacket(char *from)
 {
-	int		i;
-	unsigned	in;
+	int i;
+	unsigned in;
 	byte m[4] = {0};
 	char *p;
 
@@ -182,9 +184,9 @@ qboolean G_FilterPacket(char *from)
 		i++, p++;
 	}
 
-	in = *(unsigned *)m;
+	in = *(unsigned*)m;
 
-	for(i=0 ; i<numIPFilters ; i++)
+	for(i = 0; i<numIPFilters; i++)
 		if((in & ipFilters[i].mask) == ipFilters[i].compare)
 			return g_filterBan.integer != 0;
 
@@ -196,13 +198,14 @@ qboolean G_FilterPacket(char *from)
 AddIP
 =================
 */
-static void AddIP(char *str)
+static void
+AddIP(char *str)
 {
-	int		i;
+	int i;
 
-	for(i = 0 ; i < numIPFilters ; i++)
+	for(i = 0; i < numIPFilters; i++)
 		if(ipFilters[i].compare == 0xffffffff)
-			break;		// free spot
+			break;	// free spot
 	if(i == numIPFilters){
 		if(numIPFilters == MAX_IPFILTERS){
 			G_Printf("IP filter list is full\n");
@@ -222,10 +225,11 @@ static void AddIP(char *str)
 G_ProcessIPBans
 =================
 */
-void G_ProcessIPBans(void)
+void
+G_ProcessIPBans(void)
 {
 	char *s, *t;
-	char		str[MAX_CVAR_VALUE_STRING];
+	char str[MAX_CVAR_VALUE_STRING];
 
 	Q_strncpyz(str, g_banIPs.string, sizeof(str));
 
@@ -241,15 +245,15 @@ void G_ProcessIPBans(void)
 	}
 }
 
-
 /*
 =================
 Svcmd_AddIP_f
 =================
 */
-void Svcmd_AddIP_f(void)
+void
+Svcmd_AddIP_f(void)
 {
-	char		str[MAX_TOKEN_CHARS];
+	char str[MAX_TOKEN_CHARS];
 
 	if(trap_Argc() < 2){
 		G_Printf("Usage: addip <ip-mask>\n");
@@ -259,7 +263,6 @@ void Svcmd_AddIP_f(void)
 	trap_Argv(1, str, sizeof(str));
 
 	AddIP(str);
-
 }
 
 /*
@@ -267,11 +270,12 @@ void Svcmd_AddIP_f(void)
 Svcmd_RemoveIP_f
 =================
 */
-void Svcmd_RemoveIP_f(void)
+void
+Svcmd_RemoveIP_f(void)
 {
-	ipFilter_t	f;
-	int			i;
-	char		str[MAX_TOKEN_CHARS];
+	ipFilter_t f;
+	int i;
+	char str[MAX_TOKEN_CHARS];
 
 	if(trap_Argc() < 2){
 		G_Printf("Usage: removeip <ip-mask>\n");
@@ -283,16 +287,15 @@ void Svcmd_RemoveIP_f(void)
 	if(!StringToFilter(str, &f))
 		return;
 
-	for(i=0 ; i<numIPFilters ; i++){
-		if(ipFilters[i].mask == f.mask	&&
-		        ipFilters[i].compare == f.compare){
+	for(i = 0; i<numIPFilters; i++)
+		if(ipFilters[i].mask == f.mask  &&
+		   ipFilters[i].compare == f.compare){
 			ipFilters[i].compare = 0xffffffffu;
 			G_Printf("Removed.\n");
 
 			UpdateIPBans();
 			return;
 		}
-	}
 
 	G_Printf("Didn't find %s.\n", str);
 }
@@ -302,16 +305,16 @@ void Svcmd_RemoveIP_f(void)
 Svcmd_EntityList_f
 ===================
 */
-void	Svcmd_EntityList_f(void)
+void
+Svcmd_EntityList_f(void)
 {
-	int			e;
-	gentity_t		*check;
+	int e;
+	gentity_t *check;
 
 	check = g_entities+1;
-	for(e = 1; e < level.num_entities ; e++, check++){
-		if(!check->inuse){
+	for(e = 1; e < level.num_entities; e++, check++){
+		if(!check->inuse)
 			continue;
-		}
 		G_Printf("%3i:", e);
 		switch(check->s.eType){
 		case ET_GENERAL:
@@ -359,18 +362,18 @@ void	Svcmd_EntityList_f(void)
 			break;
 		}
 
-		if(check->classname){
+		if(check->classname)
 			G_Printf("%s", check->classname);
-		}
 		G_Printf("\n");
 	}
 }
 
-gclient_t	*ClientForString(const char *s)
+gclient_t       *
+ClientForString(const char *s)
 {
-	gclient_t	*cl;
-	int			i;
-	int			idnum;
+	gclient_t *cl;
+	int i;
+	int idnum;
 
 	// numeric values are just slot numbers
 	if(s[0] >= '0' && s[0] <= '9'){
@@ -389,14 +392,12 @@ gclient_t	*ClientForString(const char *s)
 	}
 
 	// check for a name match
-	for(i=0 ; i < level.maxclients ; i++){
+	for(i = 0; i < level.maxclients; i++){
 		cl = &level.clients[i];
-		if(cl->pers.connected == CON_DISCONNECTED){
+		if(cl->pers.connected == CON_DISCONNECTED)
 			continue;
-		}
-		if(!Q_stricmp(cl->pers.netname, s)){
+		if(!Q_stricmp(cl->pers.netname, s))
 			return cl;
-		}
 	}
 
 	G_Printf("User %s is not on the server\n", s);
@@ -411,10 +412,11 @@ Svcmd_ForceTeam_f
 forceteam <player> <team>
 ===================
 */
-void	Svcmd_ForceTeam_f(void)
+void
+Svcmd_ForceTeam_f(void)
 {
-	gclient_t	*cl;
-	char		str[MAX_TOKEN_CHARS];
+	gclient_t *cl;
+	char str[MAX_TOKEN_CHARS];
 
 	if(trap_Argc() < 3){
 		G_Printf("Usage: forceteam <player> <team>\n");
@@ -424,16 +426,15 @@ void	Svcmd_ForceTeam_f(void)
 	// find the player
 	trap_Argv(1, str, sizeof(str));
 	cl = ClientForString(str);
-	if(!cl){
+	if(!cl)
 		return;
-	}
 
 	// set the team
 	trap_Argv(2, str, sizeof(str));
 	SetTeam(&g_entities[cl - level.clients], str);
 }
 
-char	*ConcatArgs(int start);
+char *ConcatArgs(int start);
 
 /*
 =================
@@ -441,9 +442,10 @@ ConsoleCommand
 
 =================
 */
-qboolean	ConsoleCommand(void)
+qboolean
+ConsoleCommand(void)
 {
-	char	cmd[MAX_TOKEN_CHARS];
+	char cmd[MAX_TOKEN_CHARS];
 
 	trap_Argv(0, cmd, sizeof(cmd));
 
@@ -504,4 +506,3 @@ qboolean	ConsoleCommand(void)
 
 	return qfalse;
 }
-

@@ -20,17 +20,18 @@ static char *builtinres[] = {
 
 static char *builtinhz[] = {"60"};
 
-static struct {
-	float r;
-	char *s;
+static struct
+{
+	float	r;
+	char	*s;
 } knownratios[] = {
-	{ 4./3,		"4:3"   },
-	{ 16./10,	"16:10" },
-	{ 16./9,		"16:9"  },
-	{ 5./4,		"5:4"   },
-	{ 3./2,		"3:2"   },
-	{ 14./9,		"14:9"  },
-	{ 5./3,		"5:3"   }
+	{4./3, "4:3"},
+	{16./10, "16:10"},
+	{16./9, "16:9"},
+	{5./4, "5:4"},
+	{3./2, "3:2"},
+	{14./9, "14:9"},
+	{5./3, "5:3"}
 };
 
 static char *qualitylist[] = {"N64", "PS1"};
@@ -46,33 +47,36 @@ static char **resolutions = builtinres;
 static char **refreshrates = builtinhz;
 
 // video options
-static struct {
-	qboolean initialized, dirty, needrestart;
-	char *reslist[NRES];
-	int nres, resi;
-	char *ratlist[ARRAY_LEN(knownratios) + 1];
-	int nrat, rati;
-	char *hzlist[NRES];
-	int nhz, hzi;
-	qboolean fullscr;
-	qboolean vsync;
-	float fov;
-	qboolean drawfps;
-	int texquality;
-	int gquality;
-	float gamma;
+static struct
+{
+	qboolean	initialized, dirty, needrestart;
+	char		*reslist[NRES];
+	int		nres, resi;
+	char		*ratlist[ARRAY_LEN(knownratios) + 1];
+	int		nrat, rati;
+	char		*hzlist[NRES];
+	int		nhz, hzi;
+	qboolean	fullscr;
+	qboolean	vsync;
+	float		fov;
+	qboolean	drawfps;
+	int		texquality;
+	int		gquality;
+	float		gamma;
 } vo;
 
 // sound options
-static struct {
-	qboolean initialized, dirty, needrestart;
-	int qual;
-	float vol;
-	float muvol;
-	qboolean doppler;
+static struct
+{
+	qboolean	initialized, dirty, needrestart;
+	int		qual;
+	float		vol;
+	float		muvol;
+	qboolean	doppler;
 } so;
 
-static void getmodes(void)
+static void
+getmodes(void)
 {
 	uint i;
 	char *p;
@@ -80,7 +84,7 @@ static void getmodes(void)
 	Q_strncpyz(resbuf, UI_Cvar_VariableString("r_availablemodes"), sizeof resbuf);
 	if(*resbuf == '\0')
 		return;
-	for(p = resbuf, i = 0; p != nil && i < ARRAY_LEN(detectedres)-1;){
+	for(p = resbuf, i = 0; p != nil && i < ARRAY_LEN(detectedres)-1; ){
 		// XxY
 		detectedres[i++] = p;
 
@@ -103,7 +107,8 @@ static void getmodes(void)
 	}
 }
 
-static void calcratios(void)
+static void
+calcratios(void)
 {
 	int i, r;
 
@@ -130,7 +135,8 @@ static void calcratios(void)
 	ratios[r] = nil;
 }
 
-void placeholder(void)
+void
+placeholder(void)
 {
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
@@ -138,7 +144,8 @@ void placeholder(void)
 		pop();
 }
 
-void quitmenu(void)
+void
+quitmenu(void)
 {
 	uis.fullscreen = qtrue;
 
@@ -149,7 +156,8 @@ void quitmenu(void)
 		pop();
 }
 
-static void optionsbuttons(void)
+static void
+optionsbuttons(void)
 {
 	const float spc = 35;
 	float x, y;
@@ -184,7 +192,8 @@ static void optionsbuttons(void)
 /*
 Builds list of supported resolutions & refresh rates for the current aspect ratio.
 */
-static void mkmodelists(const char *ratio)
+static void
+mkmodelists(const char *ratio)
 {
 	int i, j;
 
@@ -208,7 +217,8 @@ static void mkmodelists(const char *ratio)
 /*
 Builds list of aspect ratios
 */
-static void mkratlist(void)
+static void
+mkratlist(void)
 {
 	int i, j;
 	qboolean present;
@@ -231,7 +241,8 @@ static void mkratlist(void)
 	}
 }
 
-static void initvideomenu(void)
+static void
+initvideomenu(void)
 {
 	int i, w, h, hz;
 	char resstr[16], hzstr[16];
@@ -279,13 +290,14 @@ static void initvideomenu(void)
 	vo.initialized = qtrue;
 }
 
-static void savevideochanges(void)
+static void
+savevideochanges(void)
 {
 	char w[32], *h;
 
 	if(!vo.dirty && !vo.needrestart)
 		return;
-	
+
 	h = strchr(vo.reslist[vo.resi], 'x') + 1;
 	Q_strncpyz(w, vo.reslist[vo.resi], h-vo.reslist[vo.resi]);
 	trap_Cvar_Set("r_customwidth", w);
@@ -318,7 +330,8 @@ static void savevideochanges(void)
 	vo.initialized = qfalse;
 }
 
-void videomenu(void)
+void
+videomenu(void)
 {
 	const float spc = 24;
 	float x, xx, y;
@@ -402,15 +415,15 @@ void videomenu(void)
 	if(textspinner(".v.gq", xx, y, 0, gqualitylist, &vo.gquality, ARRAY_LEN(gqualitylist)))
 		vo.dirty = qtrue;
 
-	if(vo.dirty || vo.needrestart){
+	if(vo.dirty || vo.needrestart)
 		if(button(".v.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
 			savevideochanges();
 			pop();
 		}
-	}
 }
 
-static void initsoundmenu(void)
+static void
+initsoundmenu(void)
 {
 	int freq;
 
@@ -435,7 +448,8 @@ static void initsoundmenu(void)
 	so.initialized = qtrue;
 }
 
-static void savesoundchanges(void)
+static void
+savesoundchanges(void)
 {
 	switch(so.qual){
 	case 0:
@@ -456,14 +470,15 @@ static void savesoundchanges(void)
 	so.initialized = qfalse;
 }
 
-void soundmenu(void)
+void
+soundmenu(void)
 {
 	const float spc = 24;
 	float x, xx, y;
 
 	if(!so.initialized)
 		initsoundmenu();
-	
+
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	optionsbuttons();
@@ -498,7 +513,8 @@ void soundmenu(void)
 		}
 }
 
-void errormenu(void)
+void
+errormenu(void)
 {
 	int i;
 	char buf[MAX_STRING_CHARS], msg[MAX_STRING_CHARS];
@@ -517,7 +533,8 @@ void errormenu(void)
 	drawstr(320, 220, msg, UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_red);
 }
 
-void mainmenu(void)
+void
+mainmenu(void)
 {
 	const float spc = 35;
 	float y;
@@ -538,7 +555,8 @@ void mainmenu(void)
 		push(quitmenu);
 }
 
-void ingamemenu(void)
+void
+ingamemenu(void)
 {
 	const float spc = 35;
 	float y;

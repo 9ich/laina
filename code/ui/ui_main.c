@@ -22,41 +22,44 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "ui_local.h"
 
-typedef struct {
+typedef struct
+{
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
 	char		*defaultString;
-	int			cvarFlags;
+	int		cvarFlags;
 } cvarTable_t;
 
-vmCvar_t	ui_drawCrosshair;
-vmCvar_t	ui_drawCrosshairNames;
-vmCvar_t	ui_marks;
+vmCvar_t ui_drawCrosshair;
+vmCvar_t ui_drawCrosshairNames;
+vmCvar_t ui_marks;
 vmCvar_t ui_drawfps;
 
 static cvarTable_t cvarTable[] = {
-	{ &ui_drawCrosshair, "cg_drawCrosshair", "4", CVAR_ARCHIVE },
-	{ &ui_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE },
-	{ &ui_marks, "cg_marks", "1", CVAR_ARCHIVE },
-	{ &ui_drawfps, "cg_drawfps", "1", CVAR_ARCHIVE },
+	{&ui_drawCrosshair, "cg_drawCrosshair", "4", CVAR_ARCHIVE},
+	{&ui_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE},
+	{&ui_marks, "cg_marks", "1", CVAR_ARCHIVE},
+	{&ui_drawfps, "cg_drawfps", "1", CVAR_ARCHIVE},
 };
 static int cvarTableSize = ARRAY_LEN(cvarTable);
 
-void registercvars(void)
+void
+registercvars(void)
 {
 	int i;
 	cvarTable_t *cv;
 
-	for(i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++)
+	for(i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++)
 		trap_Cvar_Register(cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags);
 }
 
-void updatecvars(void)
+void
+updatecvars(void)
 {
 	int i;
 	cvarTable_t *cv;
 
-	for(i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++)
+	for(i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++)
 		trap_Cvar_Update(cv->vmCvar);
 }
 
@@ -68,7 +71,8 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
-Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11)
+Q_EXPORT intptr_t
+vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11)
 {
 	switch(command){
 	case UI_GETAPIVERSION:
@@ -101,8 +105,8 @@ Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, in
 	case UI_DRAW_CONNECT_SCREEN:
 		drawconnectscreen(arg0);
 		return 0;
-	case UI_HASUNIQUECDKEY:				// mod authors need to observe this
-		return qtrue;  // change this to qfalse for mods!
+	case UI_HASUNIQUECDKEY:	// mod authors need to observe this
+		return qtrue;	// change this to qfalse for mods!
 	}
 	return -1;
 }

@@ -32,43 +32,43 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#define MEMDEBUG
 
 #ifdef MEMDEBUG
-#define GetMemory(size)				GetMemoryDebug(size, #size, __FILE__, __LINE__);
-#define GetClearedMemory(size)		GetClearedMemoryDebug(size, #size, __FILE__, __LINE__);
+#define GetMemory(size)		GetMemoryDebug(size, #size, __FILE__, __LINE__);
+#define GetClearedMemory(size)	GetClearedMemoryDebug(size, #size, __FILE__, __LINE__);
 //allocate a memory block of the given size
-void *GetMemoryDebug(ulong size, char *label, char *file, int line);
+void	*GetMemoryDebug(ulong size, char *label, char *file, int line);
 //allocate a memory block of the given size and clear it
-void *GetClearedMemoryDebug(ulong size, char *label, char *file, int line);
-#define GetHunkMemory(size)			GetHunkMemoryDebug(size, #size, __FILE__, __LINE__);
+void	*GetClearedMemoryDebug(ulong size, char *label, char *file, int line);
+#define GetHunkMemory(size)		GetHunkMemoryDebug(size, #size, __FILE__, __LINE__);
 #define GetClearedHunkMemory(size)	GetClearedHunkMemoryDebug(size, #size, __FILE__, __LINE__);
 //allocate a memory block of the given size
-void *GetHunkMemoryDebug(ulong size, char *label, char *file, int line);
+void	*GetHunkMemoryDebug(ulong size, char *label, char *file, int line);
 //allocate a memory block of the given size and clear it
-void *GetClearedHunkMemoryDebug(ulong size, char *label, char *file, int line);
+void	*GetClearedHunkMemoryDebug(ulong size, char *label, char *file, int line);
 #else
 //allocate a memory block of the given size
-void *GetMemory(ulong size);
+void	*GetMemory(ulong size);
 //allocate a memory block of the given size and clear it
-void *GetClearedMemory(ulong size);
+void	*GetClearedMemory(ulong size);
 #ifdef BSPC
-#define GetHunkMemory GetMemory
-#define GetClearedHunkMemory GetClearedMemory
+#define GetHunkMemory		GetMemory
+#define GetClearedHunkMemory	GetClearedMemory
 #else
 //allocate a memory block of the given size
-void *GetHunkMemory(ulong size);
+void	*GetHunkMemory(ulong size);
 //allocate a memory block of the given size and clear it
-void *GetClearedHunkMemory(ulong size);
+void	*GetClearedHunkMemory(ulong size);
 #endif
 #endif
 
 //free the given memory block
-void FreeMemory(void *ptr);
+void	FreeMemory(void *ptr);
 //returns the amount available memory
-int AvailableMemory(void);
+int	AvailableMemory(void);
 //prints the total used memory size
-void PrintUsedMemorySize(void);
+void	PrintUsedMemorySize(void);
 //print all memory blocks with label
-void PrintMemoryLabels(void);
+void	PrintMemoryLabels(void);
 //returns the size of the memory block in bytes
-int MemoryByteSize(void *ptr);
+int	MemoryByteSize(void *ptr);
 //free all allocated memory
-void DumpMemory(void);
+void	DumpMemory(void);
