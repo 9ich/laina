@@ -84,38 +84,18 @@ ushort crctable[257] =
 	0x6e17,	0x7e36,	0x4e55,	0x5e74,	0x2e93,	0x3eb2,	0x0ed1,	0x1ef0
 };
 
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void CRC_Init(ushort *crcvalue)
 {
 	*crcvalue = CRC_INIT_VALUE;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void CRC_ProcessByte(ushort *crcvalue, byte data)
 {
 	*crcvalue = (*crcvalue << 8) ^ crctable[(*crcvalue >> 8) ^ data];
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 ushort CRC_Value(ushort crcvalue)
 {
 	return crcvalue ^ CRC_XOR_VALUE;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 ushort CRC_ProcessString(uchar *data, int length)
 {
 	ushort crcvalue;
@@ -131,11 +111,6 @@ ushort CRC_ProcessString(uchar *data, int length)
 	}
 	return CRC_Value(crcvalue);
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void CRC_ContinueProcessString(ushort *crc, char *data, int length)
 {
 	int i;

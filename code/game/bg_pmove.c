@@ -481,7 +481,6 @@ static qboolean	PM_CheckWaterJump(void)
 	return qtrue;
 }
 
-//============================================================================
 
 
 /*
@@ -990,7 +989,6 @@ static void PM_NoclipMove(void)
 	VectorMA(pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin);
 }
 
-//============================================================================
 
 /*
 ================

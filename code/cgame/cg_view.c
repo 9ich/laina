@@ -175,7 +175,6 @@ static void CG_AddTestModel(void)
 
 
 
-//============================================================================
 
 
 /*
@@ -215,7 +214,6 @@ static void CG_CalcVrect(void)
 	cg.refdef.y = (cgs.glconfig.vidHeight - cg.refdef.height)/2;
 }
 
-//==============================================================================
 
 
 /*

@@ -51,11 +51,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define qfalse	false
 #endif //BSPC
 
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 fielddef_t *FindField(fielddef_t *defs, char *name)
 {
 	int i;
@@ -66,11 +61,6 @@ fielddef_t *FindField(fielddef_t *defs, char *name)
 	}
 	return nil;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 {
 	token_t token;
@@ -179,11 +169,6 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 	}
 	return 1;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 qboolean ReadChar(source_t *source, fielddef_t *fd, void *p)
 {
 	token_t token;
@@ -203,11 +188,6 @@ qboolean ReadChar(source_t *source, fielddef_t *fd, void *p)
 	}
 	return 1;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int ReadString(source_t *source, fielddef_t *fd, void *p)
 {
 	token_t token;
@@ -221,11 +201,6 @@ int ReadString(source_t *source, fielddef_t *fd, void *p)
 	((char *)p)[MAX_STRINGFIELD-1] = '\0';
 	return 1;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int ReadStructure(source_t *source, structdef_t *def, char *structure)
 {
 	token_t token;
@@ -269,25 +244,25 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 					if (!ReadChar(source, fd, p)) return qfalse;
 					p = (char *) p + sizeof(char);
 					break;
-				} //end case
+				}
 				case FT_INT:
 				{
 					if (!ReadNumber(source, fd, p)) return qfalse;
 					p = (char *) p + sizeof(int);
 					break;
-				} //end case
+				}
 				case FT_FLOAT:
 				{
 					if (!ReadNumber(source, fd, p)) return qfalse;
 					p = (char *) p + sizeof(float);
 					break;
-				} //end case
+				}
 				case FT_STRING:
 				{
 					if (!ReadString(source, fd, p)) return qfalse;
 					p = (char *) p + MAX_STRINGFIELD;
 					break;
-				} //end case
+				}
 				case FT_STRUCT:
 				{
 					if (!fd->substruct)
@@ -298,8 +273,8 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 					ReadStructure(source, fd->substruct, (char *) p);
 					p = (char *) p + fd->substruct->size;
 					break;
-				} //end case
-			} //end switch
+				}
+			}
 			if (fd->type & FT_ARRAY)
 			{
 				if (!PC_ExpectAnyToken(source, &token)) return qfalse;
@@ -314,11 +289,6 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 	}
 	return qtrue;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int WriteIndent(FILE *fp, int indent)
 {
 	while(indent-- > 0)
@@ -327,11 +297,6 @@ int WriteIndent(FILE *fp, int indent)
 	}
 	return qtrue;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int WriteFloat(FILE *fp, float value)
 {
 	char buf[128];
@@ -354,11 +319,6 @@ int WriteFloat(FILE *fp, float value)
 	if (fprintf(fp, "%s", buf) < 0) return 0;
 	return 1;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int WriteStructWithIndent(FILE *fp, structdef_t *def, char *structure, int indent)
 {
 	int i, num;
@@ -393,32 +353,32 @@ int WriteStructWithIndent(FILE *fp, structdef_t *def, char *structure, int inden
 					if (fprintf(fp, "%d", *(char *) p) < 0) return qfalse;
 					p = (char *) p + sizeof(char);
 					break;
-				} //end case
+				}
 				case FT_INT:
 				{
 					if (fprintf(fp, "%d", *(int *) p) < 0) return qfalse;
 					p = (char *) p + sizeof(int);
 					break;
-				} //end case
+				}
 				case FT_FLOAT:
 				{
 					if (!WriteFloat(fp, *(float *)p)) return qfalse;
 					p = (char *) p + sizeof(float);
 					break;
-				} //end case
+				}
 				case FT_STRING:
 				{
 					if (fprintf(fp, "\"%s\"", (char *) p) < 0) return qfalse;
 					p = (char *) p + MAX_STRINGFIELD;
 					break;
-				} //end case
+				}
 				case FT_STRUCT:
 				{
 					if (!WriteStructWithIndent(fp, fd->substruct, structure, indent)) return qfalse;
 					p = (char *) p + fd->substruct->size;
 					break;
-				} //end case
-			} //end switch
+				}
+			}
 			if (fd->type & FT_ARRAY)
 			{
 				if (num > 0)
@@ -439,11 +399,6 @@ int WriteStructWithIndent(FILE *fp, structdef_t *def, char *structure, int inden
 	if (fprintf(fp, "}\r\n") < 0) return qfalse;
 	return qtrue;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int WriteStructure(FILE *fp, structdef_t *def, char *structure)
 {
 	return WriteStructWithIndent(fp, def, structure, 0);

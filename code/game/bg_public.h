@@ -200,7 +200,6 @@ typedef struct {
 void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd);
 void Pmove(pmove_t *pmove);
 
-//===================================================================================
 
 // tokens <-> lives
 #define LIFE2TOK(x)	((x)*100)

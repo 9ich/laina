@@ -61,7 +61,6 @@ typedef enum {
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
 
-//============================================================================
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;

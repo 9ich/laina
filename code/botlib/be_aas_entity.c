@@ -55,11 +55,6 @@ enum {
 	ET_BREAKABLE,
 };
 
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_UpdateEntity(int entnum, bot_entitystate_t *state)
 {
 	int relink;
@@ -159,11 +154,6 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t *state)
 	}
 	return BLERR_NOERROR;
 }
-//===========================================================================
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 void AAS_EntityInfo(int entnum, aas_entityinfo_t *info)
 {
 	if (!aasworld.initialized)
@@ -182,11 +172,6 @@ void AAS_EntityInfo(int entnum, aas_entityinfo_t *info)
 
 	Com_Memcpy(info, &aasworld.entities[entnum].i, sizeof(aas_entityinfo_t));
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_EntityOrigin(int entnum, vec3_t origin)
 {
 	if (entnum < 0 || entnum >= aasworld.maxentities)
@@ -198,11 +183,6 @@ void AAS_EntityOrigin(int entnum, vec3_t origin)
 
 	VectorCopy(aasworld.entities[entnum].i.origin, origin);
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_EntityModelindex(int entnum)
 {
 	if (entnum < 0 || entnum >= aasworld.maxentities)
@@ -212,11 +192,6 @@ int AAS_EntityModelindex(int entnum)
 	}
 	return aasworld.entities[entnum].i.modelindex;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_EntityType(int entnum)
 {
 	if (!aasworld.initialized) return 0;
@@ -228,11 +203,6 @@ int AAS_EntityType(int entnum)
 	}
 	return aasworld.entities[entnum].i.type;
 } //end of the AAS_EntityType
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_EntityModelNum(int entnum)
 {
 	if (!aasworld.initialized) return 0;
@@ -244,11 +214,6 @@ int AAS_EntityModelNum(int entnum)
 	}
 	return aasworld.entities[entnum].i.modelindex;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_OriginOfMoverWithModelNum(int modelnum, vec3_t origin)
 {
 	int i;
@@ -268,11 +233,6 @@ int AAS_OriginOfMoverWithModelNum(int modelnum, vec3_t origin)
 	}
 	return qfalse;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_EntitySize(int entnum, vec3_t mins, vec3_t maxs)
 {
 	aas_entity_t *ent;
@@ -289,11 +249,6 @@ void AAS_EntitySize(int entnum, vec3_t mins, vec3_t maxs)
 	VectorCopy(ent->i.mins, mins);
 	VectorCopy(ent->i.maxs, maxs);
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_EntityBSPData(int entnum, bsp_entdata_t *entdata)
 {
 	aas_entity_t *ent;
@@ -306,11 +261,6 @@ void AAS_EntityBSPData(int entnum, bsp_entdata_t *entdata)
 	entdata->solid = ent->i.solid;
 	entdata->modelnum = ent->i.modelindex - 1;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_ResetEntityLinks(void)
 {
 	int i;
@@ -320,11 +270,6 @@ void AAS_ResetEntityLinks(void)
 		aasworld.entities[i].leaves = nil;
 	}
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_InvalidateEntities(void)
 {
 	int i;
@@ -334,11 +279,6 @@ void AAS_InvalidateEntities(void)
 		aasworld.entities[i].i.number = i;
 	}
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_UnlinkInvalidEntities(void)
 {
 	int i;
@@ -356,11 +296,6 @@ void AAS_UnlinkInvalidEntities(void)
 		}
 	}
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_NearestEntity(vec3_t origin, int modelindex)
 {
 	int i, bestentnum;
@@ -390,11 +325,6 @@ int AAS_NearestEntity(vec3_t origin, int modelindex)
 	}
 	return bestentnum;
 }
-//===========================================================================
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_BestReachableEntityArea(int entnum)
 {
 	aas_entity_t *ent;
@@ -402,11 +332,6 @@ int AAS_BestReachableEntityArea(int entnum)
 	ent = &aasworld.entities[entnum];
 	return AAS_BestReachableLinkArea(ent->areas);
 }
-//===========================================================================
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 int AAS_NextEntity(int entnum)
 {
 	if (!aasworld.loaded) return 0;
