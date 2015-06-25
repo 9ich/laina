@@ -128,7 +128,7 @@ void P_WorldEffects(gentity_t *ent)
 				// don't play a normal pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				G_Damage(ent, NULL, NULL, NULL, NULL,
+				G_Damage(ent, nil, nil, nil, nil,
 				         ent->damage, DAMAGE_NO_ARMOR, MOD_WATER);
 			}
 		}
@@ -147,12 +147,12 @@ void P_WorldEffects(gentity_t *ent)
 				G_AddEvent(ent, EV_POWERUP_BATTLESUIT, 0);
 			}else{
 				if(ent->watertype & CONTENTS_LAVA){
-					G_Damage(ent, NULL, NULL, NULL, NULL,
+					G_Damage(ent, nil, nil, nil, nil,
 					         30*waterlevel, 0, MOD_LAVA);
 				}
 
 				if(ent->watertype & CONTENTS_SLIME){
-					G_Damage(ent, NULL, NULL, NULL, NULL,
+					G_Damage(ent, nil, nil, nil, nil,
 					         10*waterlevel, 0, MOD_SLIME);
 				}
 			}
@@ -554,7 +554,7 @@ void ClientEvents(gentity_t *ent, int oldEventSequence)
 				damage = 5;
 			}
 			ent->pain_debounce_time = level.time + 200;	// no normal pain sound
-			G_Damage(ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
+			G_Damage(ent, nil, nil, nil, nil, damage, 0, MOD_FALLING);
 			break;
 
 		case EV_FIRE_WEAPON:
@@ -563,7 +563,7 @@ void ClientEvents(gentity_t *ent, int oldEventSequence)
 
 		case EV_USE_ITEM1:		// teleporter
 			// drop flags in CTF
-			item = NULL;
+			item = nil;
 			j = 0;
 
 			if(ent->client->ps.powerups[ PW_REDFLAG ]){

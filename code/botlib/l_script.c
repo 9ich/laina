@@ -86,76 +86,76 @@ typedef enum {qfalse, qtrue}	qboolean;
 punctuation_t default_punctuations[] =
 {
 	//binary operators
-	{">>=",P_RSHIFT_ASSIGN, NULL},
-	{"<<=",P_LSHIFT_ASSIGN, NULL},
-	{"...",P_PARMS, NULL},
+	{">>=",P_RSHIFT_ASSIGN, nil},
+	{"<<=",P_LSHIFT_ASSIGN, nil},
+	{"...",P_PARMS, nil},
 	//define merge operator
-	{"##",P_PRECOMPMERGE, NULL},
+	{"##",P_PRECOMPMERGE, nil},
 	//logic operators
-	{"&&",P_LOGIC_AND, NULL},
-	{"||",P_LOGIC_OR, NULL},
-	{">=",P_LOGIC_GEQ, NULL},
-	{"<=",P_LOGIC_LEQ, NULL},
-	{"==",P_LOGIC_EQ, NULL},
-	{"!=",P_LOGIC_UNEQ, NULL},
+	{"&&",P_LOGIC_AND, nil},
+	{"||",P_LOGIC_OR, nil},
+	{">=",P_LOGIC_GEQ, nil},
+	{"<=",P_LOGIC_LEQ, nil},
+	{"==",P_LOGIC_EQ, nil},
+	{"!=",P_LOGIC_UNEQ, nil},
 	//arithmatic operators
-	{"*=",P_MUL_ASSIGN, NULL},
-	{"/=",P_DIV_ASSIGN, NULL},
-	{"%=",P_MOD_ASSIGN, NULL},
-	{"+=",P_ADD_ASSIGN, NULL},
-	{"-=",P_SUB_ASSIGN, NULL},
-	{"++",P_INC, NULL},
-	{"--",P_DEC, NULL},
+	{"*=",P_MUL_ASSIGN, nil},
+	{"/=",P_DIV_ASSIGN, nil},
+	{"%=",P_MOD_ASSIGN, nil},
+	{"+=",P_ADD_ASSIGN, nil},
+	{"-=",P_SUB_ASSIGN, nil},
+	{"++",P_INC, nil},
+	{"--",P_DEC, nil},
 	//binary operators
-	{"&=",P_BIN_AND_ASSIGN, NULL},
-	{"|=",P_BIN_OR_ASSIGN, NULL},
-	{"^=",P_BIN_XOR_ASSIGN, NULL},
-	{">>",P_RSHIFT, NULL},
-	{"<<",P_LSHIFT, NULL},
+	{"&=",P_BIN_AND_ASSIGN, nil},
+	{"|=",P_BIN_OR_ASSIGN, nil},
+	{"^=",P_BIN_XOR_ASSIGN, nil},
+	{">>",P_RSHIFT, nil},
+	{"<<",P_LSHIFT, nil},
 	//reference operators
-	{"->",P_POINTERREF, NULL},
+	{"->",P_POINTERREF, nil},
 	//C++
-	{"::",P_CPP1, NULL},
-	{".*",P_CPP2, NULL},
+	{"::",P_CPP1, nil},
+	{".*",P_CPP2, nil},
 	//arithmatic operators
-	{"*",P_MUL, NULL},
-	{"/",P_DIV, NULL},
-	{"%",P_MOD, NULL},
-	{"+",P_ADD, NULL},
-	{"-",P_SUB, NULL},
-	{"=",P_ASSIGN, NULL},
+	{"*",P_MUL, nil},
+	{"/",P_DIV, nil},
+	{"%",P_MOD, nil},
+	{"+",P_ADD, nil},
+	{"-",P_SUB, nil},
+	{"=",P_ASSIGN, nil},
 	//binary operators
-	{"&",P_BIN_AND, NULL},
-	{"|",P_BIN_OR, NULL},
-	{"^",P_BIN_XOR, NULL},
-	{"~",P_BIN_NOT, NULL},
+	{"&",P_BIN_AND, nil},
+	{"|",P_BIN_OR, nil},
+	{"^",P_BIN_XOR, nil},
+	{"~",P_BIN_NOT, nil},
 	//logic operators
-	{"!",P_LOGIC_NOT, NULL},
-	{">",P_LOGIC_GREATER, NULL},
-	{"<",P_LOGIC_LESS, NULL},
+	{"!",P_LOGIC_NOT, nil},
+	{">",P_LOGIC_GREATER, nil},
+	{"<",P_LOGIC_LESS, nil},
 	//reference operator
-	{".",P_REF, NULL},
+	{".",P_REF, nil},
 	//seperators
-	{",",P_COMMA, NULL},
-	{";",P_SEMICOLON, NULL},
+	{",",P_COMMA, nil},
+	{";",P_SEMICOLON, nil},
 	//label indication
-	{":",P_COLON, NULL},
+	{":",P_COLON, nil},
 	//if statement
-	{"?",P_QUESTIONMARK, NULL},
+	{"?",P_QUESTIONMARK, nil},
 	//embracements
-	{"(",P_PARENTHESESOPEN, NULL},
-	{")",P_PARENTHESESCLOSE, NULL},
-	{"{",P_BRACEOPEN, NULL},
-	{"}",P_BRACECLOSE, NULL},
-	{"[",P_SQBRACKETOPEN, NULL},
-	{"]",P_SQBRACKETCLOSE, NULL},
-	{"\\",P_BACKSLASH, NULL},
+	{"(",P_PARENTHESESOPEN, nil},
+	{")",P_PARENTHESESCLOSE, nil},
+	{"{",P_BRACEOPEN, nil},
+	{"}",P_BRACECLOSE, nil},
+	{"[",P_SQBRACKETOPEN, nil},
+	{"]",P_SQBRACKETCLOSE, nil},
+	{"\\",P_BACKSLASH, nil},
 	//precompiler operator
-	{"#",P_PRECOMP, NULL},
+	{"#",P_PRECOMP, nil},
 #ifdef DOLLAR
-	{"$",P_DOLLAR, NULL},
+	{"$",P_DOLLAR, nil},
 #endif //DOLLAR
-	{NULL, 0}
+	{nil, 0}
 };
 
 #ifdef BSPC
@@ -182,24 +182,24 @@ void PS_CreatePunctuationTable(script_t *script, punctuation_t *punctuations)
 	for (i = 0; punctuations[i].p; i++)
 	{
 		newp = &punctuations[i];
-		lastp = NULL;
+		lastp = nil;
 		//sort the punctuations in this table entry on length (longer punctuations first)
-		for (p = script->punctuationtable[(unsigned int) newp->p[0]]; p; p = p->next)
+		for (p = script->punctuationtable[(uint) newp->p[0]]; p; p = p->next)
 		{
 			if (strlen(p->p) < strlen(newp->p))
 			{
 				newp->next = p;
 				if (lastp) lastp->next = newp;
-				else script->punctuationtable[(unsigned int) newp->p[0]] = newp;
+				else script->punctuationtable[(uint) newp->p[0]] = newp;
 				break;
 			}
 			lastp = p;
 		}
 		if (!p)
 		{
-			newp->next = NULL;
+			newp->next = nil;
 			if (lastp) lastp->next = newp;
-			else script->punctuationtable[(unsigned int) newp->p[0]] = newp;
+			else script->punctuationtable[(uint) newp->p[0]] = newp;
 		}
 	}
 }
@@ -539,10 +539,10 @@ int PS_ReadName(script_t *script, token_t *token)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void NumberValue(char *string, int subtype, unsigned long int *intvalue,
+void NumberValue(char *string, int subtype, ulong *intvalue,
 															float *floatvalue)
 {
-	unsigned long int dotfound = 0;
+	ulong dotfound = 0;
 
 	*intvalue = 0;
 	*floatvalue = 0;
@@ -569,7 +569,7 @@ void NumberValue(char *string, int subtype, unsigned long int *intvalue,
 			}
 			string++;
 		}
-		*intvalue = (unsigned long) *floatvalue;
+		*intvalue = (ulong) *floatvalue;
 	}
 	else if (subtype & TT_DECIMAL)
 	{
@@ -615,7 +615,7 @@ int PS_ReadNumber(script_t *script, token_t *token)
 	int len = 0, i;
 	int octal, dot;
 	char c;
-//	unsigned long int intvalue = 0;
+//	ulong intvalue = 0;
 //	double floatvalue = 0;
 
 	token->type = TT_NUMBER;
@@ -769,7 +769,7 @@ int PS_ReadPunctuation(script_t *script, token_t *token)
 	punctuation_t *punc;
 
 #ifdef PUNCTABLE
-	for (punc = script->punctuationtable[(unsigned int)*script->script_p]; punc; punc = punc->next)
+	for (punc = script->punctuationtable[(uint)*script->script_p]; punc; punc = punc->next)
 	{
 #else
 	int i;
@@ -1065,7 +1065,7 @@ void PS_UnreadToken(script_t *script, token_t *token)
 	script->tokenavailable = 1;
 }
 //============================================================================
-// returns the next character of the read white space, returns NULL if none
+// returns the next character of the read white space, returns nil if none
 // Parameter:				-
 // Returns:					-
 // Changes Globals:		-
@@ -1203,9 +1203,9 @@ void ResetScript(script_t *script)
 	//pointer in script buffer before reading token
 	script->lastscript_p = script->buffer;
 	//begin of white space
-	script->whitespace_p = NULL;
+	script->whitespace_p = nil;
 	//end of white space
-	script->endwhitespace_p = NULL;
+	script->endwhitespace_p = nil;
 	//set if there's a token available in script->token
 	script->tokenavailable = 0;
 	script->line = 1;
@@ -1299,10 +1299,10 @@ script_t *LoadScriptFile(const char *filename)
 	else
 		Com_sprintf(pathname, sizeof(pathname), "%s", filename);
 	length = botimport.FS_FOpenFile( pathname, &fp, FS_READ );
-	if (!fp) return NULL;
+	if (!fp) return nil;
 #else
 	fp = fopen(filename, "rb");
-	if (!fp) return NULL;
+	if (!fp) return nil;
 
 	length = FileLength(fp);
 #endif
@@ -1324,7 +1324,7 @@ script_t *LoadScriptFile(const char *filename)
 	script->tokenavailable = 0;
 	script->line = 1;
 	script->lastline = 1;
-	SetScriptPunctuations(script, NULL);
+	SetScriptPunctuations(script, nil);
 #ifdef BOTLIB
 	botimport.FS_Read(script->buffer, length, fp);
 	botimport.FS_FCloseFile(fp);
@@ -1332,7 +1332,7 @@ script_t *LoadScriptFile(const char *filename)
 	if (fread(script->buffer, length, 1, fp) != 1)
 	{
 		FreeMemory(buffer);
-		script = NULL;
+		script = nil;
 	}
 	fclose(fp);
 #endif
@@ -1366,7 +1366,7 @@ script_t *LoadScriptMemory(char *ptr, int length, char *name)
 	script->tokenavailable = 0;
 	script->line = 1;
 	script->lastline = 1;
-	SetScriptPunctuations(script, NULL);
+	SetScriptPunctuations(script, nil);
 	Com_Memcpy(script->buffer, ptr, length);
 	return script;
 }

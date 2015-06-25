@@ -94,7 +94,7 @@ typedef enum {
 #ifndef WOLF_PARTICLES
 static char *shaderAnimNames[MAX_SHADER_ANIMS] = {
 	"explode1",
-	NULL
+	nil
 };
 static qhandle_t shaderAnims[MAX_SHADER_ANIMS][MAX_SHADER_ANIM_FRAMES];
 static int	shaderAnimCounts[MAX_SHADER_ANIMS] = {
@@ -113,7 +113,7 @@ static char *shaderAnimNames[MAX_SHADER_ANIMS] = {
 	"expblue",
 	"blacksmokeanimb",	// uses 'explode1' sequence
 	"blood",
-	NULL
+	nil
 };
 static qhandle_t shaderAnims[MAX_SHADER_ANIMS][MAX_SHADER_ANIM_FRAMES];
 static int	shaderAnimCounts[MAX_SHADER_ANIMS] = {
@@ -164,13 +164,13 @@ void CG_ClearParticles(void)
 	memset(particles, 0, sizeof(particles));
 
 	free_particles = &particles[0];
-	active_particles = NULL;
+	active_particles = nil;
 
 	for(i=0 ; i<cl_numparticles ; i++){
 		particles[i].next = &particles[i+1];
 		particles[i].type = 0;
 	}
-	particles[cl_numparticles-1].next = NULL;
+	particles[cl_numparticles-1].next = nil;
 
 	oldtime = cg.time;
 
@@ -350,7 +350,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 		if(p->roll){
 			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
-			AngleVectors(rotate_ang, NULL, rr, ru);
+			AngleVectors(rotate_ang, nil, rr, ru);
 		}
 
 		if(p->roll){
@@ -465,7 +465,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 			vectoangles(rforward, temp);
 			p->accumroll += p->roll;
 			temp[ROLL] += p->accumroll * 0.1;
-			AngleVectors(temp, NULL, rright2, rup2);
+			AngleVectors(temp, nil, rright2, rup2);
 		}else{
 			VectorCopy(rright, rright2);
 			VectorCopy(rup, rup2);
@@ -544,7 +544,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 		if(p->roll){
 			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
-			AngleVectors(rotate_ang, NULL, rr, ru);
+			AngleVectors(rotate_ang, nil, rr, ru);
 		}else{
 			VectorCopy(vup, ru);
 			VectorCopy(vright, rr);
@@ -724,7 +724,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha)
 		if(p->roll){
 			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
-			AngleVectors(rotate_ang, NULL, rr, ru);
+			AngleVectors(rotate_ang, nil, rr, ru);
 		}
 
 		if(p->roll){
@@ -827,8 +827,8 @@ void CG_AddParticles(void)
 
 	oldtime = cg.time;
 
-	active = NULL;
-	tail = NULL;
+	active = nil;
+	tail = nil;
 
 	for(p=active_particles ; p ; p=next){
 
@@ -896,7 +896,7 @@ void CG_AddParticles(void)
 			continue;
 		}
 
-		p->next = NULL;
+		p->next = nil;
 		if(!tail)
 			active = tail = p;
 		else{
@@ -1571,7 +1571,7 @@ void CG_OilSlickRemove(centity_t *cent)
 	id = 1.0f;
 
 	if(!id)
-		CG_Printf("CG_OilSlickRevove NULL id\n");
+		CG_Printf("CG_OilSlickRevove nil id\n");
 
 	for(p=active_particles ; p ; p=next){
 		next = p->next;
@@ -1606,7 +1606,7 @@ qboolean ValidBloodPool(vec3_t start)
 	VectorSet(normal, 0, 0, 1);
 
 	vectoangles(normal, angles);
-	AngleVectors(angles, NULL, right, up);
+	AngleVectors(angles, nil, right, up);
 
 	VectorMA(start, EXTRUDE_DIST, normal, center_pos);
 
@@ -1617,7 +1617,7 @@ qboolean ValidBloodPool(vec3_t start)
 			VectorMA(x_pos, y, up, this_pos);
 			VectorMA(this_pos, -EXTRUDE_DIST*2, normal, end_pos);
 
-			CG_Trace(&trace, this_pos, NULL, NULL, end_pos, -1, CONTENTS_SOLID);
+			CG_Trace(&trace, this_pos, nil, nil, end_pos, -1, CONTENTS_SOLID);
 
 
 			if(trace.entityNum < ENTITYNUM_WORLD)  // may only land on world
@@ -1709,7 +1709,7 @@ void CG_ParticleBloodCloud(centity_t *cent, vec3_t origin, vec3_t dir)
 
 	length = VectorLength(dir);
 	vectoangles(dir, angles);
-	AngleVectors(angles, forward, NULL, NULL);
+	AngleVectors(angles, forward, nil, nil);
 
 	crittersize = LARGESIZE;
 
@@ -1834,7 +1834,7 @@ void CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir)
 	VectorNegate(dir, dir);
 	length = VectorLength(dir);
 	vectoangles(dir, angles);
-	AngleVectors(angles, forward, NULL, NULL);
+	AngleVectors(angles, forward, nil, nil);
 
 	crittersize = LARGESIZE;
 

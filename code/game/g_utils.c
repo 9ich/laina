@@ -156,8 +156,8 @@ G_Find
 Searches all active entities for the next one that holds
 the matching string at fieldofs (use the FOFS() macro) in the structure.
 
-Searches beginning at the entity after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
+Searches beginning at the entity after from, or the beginning if nil
+nil will be returned if the end of the list is reached.
 
 =============
 */
@@ -180,7 +180,7 @@ gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match)
 			return from;
 	}
 
-	return NULL;
+	return nil;
 }
 
 
@@ -195,13 +195,13 @@ Selects a random entity from among the targets
 
 gentity_t *G_PickTarget(char *targetname)
 {
-	gentity_t	*ent = NULL;
+	gentity_t	*ent = nil;
 	int		num_choices = 0;
 	gentity_t	*choice[MAXCHOICES];
 
 	if(!targetname){
-		G_Printf("G_PickTarget called with NULL targetname\n");
-		return NULL;
+		G_Printf("G_PickTarget called with nil targetname\n");
+		return nil;
 	}
 
 	while(1){
@@ -215,7 +215,7 @@ gentity_t *G_PickTarget(char *targetname)
 
 	if(!num_choices){
 		G_Printf("G_PickTarget: target %s not found\n", targetname);
-		return NULL;
+		return nil;
 	}
 
 	return choice[rand() % num_choices];
@@ -251,8 +251,8 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator)
 		return;
 	}
 
-	t = NULL;
-	while((t = G_Find(t, FOFS(targetname), ent->target)) != NULL){
+	t = nil;
+	while((t = G_Find(t, FOFS(targetname), ent->target)) != nil){
 		if(t == ent){
 			G_Printf("WARNING: Entity used itself.\n");
 		}else{
@@ -341,7 +341,7 @@ void G_SetMovedir(vec3_t angles, vec3_t movedir)
 	}else if(VectorCompare(angles, VEC_DOWN)){
 		VectorCopy(MOVEDIR_DOWN, movedir);
 	}else{
-		AngleVectors(angles, movedir, NULL, NULL);
+		AngleVectors(angles, movedir, nil, nil);
 	}
 	VectorClear(angles);
 }
@@ -398,7 +398,7 @@ gentity_t *G_Spawn(void)
 	int			i, force;
 	gentity_t	*e;
 
-	e = NULL;	// shut up warning
+	e = nil;	// shut up warning
 	i = 0;		// shut up warning
 	for(force = 0 ; force < 2 ; force++){
 		// if we go through all entities and can't find one to free,
@@ -551,7 +551,7 @@ void G_KillBox(gentity_t *ent)
 		}
 
 		// nail it
-		G_Damage(hit, ent, ent, NULL, NULL,
+		G_Damage(hit, ent, ent, nil, nil,
 		         100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
 

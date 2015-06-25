@@ -399,7 +399,7 @@ typedef enum {
 	GAME_SHUTDOWN,	// (void);
 
 	GAME_CLIENT_CONNECT,	// ( int clientNum, qboolean firstTime, qboolean isBot );
-	// return NULL if the client is allowed to connect, otherwise return
+	// return nil if the client is allowed to connect, otherwise return
 	// a text string with the reason for denial
 
 	GAME_CLIENT_BEGIN,				// ( int clientNum );

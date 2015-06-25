@@ -49,7 +49,7 @@ int numblocks;
 
 typedef struct memoryblock_s
 {
-	unsigned long int id;
+	ulong id;
 	void *ptr;
 	int size;
 #ifdef MEMDEBUG
@@ -69,7 +69,7 @@ memoryblock_t *memory;
 //===========================================================================
 void LinkMemoryBlock(memoryblock_t *block)
 {
-	block->prev = NULL;
+	block->prev = nil;
 	block->next = memory;
 	if (memory) memory->prev = block;
 	memory = block;
@@ -91,9 +91,9 @@ void UnlinkMemoryBlock(memoryblock_t *block)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetMemory(unsigned long size)
+void *GetMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
@@ -121,9 +121,9 @@ void *GetMemory(unsigned long size)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetClearedMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetClearedMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetClearedMemory(unsigned long size)
+void *GetClearedMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
@@ -141,9 +141,9 @@ void *GetClearedMemory(unsigned long size)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetHunkMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetHunkMemory(unsigned long size)
+void *GetHunkMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
@@ -171,9 +171,9 @@ void *GetHunkMemory(unsigned long size)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetClearedHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetClearedHunkMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetClearedHunkMemory(unsigned long size)
+void *GetClearedHunkMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
@@ -197,22 +197,22 @@ memoryblock_t *BlockFromPointer(void *ptr, char *str)
 	if (!ptr)
 	{
 #ifdef MEMDEBUG
-		//char *crash = (char *) NULL;
+		//char *crash = (char *) nil;
 		//crash[0] = 1;
-		botimport.Print(PRT_FATAL, "%s: NULL pointer\n", str);
+		botimport.Print(PRT_FATAL, "%s: nil pointer\n", str);
 #endif // MEMDEBUG
-		return NULL;
+		return nil;
 	}
 	block = (memoryblock_t *) ((char *) ptr - sizeof(memoryblock_t));
 	if (block->id != MEM_ID && block->id != HUNK_ID)
 	{
 		botimport.Print(PRT_FATAL, "%s: invalid memory block\n", str);
-		return NULL;
+		return nil;
 	}
 	if (block->ptr != ptr)
 	{
 		botimport.Print(PRT_FATAL, "%s: memory block pointer invalid\n", str);
-		return NULL;
+		return nil;
 	}
 	return block;
 }
@@ -323,19 +323,19 @@ void DumpMemory(void)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetMemory(unsigned long size)
+void *GetMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
-	unsigned long int *memid;
+	ulong *memid;
 
-	ptr = botimport.GetMemory(size + sizeof(unsigned long int));
-	if (!ptr) return NULL;
-	memid = (unsigned long int *) ptr;
+	ptr = botimport.GetMemory(size + sizeof(ulong));
+	if (!ptr) return nil;
+	memid = (ulong *) ptr;
 	*memid = MEM_ID;
-	return (unsigned long int *) ((char *) ptr + sizeof(unsigned long int));
+	return (ulong *) ((char *) ptr + sizeof(ulong));
 }
 //===========================================================================
 // Parameter:			-
@@ -343,9 +343,9 @@ void *GetMemory(unsigned long size)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetClearedMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetClearedMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetClearedMemory(unsigned long size)
+void *GetClearedMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
@@ -363,19 +363,19 @@ void *GetClearedMemory(unsigned long size)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetHunkMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetHunkMemory(unsigned long size)
+void *GetHunkMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
-	unsigned long int *memid;
+	ulong *memid;
 
-	ptr = botimport.HunkAlloc(size + sizeof(unsigned long int));
-	if (!ptr) return NULL;
-	memid = (unsigned long int *) ptr;
+	ptr = botimport.HunkAlloc(size + sizeof(ulong));
+	if (!ptr) return nil;
+	memid = (ulong *) ptr;
 	*memid = HUNK_ID;
-	return (unsigned long int *) ((char *) ptr + sizeof(unsigned long int));
+	return (ulong *) ((char *) ptr + sizeof(ulong));
 }
 //===========================================================================
 // Parameter:			-
@@ -383,9 +383,9 @@ void *GetHunkMemory(unsigned long size)
 // Changes Globals:		-
 //===========================================================================
 #ifdef MEMDEBUG
-void *GetClearedHunkMemoryDebug(unsigned long size, char *label, char *file, int line)
+void *GetClearedHunkMemoryDebug(ulong size, char *label, char *file, int line)
 #else
-void *GetClearedHunkMemory(unsigned long size)
+void *GetClearedHunkMemory(ulong size)
 #endif //MEMDEBUG
 {
 	void *ptr;
@@ -404,9 +404,9 @@ void *GetClearedHunkMemory(unsigned long size)
 //===========================================================================
 void FreeMemory(void *ptr)
 {
-	unsigned long int *memid;
+	ulong *memid;
 
-	memid = (unsigned long int *) ((char *) ptr - sizeof(unsigned long int));
+	memid = (ulong *) ((char *) ptr - sizeof(ulong));
 
 	if (*memid == MEM_ID)
 	{

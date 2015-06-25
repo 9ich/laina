@@ -223,7 +223,7 @@ void AAS_UnlinkFromBSPLeaves(bsp_link_t *leaves)
 //===========================================================================
 bsp_link_t *AAS_BSPLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum, int modelnum)
 {
-	return NULL;
+	return nil;
 }
 //===========================================================================
 // Parameter:				-
@@ -386,7 +386,7 @@ void AAS_ParseBSPEntities(void)
 		}
 		ent = &bspworld.entities[bspworld.numentities];
 		bspworld.numentities++;
-		ent->epairs = NULL;
+		ent->epairs = nil;
 		while(PS_ReadToken(script, &token))
 		{
 			if (!strcmp(token.string, "}")) break;
@@ -442,7 +442,7 @@ void AAS_DumpBSPData(void)
 	AAS_FreeBSPEntities();
 
 	if (bspworld.dentdata) FreeMemory(bspworld.dentdata);
-	bspworld.dentdata = NULL;
+	bspworld.dentdata = nil;
 	bspworld.entdatasize = 0;
 	bspworld.loaded = qfalse;
 	Com_Memset( &bspworld, 0, sizeof(bspworld) );

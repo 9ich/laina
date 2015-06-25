@@ -102,7 +102,7 @@ static void CG_ParseScores(void)
 		cg.scores[i].team = cgs.clientinfo[cg.scores[i].client].team;
 	}
 #ifdef MISSIONPACK
-	CG_SetScoreSelection(NULL);
+	CG_SetScoreSelection(nil);
 #endif
 
 }
@@ -395,7 +395,7 @@ static void CG_AddToTeamChat(const char *str)
 
 	lastcolor = '7';
 
-	ls = NULL;
+	ls = nil;
 	while(*str){
 		if(len > TEAMCHAT_WIDTH - 1){
 			if(ls){
@@ -413,7 +413,7 @@ static void CG_AddToTeamChat(const char *str)
 			*p++ = Q_COLOR_ESCAPE;
 			*p++ = lastcolor;
 			len = 0;
-			ls = NULL;
+			ls = nil;
 		}
 
 		if(Q_IsColorString(str)){

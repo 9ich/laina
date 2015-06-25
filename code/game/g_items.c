@@ -100,13 +100,13 @@ int Pickup_Powerup(gentity_t *ent, gentity_t *other)
 		}
 
 		// if not facing, no sound
-		AngleVectors(client->ps.viewangles, forward, NULL, NULL);
+		AngleVectors(client->ps.viewangles, forward, nil, nil);
 		if(DotProduct(delta, forward) < 0.4){
 			continue;
 		}
 
 		// if not line of sight, no sound
-		trap_Trace(&tr, client->ps.origin, NULL, NULL, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID);
+		trap_Trace(&tr, client->ps.origin, nil, nil, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID);
 		if(tr.fraction != 1.0){
 			continue;
 		}
@@ -611,7 +611,7 @@ gentity_t *Drop_Item(gentity_t *ent, gitem_t *item, float angle)
 	angles[YAW] += angle;
 	angles[PITCH] = 0;	// always forward
 
-	AngleVectors(angles, velocity, NULL, NULL);
+	AngleVectors(angles, velocity, nil, nil);
 	VectorScale(velocity, 150, velocity);
 	velocity[2] += 200 + crandom() * 50;
 
@@ -750,13 +750,13 @@ void G_CheckTeamItems(void)
 		gentity_t	*ent;
 
 		// check for the two obelisks
-		ent = NULL;
+		ent = nil;
 		ent = G_Find(ent, FOFS(classname), "team_redobelisk");
 		if(!ent){
 			G_Printf(S_COLOR_YELLOW "WARNING: No team_redobelisk in map\n");
 		}
 
-		ent = NULL;
+		ent = nil;
 		ent = G_Find(ent, FOFS(classname), "team_blueobelisk");
 		if(!ent){
 			G_Printf(S_COLOR_YELLOW "WARNING: No team_blueobelisk in map\n");
@@ -767,19 +767,19 @@ void G_CheckTeamItems(void)
 		gentity_t	*ent;
 
 		// check for all three obelisks
-		ent = NULL;
+		ent = nil;
 		ent = G_Find(ent, FOFS(classname), "team_redobelisk");
 		if(!ent){
 			G_Printf(S_COLOR_YELLOW "WARNING: No team_redobelisk in map\n");
 		}
 
-		ent = NULL;
+		ent = nil;
 		ent = G_Find(ent, FOFS(classname), "team_blueobelisk");
 		if(!ent){
 			G_Printf(S_COLOR_YELLOW "WARNING: No team_blueobelisk in map\n");
 		}
 
-		ent = NULL;
+		ent = nil;
 		ent = G_Find(ent, FOFS(classname), "team_neutralobelisk");
 		if(!ent){
 			G_Printf(S_COLOR_YELLOW "WARNING: No team_neutralobelisk in map\n");
@@ -811,7 +811,7 @@ The item will be added to the precache list
 void RegisterItem(gitem_t *item)
 {
 	if(!item){
-		G_Error("RegisterItem: NULL");
+		G_Error("RegisterItem: nil");
 	}
 	itemRegistered[ item - bg_itemlist ] = qtrue;
 }

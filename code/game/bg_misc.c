@@ -42,15 +42,15 @@ An item fires all of its targets when it is picked up.  If the toucher can't car
 
 gitem_t	bg_itemlist[] = {
 	{
-		NULL,
-		NULL,
+		nil,
+		nil,
 		{
-			NULL,
-			NULL,
-			NULL, NULL
+			nil,
+			nil,
+			nil, nil
 		} ,
-		/* icon */		NULL,
-		/* pickup */	NULL,
+		/* icon */		nil,
+		/* pickup */	nil,
 		0,
 		0,
 		0,
@@ -66,7 +66,7 @@ gitem_t	bg_itemlist[] = {
 		"sound/items/token",
 		{
 			"models/items/token",
-			NULL, NULL, NULL
+			nil, nil, nil
 		},
 		/* icon */		"icons/token",
 		/* pickup */	"Token",
@@ -83,7 +83,7 @@ gitem_t	bg_itemlist[] = {
 		"sound/items/token",
 		{
 			"models/items/token",
-			NULL, NULL, NULL
+			nil, nil, nil
 		},
 		/* icon */		"icons/token_large",
 		/* pickup */	"Big Token",
@@ -100,7 +100,7 @@ gitem_t	bg_itemlist[] = {
 		"sound/items/life",
 		{
 			"models/items/life",
-			NULL, NULL, NULL
+			nil, nil, nil
 		},
 		/* icon */		"icons/life",
 		/* pickup */	"Extra Life",
@@ -117,7 +117,7 @@ gitem_t	bg_itemlist[] = {
 		"sound/items/key_jade",
 		{
 			"models/items/key_jade",
-			NULL, NULL, NULL
+			nil, nil, nil
 		},
 		"icons/key_jade",	// icon	
 		"Jade Key",		// pickup
@@ -134,7 +134,7 @@ gitem_t	bg_itemlist[] = {
 		"sound/items/key_ruby",
 		{
 			"models/items/key_ruby",
-			NULL, NULL, NULL
+			nil, nil, nil
 		},
 		"icons/key_ruby",	// icon	
 		"Ruby Key",		// pickup
@@ -151,7 +151,7 @@ gitem_t	bg_itemlist[] = {
 		"sound/items/key_sapphire",
 		{
 			"models/items/key_sapphire",
-			NULL, NULL, NULL
+			nil, nil, nil
 		},
 		"icons/key_sapphire",	// icon	
 		"Sapphire Key",		// pickup
@@ -171,7 +171,7 @@ gitem_t	bg_itemlist[] = {
 		"sound/misc/w_pkup.wav",
 		{
 			"models/weapons2/gauntlet/gauntlet.md3",
-			NULL, NULL, NULL
+			nil, nil, nil
 		},
 		/* icon */		"icons/iconw_gauntlet",
 		/* pickup */	"Gauntlet",
@@ -183,7 +183,7 @@ gitem_t	bg_itemlist[] = {
 	},
 
 	// end of list marker
-	{NULL}
+	{nil}
 };
 
 int bg_numItems = ARRAY_LEN(bg_itemlist) - 1;
@@ -207,7 +207,7 @@ gitem_t	*BG_FindItemForPowerup(powerup_t pw)
 		}
 	}
 
-	return NULL;
+	return nil;
 }
 
 
@@ -228,7 +228,7 @@ gitem_t	*BG_FindItemForHoldable(holdable_t pw)
 
 	Com_Error(ERR_DROP, "HoldableItem not found");
 
-	return NULL;
+	return nil;
 }
 
 
@@ -249,7 +249,7 @@ gitem_t	*BG_FindItemForWeapon(weapon_t weapon)
 	}
 
 	Com_Error(ERR_DROP, "Couldn't find item for weapon %i", weapon);
-	return NULL;
+	return nil;
 }
 
 /*
@@ -267,7 +267,7 @@ gitem_t	*BG_FindItem(const char *pickupName)
 			return it;
 	}
 
-	return NULL;
+	return nil;
 }
 
 /*

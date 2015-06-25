@@ -260,7 +260,7 @@ static void CG_Speaker(centity_t *cent)
 		return;
 	}
 
-	trap_S_StartSound(NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm]);
+	trap_S_StartSound(nil, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm]);
 
 	//	ent->s.frame = ent->wait * 10;
 	//	ent->s.clientNum = ent->random * 10;
@@ -322,7 +322,7 @@ static void CG_Item(centity_t *cent)
 		AxisCopy(cg.autoAxis, ent.axis);
 	}
 
-	wi = NULL;
+	wi = nil;
 	// the weapons have their origin where they attatch to player
 	// models, so we need to offset them or they will rotate
 	// eccentricly
@@ -798,8 +798,8 @@ static void CG_InterpolateEntityPosition(centity_t *cent)
 
 	// it would be an internal error to find an entity that interpolates without
 	// a snapshot ahead of the current one
-	if(cg.nextSnap == NULL){
-		CG_Error("CG_InterpoateEntityPosition: cg.nextSnap == NULL");
+	if(cg.nextSnap == nil){
+		CG_Error("CG_InterpoateEntityPosition: cg.nextSnap == nil");
 	}
 
 	f = cg.frameInterpolation;

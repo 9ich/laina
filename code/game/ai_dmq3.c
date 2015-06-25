@@ -1347,7 +1347,7 @@ int BotPointAreaNum(vec3_t origin)
 	if(areanum) return areanum;
 	VectorCopy(origin, end);
 	end[2] += 10;
-	numareas = trap_AAS_TraceAreas(origin, end, areas, NULL, 10);
+	numareas = trap_AAS_TraceAreas(origin, end, areas, nil, 10);
 	if(numareas > 0) return areas[0];
 	return 0;
 }
@@ -1451,7 +1451,7 @@ char *stristr(char *str, char *charset)
 		if(!charset[i]) return str;
 		str++;
 	}
-	return NULL;
+	return nil;
 }
 
 /*
@@ -1634,7 +1634,7 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 				if(BotTeamLeader(bs)){
 					// tell the leader we want to be on offence
 					BotVoiceChat(bs, leader, VOICECHAT_WANTONOFFENSE);
-					//BotAI_BotInitialChat(bs, "wantoffence", NULL);
+					//BotAI_BotInitialChat(bs, "wantoffence", nil);
 					//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
 				}else if(g_spSkill.integer <= 3){
 					if(bs->ltgtype != LTG_GETFLAG &&
@@ -1644,7 +1644,7 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 						        (gametype != GT_1FCTF || bs->neutralflagstatus == 0)){
 							// tell the leader we want to be on offence
 							BotVoiceChat(bs, leader, VOICECHAT_WANTONOFFENSE);
-							//BotAI_BotInitialChat(bs, "wantoffence", NULL);
+							//BotAI_BotInitialChat(bs, "wantoffence", nil);
 							//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
 						}
 					}
@@ -1658,7 +1658,7 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 				if(BotTeamLeader(bs)){
 					// tell the leader we want to be on defense
 					BotVoiceChat(bs, -1, VOICECHAT_WANTONDEFENSE);
-					//BotAI_BotInitialChat(bs, "wantdefence", NULL);
+					//BotAI_BotInitialChat(bs, "wantdefence", nil);
 					//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
 				}else if(g_spSkill.integer <= 3){
 					if(bs->ltgtype != LTG_DEFENDKEYAREA){
@@ -1666,7 +1666,7 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory)
 						        (gametype != GT_1FCTF || bs->neutralflagstatus == 0)){
 							// tell the leader we want to be on defense
 							BotVoiceChat(bs, -1, VOICECHAT_WANTONDEFENSE);
-							//BotAI_BotInitialChat(bs, "wantdefence", NULL);
+							//BotAI_BotInitialChat(bs, "wantdefence", nil);
 							//trap_BotEnterChat(bs->cs, leader, CHAT_TELL);
 						}
 					}
@@ -1851,7 +1851,7 @@ void BotUseKamikaze(bot_state_t *bs)
 		target[2] += 1;
 		VectorSubtract(bs->origin, target, dir);
 		if(VectorLengthSquared(dir) < Square(KAMIKAZE_DIST * 0.9)){
-			BotAI_Trace(&trace, bs->eye, NULL, NULL, target, bs->client, CONTENTS_SOLID);
+			BotAI_Trace(&trace, bs->eye, nil, nil, target, bs->client, CONTENTS_SOLID);
 			if(trace.fraction >= 1 || trace.ent == goal->entitynum){
 				trap_EA_Use(bs->client);
 				return;
@@ -1924,7 +1924,7 @@ void BotUseInvulnerability(bot_state_t *bs)
 		target[2] += 1;
 		VectorSubtract(bs->origin, target, dir);
 		if(VectorLengthSquared(dir) < Square(200)){
-			BotAI_Trace(&trace, bs->eye, NULL, NULL, target, bs->client, CONTENTS_SOLID);
+			BotAI_Trace(&trace, bs->eye, nil, nil, target, bs->client, CONTENTS_SOLID);
 			if(trace.fraction >= 1 || trace.ent == goal->entitynum){
 				trap_EA_Use(bs->client);
 				return;
@@ -1951,7 +1951,7 @@ void BotUseInvulnerability(bot_state_t *bs)
 		target[2] += 1;
 		VectorSubtract(bs->origin, target, dir);
 		if(VectorLengthSquared(dir) < Square(200)){
-			BotAI_Trace(&trace, bs->eye, NULL, NULL, target, bs->client, CONTENTS_SOLID);
+			BotAI_Trace(&trace, bs->eye, nil, nil, target, bs->client, CONTENTS_SOLID);
 			if(trace.fraction >= 1 || trace.ent == goal->entitynum){
 				trap_EA_Use(bs->client);
 				return;
@@ -1971,7 +1971,7 @@ void BotUseInvulnerability(bot_state_t *bs)
 		target[2] += 1;
 		VectorSubtract(bs->origin, target, dir);
 		if(VectorLengthSquared(dir) < Square(300)){
-			BotAI_Trace(&trace, bs->eye, NULL, NULL, target, bs->client, CONTENTS_SOLID);
+			BotAI_Trace(&trace, bs->eye, nil, nil, target, bs->client, CONTENTS_SOLID);
 			if(trace.fraction >= 1 || trace.ent == goal->entitynum){
 				trap_EA_Use(bs->client);
 				return;
@@ -1997,7 +1997,7 @@ void BotUseInvulnerability(bot_state_t *bs)
 		target[2] += 1;
 		VectorSubtract(bs->origin, target, dir);
 		if(VectorLengthSquared(dir) < Square(200)){
-			BotAI_Trace(&trace, bs->eye, NULL, NULL, target, bs->client, CONTENTS_SOLID);
+			BotAI_Trace(&trace, bs->eye, nil, nil, target, bs->client, CONTENTS_SOLID);
 			if(trace.fraction >= 1 || trace.ent == goal->entitynum){
 				trap_EA_Use(bs->client);
 				return;
@@ -2113,7 +2113,7 @@ bot_waypoint_t *BotCreateWayPoint(char *name, vec3_t origin, int areanum)
 	wp = botai_freewaypoints;
 	if(!wp){
 		BotAI_Print(PRT_WARNING, "BotCreateWayPoint: Out of waypoints\n");
-		return NULL;
+		return nil;
 	}
 	botai_freewaypoints = botai_freewaypoints->next;
 
@@ -2122,8 +2122,8 @@ bot_waypoint_t *BotCreateWayPoint(char *name, vec3_t origin, int areanum)
 	VectorCopy(waypointmins, wp->goal.mins);
 	VectorCopy(waypointmaxs, wp->goal.maxs);
 	wp->goal.areanum = areanum;
-	wp->next = NULL;
-	wp->prev = NULL;
+	wp->next = nil;
+	wp->prev = nil;
 	return wp;
 }
 
@@ -2139,7 +2139,7 @@ bot_waypoint_t *BotFindWayPoint(bot_waypoint_t *waypoints, char *name)
 	for(wp = waypoints; wp; wp = wp->next){
 		if(!Q_stricmp(wp->name, name)) return wp;
 	}
-	return NULL;
+	return nil;
 }
 
 /*
@@ -2167,7 +2167,7 @@ void BotInitWaypoints(void)
 {
 	int i;
 
-	botai_freewaypoints = NULL;
+	botai_freewaypoints = nil;
 	for(i = 0; i < MAX_WAYPOINTS; i++){
 		botai_waypoints[i].next = botai_freewaypoints;
 		botai_freewaypoints = &botai_waypoints[i];
@@ -2594,7 +2594,7 @@ void BotRoamGoal(bot_state_t *bs, vec3_t goal)
 		//add a random value to the z-coordinate (NOTE: 48 = maxjump?)
 		bestorg[2] += 2 * 48 * crandom();
 		//trace a line from the origin to the roam target
-		BotAI_Trace(&trace, bs->origin, NULL, NULL, bestorg, bs->entitynum, MASK_SOLID);
+		BotAI_Trace(&trace, bs->origin, nil, nil, bestorg, bs->entitynum, MASK_SOLID);
 		//direction and length towards the roam target
 		VectorSubtract(trace.endpos, bs->origin, dir);
 		len = VectorNormalize(dir);
@@ -2607,7 +2607,7 @@ void BotRoamGoal(bot_state_t *bs, vec3_t goal)
 			belowbestorg[0] = bestorg[0];
 			belowbestorg[1] = bestorg[1];
 			belowbestorg[2] = bestorg[2] - 800;
-			BotAI_Trace(&trace, bestorg, NULL, NULL, belowbestorg, bs->entitynum, MASK_SOLID);
+			BotAI_Trace(&trace, bestorg, nil, nil, belowbestorg, bs->entitynum, MASK_SOLID);
 			if(!trace.startsolid){
 				trace.endpos[2]++;
 				pc = trap_PointContents(trace.endpos, bs->entitynum);
@@ -2852,7 +2852,7 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 			contents_mask ^= (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER);
 		}
 		//trace from start to end
-		BotAI_Trace(&trace, start, NULL, NULL, end, passent, contents_mask);
+		BotAI_Trace(&trace, start, nil, nil, end, passent, contents_mask);
 		//if water was hit
 		waterfactor = 1.0;
 		if(trace.contents & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER)){
@@ -2860,7 +2860,7 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 			if(1){
 				//trace through the water
 				contents_mask &= ~(CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER);
-				BotAI_Trace(&trace, trace.endpos, NULL, NULL, end, passent, contents_mask);
+				BotAI_Trace(&trace, trace.endpos, nil, nil, end, passent, contents_mask);
 				waterfactor = 0.5;
 			}
 		}
@@ -2874,12 +2874,12 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 				squaredfogdist = VectorLengthSquared(dir);
 			}else if(infog){
 				VectorCopy(trace.endpos, start);
-				BotAI_Trace(&trace, start, NULL, NULL, eye, viewer, CONTENTS_FOG);
+				BotAI_Trace(&trace, start, nil, nil, eye, viewer, CONTENTS_FOG);
 				VectorSubtract(eye, trace.endpos, dir);
 				squaredfogdist = VectorLengthSquared(dir);
 			}else if(otherinfog){
 				VectorCopy(trace.endpos, end);
-				BotAI_Trace(&trace, eye, NULL, NULL, end, viewer, CONTENTS_FOG);
+				BotAI_Trace(&trace, eye, nil, nil, end, viewer, CONTENTS_FOG);
 				VectorSubtract(end, trace.endpos, dir);
 				squaredfogdist = VectorLengthSquared(dir);
 			}else{
@@ -2941,7 +2941,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy)
 		//if the obelisk is visible
 		VectorCopy(goal->origin, target);
 		target[2] += 1;
-		BotAI_Trace(&trace, bs->eye, NULL, NULL, target, bs->client, CONTENTS_SOLID);
+		BotAI_Trace(&trace, bs->eye, nil, nil, target, bs->client, CONTENTS_SOLID);
 		if(trace.fraction >= 1 || trace.ent == goal->entitynum){
 			if(goal->entitynum == bs->enemy){
 				return qfalse;
@@ -3391,12 +3391,12 @@ void BotAimAtEnemy(bot_state_t *bs)
 				//try to aim at the ground in front of the enemy
 				VectorCopy(entinfo.origin, end);
 				end[2] -= 64;
-				BotAI_Trace(&trace, entinfo.origin, NULL, NULL, end, entinfo.number, MASK_SHOT);
+				BotAI_Trace(&trace, entinfo.origin, nil, nil, end, entinfo.number, MASK_SHOT);
 				VectorCopy(bestorigin, groundtarget);
 				if(trace.startsolid) groundtarget[2] = entinfo.origin[2] - 16;
 				else groundtarget[2] = trace.endpos[2] - 8;
 				//trace a line from projectile start to ground target
-				BotAI_Trace(&trace, start, NULL, NULL, groundtarget, bs->entitynum, MASK_SHOT);
+				BotAI_Trace(&trace, start, nil, nil, groundtarget, bs->entitynum, MASK_SHOT);
 				//if hitpoint is not vertically too far from the ground target
 				if(fabs(trace.endpos[2] - groundtarget[2]) < 50){
 					VectorSubtract(trace.endpos, groundtarget, dir);
@@ -3407,7 +3407,7 @@ void BotAimAtEnemy(bot_state_t *bs)
 						if(VectorLengthSquared(dir) > Square(100)){
 							//check if the bot is visible from the ground target
 							trace.endpos[2] += 1;
-							BotAI_Trace(&trace, trace.endpos, NULL, NULL, entinfo.origin, entinfo.number, MASK_SHOT);
+							BotAI_Trace(&trace, trace.endpos, nil, nil, entinfo.origin, entinfo.number, MASK_SHOT);
 							if(trace.fraction >= 1){
 								//botimport.Print(PRT_MESSAGE, "%1.1f aiming at ground\n", AAS_Time());
 								VectorCopy(groundtarget, bestorigin);
@@ -3447,7 +3447,7 @@ void BotAimAtEnemy(bot_state_t *bs)
 		}
 	}
 	if(enemyvisible){
-		BotAI_Trace(&trace, bs->eye, NULL, NULL, bestorigin, bs->entitynum, MASK_SHOT);
+		BotAI_Trace(&trace, bs->eye, nil, nil, bestorigin, bs->entitynum, MASK_SHOT);
 		VectorCopy(trace.endpos, bs->aimtarget);
 	}else{
 		VectorCopy(bestorigin, bs->aimtarget);
@@ -3551,7 +3551,7 @@ void BotCheckAttack(bot_state_t *bs)
 	vectoangles(dir, angles);
 	if(!InFieldOfVision(bs->viewangles, fov, angles))
 		return;
-	BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
+	BotAI_Trace(&bsptrace, bs->eye, nil, nil, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 	if(bsptrace.fraction < 1 && bsptrace.ent != attackentity)
 		return;
 
@@ -3560,7 +3560,7 @@ void BotCheckAttack(bot_state_t *bs)
 	//get the start point shooting from
 	VectorCopy(bs->origin, start);
 	start[2] += bs->cur_ps.viewheight;
-	AngleVectors(bs->viewangles, forward, right, NULL);
+	AngleVectors(bs->viewangles, forward, right, nil);
 	start[0] += forward[0] * wi.offset[0] + right[0] * wi.offset[1];
 	start[1] += forward[1] * wi.offset[0] + right[1] * wi.offset[1];
 	start[2] += forward[2] * wi.offset[0] + right[2] * wi.offset[1] + wi.offset[2];
@@ -3692,7 +3692,7 @@ void BotSetMovedir(vec3_t angles, vec3_t movedir)
 	}else if(VectorCompare(angles, VEC_DOWN)){
 		VectorCopy(MOVEDIR_DOWN, movedir);
 	}else{
-		AngleVectors(angles, movedir, NULL, NULL);
+		AngleVectors(angles, movedir, nil, nil);
 	}
 }
 
@@ -3782,7 +3782,7 @@ int BotFuncButtonActivateGoal(bot_state_t *bs, int bspent, bot_activategoal_t *a
 		VectorMA(origin, -dist, movedir, goalorigin);
 		VectorCopy(goalorigin, activategoal->target);
 		activategoal->shoot = qtrue;
-		BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, goalorigin, bs->entitynum, MASK_SHOT);
+		BotAI_Trace(&bsptrace, bs->eye, nil, nil, goalorigin, bs->entitynum, MASK_SHOT);
 		// if the button is visible from the current position
 		if(bsptrace.fraction >= 1.0 || bsptrace.ent == entitynum){
 			activategoal->goal.entitynum = entitynum; //NOTE: this is the entity number of the shootable button
@@ -3845,7 +3845,7 @@ int BotFuncButtonActivateGoal(bot_state_t *bs, int bspent, bot_activategoal_t *a
 		start[2] += 24;
 		VectorCopy(start, end);
 		end[2] -= 100;
-		numareas = trap_AAS_TraceAreas(start, end, areas, NULL, 10);
+		numareas = trap_AAS_TraceAreas(start, end, areas, nil, 10);
 		for(i = 0; i < numareas; i++){
 			if(trap_AAS_AreaReachability(areas[i])){
 				break;
@@ -3935,7 +3935,7 @@ int BotTriggerMultipleActivateGoal(bot_state_t *bs, int bspent, bot_activategoal
 	start[2] += 24;
 	VectorCopy(start, end);
 	end[2] -= 100;
-	numareas = trap_AAS_TraceAreas(start, end, areas, NULL, 10);
+	numareas = trap_AAS_TraceAreas(start, end, areas, nil, 10);
 	for(i = 0; i < numareas; i++){
 		if(trap_AAS_AreaReachability(areas[i])){
 			break;
@@ -4313,7 +4313,7 @@ void BotRandomMove(bot_state_t *bs, bot_moveresult_t *moveresult)
 	angles[0] = 0;
 	angles[1] = random() * 360;
 	angles[2] = 0;
-	AngleVectors(angles, dir, NULL, NULL);
+	AngleVectors(angles, dir, nil, nil);
 
 	trap_BotMoveInDirection(bs->ms, dir, 400, MOVE_WALK);
 
@@ -4366,7 +4366,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate)
 		bspent = BotGetActivateGoal(bs, entinfo.number, &activategoal);
 		if(bspent){
 			if(bs->activatestack && !bs->activatestack->inuse)
-				bs->activatestack = NULL;
+				bs->activatestack = nil;
 			// if not already trying to activate this entity
 			if(!BotIsGoingToActivateEntity(bs, activategoal.goal.entitynum)){
 				BotGoForActivateGoal(bs, &activategoal);
@@ -4389,7 +4389,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate)
 	// if no direction just take a random direction
 	if(VectorNormalize(hordir) < 0.1){
 		VectorSet(angles, 0, 360 * random(), 0);
-		AngleVectors(angles, hordir, NULL, NULL);
+		AngleVectors(angles, hordir, nil, nil);
 	}
 	//if (moveresult->flags & MOVERESULT_ONTOPOFOBSTACLE) movetype = MOVE_JUMP;
 	//else
@@ -4466,13 +4466,13 @@ int BotAIPredictObstacles(bot_state_t *bs, bot_goal_t *goal)
 			//NOTE: this only works with bspc 2.1 or higher
 			modelnum = (route.endcontents & AREACONTENTS_MODELNUM) >> AREACONTENTS_MODELNUMSHIFT;
 			if(modelnum){
-				entitynum = BotModelMinsMaxs(modelnum, ET_MOVER, 0, NULL, NULL);
+				entitynum = BotModelMinsMaxs(modelnum, ET_MOVER, 0, nil, nil);
 				if(entitynum){
 					//NOTE: BotGetActivateGoal already checks if the door is open or not
 					bspent = BotGetActivateGoal(bs, entitynum, &activategoal);
 					if(bspent){
 						if(bs->activatestack && !bs->activatestack->inuse)
-							bs->activatestack = NULL;
+							bs->activatestack = nil;
 						// if not already trying to activate this entity
 						if(!BotIsGoingToActivateEntity(bs, activategoal.goal.entitynum)){
 							//BotAI_Print(PRT_MESSAGE, "blocked by mover model %d, entity %d ?\n", modelnum, entitynum);
@@ -4555,9 +4555,9 @@ void BotCheckConsoleMessages(bot_state_t *bs)
 					trap_BotLibVarSet("bot_testrchat", "1");
 					//if bot replies with a chat message
 					if(trap_BotReplyChat(bs->cs, message, context, CONTEXT_REPLY,
-					                     NULL, NULL,
-					                     NULL, NULL,
-					                     NULL, NULL,
+					                     nil, nil,
+					                     nil, nil,
+					                     nil, nil,
 					                     botname, netname)){
 						BotAI_Print(PRT_MESSAGE, "------------------------\n");
 					}else{
@@ -4570,9 +4570,9 @@ void BotCheckConsoleMessages(bot_state_t *bs)
 					if(random() < 1.5 / (NumBots()+1) && random() < chat_reply){
 						//if bot replies with a chat message
 						if(trap_BotReplyChat(bs->cs, message, context, CONTEXT_REPLY,
-						                     NULL, NULL,
-						                     NULL, NULL,
-						                     NULL, NULL,
+						                     nil, nil,
+						                     nil, nil,
+						                     nil, nil,
 						                     botname, netname)){
 							//remove the console message
 							trap_BotRemoveConsoleMessage(bs->cs, handle);
@@ -5245,7 +5245,7 @@ int BotGoalForBSPEntity(char *classname, bot_goal_t *goal)
 			start[2] -= 32;
 			VectorCopy(origin, end);
 			end[2] += 32;
-			numareas = trap_AAS_TraceAreas(start, end, areas, NULL, 10);
+			numareas = trap_AAS_TraceAreas(start, end, areas, nil, 10);
 			if(!numareas)
 				return qfalse;
 			goal->areanum = areas[0];

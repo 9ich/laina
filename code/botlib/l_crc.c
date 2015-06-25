@@ -48,7 +48,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CRC_INIT_VALUE	0xffff
 #define CRC_XOR_VALUE	0x0000
 
-unsigned short crctable[257] =
+ushort crctable[257] =
 {
 	0x0000,	0x1021,	0x2042,	0x3063,	0x4084,	0x50a5,	0x60c6,	0x70e7,
 	0x8108,	0x9129,	0xa14a,	0xb16b,	0xc18c,	0xd1ad,	0xe1ce,	0xf1ef,
@@ -89,7 +89,7 @@ unsigned short crctable[257] =
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void CRC_Init(unsigned short *crcvalue)
+void CRC_Init(ushort *crcvalue)
 {
 	*crcvalue = CRC_INIT_VALUE;
 }
@@ -98,7 +98,7 @@ void CRC_Init(unsigned short *crcvalue)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void CRC_ProcessByte(unsigned short *crcvalue, byte data)
+void CRC_ProcessByte(ushort *crcvalue, byte data)
 {
 	*crcvalue = (*crcvalue << 8) ^ crctable[(*crcvalue >> 8) ^ data];
 }
@@ -107,7 +107,7 @@ void CRC_ProcessByte(unsigned short *crcvalue, byte data)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-unsigned short CRC_Value(unsigned short crcvalue)
+ushort CRC_Value(ushort crcvalue)
 {
 	return crcvalue ^ CRC_XOR_VALUE;
 }
@@ -116,9 +116,9 @@ unsigned short CRC_Value(unsigned short crcvalue)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-unsigned short CRC_ProcessString(unsigned char *data, int length)
+ushort CRC_ProcessString(uchar *data, int length)
 {
-	unsigned short crcvalue;
+	ushort crcvalue;
 	int i, ind;
 
 	CRC_Init(&crcvalue);
@@ -136,7 +136,7 @@ unsigned short CRC_ProcessString(unsigned char *data, int length)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void CRC_ContinueProcessString(unsigned short *crc, char *data, int length)
+void CRC_ContinueProcessString(ushort *crc, char *data, int length)
 {
 	int i;
 

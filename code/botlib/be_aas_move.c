@@ -235,7 +235,7 @@ void AAS_SetMovedir(vec3_t angles, vec3_t movedir)
 	}
 	else
 	{
-		AngleVectors(angles, movedir, NULL, NULL);
+		AngleVectors(angles, movedir, nil, nil);
 	}
 }
 //===========================================================================
@@ -290,14 +290,14 @@ float AAS_WeaponJumpZVelocity(vec3_t origin, float radiusdamage)
 	//get the start point shooting from
 	VectorCopy(origin, start);
 	start[2] += 8; //view offset Z
-	AngleVectors(viewangles, forward, right, NULL);
+	AngleVectors(viewangles, forward, right, nil);
 	start[0] += forward[0] * rocketoffset[0] + right[0] * rocketoffset[1];
 	start[1] += forward[1] * rocketoffset[0] + right[1] * rocketoffset[1];
 	start[2] += forward[2] * rocketoffset[0] + right[2] * rocketoffset[1] + rocketoffset[2];
 	//end point of the trace
 	VectorMA(start, 500, forward, end);
 	//trace a line to get the impact point
-	bsptrace = AAS_Trace(start, NULL, NULL, end, 1, CONTENTS_SOLID);
+	bsptrace = AAS_Trace(start, nil, nil, end, 1, CONTENTS_SOLID);
 	//calculate the damage the bot will get from the rocket impact
 	VectorAdd(botmins, botmaxs, v);
 	VectorMA(origin, 0.5, v, v);

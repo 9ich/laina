@@ -320,7 +320,7 @@ void AAS_FloodAreas(vec3_t origin);
 int BotExportTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3)
 {
 
-//	return AAS_PointLight(parm2, NULL, NULL, NULL);
+//	return AAS_PointLight(parm2, nil, nil, nil);
 
 #ifdef DEBUG
 	static int area = -1;
@@ -428,7 +428,7 @@ int BotExportTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3)
 		/*
 		VectorCopy(origin, end);
 		end[2] += 5;
-		numareas = AAS_TraceAreas(origin, end, areas, NULL, 10);
+		numareas = AAS_TraceAreas(origin, end, areas, nil, 10);
 		AAS_TraceClientBBox(origin, end, PRESENCE_CROUCH, -1);
 		botimport.Print(PRT_MESSAGE, "num areas = %d, area = %d\n", numareas, areas[0]);
 		*/
@@ -525,7 +525,7 @@ int BotExportTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3)
 									  lastgoalareanum, lastareanum,
 									  avoidreach, avoidreachtimes, avoidreachtries,
 									  &goal, TFL_DEFAULT|TFL_FUNCBOB|TFL_ROCKETJUMP,
-									  NULL, 0, &resultFlags);
+									  nil, 0, &resultFlags);
 		AAS_ReachabilityFromNum(reachnum, &reach);
 		AAS_ShowReachability(&reach);
 		*/
@@ -544,7 +544,7 @@ int BotExportTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3)
 										  lastgoalareanum, lastareanum,
 										  avoidreach, avoidreachtimes, avoidreachtries,
 										  &goal, TFL_DEFAULT|TFL_FUNCBOB|TFL_ROCKETJUMP,
-										  NULL, 0, &resultFlags);
+										  nil, 0, &resultFlags);
 			AAS_ReachabilityFromNum(reachnum, &reach);
 			AAS_ShowReachability(&reach);
 			VectorCopy(reach.end, origin);
@@ -561,7 +561,7 @@ int BotExportTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3)
 		AAS_Reachability_WeaponJump(703, 716);
 	} // */
 
-	AngleVectors(parm3, forward, right, NULL);
+	AngleVectors(parm3, forward, right, nil);
 	//get the eye 16 units to the right of the origin
 	VectorMA(parm2, 8, right, eye);
 	//get the eye 24 units up
@@ -604,7 +604,7 @@ int BotExportTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3)
     // TTimo: nested comments are BAD for gcc -Werror, use #if 0 instead..
 #if 0
 	AAS_ClearShownDebugLines();
-	//bsptrace = AAS_Trace(eye, NULL, NULL, end, 1, MASK_PLAYERSOLID);
+	//bsptrace = AAS_Trace(eye, nil, nil, end, 1, MASK_PLAYERSOLID);
 	bsptrace = AAS_Trace(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
 	if (!line[0]) line[0] = botimport.DebugLineCreate();
 	botimport.DebugLineShow(line[0], eye, bsptrace.endpos, LINECOLOR_YELLOW);
@@ -626,7 +626,7 @@ int BotExportTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3)
 			AAS_ShowBoundingBox(ent->origin, ent->mins, ent->maxs);
 		}
 	}
-	//bsptrace = AAS_Trace2(eye, NULL, NULL, end, 1, MASK_PLAYERSOLID);
+	//bsptrace = AAS_Trace2(eye, nil, nil, end, 1, MASK_PLAYERSOLID);
 	bsptrace = AAS_Trace2(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
 	botimport.DebugLineShow(line[1], eye, bsptrace.endpos, LINECOLOR_BLUE);
 	if (bsptrace.fraction < 1.0)
@@ -854,7 +854,7 @@ botlib_export_t *GetBotLibAPI(int apiVersion, botlib_import_t *import) {
 
 	if ( apiVersion != BOTLIB_API_VERSION ) {
 		botimport.Print( PRT_ERROR, "Mismatched BOTLIB_API_VERSION: expected %i, got %i\n", BOTLIB_API_VERSION, apiVersion );
-		return NULL;
+		return nil;
 	}
 
 	Init_AAS_Export(&be_botlib_export.aas);

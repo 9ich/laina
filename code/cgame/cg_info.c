@@ -167,7 +167,7 @@ void CG_DrawInformation(void)
 	if(!levelshot){
 		levelshot = trap_R_RegisterShaderNoMip("menu/art/unknownmap");
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 	CG_DrawPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, levelshot);
 
 	// blend a detail texture over it

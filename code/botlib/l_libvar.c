@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_libvar.h"
 
 //list with library variables
-libvar_t *libvarlist = NULL;
+libvar_t *libvarlist = nil;
 
 //===========================================================================
 // Parameter:				-
@@ -116,7 +116,7 @@ void LibVarDeAllocAll(void)
 		libvarlist = libvarlist->next;
 		LibVarDeAlloc(v);
 	}
-	libvarlist = NULL;
+	libvarlist = nil;
 }
 //===========================================================================
 // Parameter:				-
@@ -134,7 +134,7 @@ libvar_t *LibVarGet(char *var_name)
 			return v;
 		}
 	}
-	return NULL;
+	return nil;
 }
 //===========================================================================
 // Parameter:				-

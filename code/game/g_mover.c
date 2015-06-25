@@ -66,7 +66,7 @@ gentity_t	*G_TestEntityPosition(gentity_t *ent)
 	if(tr.startsolid)
 		return &g_entities[ tr.entityNum ];
 
-	return NULL;
+	return nil;
 }
 
 /*
@@ -213,7 +213,7 @@ qboolean G_CheckProxMinePosition(gentity_t *check)
 
 	VectorMA(check->s.pos.trBase, 0.125, check->movedir, start);
 	VectorMA(check->s.pos.trBase, 2, check->movedir, end);
-	trap_Trace(&tr, start, NULL, NULL, end, check->s.number, MASK_SOLID);
+	trap_Trace(&tr, start, nil, nil, end, check->s.number, MASK_SOLID);
 
 	if(tr.startsolid || tr.fraction < 1)
 		return qfalse;
@@ -276,7 +276,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 	int			listedEntities;
 	vec3_t		totalMins, totalMaxs;
 
-	*obstacle = NULL;
+	*obstacle = nil;
 
 
 	// mins/maxs are the bounds at the destination
@@ -336,7 +336,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 						G_ExplodeMissile(check);
 						if(check->activator){
 							G_FreeEntity(check->activator);
-							check->activator = NULL;
+							check->activator = nil;
 						}
 						//G_Printf("prox mine explodes\n");
 					}
@@ -349,7 +349,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 						G_ExplodeMissile(check);
 						if(check->activator){
 							G_FreeEntity(check->activator);
-							check->activator = NULL;
+							check->activator = nil;
 						}
 						//G_Printf("prox mine explodes\n");
 					}
@@ -390,7 +390,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 
 		// bobbing entities are instant-kill and never get blocked
 		if(pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE){
-			G_Damage(check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH);
+			G_Damage(check, pusher, pusher, nil, nil, 99999, 0, MOD_CRUSH);
 			continue;
 		}
 
@@ -428,7 +428,7 @@ void G_MoverTeam(gentity_t *ent)
 	gentity_t	*part, *obstacle;
 	vec3_t		origin, angles;
 
-	obstacle = NULL;
+	obstacle = nil;
 
 	// make sure all team slaves can move before commiting
 	// any moves or calling any think functions
@@ -825,7 +825,7 @@ void Blocked_Door(gentity_t *ent, gentity_t *other)
 	}
 
 	if(ent->damage){
-		G_Damage(other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH);
+		G_Damage(other, ent, ent, nil, nil, ent->damage, 0, MOD_CRUSH);
 	}
 	if(ent->spawnflags & 4){
 		return;		// crushers don't reverse
@@ -874,7 +874,7 @@ void Touch_DoorTrigger(gentity_t *ent, gentity_t *other, trace_t *trace)
 	gitem_t *key;
 	int keytype;
 
-	if(other->client != NULL && ent->doorKey > 0 && ent->doorKey < bg_numItems){
+	if(other->client != nil && ent->doorKey > 0 && ent->doorKey < bg_numItems){
 		key = &bg_itemlist[ent->doorKey];
 		keytype = key->giTag;
 		if(other->client->ps.doorKeys[keytype] <= 0){
@@ -890,7 +890,7 @@ void Touch_DoorTrigger(gentity_t *ent, gentity_t *other, trace_t *trace)
 		other->client->ps.doorKeys[ent->doorKey]--;
 		ent->doorKey = -1;	// permanently unlock door
 	}
-	if(other->client != NULL && other->client->sess.sessionTeam == TEAM_SPECTATOR){
+	if(other->client != nil && other->client->sess.sessionTeam == TEAM_SPECTATOR){
 		// if the door is not open and not opening
 		if(ent->parent->moverState != MOVER_1TO2 &&
 		        ent->parent->moverState != MOVER_POS2){
@@ -1342,7 +1342,7 @@ void Reached_Train(gentity_t *ent)
 	}
 
 	// fire all other targets
-	G_UseTargets(next, NULL);
+	G_UseTargets(next, nil);
 
 	// set the new trajectory
 	ent->nextTrain = next->nextTrain;
@@ -1411,14 +1411,14 @@ void Think_SetupTrainTargets(gentity_t *ent)
 {
 	gentity_t		*path, *next, *start;
 
-	ent->nextTrain = G_Find(NULL, FOFS(targetname), ent->target);
+	ent->nextTrain = G_Find(nil, FOFS(targetname), ent->target);
 	if(!ent->nextTrain){
 		G_Printf("func_train at %s with an unfound target\n",
 		         vtos(ent->r.absmin));
 		return;
 	}
 
-	start = NULL;
+	start = nil;
 	for(path = ent->nextTrain ; path != start ; path = next){
 		if(!start){
 			start = path;
@@ -1433,7 +1433,7 @@ void Think_SetupTrainTargets(gentity_t *ent)
 		// find a path_corner among the targets
 		// there may also be other targets that get fired when the corner
 		// is reached
-		next = NULL;
+		next = nil;
 		do {
 			next = G_Find(next, FOFS(targetname), path->target);
 			if(!next){

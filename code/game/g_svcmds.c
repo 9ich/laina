@@ -377,13 +377,13 @@ gclient_t	*ClientForString(const char *s)
 		idnum = atoi(s);
 		if(idnum < 0 || idnum >= level.maxclients){
 			Com_Printf("Bad client slot: %i\n", idnum);
-			return NULL;
+			return nil;
 		}
 
 		cl = &level.clients[idnum];
 		if(cl->pers.connected == CON_DISCONNECTED){
 			G_Printf("Client %i is not connected\n", idnum);
-			return NULL;
+			return nil;
 		}
 		return cl;
 	}
@@ -401,7 +401,7 @@ gclient_t	*ClientForString(const char *s)
 
 	G_Printf("User %s is not on the server\n", s);
 
-	return NULL;
+	return nil;
 }
 
 /*

@@ -160,7 +160,7 @@ typedef struct token_s
 	int type;						//last read token type
 	int subtype;					//last read token sub type
 #ifdef NUMBERVALUE
-	unsigned long int intvalue;	//integer value
+	ulong intvalue;	//integer value
 	float floatvalue;			//floating point value
 #endif //NUMBERVALUE
 	char *whitespace_p;				//start of white space before token
@@ -209,7 +209,7 @@ int PS_SkipUntilString(script_t *script, char *string);
 void PS_UnreadLastToken(script_t *script);
 //unread the given token
 void PS_UnreadToken(script_t *script, token_t *token);
-//returns the next character of the read white space, returns NULL if none
+//returns the next character of the read white space, returns nil if none
 char PS_NextWhiteSpaceChar(script_t *script);
 //remove any leading and trailing double quotes from the token
 void StripDoubleQuotes(char *string);
@@ -219,7 +219,7 @@ void StripSingleQuotes(char *string);
 signed long int ReadSignedInt(script_t *script);
 //read a possible signed floating point number
 float ReadSignedFloat(script_t *script);
-//set an array with punctuations, NULL restores default C/C++ set
+//set an array with punctuations, nil restores default C/C++ set
 void SetScriptPunctuations(script_t *script, punctuation_t *p);
 //set script flags
 void SetScriptFlags(script_t *script, int flags);

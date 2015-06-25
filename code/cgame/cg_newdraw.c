@@ -65,7 +65,7 @@ void CG_CheckOrderPending(void)
 	if(cgs.orderPending){
 		//clientInfo_t *ci = cgs.clientinfo + sortedTeamPlayers[cg_currentSelectedPlayer.integer];
 		const char *p1, *p2, *b;
-		p1 = p2 = b = NULL;
+		p1 = p2 = b = nil;
 		switch(cgs.currentOrder){
 		case TEAMTASK_OFFENSE:
 			p1 = VOICECHAT_ONOFFENSE;
@@ -200,7 +200,7 @@ static void CG_DrawPlayerArmorValue(rectDef_t *rect, float scale, vec4_t color, 
 	if(shader){
 		trap_R_SetColor(color);
 		CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 	}else{
 		Com_sprintf(num, sizeof(num), "%i", value);
 		value = CG_Text_Width(num, scale, 0);
@@ -260,7 +260,7 @@ static void CG_DrawPlayerAmmoValue(rectDef_t *rect, float scale, vec4_t color, q
 			if(shader){
 				trap_R_SetColor(color);
 				CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
-				trap_R_SetColor(NULL);
+				trap_R_SetColor(nil);
 			}else{
 				Com_sprintf(num, sizeof(num), "%i", value);
 				value = CG_Text_Width(num, scale, 0);
@@ -334,7 +334,7 @@ static void CG_DrawSelectedPlayerHealth(rectDef_t *rect, float scale, vec4_t col
 		if(shader){
 			trap_R_SetColor(color);
 			CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
-			trap_R_SetColor(NULL);
+			trap_R_SetColor(nil);
 		}else{
 			Com_sprintf(num, sizeof(num), "%i", ci->health);
 			value = CG_Text_Width(num, scale, 0);
@@ -354,7 +354,7 @@ static void CG_DrawSelectedPlayerArmor(rectDef_t *rect, float scale, vec4_t colo
 			if(shader){
 				trap_R_SetColor(color);
 				CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
-				trap_R_SetColor(NULL);
+				trap_R_SetColor(nil);
 			}else{
 				Com_sprintf(num, sizeof(num), "%i", ci->armor);
 				value = CG_Text_Width(num, scale, 0);
@@ -483,7 +483,7 @@ static void CG_DrawPlayerScore(rectDef_t *rect, float scale, vec4_t color, qhand
 	if(shader){
 		trap_R_SetColor(color);
 		CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 	}else{
 		Com_sprintf(num, sizeof(num), "%i", value);
 		value = CG_Text_Width(num, scale, 0);
@@ -605,7 +605,7 @@ static void CG_DrawPlayerHealth(rectDef_t *rect, float scale, vec4_t color, qhan
 	if(shader){
 		trap_R_SetColor(color);
 		CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 	}else{
 		Com_sprintf(num, sizeof(num), "%i", value);
 		value = CG_Text_Width(num, scale, 0);
@@ -670,7 +670,7 @@ static void CG_DrawBlueFlagStatus(rectDef_t *rect, qhandle_t shader)
 			vec4_t color = {0, 0, 1, 1};
 			trap_R_SetColor(color);
 			CG_DrawPic(rect->x, rect->y, rect->w, rect->h, cgs.media.blueCubeIcon);
-			trap_R_SetColor(NULL);
+			trap_R_SetColor(nil);
 		}
 		return;
 	}
@@ -686,7 +686,7 @@ static void CG_DrawBlueFlagStatus(rectDef_t *rect, qhandle_t shader)
 			}else{
 				CG_DrawPic(rect->x, rect->y, rect->w, rect->h, cgs.media.flagShaders[0]);
 			}
-			trap_R_SetColor(NULL);
+			trap_R_SetColor(nil);
 		}
 	}
 }
@@ -723,7 +723,7 @@ static void CG_DrawRedFlagStatus(rectDef_t *rect, qhandle_t shader)
 			vec4_t color = {1, 0, 0, 1};
 			trap_R_SetColor(color);
 			CG_DrawPic(rect->x, rect->y, rect->w, rect->h, cgs.media.redCubeIcon);
-			trap_R_SetColor(NULL);
+			trap_R_SetColor(nil);
 		}
 		return;
 	}
@@ -739,7 +739,7 @@ static void CG_DrawRedFlagStatus(rectDef_t *rect, qhandle_t shader)
 			}else{
 				CG_DrawPic(rect->x, rect->y, rect->w, rect->h, cgs.media.flagShaders[0]);
 			}
-			trap_R_SetColor(NULL);
+			trap_R_SetColor(nil);
 		}
 	}
 }
@@ -910,7 +910,7 @@ static void CG_DrawAreaPowerUp(rectDef_t *rect, int align, float special, float 
 		if(item){
 			t = ps->powerups[ sorted[i] ];
 			if(t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME){
-				trap_R_SetColor(NULL);
+				trap_R_SetColor(nil);
 			}else{
 				vec4_t	modulate;
 
@@ -928,7 +928,7 @@ static void CG_DrawAreaPowerUp(rectDef_t *rect, int align, float special, float 
 		}
 
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 
 }
 
@@ -1299,7 +1299,7 @@ static void CG_Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4
 				s++;
 			}
 		}
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 	}
 
 }
@@ -1384,7 +1384,7 @@ void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale
 			}
 #endif
 
-			trap_R_SetColor(NULL);
+			trap_R_SetColor(nil);
 			if(cgs.orderPending){
 				// blink the icon
 				if(cg.time > cgs.orderTime - 2500 && (cg.time >> 9) & 1){
@@ -1492,7 +1492,7 @@ void CG_DrawMedal(int ownerDraw, rectDef_t *rect, float scale, vec4_t color, qha
 {
 	score_t *score = &cg.scores[cg.selectedScore];
 	float value = 0;
-	char *text = NULL;
+	char *text = nil;
 	color[3] = 0.25;
 
 	switch(ownerDraw){
@@ -1549,7 +1549,7 @@ void CG_DrawMedal(int ownerDraw, rectDef_t *rect, float scale, vec4_t color, qha
 		value = CG_Text_Width(text, scale, 0);
 		CG_Text_Paint(rect->x + (rect->w - value) / 2, rect->y + rect->h + 10 , scale, color, text, 0, 0, 0);
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 
 }
 
@@ -1774,7 +1774,7 @@ void CG_MouseEvent(int x, int y)
 	if(cgs.capturedItem){
 		Display_MouseMove(cgs.capturedItem, x, y);
 	}else{
-		Display_MouseMove(NULL, cgs.cursorX, cgs.cursorY);
+		Display_MouseMove(nil, cgs.cursorX, cgs.cursorY);
 	}
 
 }
@@ -1852,7 +1852,7 @@ void CG_KeyEvent(int key, qboolean down)
 	Display_HandleKey(key, down, cgs.cursorX, cgs.cursorY);
 
 	if(cgs.capturedItem){
-		cgs.capturedItem = NULL;
+		cgs.capturedItem = nil;
 	}	else{
 		if(key == K_MOUSE2 && down){
 			cgs.capturedItem = Display_CaptureItem(cgs.cursorX, cgs.cursorY);

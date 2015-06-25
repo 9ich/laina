@@ -167,7 +167,7 @@ qboolean checkbox(const char *id, int x, int y, int just, qboolean *state)
 		if(hot)
 			setcolour(color_orange);
 		drawnamedpic(x, y, w, h, "menu/art/tick");
-		setcolour(NULL);
+		setcolour(nil);
 	}
 	return (!uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id));
 }
@@ -302,7 +302,7 @@ static qboolean spinnerbutton(const char *id, int x, int y, const char *shader)
 	if(hot)
 		setcolour(color_orange);
 	drawnamedpic(x, y, sz, sz, shader);
-	setcolour(NULL);
+	setcolour(nil);
 	return (!uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id));
 }
 

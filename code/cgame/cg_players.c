@@ -297,7 +297,7 @@ static qboolean	CG_FileExists(const char *filename)
 {
 	int len;
 
-	len = trap_FS_FOpenFile(filename, NULL, FS_READ);
+	len = trap_FS_FOpenFile(filename, nil, FS_READ);
 	if(len>0){
 		return qtrue;
 	}
@@ -954,7 +954,7 @@ void CG_NewClientInfo(int clientNum)
 			Q_strncpyz(newInfo.skinName, "default", sizeof(newInfo.skinName));
 		}else{
 			trap_Cvar_VariableStringBuffer("model", modelStr, sizeof(modelStr));
-			if((skin = strchr(modelStr, '/')) == NULL){
+			if((skin = strchr(modelStr, '/')) == nil){
 				skin = "default";
 			}else{
 				*skin++ = 0;
@@ -998,7 +998,7 @@ void CG_NewClientInfo(int clientNum)
 			Q_strncpyz(newInfo.headSkinName, "default", sizeof(newInfo.headSkinName));
 		}else{
 			trap_Cvar_VariableStringBuffer("headmodel", modelStr, sizeof(modelStr));
-			if((skin = strchr(modelStr, '/')) == NULL){
+			if((skin = strchr(modelStr, '/')) == nil){
 				skin = "default";
 			}else{
 				*skin++ = 0;
@@ -1599,7 +1599,7 @@ static void CG_DustTrail(centity_t *cent)
 
 	VectorCopy(cent->currentState.pos.trBase, end);
 	end[2] -= 64;
-	CG_Trace(&tr, cent->currentState.pos.trBase, NULL, NULL, end, cent->currentState.number, MASK_PLAYERSOLID);
+	CG_Trace(&tr, cent->currentState.pos.trBase, nil, nil, end, cent->currentState.number, MASK_PLAYERSOLID);
 
 	if(!(tr.surfaceFlags & SURF_DUST))
 		return;
@@ -2032,7 +2032,7 @@ static void CG_PlayerSplash(centity_t *cent)
 	}
 
 	// trace down to find the surface
-	trap_CM_BoxTrace(&trace, start, end, NULL, NULL, 0, (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA));
+	trap_CM_BoxTrace(&trace, start, end, nil, nil, 0, (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA));
 
 	if(trace.fraction == 1.0){
 		return;
@@ -2516,7 +2516,7 @@ void CG_Player(centity_t *cent)
 #endif
 
 	// add the gun / barrel / flash
-	CG_AddPlayerWeapon(&torso, NULL, cent, ci->team);
+	CG_AddPlayerWeapon(&torso, nil, cent, ci->team);
 
 	// add powerups floating behind the player
 	CG_PlayerPowerups(cent, &torso);

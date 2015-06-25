@@ -110,7 +110,7 @@ field_t fields[] = {
 	{"targetShaderName", FOFS(targetShaderName), F_STRING},
 	{"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
 
-	{NULL}
+	{nil}
 };
 
 
@@ -260,7 +260,7 @@ spawn_t	spawns[] = {
 #endif
 	{"item_botroam", SP_item_botroam},
 
-	{NULL, 0}
+	{nil, 0}
 };
 
 /*
@@ -277,7 +277,7 @@ qboolean G_CallSpawn(gentity_t *ent)
 	gitem_t	*item;
 
 	if(!ent->classname){
-		G_Printf("G_CallSpawn: NULL classname\n");
+		G_Printf("G_CallSpawn: nil classname\n");
 		return qfalse;
 	}
 
@@ -459,7 +459,7 @@ void G_SpawnGEntityFromSpawnVars(void)
 	}
 #endif
 
-	if(G_SpawnString("gametype", NULL, &value)){
+	if(G_SpawnString("gametype", nil, &value)){
 		if(g_gametype.integer >= GT_FFA && g_gametype.integer < GT_MAX_GAME_TYPE){
 			gametypeName = gametypeNames[g_gametype.integer];
 

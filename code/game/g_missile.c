@@ -106,7 +106,7 @@ static void ProximityMine_Explode(gentity_t *mine)
 	// if the prox mine has a trigger free it
 	if(mine->activator){
 		G_FreeEntity(mine->activator);
-		mine->activator = NULL;
+		mine->activator = nil;
 	}
 }
 
@@ -386,7 +386,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace)
 		}else{
 			VectorCopy(trace->endpos, v);
 			G_AddEvent(nent, EV_MISSILE_MISS, DirToByte(trace->plane.normal));
-			ent->enemy = NULL;
+			ent->enemy = nil;
 		}
 
 		SnapVectorTowards(v, ent->s.pos.trBase);	// save net bandwidth
@@ -491,7 +491,7 @@ void G_RunMissile(gentity_t *ent)
 		if(tr.surfaceFlags & SURF_NOIMPACT){
 			// If grapple, reset owner
 			if(ent->parent && ent->parent->client && ent->parent->client->hook == ent){
-				ent->parent->client->hook = NULL;
+				ent->parent->client->hook = nil;
 			}
 			G_FreeEntity(ent);
 			return;
@@ -545,7 +545,7 @@ gentity_t *fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->methodOfDeath = MOD_PLASMA;
 	bolt->splashMethodOfDeath = MOD_PLASMA_SPLASH;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -588,7 +588,7 @@ gentity_t *fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->methodOfDeath = MOD_GRENADE;
 	bolt->splashMethodOfDeath = MOD_GRENADE_SPLASH;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -630,7 +630,7 @@ gentity_t *fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->methodOfDeath = MOD_BFG;
 	bolt->splashMethodOfDeath = MOD_BFG_SPLASH;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -671,7 +671,7 @@ gentity_t *fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->methodOfDeath = MOD_ROCKET;
 	bolt->splashMethodOfDeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -705,7 +705,7 @@ gentity_t *fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
 	hook->methodOfDeath = MOD_GRAPPLE;
 	hook->clipmask = MASK_SHOT;
 	hook->parent = self;
-	hook->target_ent = NULL;
+	hook->target_ent = nil;
 
 	hook->s.pos.trType = TR_LINEAR;
 	hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -748,7 +748,7 @@ gentity_t *fire_nail(gentity_t *self, vec3_t start, vec3_t forward, vec3_t right
 	bolt->damage = 20;
 	bolt->methodOfDeath = MOD_NAIL;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target_ent = nil;
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;
@@ -800,7 +800,7 @@ gentity_t *fire_prox(gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->methodOfDeath = MOD_PROXIMITY_MINE;
 	bolt->splashMethodOfDeath = MOD_PROXIMITY_MINE;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target_ent = nil;
 	// count is used to check if the prox mine left the player bbox
 	// if count == 1 then the prox mine left the player bbox and can attack to it
 	bolt->count = 0;

@@ -233,7 +233,7 @@ void BotVoiceChat_Patrol(bot_state_t *bs, int client, int mode)
 	bs->ltgtype = 0;
 	bs->lead_time = 0;
 	bs->lastgoal_ltgtype = 0;
-	BotAI_BotInitialChat(bs, "dismissed", NULL);
+	BotAI_BotInitialChat(bs, "dismissed", nil);
 	trap_BotEnterChat(bs->cs, client, CHAT_TELL);
 	BotVoiceChatOnly(bs, -1, VOICECHAT_ONPATROL);
 	BotSetTeamStatus(bs);
@@ -271,7 +271,7 @@ void BotVoiceChat_Camp(bot_state_t *bs, int client, int mode)
 	}
 	//if the other is not visible
 	if(bs->teamgoal.entitynum < 0){
-		BotAI_BotInitialChat(bs, "whereareyou", EasyClientName(client, netname, sizeof(netname)), NULL);
+		BotAI_BotInitialChat(bs, "whereareyou", EasyClientName(client, netname, sizeof(netname)), nil);
 		trap_BotEnterChat(bs->cs, client, CHAT_TELL);
 		return;
 	}
@@ -322,7 +322,7 @@ void BotVoiceChat_FollowMe(bot_state_t *bs, int client, int mode)
 	}
 	//if the other is not visible
 	if(bs->teamgoal.entitynum < 0){
-		BotAI_BotInitialChat(bs, "whereareyou", EasyClientName(client, netname, sizeof(netname)), NULL);
+		BotAI_BotInitialChat(bs, "whereareyou", EasyClientName(client, netname, sizeof(netname)), nil);
 		trap_BotEnterChat(bs->cs, client, CHAT_TELL);
 		return;
 	}
@@ -437,7 +437,7 @@ void BotVoiceChat_WhoIsLeader(bot_state_t *bs, int client, int mode)
 	ClientName(bs->client, netname, sizeof(netname));
 	//if this bot IS the team leader
 	if(!Q_stricmp(netname, bs->teamleader)){
-		BotAI_BotInitialChat(bs, "iamteamleader", NULL);
+		BotAI_BotInitialChat(bs, "iamteamleader", nil);
 		trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 		BotVoiceChatOnly(bs, -1, VOICECHAT_STARTLEADER);
 	}
@@ -458,7 +458,7 @@ void BotVoiceChat_WantOnDefense(bot_state_t *bs, int client, int mode)
 	preference |= TEAMTP_DEFENDER;
 	BotSetTeamMateTaskPreference(bs, client, preference);
 	EasyClientName(client, netname, sizeof(netname));
-	BotAI_BotInitialChat(bs, "keepinmind", netname, NULL);
+	BotAI_BotInitialChat(bs, "keepinmind", netname, nil);
 	trap_BotEnterChat(bs->cs, client, CHAT_TELL);
 	BotVoiceChatOnly(bs, client, VOICECHAT_YES);
 	trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
@@ -479,7 +479,7 @@ void BotVoiceChat_WantOnOffense(bot_state_t *bs, int client, int mode)
 	preference |= TEAMTP_ATTACKER;
 	BotSetTeamMateTaskPreference(bs, client, preference);
 	EasyClientName(client, netname, sizeof(netname));
-	BotAI_BotInitialChat(bs, "keepinmind", netname, NULL);
+	BotAI_BotInitialChat(bs, "keepinmind", netname, nil);
 	trap_BotEnterChat(bs->cs, client, CHAT_TELL);
 	BotVoiceChatOnly(bs, client, VOICECHAT_YES);
 	trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
@@ -504,7 +504,7 @@ voiceCommand_t voiceCommands[] = {
 	{VOICECHAT_WHOISLEADER, BotVoiceChat_WhoIsLeader },
 	{VOICECHAT_WANTONDEFENSE, BotVoiceChat_WantOnDefense },
 	{VOICECHAT_WANTONOFFENSE, BotVoiceChat_WantOnOffense },
-	{NULL, BotVoiceChat_Dummy}
+	{nil, BotVoiceChat_Dummy}
 };
 
 int BotVoiceChatCommand(bot_state_t *bs, int mode, char *voiceChat)

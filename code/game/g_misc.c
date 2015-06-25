@@ -102,7 +102,7 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles)
 	player->client->ps.origin[2] += 1;
 	if(!noAngles){
 		// spit the player out
-		AngleVectors(angles, player->client->ps.velocity, NULL, NULL);
+		AngleVectors(angles, player->client->ps.velocity, nil, nil);
 		VectorScale(player->client->ps.velocity, 400, player->client->ps.velocity);
 		player->client->ps.pm_time = 160;		// hold time
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
@@ -424,8 +424,8 @@ static void PortalTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	}
 
 	// find the destination
-	destination = NULL;
-	while((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != NULL){
+	destination = nil;
+	while((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != nil){
 		if(destination->count == self->count){
 			break;
 		}
@@ -436,7 +436,7 @@ static void PortalTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		if(self->pos1[0] || self->pos1[1] || self->pos1[2]){
 			TeleportPlayer(other, self->pos1, self->s.angles);
 		}
-		G_Damage(other, other, other, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+		G_Damage(other, other, other, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 		return;
 	}
 
@@ -487,8 +487,8 @@ void DropPortalSource(gentity_t *player)
 	ent->think = PortalEnable;
 
 	// find the destination
-	destination = NULL;
-	while((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != NULL){
+	destination = nil;
+	while((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != nil){
 		if(destination->count == ent->count){
 			VectorCopy(destination->s.pos.trBase, ent->pos1);
 			break;

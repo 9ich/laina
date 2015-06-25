@@ -15,7 +15,7 @@ static char *builtinres[] = {
 	"1600x1200",
 	"2048x1536",
 	"856x480",
-	NULL
+	nil
 };
 
 static char *builtinhz[] = {"60"};
@@ -74,29 +74,29 @@ static struct {
 
 static void getmodes(void)
 {
-	unsigned int i;
+	uint i;
 	char *p;
 
 	Q_strncpyz(resbuf, UI_Cvar_VariableString("r_availablemodes"), sizeof resbuf);
 	if(*resbuf == '\0')
 		return;
-	for(p = resbuf, i = 0; p != NULL && i < ARRAY_LEN(detectedres)-1;){
+	for(p = resbuf, i = 0; p != nil && i < ARRAY_LEN(detectedres)-1;){
 		// XxY
 		detectedres[i++] = p;
 
 		// @Hz
 		p = strchr(p, '@');
-		if(p != NULL)
+		if(p != nil)
 			*p++ = '\0';
 		detectedhz[i] = p;
 
 		// next
 		p = strchr(p, ' ');
-		if(p != NULL)
+		if(p != nil)
 			*p++ = '\0';
 	}
-	detectedres[i] = NULL;
-	detectedhz[i] = NULL;
+	detectedres[i] = nil;
+	detectedhz[i] = nil;
 	if(i > 0){
 		resolutions = detectedres;
 		refreshrates = detectedhz;
@@ -127,7 +127,7 @@ static void calcratios(void)
 		Q_strncpyz(ratiobuf[r], str, sizeof ratiobuf[r]);
 		ratios[r] = ratiobuf[r];
 	}
-	ratios[r] = NULL;
+	ratios[r] = nil;
 }
 
 void placeholder(void)
@@ -188,7 +188,7 @@ static void mkmodelists(const char *ratio)
 {
 	int i, j;
 
-	for(i = 0; resolutions[i] != NULL; i++){
+	for(i = 0; resolutions[i] != nil; i++){
 		if(Q_stricmp(ratios[i], ratio) != 0)
 			continue;
 		for(j = 0; j < vo.nres; j++)
@@ -213,9 +213,9 @@ static void mkratlist(void)
 	int i, j;
 	qboolean present;
 
-	for(i = 0; ratios[i] != NULL; i++){
+	for(i = 0; ratios[i] != nil; i++){
 		present = qfalse;
-		for(j = 0; vo.ratlist[j] != NULL; j++)
+		for(j = 0; vo.ratlist[j] != nil; j++)
 			if(Q_stricmp(vo.ratlist[j], ratios[i]) == 0){
 				present = qtrue;
 				break;
@@ -223,7 +223,7 @@ static void mkratlist(void)
 		if(present)
 			continue;
 		for(j = 0; j < ARRAY_LEN(vo.ratlist)-1; j++)
-			if(vo.ratlist[j] == NULL){
+			if(vo.ratlist[j] == nil){
 				vo.ratlist[j] = ratios[i];
 				vo.nrat++;
 				break;
@@ -238,7 +238,7 @@ static void initvideomenu(void)
 	char *ratio;
 
 	memset(&vo, 0, sizeof vo);
-	ratio = NULL;
+	ratio = nil;
 	getmodes();
 	calcratios();
 	mkratlist();
@@ -249,7 +249,7 @@ static void initvideomenu(void)
 	hz = trap_Cvar_VariableValue("r_displayrefresh");
 	Com_sprintf(resstr, sizeof resstr, "%dx%d", w, h);
 	Com_sprintf(hzstr, sizeof hzstr, "%d", hz);
-	for(i = 0; resolutions[i] != NULL; i++)
+	for(i = 0; resolutions[i] != nil; i++)
 		if(Q_stricmp(resolutions[i], resstr) == 0)
 			ratio = ratios[i];
 
@@ -259,13 +259,13 @@ static void initvideomenu(void)
 	vo.resi = 0;
 	vo.rati = 0;
 	vo.hzi = 0;
-	for(i = 0; vo.reslist[i] != NULL; i++)
+	for(i = 0; vo.reslist[i] != nil; i++)
 		if(Q_stricmp(vo.reslist[i], resstr) == 0)
 			vo.resi = i;
-	for(i = 0; vo.ratlist[i] != NULL; i++)
+	for(i = 0; vo.ratlist[i] != nil; i++)
 		if(Q_stricmp(vo.ratlist[i], ratio) == 0)
 			vo.rati = i;
-	for(i = 0; vo.hzlist[i] != NULL; i++)
+	for(i = 0; vo.hzlist[i] != nil; i++)
 		if(Q_stricmp(vo.hzlist[i], hzstr) == 0)
 			vo.hzi = i;
 	vo.texquality = 0;
@@ -351,12 +351,12 @@ void videomenu(void)
 		h = trap_Cvar_VariableValue("r_customheight");
 		Com_sprintf(resstr, sizeof resstr, "%dx%d", w, h);
 		memset(vo.reslist, 0, sizeof vo.reslist);
-		for(i = 0, j = 0; resolutions[i] != NULL; i++)
+		for(i = 0, j = 0; resolutions[i] != nil; i++)
 			if(Q_stricmp(ratios[i], vo.ratlist[vo.rati]) == 0){
 				vo.reslist[j++] = resolutions[i];
 				vo.nres++;
 			}
-		for(i = 0; vo.reslist[i] != NULL; i++)
+		for(i = 0; vo.reslist[i] != nil; i++)
 			if(Q_stricmp(vo.reslist[i], resstr) == 0)
 				vo.resi = i;
 		vo.needrestart = qtrue;

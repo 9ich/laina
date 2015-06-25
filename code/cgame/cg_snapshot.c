@@ -134,10 +134,10 @@ static void CG_TransitionSnapshot(void)
 	int					i;
 
 	if(!cg.snap){
-		CG_Error("CG_TransitionSnapshot: NULL cg.snap");
+		CG_Error("CG_TransitionSnapshot: nil cg.snap");
 	}
 	if(!cg.nextSnap){
-		CG_Error("CG_TransitionSnapshot: NULL cg.nextSnap");
+		CG_Error("CG_TransitionSnapshot: nil cg.nextSnap");
 	}
 
 	// execute any server string commands before transitioning entities
@@ -169,7 +169,7 @@ static void CG_TransitionSnapshot(void)
 		cent->snapShotTime = cg.snap->serverTime;
 	}
 
-	cg.nextSnap = NULL;
+	cg.nextSnap = nil;
 
 	// check for playerstate transition events
 	if(oldFrame){
@@ -300,14 +300,14 @@ static snapshot_t *CG_ReadNextSnapshot(void)
 		// buffer in the client system.
 
 		// record as a dropped packet
-		CG_AddLagometerSnapshotInfo(NULL);
+		CG_AddLagometerSnapshotInfo(nil);
 
 		// If there are additional snapshots, continue trying to
 		// read them.
 	}
 
 	// nothing left to read
-	return NULL;
+	return nil;
 }
 
 
@@ -395,14 +395,14 @@ void CG_ProcessSnapshots(void)
 	} while(1);
 
 	// assert our valid conditions upon exiting
-	if(cg.snap == NULL){
-		CG_Error("CG_ProcessSnapshots: cg.snap == NULL");
+	if(cg.snap == nil){
+		CG_Error("CG_ProcessSnapshots: cg.snap == nil");
 	}
 	if(cg.time < cg.snap->serverTime){
 		// this can happen right after a vid_restart
 		cg.time = cg.snap->serverTime;
 	}
-	if(cg.nextSnap != NULL && cg.nextSnap->serverTime <= cg.time){
+	if(cg.nextSnap != nil && cg.nextSnap->serverTime <= cg.time){
 		CG_Error("CG_ProcessSnapshots: cg.nextSnap->serverTime <= cg.time");
 	}
 

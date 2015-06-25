@@ -99,10 +99,10 @@ gentity_t *SelectNearestDeathmatchSpawnPoint(vec3_t from)
 	gentity_t	*nearestSpot;
 
 	nearestDist = 999999;
-	nearestSpot = NULL;
-	spot = NULL;
+	nearestSpot = nil;
+	spot = nil;
 
-	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != nil){
 
 		VectorSubtract(spot->s.origin, from, delta);
 		dist = VectorLength(delta);
@@ -132,9 +132,9 @@ gentity_t *SelectRandomDeathmatchSpawnPoint(qboolean isbot)
 	gentity_t	*spots[MAX_SPAWN_POINTS];
 
 	count = 0;
-	spot = NULL;
+	spot = nil;
 
-	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL && count < MAX_SPAWN_POINTS){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != nil && count < MAX_SPAWN_POINTS){
 		if(SpotWouldTelefrag(spot))
 			continue;
 
@@ -149,7 +149,7 @@ gentity_t *SelectRandomDeathmatchSpawnPoint(qboolean isbot)
 	}
 
 	if(!count){	// no spots that won't telefrag
-		return G_Find(NULL, FOFS(classname), "playerspawn");
+		return G_Find(nil, FOFS(classname), "playerspawn");
 	}
 
 	selection = rand() % count;
@@ -173,9 +173,9 @@ gentity_t *SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3
 	int			numSpots, rnd, i, j;
 
 	numSpots = 0;
-	spot = NULL;
+	spot = nil;
 
-	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != nil){
 		if(SpotWouldTelefrag(spot))
 			continue;
 
@@ -214,7 +214,7 @@ gentity_t *SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3
 	}
 
 	if(!numSpots){
-		spot = G_Find(NULL, FOFS(classname), "playerspawn");
+		spot = G_Find(nil, FOFS(classname), "playerspawn");
 
 		if(!spot)
 			G_Error("Couldn't find a spawn point");
@@ -296,7 +296,7 @@ gentity_t *SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 {
 	gentity_t	*spot;
 
-	spot = NULL;
+	spot = nil;
 
 	if(level.checkpoint != ENTITYNUM_NONE){
 		spot = &g_entities[level.checkpoint];
@@ -306,7 +306,7 @@ gentity_t *SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 		return spot;
 	}
 
-	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != NULL){
+	while((spot = G_Find(spot, FOFS(classname), "playerspawn")) != nil){
 		if(((spot->flags & FL_NO_BOTS) && isbot) ||
 		        ((spot->flags & FL_NO_HUMANS) && !isbot)){
 			continue;
@@ -339,7 +339,7 @@ gentity_t *SelectSpectatorSpawnPoint(vec3_t origin, vec3_t angles)
 	VectorCopy(level.intermission_origin, origin);
 	VectorCopy(level.intermission_angle, angles);
 
-	return NULL;
+	return nil;
 }
 
 /*
@@ -870,7 +870,7 @@ Called again for every map change or tournement restart.
 
 The session information will be valid after exit.
 
-Return NULL if the client should be allowed, otherwise return
+Return nil if the client should be allowed, otherwise return
 a string with the reason for denial.
 
 Otherwise, the client will be sent the current gamestate
@@ -963,9 +963,9 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot)
 	// for statistics
 //	client->areabits = areabits;
 //	if ( !client->areabits )
-//		client->areabits = G_Alloc( (trap_AAS_PointReachabilityAreaIndex( NULL ) + 7) / 8 );
+//		client->areabits = G_Alloc( (trap_AAS_PointReachabilityAreaIndex( nil ) + 7) / 8 );
 
-	return NULL;
+	return nil;
 }
 
 /*
@@ -1288,7 +1288,7 @@ void ClientDisconnect(int clientNum)
 
 		trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
 		level.restarted = qtrue;
-		level.changemap = NULL;
+		level.changemap = nil;
 		level.intermissiontime = 0;
 	}
 

@@ -677,7 +677,7 @@ int trap_StringContains(char *str1, char *str2, int casesensitive)
 	return syscall(BOTLIB_AI_STRING_CONTAINS, str1, str2, casesensitive);
 }
 
-int trap_BotFindMatch(char *str, void /* struct bot_match_s */ *match, unsigned long int context)
+int trap_BotFindMatch(char *str, void /* struct bot_match_s */ *match, ulong context)
 {
 	return syscall(BOTLIB_AI_FIND_MATCH, str, match, context);
 }
@@ -692,7 +692,7 @@ void trap_UnifyWhiteSpaces(char *string)
 	syscall(BOTLIB_AI_UNIFY_WHITE_SPACES, string);
 }
 
-void trap_BotReplaceSynonyms(char *string, unsigned long int context)
+void trap_BotReplaceSynonyms(char *string, ulong context)
 {
 	syscall(BOTLIB_AI_REPLACE_SYNONYMS, string, context);
 }

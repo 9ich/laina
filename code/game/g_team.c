@@ -94,7 +94,7 @@ const char *TeamColorString(int team)
 	return S_COLOR_WHITE;
 }
 
-// NULL for everyone
+// nil for everyone
 static __attribute__((format(printf, 2, 3))) void QDECL PrintMsg(gentity_t *ent, const char *fmt, ...)
 {
 	char		msg[1024];
@@ -108,10 +108,10 @@ static __attribute__((format(printf, 2, 3))) void QDECL PrintMsg(gentity_t *ent,
 	va_end(argptr);
 
 	// double quotes are bad
-	while((p = strchr(msg, '"')) != NULL)
+	while((p = strchr(msg, '"')) != nil)
 		*p = '\'';
 
-	trap_SendServerCommand(((ent == NULL) ? -1 : ent-g_entities), va("print \"%s\"", msg));
+	trap_SendServerCommand(((ent == nil) ? -1 : ent-g_entities), va("print \"%s\"", msg));
 }
 
 /*
@@ -275,7 +275,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 	int flag_pw, enemy_flag_pw;
 	int otherteam;
 	int tokens;
-	gentity_t *flag, *carrier = NULL;
+	gentity_t *flag, *carrier = nil;
 	char *c;
 	vec3_t v1, v2;
 	int team;
@@ -315,7 +315,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		attacker->client->pers.teamState.lastfraggedcarrier = level.time;
 		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS);
 		attacker->client->pers.teamState.fragcarrier++;
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's flag carrier!\n",
+		PrintMsg(nil, "%s" S_COLOR_WHITE " fragged %s's flag carrier!\n",
 		         attacker->client->pers.netname, TeamName(team));
 
 		// the target had the flag, clear the hurt carrier
@@ -333,7 +333,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		attacker->client->pers.teamState.lastfraggedcarrier = level.time;
 		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS * tokens * tokens);
 		attacker->client->pers.teamState.fragcarrier++;
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's skull carrier!\n",
+		PrintMsg(nil, "%s" S_COLOR_WHITE " fragged %s's skull carrier!\n",
 		         attacker->client->pers.netname, TeamName(team));
 
 		// the target had the flag, clear the hurt carrier
@@ -421,13 +421,13 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 			carrier = g_entities + i;
 			if(carrier->inuse && carrier->client->ps.powerups[flag_pw])
 				break;
-			carrier = NULL;
+			carrier = nil;
 		}
 #ifdef MISSIONPACK
 	}
 #endif
-	flag = NULL;
-	while((flag = G_Find(flag, FOFS(classname), c)) != NULL){
+	flag = nil;
+	while((flag = G_Find(flag, FOFS(classname), c)) != nil){
 		if(!(flag->flags & FL_DROPPED_ITEM))
 			break;
 	}
@@ -518,7 +518,7 @@ void Team_CheckHurtCarrier(gentity_t *targ, gentity_t *attacker)
 gentity_t *Team_ResetFlag(int team)
 {
 	char *c;
-	gentity_t *ent, *rent = NULL;
+	gentity_t *ent, *rent = nil;
 
 	switch(team){
 	case TEAM_RED:
@@ -531,11 +531,11 @@ gentity_t *Team_ResetFlag(int team)
 		c = "team_CTF_neutralflag";
 		break;
 	default:
-		return NULL;
+		return nil;
 	}
 
-	ent = NULL;
-	while((ent = G_Find(ent, FOFS(classname), c)) != NULL){
+	ent = nil;
+	while((ent = G_Find(ent, FOFS(classname), c)) != nil){
 		if(ent->flags & FL_DROPPED_ITEM)
 			G_FreeEntity(ent);
 		else{
@@ -566,8 +566,8 @@ void Team_ReturnFlagSound(gentity_t *ent, int team)
 {
 	gentity_t	*te;
 
-	if(ent == NULL){
-		G_Printf("Warning:  NULL passed to Team_ReturnFlagSound\n");
+	if(ent == nil){
+		G_Printf("Warning:  nil passed to Team_ReturnFlagSound\n");
 		return;
 	}
 
@@ -584,8 +584,8 @@ void Team_TakeFlagSound(gentity_t *ent, int team)
 {
 	gentity_t	*te;
 
-	if(ent == NULL){
-		G_Printf("Warning:  NULL passed to Team_TakeFlagSound\n");
+	if(ent == nil){
+		G_Printf("Warning:  nil passed to Team_TakeFlagSound\n");
 		return;
 	}
 
@@ -622,8 +622,8 @@ void Team_CaptureFlagSound(gentity_t *ent, int team)
 {
 	gentity_t	*te;
 
-	if(ent == NULL){
-		G_Printf("Warning:  NULL passed to Team_CaptureFlagSound\n");
+	if(ent == nil){
+		G_Printf("Warning:  nil passed to Team_CaptureFlagSound\n");
 		return;
 	}
 
@@ -640,9 +640,9 @@ void Team_ReturnFlag(int team)
 {
 	Team_ReturnFlagSound(Team_ResetFlag(team), team);
 	if(team == TEAM_FREE){
-		PrintMsg(NULL, "The flag has returned!\n");
+		PrintMsg(nil, "The flag has returned!\n");
 	}else{
-		PrintMsg(NULL, "The %s flag has returned!\n", TeamName(team));
+		PrintMsg(nil, "The %s flag has returned!\n", TeamName(team));
 	}
 }
 
@@ -708,7 +708,7 @@ int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team)
 
 		if(ent->flags & FL_DROPPED_ITEM){
 			// hey, it's not home.  return it by teleporting it back
-			PrintMsg(NULL, "%s" S_COLOR_WHITE " returned the %s flag!\n",
+			PrintMsg(nil, "%s" S_COLOR_WHITE " returned the %s flag!\n",
 			         cl->pers.netname, TeamName(team));
 			AddScore(other, ent->r.currentOrigin, CTF_RECOVERY_BONUS);
 			other->client->pers.teamState.flagrecovery++;
@@ -727,10 +727,10 @@ int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team)
 		return 0; // We don't have the flag
 #ifdef MISSIONPACK
 	if(g_gametype.integer == GT_1FCTF){
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " captured the flag!\n", cl->pers.netname);
+		PrintMsg(nil, "%s" S_COLOR_WHITE " captured the flag!\n", cl->pers.netname);
 	}else{
 #endif
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " captured the %s flag!\n", cl->pers.netname, TeamName(OtherTeam(team)));
+		PrintMsg(nil, "%s" S_COLOR_WHITE " captured the %s flag!\n", cl->pers.netname, TeamName(OtherTeam(team)));
 #ifdef MISSIONPACK
 	}
 #endif
@@ -810,7 +810,7 @@ int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team)
 
 #ifdef MISSIONPACK
 	if(g_gametype.integer == GT_1FCTF){
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname);
+		PrintMsg(nil, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname);
 
 		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX; // flags never expire
 
@@ -821,7 +821,7 @@ int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team)
 		}
 	}else{
 #endif
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
+		PrintMsg(nil, "%s" S_COLOR_WHITE " got the %s flag!\n",
 		         other->client->pers.netname, TeamName(team));
 
 		if(team == TEAM_RED)
@@ -908,7 +908,7 @@ gentity_t *Team_GetLocation(gentity_t *ent)
 	float			bestlen, len;
 	vec3_t			origin;
 
-	best = NULL;
+	best = nil;
 	bestlen = 3*8192.0*8192.0;
 
 	VectorCopy(ent->r.currentOrigin, origin);
@@ -987,20 +987,20 @@ gentity_t *SelectRandomTeamSpawnPoint(int teamstate, team_t team)
 		else if(team == TEAM_BLUE)
 			classname = "team_CTF_blueplayer";
 		else
-			return NULL;
+			return nil;
 	}else{
 		if(team == TEAM_RED)
 			classname = "team_CTF_redspawn";
 		else if(team == TEAM_BLUE)
 			classname = "team_CTF_bluespawn";
 		else
-			return NULL;
+			return nil;
 	}
 	count = 0;
 
-	spot = NULL;
+	spot = nil;
 
-	while((spot = G_Find(spot, FOFS(classname), classname)) != NULL){
+	while((spot = G_Find(spot, FOFS(classname), classname)) != nil){
 		if(SpotWouldTelefrag(spot)){
 			continue;
 		}
@@ -1010,7 +1010,7 @@ gentity_t *SelectRandomTeamSpawnPoint(int teamstate, team_t team)
 	}
 
 	if(!count){	// no spots that won't telefrag
-		return G_Find(NULL, FOFS(classname), classname);
+		return G_Find(nil, FOFS(classname), classname);
 	}
 
 	selection = rand() % count;
@@ -1291,7 +1291,7 @@ static void ObeliskTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		return;
 	}
 
-	PrintMsg(NULL, "%s" S_COLOR_WHITE " brought in %i skull%s.\n",
+	PrintMsg(nil, "%s" S_COLOR_WHITE " brought in %i skull%s.\n",
 	         other->client->pers.netname, tokens, tokens ? "s" : "");
 
 	AddTeamScore(self->s.pos.trBase, other->client->sess.sessionTeam, tokens);

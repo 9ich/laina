@@ -344,10 +344,10 @@ void CG_RegisterCvars(void)
 
 	forceModelModificationCount = cg_forceModel.modificationCount;
 
-	trap_Cvar_Register(NULL, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(NULL, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE);
+	trap_Cvar_Register(nil, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
+	trap_Cvar_Register(nil, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
+	trap_Cvar_Register(nil, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
+	trap_Cvar_Register(nil, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE);
 }
 
 /*
@@ -1026,12 +1026,12 @@ char *CG_GetMenuBuffer(const char *filename)
 	len = trap_FS_FOpenFile(filename, &f, FS_READ);
 	if(!f){
 		trap_Print(va(S_COLOR_RED "menu file not found: %s, using default\n", filename));
-		return NULL;
+		return nil;
 	}
 	if(len >= MAX_MENUFILE){
 		trap_Print(va(S_COLOR_RED "menu file too large: %s is %i, max allowed is %i\n", filename, len, MAX_MENUFILE));
 		trap_FS_FCloseFile(f);
-		return NULL;
+		return nil;
 	}
 
 	trap_FS_Read(buf, len, f);
@@ -1384,7 +1384,7 @@ void CG_SetScoreSelection(void *p)
 		}
 	}
 
-	if(menu == NULL){
+	if(menu == nil){
 		// just interested in setting the selected score
 		return;
 	}
@@ -1396,9 +1396,9 @@ void CG_SetScoreSelection(void *p)
 			feeder = FEEDER_BLUETEAM_LIST;
 			i = blue;
 		}
-		Menu_SetFeederSelection(menu, feeder, i, NULL);
+		Menu_SetFeederSelection(menu, feeder, i, nil);
 	}else{
-		Menu_SetFeederSelection(menu, FEEDER_SCOREBOARD, cg.selectedScore, NULL);
+		Menu_SetFeederSelection(menu, FEEDER_SCOREBOARD, cg.selectedScore, nil);
 	}
 }
 
@@ -1426,9 +1426,9 @@ static const char *CG_FeederItemText(float feederID, int index, int column, qhan
 {
 	gitem_t *item;
 	int scoreIndex = 0;
-	clientInfo_t *info = NULL;
+	clientInfo_t *info = nil;
 	int team = -1;
-	score_t *sp = NULL;
+	score_t *sp = nil;
 
 	*handle = -1;
 
@@ -1668,7 +1668,7 @@ void CG_LoadHudMenu(void)
 
 void CG_AssetCache(void)
 {
-	//if (Assets.textFont == NULL){
+	//if (Assets.textFont == nil){
 	//  trap_R_RegisterFont("fonts/arial.ttf", 72, &Assets.textFont);
 	//}
 	//Assets.background = trap_R_RegisterShaderNoMip( ASSET_BACKGROUND );

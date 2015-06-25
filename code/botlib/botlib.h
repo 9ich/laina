@@ -321,10 +321,10 @@ typedef struct ai_export_s
 	void	(*BotEnterChat)(int chatstate, int client, int sendto);
 	void	(*BotGetChatMessage)(int chatstate, char *buf, int size);
 	int		(*StringContains)(char *str1, char *str2, int casesensitive);
-	int		(*BotFindMatch)(char *str, struct bot_match_s *match, unsigned long int context);
+	int		(*BotFindMatch)(char *str, struct bot_match_s *match, ulong context);
 	void	(*BotMatchVariable)(struct bot_match_s *match, int variable, char *buf, int size);
 	void	(*UnifyWhiteSpaces)(char *string);
-	void	(*BotReplaceSynonyms)(char *string, unsigned long int context);
+	void	(*BotReplaceSynonyms)(char *string, ulong context);
 	int		(*BotLoadChatFile)(int chatstate, char *chatfile, char *chatname);
 	void	(*BotSetChatGender)(int chatstate, int gender);
 	void	(*BotSetChatName)(int chatstate, char *name, int client);

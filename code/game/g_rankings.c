@@ -50,7 +50,7 @@ void G_RankRunFrame()
 			ent = &(g_entities[i]);
 			if(!ent->inuse)
 				continue;
-			if(ent->client == NULL)
+			if(ent->client == nil)
 				continue;
 			if(ent->r.svFlags & SVF_BOT){
 				// no bots in ranked games
@@ -106,7 +106,7 @@ void G_RankRunFrame()
 						ent2 = &(g_entities[j]);
 						if(!ent2->inuse)
 							continue;
-						if(ent2->client == NULL)
+						if(ent2->client == nil)
 							continue;
 						if(ent2->r.svFlags & SVF_BOT)
 							continue;
@@ -137,7 +137,7 @@ void G_RankRunFrame()
 	if(level.intermissiontime == 0){
 		for(i = 0; i < level.maxclients; i++){
 			ent = &(g_entities[i]);
-			if(ent->client == NULL){
+			if(ent->client == nil){
 				continue;
 			}
 

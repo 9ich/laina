@@ -161,7 +161,7 @@ void TossClientCubes(gentity_t *self)
 	angles[PITCH] = 0;	// always forward
 	angles[ROLL] = 0;
 
-	AngleVectors(angles, velocity, NULL, NULL);
+	AngleVectors(angles, velocity, nil, nil);
 	VectorScale(velocity, 150, velocity);
 	velocity[2] += 200 + crandom() * 50;
 
@@ -205,7 +205,7 @@ void TossClientPersistantPowerups(gentity_t *ent)
 	trap_LinkEntity(powerup);
 
 	ent->client->ps.stats[STAT_PERSISTANT_POWERUP] = 0;
-	ent->client->persistantPowerup = NULL;
+	ent->client->persistantPowerup = nil;
 }
 #endif
 
@@ -378,7 +378,7 @@ void CheckAlmostCapture(gentity_t *self, gentity_t *attacker)
 				classname = "team_CTF_blueflag";
 			}
 		}
-		ent = NULL;
+		ent = nil;
 		do {
 			ent = G_Find(ent, FOFS(classname), classname);
 		} while(ent && (ent->flags & FL_DROPPED_ITEM));
@@ -414,7 +414,7 @@ void CheckAlmostScored(gentity_t *self, gentity_t *attacker)
 		}else{
 			classname = "team_blueobelisk";
 		}
-		ent = G_Find(NULL, FOFS(classname), classname);
+		ent = G_Find(nil, FOFS(classname), classname);
 		// if we found the destination obelisk
 		if(ent){
 			// if the player was *very* close
@@ -792,7 +792,7 @@ point		point at which the damage is being inflicted, used for headshots
 damage		amount of damage being inflicted
 knockback	force to be applied against targ as a result of the damage
 
-inflictor, attacker, dir, and point can be NULL for environmental effects
+inflictor, attacker, dir, and point can be nil for environmental effects
 
 dflags		these flags are used to control how T_Damage works
 	DAMAGE_RADIUS			damage was indirect (from a nearby explosion)
@@ -1219,7 +1219,7 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float 
 			// push the center of mass higher than the origin so players
 			// get knocked into the air more
 			dir[2] += 24;
-			G_Damage(ent, NULL, attacker, dir, origin, (int)points, DAMAGE_RADIUS, mod);
+			G_Damage(ent, nil, attacker, dir, origin, (int)points, DAMAGE_RADIUS, mod);
 		}
 	}
 

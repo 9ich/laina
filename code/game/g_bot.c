@@ -103,7 +103,7 @@ int G_ParseInfos(char *buf, int max, char *infos[])
 
 			token = COM_ParseExt(&buf, qfalse);
 			if(!token[0]){
-				strcpy(token, "<NULL>");
+				strcpy(token, "<nil>");
 			}
 			Info_SetValueForKey(info, key, token);
 		}
@@ -202,7 +202,7 @@ const char *G_GetArenaInfoByMap(const char *map)
 		}
 	}
 
-	return NULL;
+	return nil;
 }
 
 /*
@@ -765,9 +765,9 @@ static void G_SpawnBots(char *botList, int baseDelay)
 	int			delay;
 	char		bots[MAX_INFO_VALUE];
 
-	podium1 = NULL;
-	podium2 = NULL;
-	podium3 = NULL;
+	podium1 = nil;
+	podium2 = nil;
+	podium3 = nil;
 
 	skill = trap_Cvar_VariableValue("g_spSkill");
 	if(skill < 1){
@@ -890,7 +890,7 @@ char *G_GetBotInfoByNumber(int num)
 {
 	if(num < 0 || num >= g_numBots){
 		trap_Print(va(S_COLOR_RED "Invalid bot number: %i\n", num));
-		return NULL;
+		return nil;
 	}
 	return g_botInfos[num];
 }
@@ -913,7 +913,7 @@ char *G_GetBotInfoByName(const char *name)
 		}
 	}
 
-	return NULL;
+	return nil;
 }
 
 /*

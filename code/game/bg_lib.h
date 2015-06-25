@@ -33,11 +33,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 #endif
 
-#ifndef NULL
-#define NULL ((void *)0)
+#ifndef nil
+#define nil ((void *)0)
 #endif
 
-typedef unsigned int size_t;
+typedef uint size_t;
 
 typedef char   *va_list;
 #define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
@@ -48,17 +48,17 @@ typedef char   *va_list;
 #define CHAR_BIT      8             /* number of bits in a char */
 #define SCHAR_MAX     0x7f          /* maximum signed char value */
 #define SCHAR_MIN   (-SCHAR_MAX - 1) /* minimum signed char value */
-#define UCHAR_MAX     0xff          /* maximum unsigned char value */
+#define UCHAR_MAX     0xff          /* maximum uchar value */
 
 #define SHRT_MAX      0x7fff        /* maximum (signed) short value */
 #define SHRT_MIN    (-SHRT_MAX - 1) /* minimum (signed) short value */
-#define USHRT_MAX     0xffff        /* maximum unsigned short value */
+#define USHRT_MAX     0xffff        /* maximum ushort value */
 #define INT_MAX       0x7fffffff    /* maximum (signed) int value */
 #define INT_MIN     (-INT_MAX - 1)  /* minimum (signed) int value */
-#define UINT_MAX      0xffffffff    /* maximum unsigned int value */
+#define UINT_MAX      0xffffffff    /* maximum uint value */
 #define LONG_MAX      0x7fffffffL   /* maximum (signed) long value */
 #define LONG_MIN    (-LONG_MAX - 1) /* minimum (signed) long value */
-#define ULONG_MAX     0xffffffffUL  /* maximum unsigned long value */
+#define ULONG_MAX     0xffffffffUL  /* maximum ulong value */
 
 #define isalnum(c)  (isalpha(c) || isdigit(c))
 #define isalpha(c)  (isupper(c) || islower(c))

@@ -49,8 +49,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 typedef struct midrangearea_s
 {
 	int valid;
-	unsigned short starttime;
-	unsigned short goaltime;
+	ushort starttime;
+	ushort goaltime;
 } midrangearea_t;
 
 midrangearea_t *midrangeareas;
@@ -139,7 +139,7 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		//if the travel time from the start to the area is greater than the shortest goal travel time
 		if (starttime > (float) 1.1 * goaltraveltime) continue;
 		//travel time from the area to the goal area
-		goaltime = AAS_AreaTravelTimeToGoalArea(i, NULL, goalareanum, travelflags);
+		goaltime = AAS_AreaTravelTimeToGoalArea(i, nil, goalareanum, travelflags);
 		if (!goaltime) continue;
 		//if the travel time from the area to the goal is greater than the shortest goal travel time
 		if (goaltime > (float) 0.8 * goaltraveltime) continue;
@@ -222,9 +222,9 @@ void AAS_ShutdownAlternativeRouting(void)
 {
 #ifdef ENABLE_ALTROUTING
 	if (midrangeareas) FreeMemory(midrangeareas);
-	midrangeareas = NULL;
+	midrangeareas = nil;
 	if (clusterareas) FreeMemory(clusterareas);
-	clusterareas = NULL;
+	clusterareas = nil;
 	numclusterareas = 0;
 #endif
 }

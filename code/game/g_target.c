@@ -40,8 +40,8 @@ void Use_Target_Give(gentity_t *ent, gentity_t *other, gentity_t *activator)
 	}
 
 	memset(&trace, 0, sizeof(trace));
-	t = NULL;
-	while((t = G_Find(t, FOFS(targetname), ent->target)) != NULL){
+	t = nil;
+	while((t = G_Find(t, FOFS(targetname), ent->target)) != nil){
 		if(!t->item){
 			continue;
 		}
@@ -280,7 +280,7 @@ void target_laser_think(gentity_t *self)
 	// fire forward and see what we hit
 	VectorMA(self->s.origin, 2048, self->movedir, end);
 
-	trap_Trace(&tr, self->s.origin, NULL, NULL, end, self->s.number, CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE);
+	trap_Trace(&tr, self->s.origin, nil, nil, end, self->s.number, CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE);
 
 	if(tr.entityNum){
 		// hurt it if we can
@@ -323,7 +323,7 @@ void target_laser_start(gentity_t *self)
 	self->s.eType = ET_BEAM;
 
 	if(self->target){
-		ent = G_Find(NULL, FOFS(targetname), self->target);
+		ent = G_Find(nil, FOFS(targetname), self->target);
 		if(!ent){
 			G_Printf("%s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target);
 		}
@@ -424,7 +424,7 @@ Kills the activator.
 */
 void target_kill_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	G_Damage(activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+	G_Damage(activator, nil, nil, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 }
 
 void SP_target_kill(gentity_t *self)
@@ -450,7 +450,7 @@ static void target_location_linkup(gentity_t *ent)
 
 	level.locationLinked = qtrue;
 
-	level.locationHead = NULL;
+	level.locationHead = nil;
 
 	trap_SetConfigstring(CS_LOCATIONS, "unknown");
 

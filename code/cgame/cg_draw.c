@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // used for scoreboard
 extern displayContextDef_t cgDC;
-menuDef_t *menuScoreboard = NULL;
+menuDef_t *menuScoreboard = nil;
 #else
 int drawTeamOverlayModificationCount = -1;
 #endif
@@ -50,7 +50,7 @@ int CG_Text_Width(const char *text, float scale, int limit)
 	glyphInfo_t *glyph;
 	float useScale;
 // FIXME: see ui_main.c, same problem
-//	const unsigned char *s = text;
+//	const uchar *s = text;
 	const char *s = text;
 	fontInfo_t *font = &cgDC.Assets.textFont;
 	if(scale <= cg_smallFont.value){
@@ -88,7 +88,7 @@ int CG_Text_Height(const char *text, float scale, int limit)
 	glyphInfo_t *glyph;
 	float useScale;
 // TTimo: FIXME
-//	const unsigned char *s = text;
+//	const uchar *s = text;
 	const char *s = text;
 	fontInfo_t *font = &cgDC.Assets.textFont;
 	if(scale <= cg_smallFont.value){
@@ -145,7 +145,7 @@ void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text
 	useScale = scale * font->glyphScale;
 	if(text){
 // TTimo: FIXME
-//		const unsigned char *s = text;
+//		const uchar *s = text;
 		const char *s = text;
 		trap_R_SetColor(color);
 		memcpy(&newColor[0], &color[0], sizeof(vec4_t));
@@ -197,7 +197,7 @@ void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text
 				count++;
 			}
 		}
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 	}
 }
 
@@ -514,7 +514,7 @@ void CG_DrawTeamBackground(int x, int y, int w, int h, float alpha, int team)
 	}
 	trap_R_SetColor(hcolor);
 	CG_DrawPic(x, y, w, h, cgs.media.teamStatusBar);
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 /*
@@ -777,7 +777,7 @@ static float CG_DrawPowerups(float y)
 
 			t = ps->powerups[ sorted[i] ];
 			if(t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME){
-				trap_R_SetColor(NULL);
+				trap_R_SetColor(nil);
 			}else{
 				vec4_t	modulate;
 
@@ -799,7 +799,7 @@ static float CG_DrawPowerups(float y)
 			           size, size, trap_R_RegisterShader(item->icon));
 		}
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 
 	return y;
 }
@@ -846,7 +846,7 @@ static int CG_DrawPickupItem(int y)
 			trap_R_SetColor(fadeColor);
 			CG_DrawPic(8, y, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon);
 			CG_DrawBigString(ICON_SIZE + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_name, fadeColor[0]);
-			trap_R_SetColor(NULL);
+			trap_R_SetColor(nil);
 		}
 	}
 
@@ -922,7 +922,7 @@ static void CG_DrawTeamInfo(void)
 
 		trap_R_SetColor(hcolor);
 		CG_DrawPic(CHATLOC_X, CHATLOC_Y - h, 640, h, cgs.media.teamStatusBar);
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 
 		hcolor[0] = hcolor[1] = hcolor[2] = 1.0f;
 		hcolor[3] = 1.0f;
@@ -1046,7 +1046,7 @@ static void CG_DrawReward(void)
 			x += ICON_SIZE;
 		}
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 
@@ -1094,7 +1094,7 @@ CG_AddLagometerSnapshotInfo
 Each time a snapshot is received, log its ping time and
 the number of snapshots that were dropped before it.
 
-Pass NULL for a dropped packet.
+Pass nil for a dropped packet.
 ==============
 */
 void CG_AddLagometerSnapshotInfo(snapshot_t *snap)
@@ -1182,7 +1182,7 @@ static void CG_DrawLagometer(void)
 	y = 480 - 48;
 #endif
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 	CG_DrawPic(x, y, 48, 48, cgs.media.lagometerShader);
 
 	ax = x;
@@ -1257,7 +1257,7 @@ static void CG_DrawLagometer(void)
 		}
 	}
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 
 	if(cg_nopredict.integer || cg_synchronousClients.integer){
 		CG_DrawBigString(x, y, "snc", 1.0);
@@ -1372,7 +1372,7 @@ static void CG_DrawCenterString(void)
 		start++;
 	}
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 
@@ -1418,7 +1418,7 @@ static void CG_DrawCrosshair(void)
 		CG_ColorForHealth(hcolor);
 		trap_R_SetColor(hcolor);
 	}else{
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 	}
 
 	w = h = cg_crosshairSize.value;
@@ -1506,7 +1506,7 @@ static void CG_DrawCrosshair3D(void)
 	// let the trace run through until a change in stereo separation of the crosshair becomes less than one pixel.
 	maxdist = cgs.glconfig.vidWidth * stereoSep * zProj / (2 * xmax);
 	VectorMA(cg.refdef.vieworg, maxdist, cg.refdef.viewaxis[0], endpos);
-	CG_Trace(&trace, cg.refdef.vieworg, NULL, NULL, endpos, 0, MASK_SHOT);
+	CG_Trace(&trace, cg.refdef.vieworg, nil, nil, endpos, 0, MASK_SHOT);
 
 	memset(&ent, 0, sizeof(ent));
 	ent.reType = RT_SPRITE;
@@ -1587,7 +1587,7 @@ static void CG_DrawCrosshairNames(void)
 	// draw the name of the player being looked at
 	color = CG_FadeColor(cg.crosshairClientTime, 1000);
 	if(!color){
-		trap_R_SetColor(NULL);
+		trap_R_SetColor(nil);
 		return;
 	}
 
@@ -1600,7 +1600,7 @@ static void CG_DrawCrosshairNames(void)
 	w = CG_DrawStrlen(name) * BIGCHAR_WIDTH;
 	CG_DrawBigString(320 - w / 2, 170, name, color[3] * 0.5f);
 #endif
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 
@@ -1730,7 +1730,7 @@ static qboolean CG_DrawScoreboard(void)
 		}
 	}
 
-	if(menuScoreboard == NULL){
+	if(menuScoreboard == nil){
 		if(cgs.gametype >= GT_TEAM){
 			menuScoreboard = Menus_FindByName("teamscore_menu");
 		}else{
@@ -1845,8 +1845,8 @@ static void CG_DrawWarmup(void)
 
 	if(cgs.gametype == GT_TOURNAMENT){
 		// find the two active players
-		ci1 = NULL;
-		ci2 = NULL;
+		ci1 = nil;
+		ci2 = nil;
 		for(i = 0 ; i < cgs.maxclients ; i++){
 			if(cgs.clientinfo[i].infoValid && cgs.clientinfo[i].team == TEAM_FREE){
 				if(!ci1){

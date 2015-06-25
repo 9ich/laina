@@ -182,46 +182,46 @@ void AAS_DumpAASData(void)
 {
 	aasworld.numbboxes = 0;
 	if (aasworld.bboxes) FreeMemory(aasworld.bboxes);
-	aasworld.bboxes = NULL;
+	aasworld.bboxes = nil;
 	aasworld.numvertexes = 0;
 	if (aasworld.vertexes) FreeMemory(aasworld.vertexes);
-	aasworld.vertexes = NULL;
+	aasworld.vertexes = nil;
 	aasworld.numplanes = 0;
 	if (aasworld.planes) FreeMemory(aasworld.planes);
-	aasworld.planes = NULL;
+	aasworld.planes = nil;
 	aasworld.numedges = 0;
 	if (aasworld.edges) FreeMemory(aasworld.edges);
-	aasworld.edges = NULL;
+	aasworld.edges = nil;
 	aasworld.edgeindexsize = 0;
 	if (aasworld.edgeindex) FreeMemory(aasworld.edgeindex);
-	aasworld.edgeindex = NULL;
+	aasworld.edgeindex = nil;
 	aasworld.numfaces = 0;
 	if (aasworld.faces) FreeMemory(aasworld.faces);
-	aasworld.faces = NULL;
+	aasworld.faces = nil;
 	aasworld.faceindexsize = 0;
 	if (aasworld.faceindex) FreeMemory(aasworld.faceindex);
-	aasworld.faceindex = NULL;
+	aasworld.faceindex = nil;
 	aasworld.numareas = 0;
 	if (aasworld.areas) FreeMemory(aasworld.areas);
-	aasworld.areas = NULL;
+	aasworld.areas = nil;
 	aasworld.numareasettings = 0;
 	if (aasworld.areasettings) FreeMemory(aasworld.areasettings);
-	aasworld.areasettings = NULL;
+	aasworld.areasettings = nil;
 	aasworld.reachabilitysize = 0;
 	if (aasworld.reachability) FreeMemory(aasworld.reachability);
-	aasworld.reachability = NULL;
+	aasworld.reachability = nil;
 	aasworld.numnodes = 0;
 	if (aasworld.nodes) FreeMemory(aasworld.nodes);
-	aasworld.nodes = NULL;
+	aasworld.nodes = nil;
 	aasworld.numportals = 0;
 	if (aasworld.portals) FreeMemory(aasworld.portals);
-	aasworld.portals = NULL;
+	aasworld.portals = nil;
 	aasworld.numportals = 0;
 	if (aasworld.portalindex) FreeMemory(aasworld.portalindex);
-	aasworld.portalindex = NULL;
+	aasworld.portalindex = nil;
 	aasworld.portalindexsize = 0;
 	if (aasworld.clusters) FreeMemory(aasworld.clusters);
-	aasworld.clusters = NULL;
+	aasworld.clusters = nil;
 	aasworld.numclusters = 0;
 	aasworld.loaded = qfalse;
 	aasworld.initialized = qfalse;
@@ -297,7 +297,7 @@ char *AAS_LoadAASLump(fileHandle_t fp, int offset, int length, int *lastoffset, 
 			AAS_Error("can't seek to aas lump\n");
 			AAS_DumpAASData();
 			botimport.FS_FCloseFile(fp);
-			return NULL;
+			return nil;
 		}
 	}
 	//allocate memory
@@ -315,13 +315,13 @@ char *AAS_LoadAASLump(fileHandle_t fp, int offset, int length, int *lastoffset, 
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_DData(unsigned char *data, int size)
+void AAS_DData(uchar *data, int size)
 {
 	int i;
 
 	for (i = 0; i < size; i++)
 	{
-		data[i] ^= (unsigned char) i * 119;
+		data[i] ^= (uchar) i * 119;
 	}
 }
 //===========================================================================
@@ -367,7 +367,7 @@ int AAS_LoadAASFile(char *filename)
 	}
 	if (header.version == AASVERSION)
 	{
-		AAS_DData((unsigned char *) &header + 8, sizeof(aas_header_t) - 8);
+		AAS_DData((uchar *) &header + 8, sizeof(aas_header_t) - 8);
 	}
 	aasworld.bspchecksum = atoi(LibVarGetString( "sv_mapChecksum"));
 	if (LittleLong(header.bspchecksum) != aasworld.bspchecksum)
@@ -557,7 +557,7 @@ qboolean AAS_WriteAASFile(char *filename)
 		aasworld.numclusters * sizeof(aas_cluster_t))) return qfalse;
 	//rewrite the header with the added lumps
 	botimport.FS_Seek(fp, 0, FS_SEEK_SET);
-	AAS_DData((unsigned char *) &header + 8, sizeof(aas_header_t) - 8);
+	AAS_DData((uchar *) &header + 8, sizeof(aas_header_t) - 8);
 	botimport.FS_Write(&header, sizeof(aas_header_t), fp);
 	//close the file
 	botimport.FS_FCloseFile(fp);

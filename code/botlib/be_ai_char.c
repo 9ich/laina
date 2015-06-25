@@ -86,12 +86,12 @@ bot_character_t *BotCharacterFromHandle(int handle)
 	if (handle <= 0 || handle > MAX_CLIENTS)
 	{
 		botimport.Print(PRT_FATAL, "character handle %d out of range\n", handle);
-		return NULL;
+		return nil;
 	}
 	if (!botcharacters[handle])
 	{
 		botimport.Print(PRT_FATAL, "invalid character %d\n", handle);
-		return NULL;
+		return nil;
 	}
 	return botcharacters[handle];
 }
@@ -154,7 +154,7 @@ void BotFreeCharacter2(int handle)
 	}
 	BotFreeCharacterStrings(botcharacters[handle]);
 	FreeMemory(botcharacters[handle]);
-	botcharacters[handle] = NULL;
+	botcharacters[handle] = nil;
 }
 //========================================================================
 // Parameter:			-
@@ -215,7 +215,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 	if (!source)
 	{
 		botimport.Print(PRT_ERROR, "counldn't load %s\n", charfile);
-		return NULL;
+		return nil;
 	}
 	ch = (bot_character_t *) GetClearedMemory(sizeof(bot_character_t) +
 					MAX_CHARACTERISTICS * sizeof(bot_characteristic_t));
@@ -229,14 +229,14 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 				FreeSource(source);
 				BotFreeCharacterStrings(ch);
 				FreeMemory(ch);
-				return NULL;
+				return nil;
 			}
 			if (!PC_ExpectTokenString(source, "{"))
 			{
 				FreeSource(source);
 				BotFreeCharacterStrings(ch);
 				FreeMemory(ch);
-				return NULL;
+				return nil;
 			}
 			//if it's the correct skill
 			if (skill < 0 || token.intvalue == skill)
@@ -252,7 +252,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 						FreeSource(source);
 						BotFreeCharacterStrings(ch);
 						FreeMemory(ch);
-						return NULL;
+						return nil;
 					}
 					index = token.intvalue;
 					if (index < 0 || index > MAX_CHARACTERISTICS)
@@ -261,7 +261,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 						FreeSource(source);
 						BotFreeCharacterStrings(ch);
 						FreeMemory(ch);
-						return NULL;
+						return nil;
 					}
 					if (ch->c[index].type)
 					{
@@ -269,14 +269,14 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 						FreeSource(source);
 						BotFreeCharacterStrings(ch);
 						FreeMemory(ch);
-						return NULL;
+						return nil;
 					}
 					if (!PC_ExpectAnyToken(source, &token))
 					{
 						FreeSource(source);
 						BotFreeCharacterStrings(ch);
 						FreeMemory(ch);
-						return NULL;
+						return nil;
 					}
 					if (token.type == TT_NUMBER)
 					{
@@ -304,7 +304,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 						FreeSource(source);
 						BotFreeCharacterStrings(ch);
 						FreeMemory(ch);
-						return NULL;
+						return nil;
 					}
 				}
 				break;
@@ -319,7 +319,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 						FreeSource(source);
 						BotFreeCharacterStrings(ch);
 						FreeMemory(ch);
-						return NULL;
+						return nil;
 					}
 					if (!strcmp(token.string, "{")) indent++;
 					else if (!strcmp(token.string, "}")) indent--;
@@ -332,7 +332,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 			FreeSource(source);
 			BotFreeCharacterStrings(ch);
 			FreeMemory(ch);
-			return NULL;
+			return nil;
 		}
 	}
 	FreeSource(source);
@@ -340,7 +340,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 	{
 		BotFreeCharacterStrings(ch);
 		FreeMemory(ch);
-		return NULL;
+		return nil;
 	}
 	return ch;
 }
@@ -372,7 +372,7 @@ int BotFindCachedCharacter(char *charfile, float skill)
 int BotLoadCachedCharacter(char *charfile, float skill, int reload)
 {
 	int handle, cachedhandle, intskill;
-	bot_character_t *ch = NULL;
+	bot_character_t *ch = nil;
 #ifdef DEBUG
 	int starttime;
 

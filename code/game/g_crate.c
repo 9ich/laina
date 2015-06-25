@@ -37,7 +37,7 @@ void SP_crate(gentity_t *ent)
 			break;
 		}
 	}
-	if(ent->boxcontents == NULL)
+	if(ent->boxcontents == nil)
 		G_Printf(S_COLOR_YELLOW "WARNING: bad item %s in breakable_box\n", contents);
 	G_SpawnInt("count", "5", &ent->count);
 
@@ -116,7 +116,7 @@ static void crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 	vec3_t vel;
 	int i;
 	
-	if(self->boxcontents == NULL)
+	if(self->boxcontents == nil)
 		return;
 	for(i = 0; i < self->count; i++){
 		vel[0] = crandom()*BOX_CONTENTS_SPEED;
@@ -133,12 +133,12 @@ static void crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 
 static void crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
-	if(other->client == NULL)
+	if(other->client == nil)
 		return;
 	if(other->s.groundEntityNum != self->s.number)
 		return;
 	BG_Squish(&other->client->ps, &self->s);
-	self->use(self, NULL, other);
+	self->use(self, nil, other);
 }
 
 static void crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
@@ -154,17 +154,17 @@ static void crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *a
 
 static void crate_checkpoint_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
-	if(other->client == NULL)
+	if(other->client == nil)
 		return;
 	if(other->s.groundEntityNum != self->s.number)
 		return;
 	BG_Squish(&other->client->ps, &self->s);
-	self->use(self, NULL, other);
+	self->use(self, nil, other);
 }
 
 static void crate_bouncy_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
-	if(other->client == NULL)
+	if(other->client == nil)
 		return;
 	if(other->s.groundEntityNum != self->s.number)
 		return;

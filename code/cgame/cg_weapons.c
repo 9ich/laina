@@ -571,7 +571,7 @@ void CG_GrappleTrail(centity_t *ent, const weaponInfo_t *wi)
 	//FIXME adjust for muzzle position
 	VectorCopy(cg_entities[ ent->currentState.otherEntityNum ].lerpOrigin, beam.origin);
 	beam.origin[2] += 26;
-	AngleVectors(cg_entities[ ent->currentState.otherEntityNum ].lerpAngles, forward, NULL, up);
+	AngleVectors(cg_entities[ ent->currentState.otherEntityNum ].lerpAngles, forward, nil, up);
 	VectorMA(beam.origin, -6, up, beam.origin);
 	VectorCopy(origin, beam.oldorigin);
 
@@ -1007,12 +1007,12 @@ static void CG_LightningBolt(centity_t *cent, vec3_t origin)
 			}
 		}
 
-		AngleVectors(angle, forward, NULL, NULL);
+		AngleVectors(angle, forward, nil, nil);
 		VectorCopy(cent->lerpOrigin, muzzlePoint);
 //		VectorCopy(cg.refdef.vieworg, muzzlePoint );
 	}else{
 		// !CPMA
-		AngleVectors(cent->lerpAngles, forward, NULL, NULL);
+		AngleVectors(cent->lerpAngles, forward, nil, nil);
 		VectorCopy(cent->lerpOrigin, muzzlePoint);
 	}
 
@@ -1080,7 +1080,7 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ){
 
 	// find muzzle point for this frame
 	VectorCopy( cent->lerpOrigin, muzzlePoint );
-	AngleVectors( cent->lerpAngles, forward, NULL, NULL );
+	AngleVectors( cent->lerpAngles, forward, nil, nil );
 
 	// FIXME: crouch
 	muzzlePoint[2] += DEFAULT_VIEWHEIGHT;
@@ -1160,7 +1160,7 @@ static float	CG_MachinegunSpinAngle(centity_t *cent)
 		cent->pe.barrelSpinning = !!(cent->currentState.eFlags & EF_FIRING);
 #ifdef MISSIONPACK
 		if(cent->currentState.weapon == WP_CHAINGUN && !cent->pe.barrelSpinning){
-			trap_S_StartSound(NULL, cent->currentState.number, CHAN_WEAPON, trap_S_RegisterSound("sound/weapons/vulcan/wvulwind.wav", qfalse));
+			trap_S_StartSound(nil, cent->currentState.number, CHAN_WEAPON, trap_S_RegisterSound("sound/weapons/vulcan/wvulwind.wav", qfalse));
 		}
 #endif
 	}
@@ -1199,7 +1199,7 @@ static void CG_AddWeaponWithPowerups(refEntity_t *gun, int powerups)
 =============
 CG_AddPlayerWeapon
 
-Used for both the view weapon (ps is valid) and the world modelother character models (ps is NULL)
+Used for both the view weapon (ps is valid) and the world modelother character models (ps is nil)
 The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
@@ -1526,7 +1526,7 @@ void CG_DrawWeaponSelect(void)
 		}
 	}
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 
@@ -1723,7 +1723,7 @@ void CG_FireWeapon(centity_t *cent)
 
 	// play quad sound if needed
 	if(cent->currentState.powerups & (1 << PW_QUAD)){
-		trap_S_StartSound(NULL, cent->currentState.number, CHAN_ITEM, cgs.media.quadSound);
+		trap_S_StartSound(nil, cent->currentState.number, CHAN_ITEM, cgs.media.quadSound);
 	}
 
 	// play a sound
@@ -1735,7 +1735,7 @@ void CG_FireWeapon(centity_t *cent)
 	if(c > 0){
 		c = rand() % c;
 		if(weap->flashSound[c]){
-			trap_S_StartSound(NULL, ent->number, CHAN_WEAPON, weap->flashSound[c]);
+			trap_S_StartSound(nil, ent->number, CHAN_WEAPON, weap->flashSound[c]);
 		}
 	}
 
@@ -1997,7 +1997,7 @@ static void CG_ShotgunPellet(vec3_t start, vec3_t end, int skipNum)
 	trace_t		tr;
 	int sourceContentType, destContentType;
 
-	CG_Trace(&tr, start, NULL, NULL, end, skipNum, MASK_SHOT);
+	CG_Trace(&tr, start, nil, nil, end, skipNum, MASK_SHOT);
 
 	sourceContentType = CG_PointContents(start, 0);
 	destContentType = CG_PointContents(tr.endpos, 0);
@@ -2010,12 +2010,12 @@ static void CG_ShotgunPellet(vec3_t start, vec3_t end, int skipNum)
 	}else if(sourceContentType & CONTENTS_WATER){
 		trace_t trace;
 
-		trap_CM_BoxTrace(&trace, end, start, NULL, NULL, 0, CONTENTS_WATER);
+		trap_CM_BoxTrace(&trace, end, start, nil, nil, 0, CONTENTS_WATER);
 		CG_BubbleTrail(start, trace.endpos, 32);
 	}else if(destContentType & CONTENTS_WATER){
 		trace_t trace;
 
-		trap_CM_BoxTrace(&trace, start, end, NULL, NULL, 0, CONTENTS_WATER);
+		trap_CM_BoxTrace(&trace, start, end, nil, nil, 0, CONTENTS_WATER);
 		CG_BubbleTrail(tr.endpos, trace.endpos, 32);
 	}
 
@@ -2202,7 +2202,7 @@ static qboolean	CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 	if(entityNum == cg.snap->ps.clientNum){
 		VectorCopy(cg.snap->ps.origin, muzzle);
 		muzzle[2] += cg.snap->ps.viewheight;
-		AngleVectors(cg.snap->ps.viewangles, forward, NULL, NULL);
+		AngleVectors(cg.snap->ps.viewangles, forward, nil, nil);
 		VectorMA(muzzle, 14, forward, muzzle);
 		return qtrue;
 	}
@@ -2214,7 +2214,7 @@ static qboolean	CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle)
 
 	VectorCopy(cent->currentState.pos.trBase, muzzle);
 
-	AngleVectors(cent->currentState.apos.trBase, forward, NULL, NULL);
+	AngleVectors(cent->currentState.apos.trBase, forward, nil, nil);
 	anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
 	if(anim == LEGS_WALKCR || anim == LEGS_IDLECR){
 		muzzle[2] += CROUCH_VIEWHEIGHT;
@@ -2254,12 +2254,12 @@ void CG_Bullet(vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, i
 			}
 			// bubble trail from water into air
 			else if((sourceContentType & CONTENTS_WATER)){
-				trap_CM_BoxTrace(&trace, end, start, NULL, NULL, 0, CONTENTS_WATER);
+				trap_CM_BoxTrace(&trace, end, start, nil, nil, 0, CONTENTS_WATER);
 				CG_BubbleTrail(start, trace.endpos, 32);
 			}
 			// bubble trail from air into water
 			else if((destContentType & CONTENTS_WATER)){
-				trap_CM_BoxTrace(&trace, start, end, NULL, NULL, 0, CONTENTS_WATER);
+				trap_CM_BoxTrace(&trace, start, end, nil, nil, 0, CONTENTS_WATER);
 				CG_BubbleTrail(trace.endpos, end, 32);
 			}
 

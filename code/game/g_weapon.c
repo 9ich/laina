@@ -82,7 +82,7 @@ qboolean CheckGauntletAttack(gentity_t *ent)
 
 	VectorMA(muzzle, 32, forward, end);
 
-	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
+	trap_Trace(&tr, muzzle, nil, nil, end, ent->s.number, MASK_SHOT);
 	if(tr.surfaceFlags & SURF_NOIMPACT){
 		return qfalse;
 	}
@@ -189,7 +189,7 @@ void Bullet_Fire(gentity_t *ent, float spread, int damage, int mod)
 	passent = ent->s.number;
 	for(i = 0; i < 10; i++){
 
-		trap_Trace(&tr, muzzle, NULL, NULL, end, passent, MASK_SHOT);
+		trap_Trace(&tr, muzzle, nil, nil, end, passent, MASK_SHOT);
 		if(tr.surfaceFlags & SURF_NOIMPACT){
 			return;
 		}
@@ -284,7 +284,7 @@ qboolean ShotgunPellet(vec3_t start, vec3_t end, gentity_t *ent)
 	VectorCopy(start, tr_start);
 	VectorCopy(end, tr_end);
 	for(i = 0; i < 10; i++){
-		trap_Trace(&tr, tr_start, NULL, NULL, tr_end, passent, MASK_SHOT);
+		trap_Trace(&tr, tr_start, nil, nil, tr_end, passent, MASK_SHOT);
 		traceEnt = &g_entities[ tr.entityNum ];
 
 		// send bullet impact
@@ -472,7 +472,7 @@ void weapon_railgun_fire(gentity_t *ent)
 	hits = 0;
 	passent = ent->s.number;
 	do {
-		trap_Trace(&trace, muzzle, NULL, NULL, end, passent, MASK_SHOT);
+		trap_Trace(&trace, muzzle, nil, nil, end, passent, MASK_SHOT);
 		if(trace.entityNum >= ENTITYNUM_MAX_NORMAL){
 			break;
 		}
@@ -587,7 +587,7 @@ void Weapon_GrapplingHook_Fire(gentity_t *ent)
 
 void Weapon_HookFree(gentity_t *ent)
 {
-	ent->parent->client->hook = NULL;
+	ent->parent->client->hook = nil;
 	ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
 	G_FreeEntity(ent);
 }
@@ -633,7 +633,7 @@ void Weapon_LightningFire(gentity_t *ent)
 	for(i = 0; i < 10; i++){
 		VectorMA(muzzle, LIGHTNING_RANGE, forward, end);
 
-		trap_Trace(&tr, muzzle, NULL, NULL, end, passent, MASK_SHOT);
+		trap_Trace(&tr, muzzle, nil, nil, end, passent, MASK_SHOT);
 
 #ifdef MISSIONPACK
 		// if not the first trace (the lightning bounced of an invulnerability sphere)
@@ -967,7 +967,7 @@ static void KamikazeRadiusDamage(vec3_t origin, gentity_t *attacker, float damag
 		// push the center of mass higher than the origin so players
 		// get knocked into the air more
 		dir[2] += 24;
-		G_Damage(ent, NULL, attacker, dir, origin, damage, DAMAGE_RADIUS|DAMAGE_NO_TEAM_PROTECTION, MOD_KAMIKAZE);
+		G_Damage(ent, nil, attacker, dir, origin, damage, DAMAGE_RADIUS|DAMAGE_NO_TEAM_PROTECTION, MOD_KAMIKAZE);
 		ent->kamikazeTime = level.time + 3000;
 //		}
 	}
@@ -1026,7 +1026,7 @@ static void KamikazeShockWave(vec3_t origin, gentity_t *attacker, float damage, 
 //		if( CanDamage (ent, origin) ){
 		VectorSubtract(ent->r.currentOrigin, origin, dir);
 		dir[2] += 24;
-		G_Damage(ent, NULL, attacker, dir, origin, damage, DAMAGE_RADIUS|DAMAGE_NO_TEAM_PROTECTION, MOD_KAMIKAZE);
+		G_Damage(ent, nil, attacker, dir, origin, damage, DAMAGE_RADIUS|DAMAGE_NO_TEAM_PROTECTION, MOD_KAMIKAZE);
 		dir[2] = 0;
 		VectorNormalize(dir);
 		if(ent->client){
@@ -1136,7 +1136,7 @@ void G_StartKamikaze(gentity_t *ent)
 		explosion->activator = ent;
 		ent->s.eFlags &= ~EF_KAMIKAZE;
 		// nuke the guy that used it
-		G_Damage(ent, ent, ent, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_KAMIKAZE);
+		G_Damage(ent, ent, ent, nil, nil, 100000, DAMAGE_NO_PROTECTION, MOD_KAMIKAZE);
 	}else{
 		if(!strcmp(ent->activator->classname, "bodyque")){
 			explosion->activator = &g_entities[ent->activator->r.ownerNum];

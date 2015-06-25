@@ -58,7 +58,7 @@ void CG_FillRect(float x, float y, float width, float height, const float *color
 	CG_AdjustFrom640(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader);
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 /*
@@ -97,7 +97,7 @@ void CG_DrawRect(float x, float y, float width, float height, float size, const 
 	CG_DrawTopBottom(x, y, width, height, size);
 	CG_DrawSides(x, y, width, height, size);
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 
@@ -218,7 +218,7 @@ void CG_DrawStringExt(int x, int y, const char *string, const float *setColor,
 		cnt++;
 		s++;
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 void CG_DrawBigString(int x, int y, const char *s, float alpha)
@@ -345,13 +345,13 @@ float *CG_FadeColor(int startMsec, int totalMsec)
 	int			t;
 
 	if(startMsec == 0){
-		return NULL;
+		return nil;
 	}
 
 	t = cg.time - startMsec;
 
 	if(t >= totalMsec){
-		return NULL;
+		return nil;
 	}
 
 	// fade out
@@ -608,7 +608,7 @@ UI_DrawBannerString
 static void UI_DrawBannerString2(int x, int y, const char *str, vec4_t color)
 {
 	const char *s;
-	unsigned char	ch;
+	uchar	ch;
 	float	ax;
 	float	ay;
 	float	aw;
@@ -643,7 +643,7 @@ static void UI_DrawBannerString2(int x, int y, const char *str, vec4_t color)
 		s++;
 	}
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 void UI_DrawBannerString(int x, int y, const char *str, int style, vec4_t color)
@@ -717,7 +717,7 @@ int UI_ProportionalStringWidth(const char *str)
 static void UI_DrawProportionalString2(int x, int y, const char *str, vec4_t color, float sizeScale, qhandle_t charset)
 {
 	const char *s;
-	unsigned char	ch;
+	uchar	ch;
 	float	ax;
 	float	ay;
 	float	aw;
@@ -754,7 +754,7 @@ static void UI_DrawProportionalString2(int x, int y, const char *str, vec4_t col
 		s++;
 	}
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 /*

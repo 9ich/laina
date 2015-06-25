@@ -239,14 +239,14 @@ char *strchr(const char *string, int c)
 	}
 
 	if(c)
-		return NULL;
+		return nil;
 	else
 		return (char *) string;
 }
 
 char *strrchr(const char *string, int c)
 {
-	const char *found = NULL;
+	const char *found = nil;
 
 	while(*string){
 		if(*string == c)
@@ -1020,7 +1020,7 @@ double strtod(const char *nptr, char **endptr)
 	if(Q_stricmpn(nptr, "inf", 3) == 0){
 		floatint_t inf;
 		inf.ui = 0x7f800000;
-		if(endptr == NULL)
+		if(endptr == nil)
 			return inf.f;
 		if(Q_stricmpn(&nptr[3], "inity", 5) == 0)
 			*endptr = (char *)&nptr[8];
@@ -1353,7 +1353,7 @@ double fabs(double x)
  * snprintf() is used instead of sprintf() as it does limit checks
  * for string length.  This covers a nasty loophole.
  *
- * The other functions are there to prevent NULL pointers from
+ * The other functions are there to prevent nil pointers from
  * causing nast effects.
  *
  * More Recently:
@@ -1389,13 +1389,13 @@ double fabs(double x)
  *
  *  Russ Allbery <rra@stanford.edu> 2000-08-26
  *    fixed return value to comply with C99
- *    fixed handling of snprintf(NULL, ...)
+ *    fixed handling of snprintf(nil, ...)
  *
  *  Hrvoje Niksic <hniksic@arsdigita.com> 2000-11-04
  *    include <config.h> instead of "config.h".
  *    moved TEST_SNPRINTF stuff out of HAVE_SNPRINTF ifdef.
- *    include <stdio.h> for NULL.
- *    added support and test cases for long long.
+ *    include <stdio.h> for nil.
+ *    added support and test cases for vlong.
  *    don't declare argument types to (v)snprintf if stdarg is not used.
  *    use int instead of short int as 2nd arg to va_arg.
  *
@@ -1413,7 +1413,7 @@ double fabs(double x)
 
 #if (SIZEOF_LONG_LONG > 0)
 /* #ifdef HAVE_LONG_LONG */
-# define LLONG long long
+# define LLONG vlong
 #else
 # define LLONG long
 #endif
@@ -1600,26 +1600,26 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 			case 'o':
 				flags |= DP_F_UNSIGNED;
 				if(cflags == DP_C_SHORT)
-//	  value = (unsigned short int) va_arg (args, unsigned short int); // Thilo: This does not work because the rcc compiler cannot do that cast correctly.
-					value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);   // Using this workaround instead.
+//	  value = (ushort) va_arg (args, ushort); // Thilo: This does not work because the rcc compiler cannot do that cast correctly.
+					value = va_arg(args, uint) & ((1 << sizeof(ushort) * 8) - 1);   // Using this workaround instead.
 				else if(cflags == DP_C_LONG)
-					value = va_arg(args, unsigned long int);
+					value = va_arg(args, ulong);
 				else if(cflags == DP_C_LLONG)
 					value = va_arg(args, unsigned LLONG);
 				else
-					value = va_arg(args, unsigned int);
+					value = va_arg(args, uint);
 				total += fmtint(buffer, &currlen, maxlen, value, 8, min, max, flags);
 				break;
 			case 'u':
 				flags |= DP_F_UNSIGNED;
 				if(cflags == DP_C_SHORT)
-					value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+					value = va_arg(args, uint) & ((1 << sizeof(ushort) * 8) - 1);
 				else if(cflags == DP_C_LONG)
-					value = va_arg(args, unsigned long int);
+					value = va_arg(args, ulong);
 				else if(cflags == DP_C_LLONG)
 					value = va_arg(args, unsigned LLONG);
 				else
-					value = va_arg(args, unsigned int);
+					value = va_arg(args, uint);
 				total += fmtint(buffer, &currlen, maxlen, value, 10, min, max, flags);
 				break;
 			case 'X':
@@ -1627,13 +1627,13 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 			case 'x':
 				flags |= DP_F_UNSIGNED;
 				if(cflags == DP_C_SHORT)
-					value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1);
+					value = va_arg(args, uint) & ((1 << sizeof(ushort) * 8) - 1);
 				else if(cflags == DP_C_LONG)
-					value = va_arg(args, unsigned long int);
+					value = va_arg(args, ulong);
 				else if(cflags == DP_C_LLONG)
 					value = va_arg(args, unsigned LLONG);
 				else
-					value = va_arg(args, unsigned int);
+					value = va_arg(args, uint);
 				total += fmtint(buffer, &currlen, maxlen, value, 16, min, max, flags);
 				break;
 			case 'f':
@@ -1731,7 +1731,7 @@ static int fmtstr(char *buffer, size_t *currlen, size_t maxlen,
 	int total = 0;
 
 	if(value == 0){
-		value = "<NULL>";
+		value = "<nil>";
 	}
 
 	for(strln = 0; value[strln]; ++strln);  /* strlen */

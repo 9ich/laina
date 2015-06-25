@@ -937,7 +937,7 @@ static void Cmd_Say_f(gentity_t *ent, int mode, qboolean arg0)
 		p = ConcatArgs(1);
 	}
 
-	G_Say(ent, NULL, mode, p);
+	G_Say(ent, nil, mode, p);
 }
 
 /*
@@ -1062,7 +1062,7 @@ static void Cmd_Voice_f(gentity_t *ent, int mode, qboolean arg0, qboolean voiceo
 		p = ConcatArgs(1);
 	}
 
-	G_Voice(ent, NULL, mode, p, voiceonly);
+	G_Voice(ent, nil, mode, p, voiceonly);
 }
 
 /*
@@ -1128,7 +1128,7 @@ static void Cmd_VoiceTaunt_f(gentity_t *ent)
 		if(!(ent->r.svFlags & SVF_BOT)){
 			G_Voice(ent, ent,        SAY_TELL, VOICECHAT_DEATHINSULT, qfalse);
 		}
-		ent->enemy = NULL;
+		ent->enemy = nil;
 		return;
 	}
 	// insult someone you just killed
@@ -1175,7 +1175,7 @@ static void Cmd_VoiceTaunt_f(gentity_t *ent)
 	}
 
 	// just say something
-	G_Voice(ent, NULL, SAY_ALL, VOICECHAT_TAUNT, qfalse);
+	G_Voice(ent, nil, SAY_ALL, VOICECHAT_TAUNT, qfalse);
 }
 #endif
 
@@ -1636,7 +1636,7 @@ void Cmd_Stats_f(gentity_t *ent)
 	/*
 		int max, n, i;
 
-		max = trap_AAS_PointReachabilityAreaIndex( NULL );
+		max = trap_AAS_PointReachabilityAreaIndex( nil );
 
 		n = 0;
 		for ( i = 0; i < max; i++ ){

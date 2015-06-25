@@ -250,7 +250,7 @@ static void CG_OffsetThirdPersonView(void)
 	if(focusAngles[PITCH] > 45){
 		focusAngles[PITCH] = 45;		// don't go too far overhead
 	}
-	AngleVectors(focusAngles, forward, NULL, NULL);
+	AngleVectors(focusAngles, forward, nil, nil);
 
 	VectorMA(cg.refdef.vieworg, FOCUS_DISTANCE, forward, focusPoint);
 
@@ -436,7 +436,7 @@ static void CG_OffsetFirstPersonView(void)
 		vec3_t			forward, up;
 
 		cg.refdef.vieworg[2] -= NECK_LENGTH;
-		AngleVectors(cg.refdefViewAngles, forward, NULL, up);
+		AngleVectors(cg.refdefViewAngles, forward, nil, up);
 		VectorMA(cg.refdef.vieworg, 3, forward, cg.refdef.vieworg);
 		VectorMA(cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg);
 	}
@@ -723,7 +723,7 @@ static void CG_PowerupTimerSounds(void)
 			continue;
 		}
 		if((t - cg.time) / POWERUP_BLINK_TIME != (t - cg.oldTime) / POWERUP_BLINK_TIME){
-			trap_S_StartSound(NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound);
+			trap_S_StartSound(nil, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound);
 		}
 	}
 }

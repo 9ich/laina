@@ -245,7 +245,7 @@ static int propMapB[26][3] = {
 static void drawbannerstring2(int x, int y, const char *str, vec4_t color)
 {
 	const char *s;
-	unsigned char	ch;
+	uchar	ch;
 	float	ax;
 	float	ay;
 	float	aw;
@@ -280,7 +280,7 @@ static void drawbannerstring2(int x, int y, const char *str, vec4_t color)
 		s++;
 	}
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 /*
@@ -352,7 +352,7 @@ int propstrwidth(const char *str, int slicebegin, int sliceend)
 static void drawpropstr2(int x, int y, const char *str, vec4_t color, float sizeScale, qhandle_t charset)
 {
 	const char *s;
-	unsigned char	ch;
+	uchar	ch;
 	float	ax, ay, aw, ah;
 	float	frow, fcol, fwidth, fheight;
 
@@ -380,7 +380,7 @@ static void drawpropstr2(int x, int y, const char *str, vec4_t color, float size
 		ax += (aw + (float)PROP_GAP_WIDTH * uis.xscale * sizeScale);
 		s++;
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 float propstrsizescale(int style)
@@ -542,7 +542,7 @@ static void drawstr2(int x, int y, const char *str, vec4_t color, int charw, int
 		ax += aw;
 		s++;
 	}
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 void drawstr(int x, int y, const char *str, int style, vec4_t color)
@@ -786,7 +786,7 @@ void fillrect(float x, float y, float width, float height, const float *color)
 	adjustcoords(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 0, 0, uis.whiteShader);
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 void drawrect(float x, float y, float width, float height, const float *color)
@@ -800,7 +800,7 @@ void drawrect(float x, float y, float width, float height, const float *color)
 	trap_R_DrawStretchPic(x, y + height - 1, width, 1, 0, 0, 0, 0, uis.whiteShader);
 	trap_R_DrawStretchPic(x + width - 1, y, 1, height, 0, 0, 0, 0, uis.whiteShader);
 
-	trap_R_SetColor(NULL);
+	trap_R_SetColor(nil);
 }
 
 void setcolour(const float *rgba)
@@ -888,7 +888,7 @@ void refresh(int realtime)
 		drawfps();
 
 	// draw cursor
-	setcolour(NULL);
+	setcolour(nil);
 	drawpic(uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 
 #ifndef NDEBUG

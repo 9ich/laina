@@ -468,7 +468,7 @@ typedef struct {
 	int			latestSnapshotTime;	// the time from latestSnapshotNum, so we don't need to read the snapshot yet
 
 	snapshot_t	*snap;				// cg.snap->serverTime <= cg.time
-	snapshot_t	*nextSnap;			// cg.nextSnap->serverTime > cg.time, or NULL
+	snapshot_t	*nextSnap;			// cg.nextSnap->serverTime > cg.time, or nil
 	snapshot_t	activeSnapshots[2];
 
 	float		frameInterpolation;	// (float)( cg.time - cg.frame->serverTime ) / (cg.nextFrame->serverTime - cg.frame->serverTime)
@@ -1558,7 +1558,7 @@ void		trap_R_AddLightToScene(const vec3_t org, float intensity, float r, float g
 void		trap_R_AddAdditiveLightToScene(const vec3_t org, float intensity, float r, float g, float b);
 int			trap_R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
 void		trap_R_RenderScene(const refdef_t *fd);
-void		trap_R_SetColor(const float *rgba);	// NULL = 1,1,1,1
+void		trap_R_SetColor(const float *rgba);	// nil = 1,1,1,1
 void		trap_R_DrawStretchPic(float x, float y, float w, float h,
                                   float s1, float t1, float s2, float t2, qhandle_t hShader);
 void		trap_R_ModelBounds(clipHandle_t model, vec3_t mins, vec3_t maxs);

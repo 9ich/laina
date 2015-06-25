@@ -64,7 +64,7 @@ fielddef_t *FindField(fielddef_t *defs, char *name)
 	{
 		if (!strcmp(defs[i].name, name)) return &defs[i];
 	}
-	return NULL;
+	return nil;
 }
 //===========================================================================
 // Parameter:				-
@@ -165,12 +165,12 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 	//store the value
 	if ((fd->type & FT_TYPE) == FT_CHAR)
 	{
-		if (fd->type & FT_UNSIGNED) *(unsigned char *) p = (unsigned char) intval;
+		if (fd->type & FT_UNSIGNED) *(uchar *) p = (uchar) intval;
 		else *(char *) p = (char) intval;
 	}
 	else if ((fd->type & FT_TYPE) == FT_INT)
 	{
-		if (fd->type & FT_UNSIGNED) *(unsigned int *) p = (unsigned int) intval;
+		if (fd->type & FT_UNSIGNED) *(uint *) p = (uint) intval;
 		else *(int *) p = (int) intval;
 	}
 	else if ((fd->type & FT_TYPE) == FT_FLOAT)

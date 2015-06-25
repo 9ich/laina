@@ -140,7 +140,7 @@ static void CG_LoadHud_f(void)
 	}
 
 	CG_LoadMenus(hudSet);
-	menuScoreboard = NULL;
+	menuScoreboard = nil;
 }
 
 

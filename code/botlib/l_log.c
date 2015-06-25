@@ -90,7 +90,7 @@ void Log_Close(void)
 		botimport.Print(PRT_ERROR, "can't close log file %s\n", logfile.filename);
 		return;
 	}
-	logfile.fp = NULL;
+	logfile.fp = nil;
 	botimport.Print(PRT_MESSAGE, "Closed log %s\n", logfile.filename);
 }
 //===========================================================================

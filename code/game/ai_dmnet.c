@@ -345,7 +345,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 	if(bs->ltgtype == LTG_TEAMHELP && !retreat){
 		//check for bot typing status message
 		if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-			BotAI_BotInitialChat(bs, "help_start", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
+			BotAI_BotInitialChat(bs, "help_start", EasyClientName(bs->teammate, netname, sizeof(netname)), nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
 			trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
@@ -389,7 +389,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 	if(bs->ltgtype == LTG_TEAMACCOMPANY && !retreat){
 		//check for bot typing status message
 		if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-			BotAI_BotInitialChat(bs, "accompany_start", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
+			BotAI_BotInitialChat(bs, "accompany_start", EasyClientName(bs->teammate, netname, sizeof(netname)), nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
 			trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
@@ -397,7 +397,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		}
 		//if accompanying the companion for 3 minutes
 		if(bs->teamgoal_time < FloatTime()){
-			BotAI_BotInitialChat(bs, "accompany_stop", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
+			BotAI_BotInitialChat(bs, "accompany_stop", EasyClientName(bs->teammate, netname, sizeof(netname)), nil);
 			trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
 			bs->ltgtype = 0;
 		}
@@ -422,7 +422,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 							if(botinfo.origin[2] + botinfo.maxs[2] > entinfo.origin[2] + entinfo.mins[2] - 4 &&
 							        botinfo.origin[2] + botinfo.mins[2] < entinfo.origin[2] + entinfo.maxs[2] + 4){
 								// if the followed client looks in the direction of this bot
-								AngleVectors(entinfo.angles, dir, NULL, NULL);
+								AngleVectors(entinfo.angles, dir, nil, nil);
 								dir[2] = 0;
 								VectorNormalize(dir);
 								//VectorSubtract(entinfo.origin, entinfo.lastvisorigin, dir);
@@ -452,7 +452,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 					//if not arrived yet
 					if(!bs->arrive_time){
 						trap_EA_Gesture(bs->client);
-						BotAI_BotInitialChat(bs, "accompany_arrive", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
+						BotAI_BotInitialChat(bs, "accompany_arrive", EasyClientName(bs->teammate, netname, sizeof(netname)), nil);
 						trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
 						bs->arrive_time = FloatTime();
 					}
@@ -511,7 +511,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		memcpy(goal, &bs->teamgoal, sizeof(bot_goal_t));
 		//if the companion is NOT visible for too long
 		if(bs->teammatevisible_time < FloatTime() - 60){
-			BotAI_BotInitialChat(bs, "accompany_cannotfind", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
+			BotAI_BotInitialChat(bs, "accompany_cannotfind", EasyClientName(bs->teammate, netname, sizeof(netname)), nil);
 			trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
 			bs->ltgtype = 0;
 			// just to make sure the bot won't spam this message
@@ -531,7 +531,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		//check for bot typing status message
 		if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
 			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "defend_start", buf, NULL);
+			BotAI_BotInitialChat(bs, "defend_start", buf, nil);
 			trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 			BotVoiceChatOnly(bs, -1, VOICECHAT_ONDEFENSE);
 			bs->teammessage_time = 0;
@@ -541,7 +541,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		//stop after 2 minutes
 		if(bs->teamgoal_time < FloatTime()){
 			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "defend_stop", buf, NULL);
+			BotAI_BotInitialChat(bs, "defend_stop", buf, nil);
 			trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 			bs->ltgtype = 0;
 		}
@@ -563,13 +563,13 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		//check for bot typing status message
 		if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
 			EasyClientName(bs->teamgoal.entitynum, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "kill_start", buf, NULL);
+			BotAI_BotInitialChat(bs, "kill_start", buf, nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			bs->teammessage_time = 0;
 		}
 		if(bs->lastkilledplayer == bs->teamgoal.entitynum){
 			EasyClientName(bs->teamgoal.entitynum, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "kill_done", buf, NULL);
+			BotAI_BotInitialChat(bs, "kill_done", buf, nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			bs->lastkilledplayer = -1;
 			bs->ltgtype = 0;
@@ -585,7 +585,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		//check for bot typing status message
 		if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
 			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "getitem_start", buf, NULL);
+			BotAI_BotInitialChat(bs, "getitem_start", buf, nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
 			trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
@@ -599,12 +599,12 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		}
 		if(trap_BotItemGoalInVisButNotVisible(bs->entitynum, bs->eye, bs->viewangles, goal)){
 			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "getitem_notthere", buf, NULL);
+			BotAI_BotInitialChat(bs, "getitem_notthere", buf, nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			bs->ltgtype = 0;
 		}else if(BotReachedGoal(bs, goal)){
 			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "getitem_gotit", buf, NULL);
+			BotAI_BotInitialChat(bs, "getitem_gotit", buf, nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			bs->ltgtype = 0;
 		}
@@ -615,7 +615,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		//check for bot typing status message
 		if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
 			if(bs->ltgtype == LTG_CAMPORDER){
-				BotAI_BotInitialChat(bs, "camp_start", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
+				BotAI_BotInitialChat(bs, "camp_start", EasyClientName(bs->teammate, netname, sizeof(netname)), nil);
 				trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 				BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
 				trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
@@ -626,7 +626,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		memcpy(goal, &bs->teamgoal, sizeof(bot_goal_t));
 		if(bs->teamgoal_time < FloatTime()){
 			if(bs->ltgtype == LTG_CAMPORDER){
-				BotAI_BotInitialChat(bs, "camp_stop", NULL);
+				BotAI_BotInitialChat(bs, "camp_stop", nil);
 				trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			}
 			bs->ltgtype = 0;
@@ -637,7 +637,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 			//if not arrived yet
 			if(!bs->arrive_time){
 				if(bs->ltgtype == LTG_CAMPORDER){
-					BotAI_BotInitialChat(bs, "camp_arrive", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
+					BotAI_BotInitialChat(bs, "camp_arrive", EasyClientName(bs->teammate, netname, sizeof(netname)), nil);
 					trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 					BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_INPOSITION);
 				}
@@ -667,7 +667,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 			//make sure the bot is not gonna drown
 			if(trap_PointContents(bs->eye,bs->entitynum) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)){
 				if(bs->ltgtype == LTG_CAMPORDER){
-					BotAI_BotInitialChat(bs, "camp_stop", NULL);
+					BotAI_BotInitialChat(bs, "camp_stop", nil);
 					trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 					if(bs->lastgoal_ltgtype == LTG_CAMPORDER){
 						bs->lastgoal_ltgtype = 0;
@@ -690,7 +690,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 				strcat(buf, wp->name);
 				if(wp->next) strcat(buf, " to ");
 			}
-			BotAI_BotInitialChat(bs, "patrol_start", buf, NULL);
+			BotAI_BotInitialChat(bs, "patrol_start", buf, nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
 			trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
@@ -720,7 +720,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		}
 		//stop after 5 minutes
 		if(bs->teamgoal_time < FloatTime()){
-			BotAI_BotInitialChat(bs, "patrol_stop", NULL);
+			BotAI_BotInitialChat(bs, "patrol_stop", nil);
 			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
 			bs->ltgtype = 0;
 		}
@@ -737,7 +737,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		if(bs->ltgtype == LTG_GETFLAG){
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "captureflag_start", NULL);
+				BotAI_BotInitialChat(bs, "captureflag_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONGETFLAG);
 				bs->teammessage_time = 0;
@@ -809,7 +809,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		if(bs->ltgtype == LTG_RETURNFLAG){
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "returnflag_start", NULL);
+				BotAI_BotInitialChat(bs, "returnflag_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONRETURNFLAG);
 				bs->teammessage_time = 0;
@@ -841,7 +841,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		if(bs->ltgtype == LTG_GETFLAG){
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "captureflag_start", NULL);
+				BotAI_BotInitialChat(bs, "captureflag_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONGETFLAG);
 				bs->teammessage_time = 0;
@@ -890,7 +890,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		        bs->attackaway_time < FloatTime()){
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "attackenemybase_start", NULL);
+				BotAI_BotInitialChat(bs, "attackenemybase_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONOFFENSE);
 				bs->teammessage_time = 0;
@@ -920,7 +920,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		if(bs->ltgtype == LTG_RETURNFLAG){
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "returnflag_start", NULL);
+				BotAI_BotInitialChat(bs, "returnflag_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONRETURNFLAG);
 				bs->teammessage_time = 0;
@@ -937,7 +937,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "attackenemybase_start", NULL);
+				BotAI_BotInitialChat(bs, "attackenemybase_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONOFFENSE);
 				bs->teammessage_time = 0;
@@ -1011,7 +1011,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		        bs->attackaway_time < FloatTime()){
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "attackenemybase_start", NULL);
+				BotAI_BotInitialChat(bs, "attackenemybase_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONOFFENSE);
 				bs->teammessage_time = 0;
@@ -1042,7 +1042,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		        bs->harvestaway_time < FloatTime()){
 			//check for bot typing status message
 			if(bs->teammessage_time && bs->teammessage_time < FloatTime()){
-				BotAI_BotInitialChat(bs, "harvest_start", NULL);
+				BotAI_BotInitialChat(bs, "harvest_start", nil);
 				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotVoiceChatOnly(bs, -1, VOICECHAT_ONOFFENSE);
 				bs->teammessage_time = 0;
@@ -1079,13 +1079,13 @@ int BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 	//if the bot is leading someone and not retreating
 	if(bs->lead_time > 0 && !retreat){
 		if(bs->lead_time < FloatTime()){
-			BotAI_BotInitialChat(bs, "lead_stop", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), NULL);
+			BotAI_BotInitialChat(bs, "lead_stop", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), nil);
 			trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
 			bs->lead_time = 0;
 			return BotGetLongTermGoal(bs, tfl, retreat, goal);
 		}
 		if(bs->leadmessage_time < 0 && -bs->leadmessage_time < FloatTime()){
-			BotAI_BotInitialChat(bs, "followme", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), NULL);
+			BotAI_BotInitialChat(bs, "followme", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), nil);
 			trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
 			bs->leadmessage_time = FloatTime();
 		}
@@ -1116,7 +1116,7 @@ int BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 		//if backing up towards the team mate
 		if(bs->leadbackup_time > FloatTime()){
 			if(bs->leadmessage_time < FloatTime() - 20){
-				BotAI_BotInitialChat(bs, "followme", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), NULL);
+				BotAI_BotInitialChat(bs, "followme", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), nil);
 				trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
 				bs->leadmessage_time = FloatTime();
 			}
@@ -1131,7 +1131,7 @@ int BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal)
 			//if quite distant from the team mate
 			if(squaredist > Square(500)){
 				if(bs->leadmessage_time < FloatTime() - 20){
-					BotAI_BotInitialChat(bs, "followme", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), NULL);
+					BotAI_BotInitialChat(bs, "followme", EasyClientName(bs->lead_teammate, teammate, sizeof(teammate)), nil);
 					trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
 					bs->leadmessage_time = FloatTime();
 				}
@@ -1382,7 +1382,7 @@ void BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult)
 				if(bs->cur_ps.weapon == moveresult->weapon){
 					// if the bot is pretty close with its aim
 					if(InFieldOfVision(bs->viewangles, 20, moveresult->ideal_viewangles)){
-						BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, target, bs->entitynum, MASK_SHOT);
+						BotAI_Trace(&bsptrace, bs->eye, nil, nil, target, bs->entitynum, MASK_SHOT);
 						// if the mine is visible from the current position
 						if(bsptrace.fraction >= 1.0 || bsptrace.ent == state.number){
 							// shoot at the mine
@@ -1435,7 +1435,7 @@ void BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult)
 				if(bs->cur_ps.weapon == moveresult->weapon){
 					// if the bot is pretty close with its aim
 					if(InFieldOfVision(bs->viewangles, 20, moveresult->ideal_viewangles)){
-						BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, target, bs->entitynum, MASK_SHOT);
+						BotAI_Trace(&bsptrace, bs->eye, nil, nil, target, bs->entitynum, MASK_SHOT);
 						// if the mine is visible from the current position
 						if(bsptrace.fraction >= 1.0 || bsptrace.ent == state.number){
 							// shoot at the mine
@@ -1509,7 +1509,7 @@ int AINode_Seek_ActivateEntity(bot_state_t *bs)
 	targetvisible = qfalse;
 	// if the bot has to shoot at a target to activate something
 	if(bs->activatestack->shoot){
-		BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->activatestack->target, bs->entitynum, MASK_SHOT);
+		BotAI_Trace(&bsptrace, bs->eye, nil, nil, bs->activatestack->target, bs->entitynum, MASK_SHOT);
 		// if the shootable entity is visible from the current position
 		if(bsptrace.fraction >= 1.0 || bsptrace.ent == goal->entitynum){
 			targetvisible = qtrue;

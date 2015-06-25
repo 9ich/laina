@@ -196,8 +196,8 @@ void AAS_UnlinkCache(aas_routingcache_t *cache)
 	else aasworld.newestcache = cache->time_prev;
 	if (cache->time_prev) cache->time_prev->time_next = cache->time_next;
 	else aasworld.oldestcache = cache->time_next;
-	cache->time_next = NULL;
-	cache->time_prev = NULL;
+	cache->time_next = nil;
+	cache->time_prev = nil;
 }
 //===========================================================================
 // Parameter:			-
@@ -214,9 +214,9 @@ void AAS_LinkCache(aas_routingcache_t *cache)
 	else
 	{
 		aasworld.oldestcache = cache;
-		cache->time_prev = NULL;
+		cache->time_prev = nil;
 	}
-	cache->time_next = NULL;
+	cache->time_next = nil;
 	aasworld.newestcache = cache;
 }
 //===========================================================================
@@ -251,7 +251,7 @@ void AAS_RemoveRoutingCacheInCluster( int clusternum )
 			nextcache = cache->next;
 			AAS_FreeRoutingCache(cache);
 		}
-		aasworld.clusterareacache[clusternum][i] = NULL;
+		aasworld.clusterareacache[clusternum][i] = nil;
 	}
 }
 //===========================================================================
@@ -285,7 +285,7 @@ void AAS_RemoveRoutingCacheUsingArea( int areanum )
 			nextcache = cache->next;
 			AAS_FreeRoutingCache(cache);
 		}
-		aasworld.portalcache[i] = NULL;
+		aasworld.portalcache[i] = nil;
 	}
 }
 //===========================================================================
@@ -447,7 +447,7 @@ void AAS_CreateReversedReachability(void)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-unsigned short int AAS_AreaTravelTime(int areanum, vec3_t start, vec3_t end)
+ushort AAS_AreaTravelTime(int areanum, vec3_t start, vec3_t end)
 {
 	int intdist;
 	float dist;
@@ -488,20 +488,20 @@ void AAS_CalculateAreaTravelTimes(void)
 	//if there are still area travel times, free the memory
 	if (aasworld.areatraveltimes) FreeMemory(aasworld.areatraveltimes);
 	//get the total size of all the area travel times
-	size = aasworld.numareas * sizeof(unsigned short **);
+	size = aasworld.numareas * sizeof(ushort **);
 	for (i = 0; i < aasworld.numareas; i++)
 	{
 		revreach = &aasworld.reversedreachability[i];
 		//settings of the area
 		settings = &aasworld.areasettings[i];
-		size += settings->numreachableareas * sizeof(unsigned short *);
+		size += settings->numreachableareas * sizeof(ushort *);
 		size += settings->numreachableareas *
-			PAD(revreach->numlinks, sizeof(long)) * sizeof(unsigned short);
+			PAD(revreach->numlinks, sizeof(long)) * sizeof(ushort);
 	}
 	//allocate memory for the area travel times
 	ptr = (char *) GetClearedMemory(size);
-	aasworld.areatraveltimes = (unsigned short ***) ptr;
-	ptr += aasworld.numareas * sizeof(unsigned short **);
+	aasworld.areatraveltimes = (ushort ***) ptr;
+	ptr += aasworld.numareas * sizeof(ushort **);
 	//calcluate the travel times for all the areas
 	for (i = 0; i < aasworld.numareas; i++)
 	{
@@ -509,12 +509,12 @@ void AAS_CalculateAreaTravelTimes(void)
 		revreach = &aasworld.reversedreachability[i];
 		//settings of the area
 		settings = &aasworld.areasettings[i];
-		aasworld.areatraveltimes[i] = (unsigned short **) ptr;
-		ptr += settings->numreachableareas * sizeof(unsigned short *);
+		aasworld.areatraveltimes[i] = (ushort **) ptr;
+		ptr += settings->numreachableareas * sizeof(ushort *);
 		for (l = 0; l < settings->numreachableareas; l++)
 		{
-			aasworld.areatraveltimes[i][l] = (unsigned short *) ptr;
-			ptr += PAD(revreach->numlinks, sizeof(long)) * sizeof(unsigned short);
+			aasworld.areatraveltimes[i][l] = (ushort *) ptr;
+			ptr += PAD(revreach->numlinks, sizeof(long)) * sizeof(ushort);
 			//reachability link
 			reach = &aasworld.reachability[settings->firstreachablearea + l];
 			for (n = 0, revlink = revreach->first; revlink; revlink = revlink->next, n++)
@@ -593,7 +593,7 @@ int AAS_FreeOldestCache(void)
 
 	freed = qfalse;
 	besttime = 999999999;
-	bestcache = NULL;
+	bestcache = nil;
 	bestcluster = 0;
 	bestarea = 0;
 	//refresh cluster cache
@@ -626,7 +626,7 @@ int AAS_FreeOldestCache(void)
 		freed = qtrue;
 	}
 	besttime = 999999999;
-	bestcache = NULL;
+	bestcache = nil;
 	bestarea = 0;
 	for (i = 0; i < aasworld.numareas; i++)
 	{
@@ -702,12 +702,12 @@ aas_routingcache_t *AAS_AllocRoutingCache(int numtraveltimes)
 	int size;
 
 	size = sizeof(aas_routingcache_t)
-						+ numtraveltimes * sizeof(unsigned short int)
-						+ numtraveltimes * sizeof(unsigned char);
+						+ numtraveltimes * sizeof(ushort)
+						+ numtraveltimes * sizeof(uchar);
 	routingcachesize += size;
 	cache = (aas_routingcache_t *) GetClearedMemory(size);
-	cache->reachabilities = (unsigned char *) cache + sizeof(aas_routingcache_t)
-								+ numtraveltimes * sizeof(unsigned short int);
+	cache->reachabilities = (uchar *) cache + sizeof(aas_routingcache_t)
+								+ numtraveltimes * sizeof(ushort);
 	cache->size = size;
 	return cache;
 }
@@ -735,12 +735,12 @@ void AAS_FreeAllClusterAreaCache(void)
 				nextcache = cache->next;
 				AAS_FreeRoutingCache(cache);
 			}
-			aasworld.clusterareacache[i][j] = NULL;
+			aasworld.clusterareacache[i][j] = nil;
 		}
 	}
 	//free the cluster cache array
 	FreeMemory(aasworld.clusterareacache);
-	aasworld.clusterareacache = NULL;
+	aasworld.clusterareacache = nil;
 }
 //===========================================================================
 // Parameter:			-
@@ -789,10 +789,10 @@ void AAS_FreeAllPortalCache(void)
 			nextcache = cache->next;
 			AAS_FreeRoutingCache(cache);
 		}
-		aasworld.portalcache[i] = NULL;
+		aasworld.portalcache[i] = nil;
 	}
 	FreeMemory(aasworld.portalcache);
-	aasworld.portalcache = NULL;
+	aasworld.portalcache = nil;
 }
 //===========================================================================
 // Parameter:				-
@@ -926,8 +926,8 @@ void AAS_WriteRouteCache(void)
 	routecacheheader.version = RCVERSION;
 	routecacheheader.numareas = aasworld.numareas;
 	routecacheheader.numclusters = aasworld.numclusters;
-	routecacheheader.areacrc = CRC_ProcessString( (unsigned char *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas );
-	routecacheheader.clustercrc = CRC_ProcessString( (unsigned char *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters );
+	routecacheheader.areacrc = CRC_ProcessString( (uchar *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas );
+	routecacheheader.clustercrc = CRC_ProcessString( (uchar *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters );
 	routecacheheader.numportalcache = numportalcache;
 	routecacheheader.numareacache = numareacache;
 	//write the header
@@ -986,9 +986,9 @@ aas_routingcache_t *AAS_ReadCache(fileHandle_t fp)
 	botimport.FS_Read(&size, sizeof(size), fp);
 	cache = (aas_routingcache_t *) GetMemory(size);
 	cache->size = size;
-	botimport.FS_Read((unsigned char *)cache + sizeof(size), size - sizeof(size), fp);
-	cache->reachabilities = (unsigned char *) cache + sizeof(aas_routingcache_t) - sizeof(unsigned short) +
-		(size - sizeof(aas_routingcache_t) + sizeof(unsigned short)) / 3 * 2;
+	botimport.FS_Read((uchar *)cache + sizeof(size), size - sizeof(size), fp);
+	cache->reachabilities = (uchar *) cache + sizeof(aas_routingcache_t) - sizeof(ushort) +
+		(size - sizeof(aas_routingcache_t) + sizeof(ushort)) / 3 * 2;
 	return cache;
 }
 //===========================================================================
@@ -1032,13 +1032,13 @@ int AAS_ReadRouteCache(void)
 		return qfalse;
 	}
 	if (routecacheheader.areacrc !=
-		CRC_ProcessString( (unsigned char *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas ))
+		CRC_ProcessString( (uchar *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas ))
 	{
 		//AAS_Error("route cache dump area CRC incorrect\n");
 		return qfalse;
 	}
 	if (routecacheheader.clustercrc !=
-		CRC_ProcessString( (unsigned char *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters ))
+		CRC_ProcessString( (uchar *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters ))
 	{
 		//AAS_Error("route cache dump cluster CRC incorrect\n");
 		return qfalse;
@@ -1048,7 +1048,7 @@ int AAS_ReadRouteCache(void)
 	{
 		cache = AAS_ReadCache(fp);
 		cache->next = aasworld.portalcache[cache->areanum];
-		cache->prev = NULL;
+		cache->prev = nil;
 		if (aasworld.portalcache[cache->areanum])
 			aasworld.portalcache[cache->areanum]->prev = cache;
 		aasworld.portalcache[cache->areanum] = cache;
@@ -1059,7 +1059,7 @@ int AAS_ReadRouteCache(void)
 		cache = AAS_ReadCache(fp);
 		clusterareanum = AAS_ClusterAreaNum(cache->cluster, cache->areanum);
 		cache->next = aasworld.clusterareacache[cache->cluster][clusterareanum];
-		cache->prev = NULL;
+		cache->prev = nil;
 		if (aasworld.clusterareacache[cache->cluster][clusterareanum])
 			aasworld.clusterareacache[cache->cluster][clusterareanum]->prev = cache;
 		aasworld.clusterareacache[cache->cluster][clusterareanum] = cache;
@@ -1115,15 +1115,15 @@ void AAS_InitReachabilityAreas(void)
 			case TRAVEL_WATERJUMP:
 				VectorCopy(reach->start, end);
 				end[2] = reach->end[2];
-				numareas = AAS_TraceAreas(reach->start, end, areas, NULL, MAX_REACHABILITYPASSAREAS);
+				numareas = AAS_TraceAreas(reach->start, end, areas, nil, MAX_REACHABILITYPASSAREAS);
 				break;
 			case TRAVEL_WALKOFFLEDGE:
 				VectorCopy(reach->end, start);
 				start[2] = reach->start[2];
-				numareas = AAS_TraceAreas(start, reach->end, areas, NULL, MAX_REACHABILITYPASSAREAS);
+				numareas = AAS_TraceAreas(start, reach->end, areas, nil, MAX_REACHABILITYPASSAREAS);
 				break;
 			case TRAVEL_GRAPPLEHOOK:
-				numareas = AAS_TraceAreas(reach->start, reach->end, areas, NULL, MAX_REACHABILITYPASSAREAS);
+				numareas = AAS_TraceAreas(reach->start, reach->end, areas, nil, MAX_REACHABILITYPASSAREAS);
 				break;
 
 			//trace arch
@@ -1198,27 +1198,27 @@ void AAS_FreeRoutingCaches(void)
 	AAS_FreeAllPortalCache();
 	// free cached travel times within areas
 	if (aasworld.areatraveltimes) FreeMemory(aasworld.areatraveltimes);
-	aasworld.areatraveltimes = NULL;
+	aasworld.areatraveltimes = nil;
 	// free cached maximum travel time through cluster portals
 	if (aasworld.portalmaxtraveltimes) FreeMemory(aasworld.portalmaxtraveltimes);
-	aasworld.portalmaxtraveltimes = NULL;
+	aasworld.portalmaxtraveltimes = nil;
 	// free reversed reachability links
 	if (aasworld.reversedreachability) FreeMemory(aasworld.reversedreachability);
-	aasworld.reversedreachability = NULL;
+	aasworld.reversedreachability = nil;
 	// free routing algorithm memory
 	if (aasworld.areaupdate) FreeMemory(aasworld.areaupdate);
-	aasworld.areaupdate = NULL;
+	aasworld.areaupdate = nil;
 	if (aasworld.portalupdate) FreeMemory(aasworld.portalupdate);
-	aasworld.portalupdate = NULL;
+	aasworld.portalupdate = nil;
 	// free lists with areas the reachabilities go through
 	if (aasworld.reachabilityareas) FreeMemory(aasworld.reachabilityareas);
-	aasworld.reachabilityareas = NULL;
+	aasworld.reachabilityareas = nil;
 	// free the reachability area index
 	if (aasworld.reachabilityareaindex) FreeMemory(aasworld.reachabilityareaindex);
-	aasworld.reachabilityareaindex = NULL;
+	aasworld.reachabilityareaindex = nil;
 	// free area contents travel flags look up table
 	if (aasworld.areacontentstravelflags) FreeMemory(aasworld.areacontentstravelflags);
-	aasworld.areacontentstravelflags = NULL;
+	aasworld.areacontentstravelflags = nil;
 }
 //===========================================================================
 // update the given routing cache
@@ -1230,7 +1230,7 @@ void AAS_UpdateAreaRoutingCache(aas_routingcache_t *areacache)
 {
 	int i, nextareanum, cluster, badtravelflags, clusterareanum, linknum;
 	int numreachabilityareas;
-	unsigned short int t, startareatraveltimes[128]; //NOTE: not more than 128 reachabilities per area allowed
+	ushort t, startareatraveltimes[128]; //NOTE: not more than 128 reachabilities per area allowed
 	aas_routingupdate_t *updateliststart, *updatelistend, *curupdate, *nextupdate;
 	aas_reachability_t *reach;
 	aas_reversedreachability_t *revreach;
@@ -1255,16 +1255,16 @@ void AAS_UpdateAreaRoutingCache(aas_routingcache_t *areacache)
 	curupdate->tmptraveltime = areacache->starttraveltime;
 	areacache->traveltimes[clusterareanum] = areacache->starttraveltime;
 	//put the area to start with in the current read list
-	curupdate->next = NULL;
-	curupdate->prev = NULL;
+	curupdate->next = nil;
+	curupdate->prev = nil;
 	updateliststart = curupdate;
 	updatelistend = curupdate;
 	//while there are updates in the current list
 	while (updateliststart)
 	{
 		curupdate = updateliststart;
-		if (curupdate->next) curupdate->next->prev = NULL;
-		else updatelistend = NULL;
+		if (curupdate->next) curupdate->next->prev = nil;
+		else updatelistend = nil;
 		updateliststart = curupdate->next;
 		curupdate->inlist = qfalse;
 		//check all reversed reachability links
@@ -1310,7 +1310,7 @@ void AAS_UpdateAreaRoutingCache(aas_routingcache_t *areacache)
 					// we add the update to the end of the list
 					// we could also use a B+ tree to have a real sorted list
 					// on travel time which makes for faster routing updates
-					nextupdate->next = NULL;
+					nextupdate->next = nil;
 					nextupdate->prev = updatelistend;
 					if (updatelistend) updatelistend->next = nextupdate;
 					else updateliststart = nextupdate;
@@ -1350,7 +1350,7 @@ aas_routingcache_t *AAS_GetAreaRoutingCache(int clusternum, int areanum, int tra
 		VectorCopy(aasworld.areas[areanum].center, cache->origin);
 		cache->starttraveltime = 1;
 		cache->travelflags = travelflags;
-		cache->prev = NULL;
+		cache->prev = nil;
 		cache->next = clustercache;
 		if (clustercache) clustercache->prev = cache;
 		aasworld.clusterareacache[clusternum][clusterareanum] = cache;
@@ -1374,7 +1374,7 @@ aas_routingcache_t *AAS_GetAreaRoutingCache(int clusternum, int areanum, int tra
 void AAS_UpdatePortalRoutingCache(aas_routingcache_t *portalcache)
 {
 	int i, portalnum, clusterareanum, clusternum;
-	unsigned short int t;
+	ushort t;
 	aas_portal_t *portal;
 	aas_cluster_t *cluster;
 	aas_routingcache_t *cache;
@@ -1396,8 +1396,8 @@ void AAS_UpdatePortalRoutingCache(aas_routingcache_t *portalcache)
 		portalcache->traveltimes[-clusternum] = portalcache->starttraveltime;
 	}
 	//put the area to start with in the current read list
-	curupdate->next = NULL;
-	curupdate->prev = NULL;
+	curupdate->next = nil;
+	curupdate->prev = nil;
 	updateliststart = curupdate;
 	updatelistend = curupdate;
 	//while there are updates in the current list
@@ -1405,8 +1405,8 @@ void AAS_UpdatePortalRoutingCache(aas_routingcache_t *portalcache)
 	{
 		curupdate = updateliststart;
 		//remove the current update from the list
-		if (curupdate->next) curupdate->next->prev = NULL;
-		else updatelistend = NULL;
+		if (curupdate->next) curupdate->next->prev = nil;
+		else updatelistend = nil;
 		updateliststart = curupdate->next;
 		//current update is removed from the list
 		curupdate->inlist = qfalse;
@@ -1446,7 +1446,7 @@ void AAS_UpdatePortalRoutingCache(aas_routingcache_t *portalcache)
 					// we add the update to the end of the list
 					// we could also use a B+ tree to have a real sorted list
 					// on travel time which makes for faster routing updates
-					nextupdate->next = NULL;
+					nextupdate->next = nil;
 					nextupdate->prev = updatelistend;
 					if (updatelistend) updatelistend->next = nextupdate;
 					else updateliststart = nextupdate;
@@ -1481,7 +1481,7 @@ aas_routingcache_t *AAS_GetPortalRoutingCache(int clusternum, int areanum, int t
 		cache->starttraveltime = 1;
 		cache->travelflags = travelflags;
 		//add the cache to the cache list
-		cache->prev = NULL;
+		cache->prev = nil;
 		cache->next = aasworld.portalcache[areanum];
 		if (aasworld.portalcache[areanum]) aasworld.portalcache[areanum]->prev = cache;
 		aasworld.portalcache[areanum] = cache;
@@ -1506,7 +1506,7 @@ aas_routingcache_t *AAS_GetPortalRoutingCache(int clusternum, int areanum, int t
 int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int travelflags, int *traveltime, int *reachnum)
 {
 	int clusternum, goalclusternum, portalnum, i, clusterareanum, bestreachnum;
-	unsigned short int t, besttime;
+	ushort t, besttime;
 	aas_portal_t *portal;
 	aas_cluster_t *cluster;
 	aas_routingcache_t *areacache, *portalcache;
@@ -1976,8 +1976,8 @@ float DistancePointToLine(vec3_t v1, vec3_t v2, vec3_t point)
 int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags)
 {
 	int i, j, nextareanum, badtravelflags, numreach, bestarea;
-	unsigned short int t, besttraveltime;
-	static unsigned short int *hidetraveltimes;
+	ushort t, besttraveltime;
+	static ushort *hidetraveltimes;
 	aas_routingupdate_t *updateliststart, *updatelistend, *curupdate, *nextupdate;
 	aas_reachability_t *reach;
 	float dist1, dist2;
@@ -1986,11 +1986,11 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 
 	if (!hidetraveltimes)
 	{
-		hidetraveltimes = (unsigned short int *) GetClearedMemory(aasworld.numareas * sizeof(unsigned short int));
+		hidetraveltimes = (ushort *) GetClearedMemory(aasworld.numareas * sizeof(ushort));
 	}
 	else
 	{
-		Com_Memset(hidetraveltimes, 0, aasworld.numareas * sizeof(unsigned short int));
+		Com_Memset(hidetraveltimes, 0, aasworld.numareas * sizeof(ushort));
 	}
 	besttraveltime = 0;
 	bestarea = 0;
@@ -2003,16 +2003,16 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 	curupdate->areatraveltimes = aasworld.areatraveltimes[areanum][0];
 	curupdate->tmptraveltime = 0;
 	//put the area to start with in the current read list
-	curupdate->next = NULL;
-	curupdate->prev = NULL;
+	curupdate->next = nil;
+	curupdate->prev = nil;
 	updateliststart = curupdate;
 	updatelistend = curupdate;
 	//while there are updates in the list
 	while (updateliststart)
 	{
 		curupdate = updateliststart;
-		if (curupdate->next) curupdate->next->prev = NULL;
-		else updatelistend = NULL;
+		if (curupdate->next) curupdate->next->prev = nil;
+		else updatelistend = nil;
 		updateliststart = curupdate->next;
 		curupdate->inlist = qfalse;
 		//check all reversed reachability links
@@ -2080,7 +2080,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 				if (!nextupdate->inlist)
 				{
 					//add the new update to the end of the list
-					nextupdate->next = NULL;
+					nextupdate->next = nil;
 					nextupdate->prev = updatelistend;
 					if (updatelistend) updatelistend->next = nextupdate;
 					else updateliststart = nextupdate;

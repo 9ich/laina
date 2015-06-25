@@ -838,7 +838,7 @@ void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3]
 	else angles[PITCH] = 0;
 	angles[YAW] = bi->viewangles[YAW];
 	angles[ROLL] = 0;
-	AngleVectors(angles, forward, right, NULL);
+	AngleVectors(angles, forward, right, nil);
 	//bot input speed is in the range [0, 400]
 	bi->speed = bi->speed * 127 / 400;
 	//set the view independent movement
@@ -1459,32 +1459,32 @@ int BotAIStartFrame(int time)
 		for(i = 0; i < MAX_GENTITIES; i++){
 			ent = &g_entities[i];
 			if(!ent->inuse){
-				trap_BotLibUpdateEntity(i, NULL);
+				trap_BotLibUpdateEntity(i, nil);
 				continue;
 			}
 			if(!ent->r.linked){
-				trap_BotLibUpdateEntity(i, NULL);
+				trap_BotLibUpdateEntity(i, nil);
 				continue;
 			}
 			if(ent->r.svFlags & SVF_NOCLIENT){
-				trap_BotLibUpdateEntity(i, NULL);
+				trap_BotLibUpdateEntity(i, nil);
 				continue;
 			}
 			// do not update missiles
 			if(ent->s.eType == ET_MISSILE && ent->s.weapon != WP_GRAPPLING_HOOK){
-				trap_BotLibUpdateEntity(i, NULL);
+				trap_BotLibUpdateEntity(i, nil);
 				continue;
 			}
 			// do not update event only entities
 			if(ent->s.eType > ET_EVENTS){
-				trap_BotLibUpdateEntity(i, NULL);
+				trap_BotLibUpdateEntity(i, nil);
 				continue;
 			}
 #ifdef MISSIONPACK
 			// never link prox mine triggers
 			if(ent->r.contents == CONTENTS_TRIGGER){
 				if(ent->touch == ProximityMine_Trigger){
-					trap_BotLibUpdateEntity(i, NULL);
+					trap_BotLibUpdateEntity(i, nil);
 					continue;
 				}
 			}

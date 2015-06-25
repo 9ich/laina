@@ -48,7 +48,7 @@ void UpdateTournamentInfo(void)
 	char		msg[MAX_STRING_CHARS];
 
 	// find the real player
-	player = NULL;
+	player = nil;
 	for(i = 0; i < level.maxclients; i++){
 		player = &g_entities[i];
 		if(!player->inuse){
@@ -140,7 +140,7 @@ static gentity_t *SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_
 	body = G_Spawn();
 	if(!body){
 		G_Printf(S_COLOR_RED "ERROR: out of gentities\n");
-		return NULL;
+		return nil;
 	}
 
 	body->classname = ent->client->pers.netname;
@@ -237,7 +237,7 @@ static void PodiumPlacementThink(gentity_t *podium)
 
 	podium->nextthink = level.time + 100;
 
-	AngleVectors(level.intermission_angle, vec, NULL, NULL);
+	AngleVectors(level.intermission_angle, vec, nil, nil);
 	VectorMA(level.intermission_origin, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
 	origin[2] -= trap_Cvar_VariableIntegerValue("g_podiumDrop");
 	G_SetOrigin(podium, origin);
@@ -294,7 +294,7 @@ static gentity_t *SpawnPodium(void)
 
 	podium = G_Spawn();
 	if(!podium){
-		return NULL;
+		return nil;
 	}
 
 	podium->classname = "podium";
@@ -304,7 +304,7 @@ static gentity_t *SpawnPodium(void)
 	podium->r.contents = CONTENTS_SOLID;
 	podium->s.modelindex = G_ModelIndex(SP_PODIUM_MODEL);
 
-	AngleVectors(level.intermission_angle, vec, NULL, NULL);
+	AngleVectors(level.intermission_angle, vec, nil, nil);
 	VectorMA(level.intermission_origin, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
 	origin[2] -= trap_Cvar_VariableIntegerValue("g_podiumDrop");
 	G_SetOrigin(podium, origin);
@@ -329,9 +329,9 @@ void SpawnModelsOnVictoryPads(void)
 	gentity_t	*player;
 	gentity_t	*podium;
 
-	podium1 = NULL;
-	podium2 = NULL;
-	podium3 = NULL;
+	podium1 = nil;
+	podium2 = nil;
+	podium3 = nil;
 
 	podium = SpawnPodium();
 

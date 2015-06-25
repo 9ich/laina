@@ -99,8 +99,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
 
 	// noset vars
-	{ NULL, "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
-	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
+	{ nil, "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
+	{ nil, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
 
 	// latched vars
@@ -305,7 +305,7 @@ void G_FindTeams(void)
 				// make sure that targets only point at the master
 				if(e2->targetname){
 					e->targetname = e2->targetname;
-					e2->targetname = NULL;
+					e2->targetname = nil;
 				}
 			}
 		}
@@ -596,7 +596,7 @@ void AddTournamentPlayer(void)
 		return;
 	}
 
-	nextInLine = NULL;
+	nextInLine = nil;
 
 	for(i = 0 ; i < level.maxclients ; i++){
 		client = &level.clients[i];
@@ -975,7 +975,7 @@ void FindIntermissionPoint(void)
 	vec3_t		dir;
 
 	// find the intermission spot
-	ent = G_Find(NULL, FOFS(classname), "info_player_intermission");
+	ent = G_Find(nil, FOFS(classname), "info_player_intermission");
 	if(!ent){	// the map creator forgot to put in an intermission point...
 		SelectSpawnPoint(vec3_origin, level.intermission_origin, level.intermission_angle, qfalse);
 	}else{
@@ -1063,7 +1063,7 @@ void ExitLevel(void)
 			RemoveTournamentLoser();
 			trap_SendConsoleCommand(EXEC_APPEND, "map_restart 0\n");
 			level.restarted = qtrue;
-			level.changemap = NULL;
+			level.changemap = nil;
 			level.intermissiontime = 0;
 		}
 		return;
@@ -1079,7 +1079,7 @@ void ExitLevel(void)
 		trap_SendConsoleCommand(EXEC_APPEND, "vstr nextmap\n");
 	}
 
-	level.changemap = NULL;
+	level.changemap = nil;
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again
@@ -1762,7 +1762,7 @@ void G_RunThink(gentity_t *ent)
 
 	ent->nextthink = 0;
 	if(!ent->think){
-		G_Error("NULL ent->think");
+		G_Error("nil ent->think");
 	}
 	ent->think(ent);
 }
