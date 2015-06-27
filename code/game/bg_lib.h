@@ -33,11 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 #endif
 
-#ifndef nil
-#define nil ((void*)0)
-#endif
-
-typedef uint	size_t;
+typedef unsigned int	size_t;
 
 typedef char	*va_list;
 #define _INTSIZEOF(n)	((sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
