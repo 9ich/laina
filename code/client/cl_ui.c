@@ -986,18 +986,6 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 		re.RegisterFont( VMA(1), args[2], VMA(3));
 		return 0;
 
-	case UI_MEMSET:
-		Com_Memset( VMA(1), args[2], args[3] );
-		return 0;
-
-	case UI_MEMCPY:
-		Com_Memcpy( VMA(1), VMA(2), args[3] );
-		return 0;
-
-	case UI_STRNCPY:
-		strncpy( VMA(1), VMA(2), args[3] );
-		return args[1];
-
 	case UI_SIN:
 		return FloatAsInt( sin( VMF(1) ) );
 
@@ -1009,12 +997,6 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 
 	case UI_SQRT:
 		return FloatAsInt( sqrt( VMF(1) ) );
-
-	case UI_FLOOR:
-		return FloatAsInt( floor( VMF(1) ) );
-
-	case UI_CEIL:
-		return FloatAsInt( ceil( VMF(1) ) );
 
 	case UI_PC_ADD_GLOBAL_DEFINE:
 		return botlib_export->PC_AddGlobalDefine( VMA(1) );

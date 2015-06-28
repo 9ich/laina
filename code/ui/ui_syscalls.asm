@@ -89,10 +89,10 @@ equ trap_LAN_CompareServers					-86
 equ trap_FS_Seek		-87
 equ trap_SetPbClStatus -88
 
-equ	sin							-104
-equ	cos							-105
-equ	atan2						-106
-equ	sqrt						-107
-equ	floor						-108
-equ	ceil						-109
+equ	sin							-101
+equ	cos							-102
+equ	atan2						-103
+equ	sqrt						-104
+equ	floor						-105
+equ	ceil						-106
 

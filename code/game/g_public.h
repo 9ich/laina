@@ -222,6 +222,15 @@ typedef enum
 	// 1.32
 	G_FS_SEEK,
 
+	G_SIN	= 100,
+	G_COS,
+	G_ATAN2,
+	G_SQRT,
+	G_FLOOR,
+	G_CEIL,
+	G_TESTPRINTINT,
+	G_TESTPRINTFLOAT,
+
 	BOTLIB_SETUP = 200,	// ( void );
 	BOTLIB_SHUTDOWN,	// ( void );
 	BOTLIB_LIBVAR_SET,
