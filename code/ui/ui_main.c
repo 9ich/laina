@@ -22,6 +22,52 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "ui_local.h"
 
+/*
+ * vmMain must be the very first function in the very first C file
+ * compiled into the ui.qvm module.
+ * 
+ * This is the only way control passes into the module.
+ */
+Q_EXPORT intptr_t
+vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11)
+{
+	switch(command){
+	case UI_GETAPIVERSION:
+		return UI_API_VERSION;
+	case UI_INIT:
+		init();
+		return 0;
+	case UI_SHUTDOWN:
+		shutdown();
+		return 0;
+	case UI_KEY_EVENT:
+		keyevent(arg0, arg1);
+		return 0;
+	case UI_CHAR_EVENT:
+		charevent(arg0);
+		return 0;
+	case UI_MOUSE_EVENT:
+		mouseevent(arg0, arg1);
+		return 0;
+	case UI_REFRESH:
+		refresh(arg0);
+		return 0;
+	case UI_IS_FULLSCREEN:
+		return uis.fullscreen;
+	case UI_SET_ACTIVE_MENU:
+		setactivemenu(arg0);
+		return 0;
+	case UI_CONSOLE_COMMAND:
+		return consolecommand(arg0);
+	case UI_DRAW_CONNECT_SCREEN:
+		drawconnectscreen(arg0);
+		return 0;
+	case UI_HASUNIQUECDKEY:	// mod authors need to observe this
+		return qtrue;	// change this to qfalse for mods!
+	}
+	return -1;
+}
+
 typedef struct
 {
 	vmCvar_t	*vmCvar;
@@ -61,52 +107,4 @@ updatecvars(void)
 
 	for(i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++)
 		trap_Cvar_Update(cv->vmCvar);
-}
-
-/*
-================
-vmMain
-
-This is the only way control passes into the module.
-This must be the very first function compiled into the .qvm file
-================
-*/
-Q_EXPORT intptr_t
-vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11)
-{
-	switch(command){
-	case UI_GETAPIVERSION:
-		return UI_API_VERSION;
-	case UI_INIT:
-		init();
-		return 0;
-	case UI_SHUTDOWN:
-		shutdown();
-		return 0;
-	case UI_KEY_EVENT:
-		keyevent(arg0, arg1);
-		return 0;
-	case UI_CHAR_EVENT:
-		charevent(arg0);
-		return 0;
-	case UI_MOUSE_EVENT:
-		mouseevent(arg0, arg1);
-		return 0;
-	case UI_REFRESH:
-		refresh(arg0);
-		return 0;
-	case UI_IS_FULLSCREEN:
-		return uis.fullscreen;
-	case UI_SET_ACTIVE_MENU:
-		setactivemenu(arg0);
-		return 0;
-	case UI_CONSOLE_COMMAND:
-		return consolecommand(arg0);
-	case UI_DRAW_CONNECT_SCREEN:
-		drawconnectscreen(arg0);
-		return 0;
-	case UI_HASUNIQUECDKEY:	// mod authors need to observe this
-		return qtrue;	// change this to qfalse for mods!
-	}
-	return -1;
 }
