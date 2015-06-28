@@ -82,6 +82,7 @@ int	rand(void);
 size_t	strlen(const char *string);
 char	*strcat(char *strDestination, const char *strSource);
 char	*strcpy(char *strDestination, const char *strSource);
+char	*strncpy(char *dst, const char *src, size_t n);
 int	strcmp(const char *string1, const char *string2);
 char	*strchr(const char *string, int c);
 char	*strrchr(const char *string, int c);

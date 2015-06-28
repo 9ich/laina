@@ -47,14 +47,11 @@ equ trap_TraceCapsule		-44
 equ trap_EntityContactCapsule	-45
 equ trap_FS_Seek -46
 
-equ	memset					-101
-equ	memcpy					-102
-equ	strncpy					-103
 equ	sin						-104
 equ	cos						-105
 equ	atan2					-106
 equ	sqrt					-107
-equ floor					-111
+equ	floor					-111
 equ	ceil					-112
 equ	testPrintInt			-113
 equ	testPrintFloat			-114

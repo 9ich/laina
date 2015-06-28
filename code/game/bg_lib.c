@@ -331,13 +331,6 @@ memmove(void *dst0, const void *src0, size_t length)
 	return dst0;
 }
 
-#if 0
-double
-floor(double x)
-{
-	return (int)(x + 0x40000000) - 0x40000000;
-}
-
 void *
 memset(void *dest, int c, size_t count)
 {
@@ -350,7 +343,7 @@ memset(void *dest, int c, size_t count)
  * sizeof(word) MUST BE A POWER OF TWO
  * SO THAT wmask BELOW IS ALL ONES
  */
-
+ 
 /*
  * Copy a block of memory, not handling overlap.
  */
@@ -367,7 +360,7 @@ memcpy(void *dst0, const void *src0, size_t length)
 	if((dst < src && dst + length > src) ||
 	   (src < dst && src + length > dst)){
 	   	Com_Error(ERR_FATAL, "backwards memcpy\n");
-	   	return;
+	   	return nil;
 	}
 
 	/*
@@ -402,6 +395,31 @@ memcpy(void *dst0, const void *src0, size_t length)
  done:
 	return dst0;
 }
+
+/*
+ * Copy src to dst, truncating or null-padding to always copy n bytes.
+ * Return dst.
+ */
+char *
+strncpy(char *dst, const char *src, size_t n)
+{
+	if(n != 0){
+		char *d = dst;
+		const char *s = src;
+
+		do{
+			if((*d++ = *s++) == 0){
+				/* NUL pad the remaining n-1 bytes */
+				while(--n != 0)
+					*d++ = 0;
+				break;
+			}
+		}while(--n != 0);
+	}
+	return dst;
+}
+
+#if 0
 
 double
 sqrt(double x)
