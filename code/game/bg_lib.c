@@ -366,10 +366,8 @@ memcpy(void *dst0, const void *src0, size_t length)
 
 	if((dst < src && dst + length > src) ||
 	   (src < dst && src + length > dst)){
-		struct syslog_data sdata = SYSLOG_DATA_INIT;
-
-		syslog_r(LOG_CRIT, &sdata, "backwards memcpy");
-		abort();
+	   	Com_Error(ERR_FATAL, "backwards memcpy\n");
+	   	return;
 	}
 
 	/*
@@ -421,11 +419,10 @@ sqrt(double x)
 	// refine
 	maxError = x * 0.001;
 
-	do {
+	do{
 		delta = (y * y) - x;
 		y -= delta / (2 * y);
-	} while(delta > maxError || delta < -maxError)
-	;
+	}while(delta > maxError || delta < -maxError);
 
 	return y;
 }
@@ -912,14 +909,13 @@ atof(const char *string)
 	value = 0;
 	c = string[0];
 	if(c != '.'){
-		do {
+		do{
 			c = *string++;
 			if(c < '0' || c > '9')
 				break;
 			c -= '0';
 			value = value * 10 + c;
-		} while(1)
-		;
+		}while(1);
 	}else
 		string++;
 
@@ -980,14 +976,13 @@ _atof(const char **stringPtr)
 	// read digits
 	value = 0;
 	if(string[0] != '.'){
-		do {
+		do{
 			c = *string++;
 			if(c < '0' || c > '9')
 				break;
 			c -= '0';
 			value = value * 10 + c;
-		} while(1)
-		;
+		}while(1);
 	}
 
 	// check for decimal point
@@ -1002,8 +997,7 @@ _atof(const char **stringPtr)
 			c -= '0';
 			value += c * fraction;
 			fraction *= 0.1;
-		} while(1)
-		;
+		}while(1);
 	}
 
 	// not handling 10e10 notation...
@@ -1214,14 +1208,13 @@ atoi(const char *string)
 
 	// read digits
 	value = 0;
-	do {
+	do{
 		c = *string++;
 		if(c < '0' || c > '9')
 			break;
 		c -= '0';
 		value = value * 10 + c;
-	} while(1)
-	;
+	}while(1);
 
 	// not handling 10e10 notation...
 
@@ -1262,14 +1255,13 @@ _atoi(const char **stringPtr)
 
 	// read digits
 	value = 0;
-	do {
+	do{
 		c = *string++;
 		if(c < '0' || c > '9')
 			break;
 		c -= '0';
 		value = value * 10 + c;
-	} while(1)
-	;
+	}while(1);
 
 	// not handling 10e10 notation...
 
@@ -1835,11 +1827,10 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
 	else
 		digits = "0123456789abcdef";
 
-	do {
+	do{
 		convert[place++] = digits[uvalue % (unsigned)base];
 		uvalue = (uvalue / (unsigned)base);
-	} while(uvalue && (place < sizeof(convert)))
-	;
+	}while(uvalue && (place < sizeof(convert)));
 	if(place == sizeof(convert))
 		place--;
 	convert[place] = 0;
@@ -1977,23 +1968,21 @@ fmtfp(char *buffer, size_t *currlen, size_t maxlen,
 #endif
 
 	/* Convert integer part */
-	do {
+	do{
 		iconvert[iplace++] =
 			(caps ? "0123456789ABCDEF" : "0123456789abcdef")[intpart % 10];
 		intpart = (intpart / 10);
-	} while(intpart && (iplace < 20))
-	;
+	}while(intpart && (iplace < 20));
 	if(iplace == 20)
 		iplace--;
 	iconvert[iplace] = 0;
 
 	/* Convert fractional part */
-	do {
+	do{
 		fconvert[fplace++] =
 			(caps ? "0123456789ABCDEF" : "0123456789abcdef")[fracpart % 10];
 		fracpart = (fracpart / 10);
-	} while(fracpart && (fplace < 20))
-	;
+	}while(fracpart && (fplace < 20));
 	if(fplace == 20)
 		fplace--;
 	fconvert[fplace] = 0;
