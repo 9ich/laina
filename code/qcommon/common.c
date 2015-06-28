@@ -2772,6 +2772,7 @@ void Com_Init( char *commandLine ) {
 
 	Sys_Init();
 
+	if(0){
 	if( Sys_WritePIDFile( ) ) {
 #ifndef DEDICATED
 		const char *message = "The last time " CLIENT_WINDOW_TITLE " ran, "
@@ -2782,6 +2783,7 @@ void Com_Init( char *commandLine ) {
 			Cvar_Set( "com_abnormalExit", "1" );
 		}
 #endif
+	}
 	}
 
 	// Pick a random port value
