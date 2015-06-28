@@ -225,7 +225,7 @@ DEBUG_CFLAGS=-g -O0
 endif
 
 ifndef LDFLAGS
-LDFLAGS = -s
+LDFLAGS =
 endif
 
 #############################################################################
