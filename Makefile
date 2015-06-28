@@ -2311,12 +2311,12 @@ $(B)/$(BASEGAME)/vm/qagame.qvm: $(Q3GVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 #############################################################################
 
 Q3UIOBJ_ = \
-  $(B)/$(BASEGAME)/ui/ui_connect.o \
   $(B)/$(BASEGAME)/ui/ui_main.o \
+  $(B)/$(BASEGAME)/ui/ui_connect.o \
   $(B)/$(BASEGAME)/ui/ui_menus.o \
-  $(B)/$(BASEGAME)/ui/bg_lib.o \
   $(B)/$(BASEGAME)/ui/ui_atoms.o \
   $(B)/$(BASEGAME)/ui/ui_widgets.o \
+  $(B)/$(BASEGAME)/ui/bg_lib.o \
   $(B)/$(BASEGAME)/qcommon/q_math.o \
   $(B)/$(BASEGAME)/qcommon/q_shared.o
 
