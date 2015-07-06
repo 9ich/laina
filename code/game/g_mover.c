@@ -585,9 +585,9 @@ Reached_BinaryMover(gentity_t *ent)
 		if(ent->soundPos2)
 			G_AddEvent(ent, EV_GENERAL_SOUND, ent->soundPos2);
 
-		// return to pos1 after a delay
+		// return to pos1 after a delay, -50ms to account for +50ms delay on trigger
 		ent->think = ReturnToPos1;
-		ent->nextthink = level.time + ent->wait;
+		ent->nextthink = level.time + ent->wait - ent->s.pos.trDuration - 50;
 
 		// fire targets
 		if(!ent->activator)
@@ -647,7 +647,7 @@ Use_BinaryMover(gentity_t *ent, gentity_t *other, gentity_t *activator)
 
 	// if all the way up, just delay before coming down
 	if(ent->moverState == MOVER_POS2){
-		ent->nextthink = level.time + ent->wait;
+		ent->nextthink = level.time + ent->wait - ent->s.pos.trDuration - 50;
 		return;
 	}
 
@@ -924,7 +924,7 @@ NOMONSTER	monsters will not trigger this door
 "angle"		determines the opening direction
 "targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
 "speed"		movement speed (100 default)
-"wait"		wait before returning (3 default, -1 = never return)
+"wait"		interval between opening and closing (2 default, -1 = never return)
 "lip"		lip remaining at end of move (8 default)
 "dmg"		damage to inflict when blocked (2 default)
 "color"		constantLight color
