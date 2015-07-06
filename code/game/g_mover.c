@@ -1013,6 +1013,103 @@ SP_func_door(gentity_t *ent)
 }
 
 /*
+
+piston
+
+*/
+
+static void
+Blocked_Piston(gentity_t *ent, gentity_t *other)
+{
+	// crush clients
+	if(other->client != nil){
+		G_Damage(other, ent, ent, nil, nil, 99999, 0, MOD_CRUSH);
+		return;
+	}
+	
+	// remove anything other than a client, except CTF flags
+	if(other->s.eType == ET_ITEM && other->item->giType == IT_TEAM){
+		Team_DroppedFlagThink(other);
+		return;
+	}
+	G_TempEntity(other->s.origin, EV_ITEM_POP);
+	G_FreeEntity(other);
+}
+
+/*QUAKED func_piston (.8 .2 .2) ? START_OPEN
+TOGGLE		wait in both the start and end states for a trigger event.
+START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+
+"model2"	.md3 model to also draw
+"angle"		determines the opening direction
+"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
+"speed"		movement speed (100 default)
+"wait"		interval between opening and closing (2 default, -1 = never return)
+"lip"		lip remaining at end of move (8 default)
+"color"		constantLight color
+"light"		constantLight radius
+*/
+void
+SP_func_piston(gentity_t *ent)
+{
+	vec3_t abs_movedir;
+	float distance;
+	vec3_t size;
+	float lip;
+	char *keyclass;
+	int i;
+
+	ent->sound1to2 = ent->sound2to1 = G_SoundIndex("sound/movers/doors/dr1_strt.wav");
+	ent->soundPos1 = ent->soundPos2 = G_SoundIndex("sound/movers/doors/dr1_end.wav");
+
+	ent->blocked = Blocked_Piston;
+
+	// default speed of 400
+	if(!ent->speed)
+		ent->speed = 400;
+
+	// default wait of 2 seconds
+	if(!ent->wait)
+		ent->wait = 2;
+	ent->wait *= 1000;
+
+	// default lip of 8 units
+	G_SpawnFloat("lip", "8", &lip);
+
+	// first position at start
+	VectorCopy(ent->s.origin, ent->pos1);
+
+	// calculate second position
+	trap_SetBrushModel(ent, ent->model);
+	G_SetMovedir(ent->s.angles, ent->movedir);
+	abs_movedir[0] = fabs(ent->movedir[0]);
+	abs_movedir[1] = fabs(ent->movedir[1]);
+	abs_movedir[2] = fabs(ent->movedir[2]);
+	VectorSubtract(ent->r.maxs, ent->r.mins, size);
+	distance = DotProduct(abs_movedir, size) - lip;
+	VectorMA(ent->pos1, distance, ent->movedir, ent->pos2);
+
+	// if "start_open", reverse position 1 and 2
+	if(ent->spawnflags & 1){
+		vec3_t temp;
+
+		VectorCopy(ent->pos2, temp);
+		VectorCopy(ent->s.origin, ent->pos2);
+		VectorCopy(temp, ent->pos1);
+	}
+
+	InitMover(ent);
+
+	ent->nextthink = level.time + FRAMETIME;
+
+	if(!(ent->flags & FL_TEAMSLAVE)){
+		if(ent->targetname)
+			// non touch/shoot doors
+			ent->think = Think_MatchTeam;
+	}
+}
+
+/*
 ===============================================================================
 
 PLAT
