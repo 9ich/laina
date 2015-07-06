@@ -410,8 +410,7 @@ timer
 ==============================================================================
 */
 
-/*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
-This should be renamed trigger_timer...
+/*QUAKED trigger_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
 Repeatedly fires its targets.
 Can be turned on or off by using.
 
@@ -422,7 +421,7 @@ so, the basic time between firing is a random time between
 
 */
 void
-func_timer_think(gentity_t *self)
+timer_think(gentity_t *self)
 {
 	G_UseTargets(self, self->activator);
 	// set time before next firing
@@ -430,7 +429,7 @@ func_timer_think(gentity_t *self)
 }
 
 void
-func_timer_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+timer_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	self->activator = activator;
 
@@ -441,21 +440,21 @@ func_timer_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 	}
 
 	// turn it on
-	func_timer_think(self);
+	timer_think(self);
 }
 
 void
-SP_func_timer(gentity_t *self)
+SP_trigger_timer(gentity_t *self)
 {
 	G_SpawnFloat("random", "0", &self->random);
 	G_SpawnFloat("wait", "1", &self->wait);
 
-	self->use = func_timer_use;
-	self->think = func_timer_think;
+	self->use = timer_use;
+	self->think = timer_think;
 
 	if(self->random >= self->wait){
 		self->random = self->wait - FRAMETIME;
-		G_Printf("func_timer at %s has random >= wait\n", vtos(self->s.origin));
+		G_Printf("trigger_timer at %s has random >= wait\n", vtos(self->s.origin));
 	}
 
 	if(self->spawnflags & 1){
