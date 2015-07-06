@@ -128,12 +128,19 @@ trigger_always_think(gentity_t *ent)
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
 This trigger will always fire.  It is activated by the world.
+
+"delay"		the delay (in seconds) before firing
 */
 void
 SP_trigger_always(gentity_t *ent)
 {
+	float delay;
+
+	G_SpawnFloat("delay", "0", &delay);
+	delay *= 1000;
+
 	// we must have some delay to make sure our use targets are present
-	ent->nextthink = level.time + 300;
+	ent->nextthink = level.time + delay + 100;
 	ent->think = trigger_always_think;
 }
 
