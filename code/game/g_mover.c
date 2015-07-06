@@ -1059,8 +1059,8 @@ SP_func_piston(gentity_t *ent)
 	char *keyclass;
 	int i;
 
-	ent->sound1to2 = ent->sound2to1 = G_SoundIndex("sound/movers/doors/dr1_strt.wav");
-	ent->soundPos1 = ent->soundPos2 = G_SoundIndex("sound/movers/doors/dr1_end.wav");
+	ent->sound1to2 = ent->sound2to1 = G_SoundIndex("sound/movers/piston/start");
+	ent->soundPos1 = ent->soundPos2 = G_SoundIndex("sound/movers/piston/end");
 
 	ent->blocked = Blocked_Piston;
 
