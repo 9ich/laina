@@ -388,6 +388,9 @@ G_Spawn(void)
 	int i, force;
 	gentity_t *e;
 
+	if(g_debugAlloc.integer)
+		G_Printf("spawn entity\n");
+
 	e = nil;	// shut up warning
 	i = 0;		// shut up warning
 	for(force = 0; force < 2; force++){
@@ -458,6 +461,9 @@ Marks the entity as free
 void
 G_FreeEntity(gentity_t *ed)
 {
+	if(g_debugAlloc.integer)
+		G_Printf("free entity\n");
+
 	trap_UnlinkEntity(ed);	// unlink from world
 
 	if(ed->neverFree)
