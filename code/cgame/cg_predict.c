@@ -19,12 +19,17 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_predict.c -- this file generates cg.predictedPlayerState by either
-// interpolating between snapshots from the server or locally predicting
-// ahead the client's movement.
-// It also handles local physics interaction, like fragments bouncing off walls
+
+/*
+This file generates cg.predictedPlayerState by either interpolating
+between snapshots from the server or locally predicting ahead the
+client's movement.  It also handles local physics interaction, like
+fragments bouncing off walls
+*/
 
 #include "cg_local.h"
+
+static char* testerror(playerState_t*, playerState_t*);
 
 static pmove_t cg_pmove;
 
@@ -34,13 +39,9 @@ static int cg_numTriggerEntities;
 static centity_t *cg_triggerEntities[MAX_ENTITIES_IN_SNAPSHOT];
 
 /*
-====================
-CG_BuildSolidList
-
 When a new cg.snap has been set, this function builds a sublist
 of the entities that are actually solid, to make for more
 efficient collision detection
-====================
 */
 void
 CG_BuildSolidList(void)
@@ -86,12 +87,6 @@ CG_BuildSolidList(void)
 	}
 }
 
-/*
-====================
-CG_ClipMoveToEntities
-
-====================
-*/
 static void
 CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 		      int skipNumber, int mask, trace_t *tr)
@@ -145,11 +140,6 @@ CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 	}
 }
 
-/*
-================
-CG_Trace
-================
-*/
 void
 CG_Trace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 	 int skipNumber, int mask)
@@ -164,11 +154,6 @@ CG_Trace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t ma
 	*result = t;
 }
 
-/*
-================
-CG_PointContents
-================
-*/
 int
 CG_PointContents(const vec3_t point, int passEntityNum)
 {
@@ -202,12 +187,8 @@ CG_PointContents(const vec3_t point, int passEntityNum)
 }
 
 /*
-========================
-CG_InterpolatePlayerState
-
 Generates cg.predictedPlayerState by interpolating between
 cg.snap->player_state and cg.nextFrame->player_state
-========================
 */
 static void
 CG_InterpolatePlayerState(qboolean grabAngles)
@@ -258,11 +239,6 @@ CG_InterpolatePlayerState(qboolean grabAngles)
 	}
 }
 
-/*
-===================
-CG_TouchItem
-===================
-*/
 static void
 CG_TouchItem(centity_t *cent)
 {
@@ -317,11 +293,7 @@ CG_TouchItem(centity_t *cent)
 }
 
 /*
-=========================
-CG_TouchTriggerPrediction
-
 Predict push triggers and items
-=========================
 */
 static void
 CG_TouchTriggerPrediction(void)
@@ -384,10 +356,125 @@ CG_TouchTriggerPrediction(void)
 	}
 }
 
-/*
-=================
-CG_PredictPlayerState
+static char*
+testerror(playerState_t *ps, playerState_t *pps)
+{
+	vec3_t delta;
+	int i;
 
+	if(pps->pm_type != ps->pm_type ||
+	   pps->pm_flags != ps->pm_flags ||
+	   pps->pm_time != ps->pm_time)
+		return "pmove discrepancy";
+
+	VectorSubtract(pps->origin, ps->origin, delta);
+	if(VectorLengthSquared(delta) > 0.1f*0.1f){
+		if(cg_showmiss.integer)
+			CG_Printf("delta=%.2f  ", VectorLength(delta));
+		return "origin delta too large";
+	}
+
+	VectorSubtract(pps->velocity, ps->velocity, delta);
+	if(VectorLengthSquared(delta) > 0.1f*0.1f){
+		if(cg_showmiss.integer)
+			CG_Printf("delta=%.2f  ", VectorLength(delta));
+		return "velocity delta too large";
+	}
+
+	if(pps->weaponTime != ps->weaponTime ||
+	   pps->gravity != ps->gravity ||
+	   pps->delta_angles[0] != ps->delta_angles[0] ||
+	   pps->delta_angles[1] != ps->delta_angles[1] ||
+	   pps->delta_angles[2] != ps->delta_angles[2])
+		return "values discrepancy";
+
+	if(pps->groundEntityNum != ps->groundEntityNum)
+		return "ground entity discrepancy";
+
+	if(pps->eFlags != ps->eFlags)
+		return "entity flags discrepancy";
+
+	if(pps->eventSequence != ps->eventSequence)
+		return "eventSequence discrepancy";
+
+	for(i = 0; i < MAX_PS_EVENTS; i++){
+		if(pps->events[i] != ps->events[i] ||
+		   pps->eventParms[i] != ps->eventParms[i])
+			return "events discrepancy";
+	}
+
+	if(pps->externalEvent != ps->externalEvent ||
+	   pps->externalEventParm != ps->externalEventParm ||
+	   pps->externalEventTime != ps->externalEventTime)
+		return "externalEvent discrepancy";
+
+	if(pps->clientNum != ps->clientNum ||
+	   pps->weapon != ps->weapon ||
+	   pps->weaponstate != ps->weaponstate)
+		return "client state discrepancy";
+
+	if(fabs(pps->viewangles[0] - ps->viewangles[0]) > 1.0f ||
+	   fabs(pps->viewangles[1] - ps->viewangles[1]) > 1.0f ||
+	   fabs(pps->viewangles[2] - ps->viewangles[2]) > 1.0f)
+	   	return "viewangle discrepancy";
+	
+	for(i = 0; i < MAX_STATS; i++)
+		if(pps->stats[i] != ps->stats[i])
+			return "stats discrepancy";
+
+	if(pps->jumppad_ent != ps->jumppad_ent)
+		return "jumppad discrepancy";
+	
+	return nil;
+}
+
+static int
+optimize(int current, int *stateindex)
+{
+	int predictcmd;
+	playerState_t *pps;
+	char *err;
+	int i;
+
+	pps = &cg.predictedPlayerState;
+
+	if(cg.nextFrameTeleport || cg.thisFrameTeleport){
+		// predict fully
+		cg.lastPredictedCmd = 0;
+		cg.stateTail = cg.stateHead;
+		predictcmd = current - CMD_BACKUP + 1;
+	}else if(cg.physicsTime == cg.lastServerTime){
+		// no new information; predict incrementally
+		predictcmd = cg.lastPredictedCmd + 1;
+	}else{
+		// we have a new snapshot
+		for(i = cg.stateHead; i != cg.stateTail; i = (i+1) % STATEBUFLEN){
+			if(cg.stateBuf[i].commandTime == pps->commandTime){
+				err = testerror(pps, &cg.stateBuf[i]);
+				if(err != nil){
+					if(cg_showmiss.integer)
+						CG_Printf("%d: %s\n", cg.time, err);
+				}else{
+					*cg_pmove.ps = cg.stateBuf[i];
+					cg.stateHead = (i+1) % STATEBUFLEN;
+					predictcmd = cg.lastPredictedCmd + 1;
+				}
+				break;
+			}
+		}
+		// if no saved states matched, predict fully
+		if(err != nil || i == cg.stateTail){
+			cg.lastPredictedCmd = 0;
+			cg.stateTail = cg.stateHead;
+			predictcmd = current - CMD_BACKUP + 1;
+		}
+	}
+	cg.lastServerTime = cg.physicsTime;
+	*stateindex = cg.stateHead;
+	return predictcmd;
+}
+
+/*
 Generates cg.predictedPlayerState for the current cg.time
 cg.predictedPlayerState is guaranteed to be valid after exiting.
 
@@ -408,7 +495,6 @@ playerState_t during prediction.
 
 We detect prediction errors and allow them to be decayed off over several frames
 to ease the jerk.
-=================
 */
 void
 CG_PredictPlayerState(void)
@@ -418,8 +504,10 @@ CG_PredictPlayerState(void)
 	qboolean moved;
 	usercmd_t oldestCmd;
 	usercmd_t latestCmd;
+	int si, predictcmd;
 
 	cg.hyperspace = qfalse;	// will be set if touching a trigger_teleport
+	si = 0;
 
 	// if this is the first frame we must guarantee
 	// predictedPlayerState is valid even if there is some
@@ -493,6 +581,9 @@ CG_PredictPlayerState(void)
 	cg_pmove.pmove_fixed = pmove_fixed.integer;	// | cg_pmove_fixed.integer;
 	cg_pmove.pmove_msec = pmove_msec.integer;
 
+	if(cg_optimizeprediction.integer)
+		predictcmd = optimize(current, &si);
+
 	// run cmds
 	moved = qfalse;
 	for(cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++){
@@ -564,7 +655,27 @@ CG_PredictPlayerState(void)
 		if(cg_pmove.pmove_fixed)
 			cg_pmove.cmd.serverTime = ((cg_pmove.cmd.serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
 
-		Pmove(&cg_pmove);
+		if(!cg_optimizeprediction.integer){
+			Pmove(&cg_pmove);
+		}else{
+			if(cmdNum >= predictcmd || (si+1) % STATEBUFLEN == cg.stateHead){
+				Pmove(&cg_pmove);
+				cg.lastPredictedCmd = cmdNum;
+				if((si+1) % STATEBUFLEN != cg.stateHead){
+					cg.stateBuf[si] = *cg_pmove.ps;
+					si = (si+1) & STATEBUFLEN;
+					cg.stateTail = si;
+				}
+			}else{
+				if(cg_showmiss.integer &&
+				   cg.stateBuf[si].commandTime != cg_pmove.cmd.serverTime)
+					CG_Printf("saved state miss\n");
+				
+				// play back the command from state buffer
+				*cg_pmove.ps = cg.stateBuf[si];
+				si = (si+1) % STATEBUFLEN;
+			}
+		}
 
 		moved = qtrue;
 

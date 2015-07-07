@@ -117,6 +117,7 @@ vmCvar_t cg_debugPosition;
 vmCvar_t cg_debugEvents;
 vmCvar_t cg_errorDecay;
 vmCvar_t cg_nopredict;
+vmCvar_t cg_optimizeprediction;
 vmCvar_t cg_noPlayerAnims;
 vmCvar_t cg_showmiss;
 vmCvar_t cg_footsteps;
@@ -249,13 +250,14 @@ static cvarTable_t cvarTable[] = {
 	{&cg_debugEvents, "cg_debugevents", "0", CVAR_CHEAT},
 	{&cg_errorDecay, "cg_errordecay", "100", 0},
 	{&cg_nopredict, "cg_nopredict", "0", 0},
+	{&cg_optimizeprediction, "cg_optimizeprediction", "1", CVAR_ARCHIVE},
 	{&cg_noPlayerAnims, "cg_noplayeranims", "0", CVAR_CHEAT},
 	{&cg_showmiss, "cg_showmiss", "0", 0},
 	{&cg_footsteps, "cg_footsteps", "1", CVAR_CHEAT},
 	{&cg_tracerChance, "cg_tracerchance", "0.4", CVAR_CHEAT},
 	{&cg_tracerWidth, "cg_tracerwidth", "1", CVAR_CHEAT},
 	{&cg_tracerLength, "cg_tracerlength", "100", CVAR_CHEAT},
-	{&cg_thirdPersonRange, "cg_thirdPersonRange", "80", 0},
+	{&cg_thirdPersonRange, "cg_thirdPersonRange", "80", CVAR_ARCHIVE},
 	{&cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_CHEAT},
 	{&cg_thirdPerson, "cg_thirdPerson", "1", 0},
 	{&cg_teamChatTime, "cg_teamChatTime", "3000", CVAR_ARCHIVE},

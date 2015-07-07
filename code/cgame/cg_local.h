@@ -455,7 +455,8 @@ typedef struct
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
 // occurs, and they will have visible effects for #define STEP_TIME or whatever msec after
 
-#define MAX_PREDICTED_EVENTS 16
+#define	MAX_PREDICTED_EVENTS	16
+#define	STATEBUFLEN		(CMD_BACKUP + 2)
 
 typedef struct
 {
@@ -502,6 +503,10 @@ typedef struct
 	playerState_t	predictedPlayerState;
 	centity_t	predictedPlayerEntity;
 	qboolean	validPPS;	// clear until the first call to CG_PredictPlayerState
+	playerState_t	stateBuf[STATEBUFLEN];	// ring buffer of saved states
+	int		stateHead, stateTail;
+	int		lastPredictedCmd;
+	int		lastServerTime;
 	int		predictedErrorTime;
 	vec3_t		predictedError;
 
@@ -1119,6 +1124,7 @@ extern vmCvar_t cg_debugEvents;
 extern vmCvar_t cg_railTrailTime;
 extern vmCvar_t cg_errorDecay;
 extern vmCvar_t cg_nopredict;
+extern vmCvar_t cg_optimizeprediction;
 extern vmCvar_t cg_noPlayerAnims;
 extern vmCvar_t cg_showmiss;
 extern vmCvar_t cg_footsteps;
