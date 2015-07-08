@@ -53,8 +53,6 @@ typedef struct sfx_s {
 	sndBuffer		*soundData;
 	qboolean		defaultSound;			// couldn't be loaded, so use buzz
 	qboolean		inMemory;				// not in Memory
-	qboolean		soundCompressed;		// not in Memory
-	int				soundCompressionMethod;	
 	int 			soundLength;
 	int			soundChannels;
 	char 			soundName[MAX_QPATH];
