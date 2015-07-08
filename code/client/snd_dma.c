@@ -1124,18 +1124,12 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 		if ( !ch->thesfx ) {
 			continue;
 		}
-		// anything coming from the view entity will always be full volume
-		if (ch->entnum == listener_number) {
-			ch->leftvol = ch->master_vol;
-			ch->rightvol = ch->master_vol;
+		if (ch->fixed_origin) {
+			VectorCopy( ch->origin, origin );
 		} else {
-			if (ch->fixed_origin) {
-				VectorCopy( ch->origin, origin );
-			} else {
-				VectorCopy( loopSounds[ ch->entnum ].origin, origin );
-			}
-			S_SpatializeOrigin( origin, ch->master_vol, &ch->leftvol, &ch->rightvol );
+			VectorCopy( loopSounds[ ch->entnum ].origin, origin );
 		}
+		S_SpatializeOrigin( origin, ch->master_vol, &ch->leftvol, &ch->rightvol );
 	}
 
 	S_AddLoopSounds();
