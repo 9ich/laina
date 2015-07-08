@@ -215,7 +215,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 			else
 			{
 				Com_Printf("Opening qconsole.log failed!\n");
-				Cvar_SetValue("logfile", 0);
+				Cvar_SetValue("com_logfile", 0);
 			}
 
       opening_qconsole = qfalse;
@@ -2728,7 +2728,7 @@ void Com_Init( char *commandLine ) {
 	com_maxfps = Cvar_Get ("com_maxfps", "125", CVAR_ARCHIVE);
 	com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE);
 
-	com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP );
+	com_logfile = Cvar_Get ("com_logfile", "0", CVAR_TEMP );
 
 	com_timescale = Cvar_Get ("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
 	com_fixedtime = Cvar_Get ("fixedtime", "0", CVAR_CHEAT);
