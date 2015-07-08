@@ -402,7 +402,7 @@ PM_CheckAirjump(void)
 		pm->ps->velocity[i] = 2*scale*pml.forward[i]*pm->cmd.forwardmove + 2*scale*pml.right[i]*pm->cmd.rightmove;
 	pm->ps->velocity[2] = AIRJUMP_VELOCITY;
 	pm->ps->nAirjumps++;
-	PM_AddEvent(EV_JUMP);
+	PM_AddEvent(EV_AIRJUMP);
 
 	if(pm->cmd.forwardmove >= 0){
 		PM_ForceLegsAnim(LEGS_JUMP);

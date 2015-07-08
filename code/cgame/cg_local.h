@@ -884,6 +884,7 @@ typedef struct
 	sfxHandle_t	landSound;
 	sfxHandle_t	fallSound;
 	sfxHandle_t	jumpPadSound;
+	sfxHandle_t	airjumpSound;
 
 	sfxHandle_t	oneMinuteSound;
 	sfxHandle_t	fiveMinuteSound;

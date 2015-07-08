@@ -656,6 +656,22 @@ CG_EntityEvent(centity_t *cent, vec3_t position)
 		DEBUGNAME("EV_JUMP");
 		trap_S_StartSound(nil, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*jump1.wav"));
 		break;
+	case EV_AIRJUMP:
+		DEBUGNAME("EV_AIRJUMP");
+		{
+			vec3_t up = {0, 0, 1};
+			vec3_t feet;
+
+			VectorCopy(cent->lerpOrigin, feet);
+			feet[2] -= 10.0f;
+
+			CG_SmokePuff(feet, up, 24, 1.0f, 1.0f, 1.0f, 0.5f, 800,
+			   cg.time, 0, LEF_PUFF_DONT_SCALE,
+			   cgs.media.smokePuffShader);
+		}
+		trap_S_StartSound(nil, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*jump1.wav"));
+		trap_S_StartSound(cent->lerpOrigin, es->number, CHAN_VOICE, cgs.media.airjumpSound);
+		break;
 	case EV_TAUNT:
 		DEBUGNAME("EV_TAUNT");
 		trap_S_StartSound(nil, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*taunt.wav"));
