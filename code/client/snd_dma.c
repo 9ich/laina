@@ -39,17 +39,14 @@ void S_Base_StopBackgroundTrack( void );
 
 snd_stream_t	*s_backgroundStream = NULL;
 static char		s_backgroundLoop[MAX_QPATH];
-//static char		s_backgroundMusic[MAX_QPATH]; //TTimo: unused
-
 
 // =======================================================================
 // Internal sound data & structures
 // =======================================================================
 
-// only begin attenuating sound volumes when outside the FULLVOLUME range
-#define		SOUND_FULLVOLUME	80
-
-#define		SOUND_ATTENUATE		0.0008f
+static const float SOUND_MAX_DIST = 1250;
+static const float SOUND_FALLOFF = 1.41421356237f;
+static const int MASTER_VOL = 127;
 
 channel_t   s_channels[MAX_CHANNELS];
 channel_t   loop_channels[MAX_CHANNELS];
@@ -422,54 +419,50 @@ S_SpatializeOrigin
 Used for spatializing s_channels
 =================
 */
-void S_SpatializeOrigin (vec3_t origin, int master_vol, int *left_vol, int *right_vol)
+static void S_SpatializeOrigin( const vec3_t origin, int master_vol, int* left_vol, int* right_vol )
 {
-    vec_t		dot;
-    vec_t		dist;
-    vec_t		lscale, rscale, scale;
-    vec3_t		source_vec;
-    vec3_t		vec;
+	vec_t		dot;
+	vec_t		dist;
+	vec_t		lscale, rscale, scale;
+	vec3_t		source_vec;
+	vec3_t		vec;
 
-	const float dist_mult = SOUND_ATTENUATE;
-	
-	// calculate stereo seperation and distance attenuation
-	VectorSubtract(origin, listener_origin, source_vec);
+	// calculate stereo separation and distance attenuation
+	VectorSubtract( origin, listener_origin, source_vec );
+	dist = VectorNormalize( source_vec );
 
-	dist = VectorNormalize(source_vec);
-	dist -= SOUND_FULLVOLUME;
-	if (dist < 0)
-		dist = 0;			// close enough to be at full volume
-	dist *= dist_mult;		// different attenuation levels
-	
+	if (dist >= SOUND_MAX_DIST) {
+		*left_vol = *right_vol = 0;
+		return;
+	}
+
+	dist *= (1.0f / SOUND_MAX_DIST);
+
+	// attenuate correctly even if we can't spatialise
+	if (dma.channels == 1) {
+		*left_vol = *right_vol = master_vol * pow(1.0f - dist, SOUND_FALLOFF);
+		return;
+	}
+
 	VectorRotate( source_vec, listener_axis, vec );
-
 	dot = -vec[1];
 
-	if (dma.channels == 1)
-	{ // no attenuation = no spatialization
-		rscale = 1.0;
-		lscale = 1.0;
+	rscale = 0.5 * (1.0 + dot);
+	lscale = 0.5 * (1.0 - dot);
+	if ( rscale < 0 ) {
+		rscale = 0;
 	}
-	else
-	{
-		rscale = 0.5 * (1.0 + dot);
-		lscale = 0.5 * (1.0 - dot);
-		if ( rscale < 0 ) {
-			rscale = 0;
-		}
-		if ( lscale < 0 ) {
-			lscale = 0;
-		}
+	if ( lscale < 0 ) {
+		lscale = 0;
 	}
 
-	// add in distance effect
-	scale = (1.0 - dist) * rscale;
-	*right_vol = (master_vol * scale);
+	scale = master_vol * pow(1.0f - dist, SOUND_FALLOFF);
+
+	*right_vol = scale * rscale;
 	if (*right_vol < 0)
 		*right_vol = 0;
 
-	scale = (1.0 - dist) * lscale;
-	*left_vol = (master_vol * scale);
+	*left_vol = scale * lscale;
 	if (*left_vol < 0)
 		*left_vol = 0;
 }
@@ -888,11 +881,7 @@ void S_AddLoopSounds (void) {
 			continue;	// already merged into an earlier sound
 		}
 
-		if (loop->kill) {
-			S_SpatializeOrigin( loop->origin, 127, &left_total, &right_total);			// 3d
-		} else {
-			S_SpatializeOrigin( loop->origin, 90,  &left_total, &right_total);			// sphere
-		}
+		S_SpatializeOrigin( loop->origin, MASTER_VOL, &left_total, &right_total );
 
 		loop->sfx->lastTimeUsed = time;
 
@@ -903,11 +892,7 @@ void S_AddLoopSounds (void) {
 			}
 			loop2->mergeFrame = loopFrame;
 
-			if (loop2->kill) {
-				S_SpatializeOrigin( loop2->origin, 127, &left, &right);				// 3d
-			} else {
-				S_SpatializeOrigin( loop2->origin, 90,  &left, &right);				// sphere
-			}
+			S_SpatializeOrigin( loop2->origin, MASTER_VOL, &left, &right );
 
 			loop2->sfx->lastTimeUsed = time;
 			left_total += left;
@@ -1121,28 +1106,26 @@ Change the volumes of all the playing sounds for changes in their positions
 ============
 */
 void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int inwater ) {
-	int			i;
-	channel_t	*ch;
-	vec3_t		origin;
+	vec3_t origin;
 
 	if ( !s_soundStarted || s_soundMuted ) {
 		return;
 	}
 
 	listener_number = entityNum;
-	VectorCopy(head, listener_origin);
-	VectorCopy(axis[0], listener_axis[0]);
-	VectorCopy(axis[1], listener_axis[1]);
-	VectorCopy(axis[2], listener_axis[2]);
+	VectorCopy( head, listener_origin );
+	VectorCopy( axis[0], listener_axis[0] );
+	VectorCopy( axis[1], listener_axis[1] );
+	VectorCopy( axis[2], listener_axis[2] );
 
-	// update spatialization for dynamic sounds	
-	ch = s_channels;
-	for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
+	// update spatialization for dynamic sounds
+	channel_t* ch = s_channels;
+	for (int i = 0; i < MAX_CHANNELS; ++i, ++ch) {
 		if ( !ch->thesfx ) {
 			continue;
 		}
-		// local and first person sounds will always be full volume
-		if (ch->fullVolume) {
+		// anything coming from the view entity will always be full volume
+		if (ch->entnum == listener_number) {
 			ch->leftvol = ch->master_vol;
 			ch->rightvol = ch->master_vol;
 		} else {
@@ -1151,13 +1134,11 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 			} else {
 				VectorCopy( loopSounds[ ch->entnum ].origin, origin );
 			}
-
-			S_SpatializeOrigin (origin, ch->master_vol, &ch->leftvol, &ch->rightvol);
+			S_SpatializeOrigin( origin, ch->master_vol, &ch->leftvol, &ch->rightvol );
 		}
 	}
 
-	// add loopsounds
-	S_AddLoopSounds ();
+	S_AddLoopSounds();
 }
 
 
