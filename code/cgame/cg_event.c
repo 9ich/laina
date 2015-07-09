@@ -669,7 +669,6 @@ CG_EntityEvent(centity_t *cent, vec3_t position)
 			   cg.time, 0, LEF_PUFF_DONT_SCALE,
 			   cgs.media.smokePuffShader);
 		}
-		trap_S_StartSound(nil, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*jump1.wav"));
 		trap_S_StartSound(cent->lerpOrigin, es->number, CHAN_VOICE, cgs.media.airjumpSound);
 		break;
 	case EV_TAUNT:
