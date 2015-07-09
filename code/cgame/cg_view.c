@@ -471,23 +471,8 @@ CG_CalcFov(void)
 		fov_x = 90;
 	else{
 		// user selectable
-		if(cgs.dmflags & DF_FIXED_FOV)
-			// dmflag to prevent wide fov for all clients
-			fov_x = 90;
-		else{
-			fov_x = cg_fov.value;
-			if(fov_x < 1)
-				fov_x = 1;
-			else if(fov_x > 160)
-				fov_x = 160;
-		}
-
-		// account for zooms
-		zoomFov = cg_zoomFov.value;
-		if(zoomFov < 1)
-			zoomFov = 1;
-		else if(zoomFov > 160)
-			zoomFov = 160;
+		fov_x = MAX(1, MIN(170, cg_fov.value));
+		zoomFov = MAX(1, MIN(170, cg_zoomFov.value));
 
 		if(cg.zoomed){
 			f = (cg.time - cg.zoomTime) / (float)ZOOM_TIME;
