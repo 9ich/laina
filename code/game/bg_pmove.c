@@ -396,6 +396,12 @@ PM_CheckAirjump(void)
 
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
+	// project jump direction to ground plane
+	pml.forward[2] = 0;
+	pml.right[2] = 0;
+	VectorNormalize(pml.forward);
+	VectorNormalize(pml.right);
+
 	scale = PM_CmdScale(&pm->cmd);
 	// kick the player in the dir they want
 	for(i = 0; i<2; i++)
@@ -665,6 +671,9 @@ PM_AirMove(void)
 	float wishspeed2;
 	usercmd_t cmd;
 
+	// set the movementDir so clients can rotate the legs for strafing
+	PM_SetMovementDir();
+
 	PM_CheckAirjump();
 
 	PM_Friction();
@@ -674,9 +683,6 @@ PM_AirMove(void)
 
 	cmd = pm->cmd;
 	scale = PM_CmdScale(&cmd);
-
-	// set the movementDir so clients can rotate the legs for strafing
-	PM_SetMovementDir();
 
 	// project moves down to flat plane
 	pml.forward[2] = 0;
