@@ -116,6 +116,7 @@ netField_t	playerStateFields[] =
 { PSF(groundEntityNum), GENTITYNUM_BITS },
 { PSF(headEntityNum), GENTITYNUM_BITS },
 { PSF(jumppad_ent), GENTITYNUM_BITS },
+{ PSF(crashland), 1 },
 { PSF(legsAnim), 8 },
 { PSF(legsTimer), 8 },
 { PSF(loopSound), 16 },

@@ -43,8 +43,8 @@ SP_crate(gentity_t *ent)
 
 	ent->model = "models/crates/crate.md3";
 	ent->physicsBounce = 0.2;
-	ent->use = crate_use;
 	ent->touch = crate_touch;
+	ent->use = crate_use;
 	ent->nextthink = -1;
 	ent->takedamage = qtrue;
 	ent->s.eType = ET_CRATE;
@@ -71,7 +71,7 @@ SP_crate_checkpoint(gentity_t *ent)
 	ent->model = "models/crates/checkpoint.md3";
 	ent->physicsBounce = 0.2;
 	ent->use = crate_checkpoint_use;
-	ent->touch = crate_checkpoint_touch;
+	ent->touch = crate_touch;
 	ent->nextthink = -1;
 	ent->takedamage = qtrue;
 	ent->s.eType = ET_CRATE;
@@ -130,7 +130,6 @@ crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
 	G_UseTargets(self, activator);
-	trap_UnlinkEntity(self);
 	G_FreeEntity(self);
 }
 
@@ -139,10 +138,8 @@ crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;
-	if(other->s.groundEntityNum != self->s.number)
-		return;
-	BG_Squish(&other->client->ps, &self->s);
-	self->use(self, nil, other);
+	if(BG_TouchCrate(&other->client->ps, &self->s))
+		self->use(self, nil, other);
 }
 
 static void
@@ -155,17 +152,6 @@ crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 	tent->s.otherEntityNum = activator->s.number;
 	G_UseTargets(self, activator);
 	trap_UnlinkEntity(self);
-}
-
-static void
-crate_checkpoint_touch(gentity_t *self, gentity_t *other, trace_t *trace)
-{
-	if(other->client == nil)
-		return;
-	if(other->s.groundEntityNum != self->s.number)
-		return;
-	BG_Squish(&other->client->ps, &self->s);
-	self->use(self, nil, other);
 }
 
 static void

@@ -1129,6 +1129,7 @@ typedef struct playerState_s {
 
 	int			groundEntityNum;// ENTITYNUM_NONE = in air
 	int			headEntityNum;
+	qboolean		crashland;		// landed on groundEntityNum hard enough to break a crate or kill an enemy
 
 	int			nAirjumps;		// number of jumps since last touched ground (for doublejump)
 

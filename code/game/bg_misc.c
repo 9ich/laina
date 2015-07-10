@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
+#include "bg_local.h"
 
 /*QUAKED item_***** ( 0 0 0 ) (-16 -16 -16) (16 16 16) suspended
 DO NOT USE THIS CLASS, IT JUST HOLDS GENERAL INFORMATION.
@@ -681,23 +682,24 @@ BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad)
 	VectorCopy(jumppad->origin2, ps->velocity);
 }
 
-// Player landed on something after jumping.
-// A squishable entity is a breakable or a regular enemy.
-void
-BG_Squish(playerState_t *ps, entityState_t *squishable)
+qboolean
+BG_TouchCrate(playerState_t *pps, entityState_t *crate)
 {
-	if(ps->pm_type != PM_NORMAL)
-		return;		// spectators don't break things
-	if(ps->powerups[PW_FLIGHT])
-		return;		// flying characters don't squish
+	if(pps->pm_type != PM_NORMAL || pps->powerups[PW_FLIGHT])
+		return qfalse;
+	if(pps->groundEntityNum != crate->number)
+		return qfalse;		// didn't land on the crate
+	if(!pps->crashland)
+		return qfalse;		// didn't land hard enough
 
-	if(ps->jumppad_ent != squishable->number)
-		BG_AddPredictableEventToPlayerstate(EV_SQUISH, 0, ps);
-	// remember hitting this squishable this frame (recycle jumppad fields)
-	ps->jumppad_ent = squishable->number;
-	ps->jumppad_frame = ps->pmove_framecount;
+	if(pps->jumppad_ent != crate->number)
+		BG_AddPredictableEventToPlayerstate(EV_SMASH_CRATE, 0, pps);
+	// remember hitting this crate this frame (recycle jumppad fields)
+	pps->jumppad_ent = crate->number;
+	pps->jumppad_frame = pps->pmove_framecount;
 	// bounce
-	ps->velocity[2] = 360;
+	pps->velocity[2] = AIRJUMP_VELOCITY;
+	return qtrue;
 }
 
 /*

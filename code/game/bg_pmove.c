@@ -1049,9 +1049,10 @@ PM_CrashLand(void)
 			// this is a pain grunt, so don't play it if dead
 			if(pm->ps->stats[STAT_HEALTH] > 0)
 				PM_AddEvent(EV_FALL_MEDIUM);
-		}else if(delta > 7)
+		}else if(delta > 7){
 			PM_AddEvent(EV_FALL_SHORT);
-		else
+			pm->ps->crashland = qtrue;
+		}else
 			PM_AddEvent(PM_FootstepForSurface());
 	}
 
@@ -1208,6 +1209,8 @@ PM_GroundTrace(void)
 	vec3_t point;
 	trace_t trace;
 
+	pm->ps->crashland = qfalse;
+
 	point[0] = pm->ps->origin[0];
 	point[1] = pm->ps->origin[1];
 	point[2] = pm->ps->origin[2] - 0.25;
@@ -1269,7 +1272,6 @@ PM_GroundTrace(void)
 	}
 
 	if(pm->ps->groundEntityNum == ENTITYNUM_NONE){
-		// just hit the ground
 		if(pm->debugLevel)
 			Com_Printf("%i:land\n", c_pmove);
 
