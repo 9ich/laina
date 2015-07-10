@@ -248,8 +248,13 @@ CG_OffsetThirdPersonView(void)
 	view[2] += 8;
 	AngleVectors(cg.refdefViewAngles, forward, right, up);
 
-	forwardScale = cos(cg_thirdPersonAngle.value / 180 * M_PI);
-	sideScale = sin(cg_thirdPersonAngle.value / 180 * M_PI);
+	if(cg_thirdPerson.integer == 1){
+		forwardScale = cos(cg_thirdPersonAngle.value / 180 * M_PI);
+		sideScale = sin(cg_thirdPersonAngle.value / 180 * M_PI);
+	}else{
+		forwardScale = 1.0f;
+		sideScale = 0.0f;
+	}
 	VectorMA(view, -cg_thirdPersonRange.value * forwardScale, forward, view);
 	VectorMA(view, -cg_thirdPersonRange.value * sideScale, right, view);
 
@@ -279,7 +284,10 @@ CG_OffsetThirdPersonView(void)
 	if(focusDist < 1)
 		focusDist = 1;	// should never happen
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2(focusPoint[2], focusDist);
-	cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
+	if(cg_thirdPerson.integer == 1){
+		cg.refdefViewAngles[PITCH] = -180 / M_PI*atan2(focusPoint[2], focusDist);
+		cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
+	}
 }
 
 // this causes a compiler bug on mac MrC compiler
@@ -579,10 +587,6 @@ CG_CalcViewValues(void)
 
 	memset(&cg.refdef, 0, sizeof(cg.refdef));
 
-	// strings for in game rendering
-	// Q_strncpyz( cg.refdef.text[0], "Park Ranger", sizeof(cg.refdef.text[0]) );
-	// Q_strncpyz( cg.refdef.text[1], "19", sizeof(cg.refdef.text[1]) );
-
 	// calculate size of 3D view
 	CG_CalcVrect();
 
@@ -615,9 +619,12 @@ CG_CalcViewValues(void)
 			  ps->velocity[1] * ps->velocity[1]);
 
 	VectorCopy(ps->origin, cg.refdef.vieworg);
-	VectorCopy(ps->viewangles, cg.refdefViewAngles);
+	if(cg_thirdPerson.integer != 3)
+		VectorCopy(ps->viewangles, cg.refdefViewAngles);
+	if(cg_thirdPerson.integer == 2)
+		VectorSet(ps->viewangles, 0, 0, 0);
 
-	if(cg_cameraOrbit.integer)
+	if(cg_cameraOrbit.value != 0.0f)
 		if(cg.time > cg.nextOrbitTime){
 			cg.nextOrbitTime = cg.time + cg_cameraOrbitDelay.integer;
 			cg_thirdPersonAngle.value += cg_cameraOrbit.value;
