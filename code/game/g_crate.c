@@ -12,6 +12,7 @@ static void	crate_touch(gentity_t*, gentity_t*, trace_t*);
 static void	crate_checkpoint_use(gentity_t*, gentity_t*, gentity_t*);
 static void	crate_checkpoint_touch(gentity_t*, gentity_t*, trace_t*);
 static void	crate_bouncy_touch(gentity_t*, gentity_t*, trace_t*);
+static void	SP_checkpoint_halo(gentity_t *ent);
 
 /*
 A breakable crate which usually contains items.
@@ -85,6 +86,25 @@ SP_crate_checkpoint(gentity_t *ent)
 }
 
 /*
+Recycles ent and transforms it into a checkpoint halo.
+*/
+static void
+SP_checkpoint_halo(gentity_t *ent)
+{
+	ent->model = "models/mapobjects/ckpoint/ckpoint";
+	ent->s.modelindex = G_ModelIndex(ent->model);
+	ent->s.eType = ET_GENERAL;
+	ent->use = nil;
+	ent->touch = nil;
+	ent->takedamage = qfalse;
+	ent->r.contents = 0;
+	// reposition on ground
+	ent->s.origin[2] += ent->r.mins[2];
+	G_SetOrigin(ent, ent->s.origin);
+	trap_LinkEntity(ent);
+}
+
+/*
 An indestructible box which acts just like a jump pad.
 
 SUSPENDED	no drop to floor
@@ -152,6 +172,7 @@ crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 	tent->s.otherEntityNum = activator->s.number;
 	G_UseTargets(self, activator);
 	trap_UnlinkEntity(self);
+	SP_checkpoint_halo(self);
 }
 
 static void
