@@ -253,7 +253,8 @@ typedef enum
 {
 	LEBS_NONE,
 	LEBS_BLOOD,
-	LEBS_BRASS
+	LEBS_BRASS,
+	LEBS_WOOD
 } leBounceSoundType_t;	// fragment local entities can make sounds on impacts
 
 typedef struct localEntity_s
@@ -887,6 +888,8 @@ typedef struct
 	sfxHandle_t	fallSound;
 	sfxHandle_t	jumpPadSound;
 	sfxHandle_t	airjumpSound;
+	sfxHandle_t	splinterBounce;
+	sfxHandle_t	crateSmash;
 
 	sfxHandle_t	oneMinuteSound;
 	sfxHandle_t	fiveMinuteSound;

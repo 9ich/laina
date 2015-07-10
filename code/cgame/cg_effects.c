@@ -78,7 +78,7 @@ CG_LaunchSplinter(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 
 	le->leType = LE_FRAGMENT;
 	le->startTime = cg.time;
-	le->endTime = le->startTime + 5000 + random() * 3000;
+	le->endTime = le->startTime + 2000 + random() * 3000;
 
 	VectorCopy(origin, re->origin);
 	AxisCopy(axisDefault, re->axis);
@@ -94,13 +94,13 @@ CG_LaunchSplinter(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 	le->angles.trBase[0] = rand();
 	le->angles.trBase[1] = rand();
 	le->angles.trBase[2] = rand();
-	le->angles.trDelta[0] = -500 + random()*1000;
-	le->angles.trDelta[1] = -500 + random()*1000;
-	le->angles.trDelta[2] = -500 + random()*1000;
+	le->angles.trDelta[0] = -1000 + random()*2000;
+	le->angles.trDelta[1] = -1000 + random()*2000;
+	le->angles.trDelta[2] = -1000 + random()*2000;
 
 	le->bounceFactor = 0.4f;
 
-	le->leBounceSoundType = LEBS_NONE;
+	le->leBounceSoundType = LEBS_WOOD;
 	le->leFlags = LEF_TUMBLE;
 }
 
@@ -250,7 +250,10 @@ CG_CrateSmash(vec3_t pt)
 {
 	vec3_t vel;
 	int i;
+	vec3_t up = {0, 0, 1};
 
+	CG_SmokePuff(pt, up, 64, 0.85f, 0.58f, 0.44f, 0.6f, 300, cg.time, 
+	   0, LEF_PUFF_DONT_SCALE, cgs.media.smokePuffShader);
 	for(i = 0; i < NSPLINTERS; i++){
 		vel[0] = crandom() * 300;
 		vel[1] = crandom() * 300;

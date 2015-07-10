@@ -786,19 +786,8 @@ CG_EntityEvent(centity_t *cent, vec3_t position)
 	case EV_SMASH_STRONG_CRATE:
 	case EV_SMASH_CHECKPOINT_CRATE:
 		DEBUGNAME("EV_SMASH_CRATE");
-		{
-			vec3_t up = {0, 0, 1};
-
-			CG_SmokePuff(cent->lerpOrigin, up,
-				     64,
-				     1, 1, 1, 1.0f,
-				     500,
-				     cg.time, 0,
-				     LEF_PUFF_DONT_SCALE,
-				     cgs.media.smokePuffShader);
-		}
 		CG_CrateSmash(cent->lerpOrigin);
-		trap_S_StartSound(cent->lerpOrigin, -1, CHAN_VOICE, cgs.media.jumpPadSound);
+		trap_S_StartSound(cent->lerpOrigin, ENTITYNUM_WORLD, CHAN_VOICE, cgs.media.crateSmash);
 		break;
 
 	// weapon events

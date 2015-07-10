@@ -196,7 +196,11 @@ CG_FragmentBounceSound(localEntity_t *le, trace_t *trace)
 				s = cgs.media.gibBounce3Sound;
 			trap_S_StartSound(trace->endpos, ENTITYNUM_WORLD, CHAN_AUTO, s);
 		}
-	}else if(le->leBounceSoundType == LEBS_BRASS){
+	}else if(le->leBounceSoundType == LEBS_WOOD){
+		sfxHandle_t s;
+		if(rand() & 1){
+			s = cgs.media.splinterBounce;
+			trap_S_StartSound(trace->endpos, ENTITYNUM_WORLD, CHAN_AUTO, s);	}
 	}
 
 	// don't allow a fragment to make multiple bounce sounds,
