@@ -26,6 +26,86 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ==================
+CG_LaunchGib
+==================
+*/
+static void
+CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
+{
+	localEntity_t *le;
+	refEntity_t *re;
+
+	le = CG_AllocLocalEntity();
+	re = &le->refEntity;
+
+	le->leType = LE_FRAGMENT;
+	le->startTime = cg.time;
+	le->endTime = le->startTime + 5000 + random() * 3000;
+
+	VectorCopy(origin, re->origin);
+	AxisCopy(axisDefault, re->axis);
+	re->hModel = hModel;
+
+	le->pos.trType = TR_GRAVITY;
+	VectorCopy(origin, le->pos.trBase);
+	VectorCopy(velocity, le->pos.trDelta);
+	le->pos.trTime = cg.time;
+
+	le->angles.trType = TR_LINEAR;
+	le->angles.trTime = cg.time;
+	le->angles.trBase[0] = rand();
+	le->angles.trBase[1] = rand();
+	le->angles.trBase[2] = rand();
+	le->angles.trDelta[0] = -400 + random()*800;
+	le->angles.trDelta[1] = -400 + random()*800;
+	le->angles.trDelta[2] = -400 + random()*800;
+
+	le->bounceFactor = 0.6f;
+
+	le->leBounceSoundType = LEBS_BLOOD;
+	le->leFlags = LEF_TUMBLE;
+	le->leMarkType = LEMT_BLOOD;
+}
+
+static void
+CG_LaunchSplinter(vec3_t origin, vec3_t velocity, qhandle_t hModel)
+{
+	localEntity_t *le;
+	refEntity_t *re;
+
+	le = CG_AllocLocalEntity();
+	re = &le->refEntity;
+
+	le->leType = LE_FRAGMENT;
+	le->startTime = cg.time;
+	le->endTime = le->startTime + 5000 + random() * 3000;
+
+	VectorCopy(origin, re->origin);
+	AxisCopy(axisDefault, re->axis);
+	re->hModel = hModel;
+
+	le->pos.trType = TR_GRAVITY;
+	VectorCopy(origin, le->pos.trBase);
+	VectorCopy(velocity, le->pos.trDelta);
+	le->pos.trTime = cg.time;
+
+	le->angles.trType = TR_LINEAR;
+	le->angles.trTime = cg.time;
+	le->angles.trBase[0] = rand();
+	le->angles.trBase[1] = rand();
+	le->angles.trBase[2] = rand();
+	le->angles.trDelta[0] = -500 + random()*1000;
+	le->angles.trDelta[1] = -500 + random()*1000;
+	le->angles.trDelta[2] = -500 + random()*1000;
+
+	le->bounceFactor = 0.4f;
+
+	le->leBounceSoundType = LEBS_NONE;
+	le->leFlags = LEF_TUMBLE;
+}
+
+/*
+==================
 CG_BubbleTrail
 
 Bullets shot underwater
@@ -158,6 +238,25 @@ CG_SmokePuff(const vec3_t p, const vec3_t vel,
 	re->radius = le->radius;
 
 	return le;
+}
+
+enum {
+	NSPLINTERS = 10,
+	SPLINTERTIME = 1000
+ };
+
+void
+CG_CrateSmash(vec3_t pt)
+{
+	vec3_t vel;
+	int i;
+
+	for(i = 0; i < NSPLINTERS; i++){
+		vel[0] = crandom() * 300;
+		vel[1] = crandom() * 300;
+		vel[2] = crandom() * 600;
+		CG_LaunchSplinter(pt, vel, cgs.media.splinter);
+	}
 }
 
 /*
@@ -520,39 +619,6 @@ CG_Bleed(vec3_t origin, int entityNum)
 	// don't show player's own blood in view
 	if(entityNum == cg.snap->ps.clientNum)
 		ex->refEntity.renderfx |= RF_THIRD_PERSON;
-}
-
-/*
-==================
-CG_LaunchGib
-==================
-*/
-void
-CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
-{
-	localEntity_t *le;
-	refEntity_t *re;
-
-	le = CG_AllocLocalEntity();
-	re = &le->refEntity;
-
-	le->leType = LE_FRAGMENT;
-	le->startTime = cg.time;
-	le->endTime = le->startTime + 5000 + random() * 3000;
-
-	VectorCopy(origin, re->origin);
-	AxisCopy(axisDefault, re->axis);
-	re->hModel = hModel;
-
-	le->pos.trType = TR_GRAVITY;
-	VectorCopy(origin, le->pos.trBase);
-	VectorCopy(velocity, le->pos.trDelta);
-	le->pos.trTime = cg.time;
-
-	le->bounceFactor = 0.6f;
-
-	le->leBounceSoundType = LEBS_BLOOD;
-	le->leMarkType = LEMT_BLOOD;
 }
 
 /*

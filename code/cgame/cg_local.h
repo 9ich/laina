@@ -722,6 +722,8 @@ typedef struct
 	qhandle_t	gibSkull;
 	qhandle_t	gibBrain;
 
+	qhandle_t	splinter;
+
 	qhandle_t	smoke2;
 
 	qhandle_t	machinegunBrassModel;
@@ -1379,6 +1381,7 @@ localEntity_t	*CG_SmokePuff(const vec3_t p,
 			      int fadeInTime,
 			      int leFlags,
 			      qhandle_t hShader);
+void		CG_CrateSmash(vec3_t pt);
 void		CG_BubbleTrail(vec3_t start, vec3_t end, float spacing);
 void		CG_SpawnEffect(vec3_t org);
 #ifdef MISSIONPACK

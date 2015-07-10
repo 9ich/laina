@@ -792,15 +792,13 @@ CG_EntityEvent(centity_t *cent, vec3_t position)
 			CG_SmokePuff(cent->lerpOrigin, up,
 				     64,
 				     1, 1, 1, 1.0f,
-				     1000,
+				     500,
 				     cg.time, 0,
 				     LEF_PUFF_DONT_SCALE,
 				     cgs.media.smokePuffShader);
 		}
-
-		// boing sound at origin, jump sound on player
+		CG_CrateSmash(cent->lerpOrigin);
 		trap_S_StartSound(cent->lerpOrigin, -1, CHAN_VOICE, cgs.media.jumpPadSound);
-		trap_S_StartSound(nil, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*jump1.wav"));
 		break;
 
 	// weapon events
