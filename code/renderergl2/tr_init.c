@@ -270,6 +270,7 @@ static void InitOpenGL( void )
 		
 		GLimp_Init();
 		GLimp_InitExtraExtensions();
+		GLimp_InitExtraGL2Extensions();
 
 		strcpy( renderer_buffer, glConfig.renderer_string );
 		Q_strlwr( renderer_buffer );

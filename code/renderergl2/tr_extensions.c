@@ -236,6 +236,12 @@ void GLimp_InitExtraExtensions()
 	{
 		ri.Printf(PRINT_DEVELOPER, result[2], extension);
 	}
+}
+
+void GLimp_InitExtraGL2Extensions()
+{
+	char *extension;
+	const char* result[3] = { "...ignoring %s\n", "...using %s\n", "...%s not found\n" };
 
 	// GL_ARB_vertex_program
 	//glRefConfig.vertexProgram = qfalse;
