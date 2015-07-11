@@ -1463,13 +1463,6 @@ int		trap_Key_GetCatcher(void);
 void		trap_Key_SetCatcher(int catcher);
 int		trap_Key_GetKey(const char *binding);
 
-typedef enum
-{
-	SYSTEM_PRINT,
-	CHAT_PRINT,
-	TEAMCHAT_PRINT
-} q3print_t;
-
 int		trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int height, int bits);
 e_status	trap_CIN_StopCinematic(int handle);
 e_status	trap_CIN_RunCinematic(int handle);
