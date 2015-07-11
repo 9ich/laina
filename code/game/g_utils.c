@@ -391,8 +391,8 @@ G_Spawn(void)
 	if(g_debugAlloc.integer)
 		G_Printf("spawn entity\n");
 
-	e = nil;	// shut up warning
-	i = 0;		// shut up warning
+	e = nil;
+	i = 0;
 	for(force = 0; force < 2; force++){
 		// if we go through all entities and can't find one to free,
 		// override the normal minimum times before use

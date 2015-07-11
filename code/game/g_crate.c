@@ -29,17 +29,19 @@ void
 SP_crate(gentity_t *ent)
 {
 	char *contents;
-	gitem_t *item;
+	int i;
 
-	// prepare the contents as a gitem_t*
+	// prepare the crate contents
 	G_SpawnString("contents", "item_token", &contents);
-	for(item = bg_itemlist+1; item->classname; item++)
-		if(strcmp(item->classname, contents) == 0){
-			ent->boxcontents = item;
+	for(i = 0; i < bg_numItems; i++)
+		if(strcmp(bg_itemlist[i].classname, contents) == 0){
+			ent->boxcontents = i;
 			break;
 		}
-	if(ent->boxcontents == nil)
-		G_Printf(S_COLOR_YELLOW "WARNING: bad item %s in breakable_box\n", contents);
+	if(ent->boxcontents < 1)
+		G_Printf(S_COLOR_YELLOW "WARNING: bad item %s in crate\n", contents);
+	else
+		RegisterItem(&bg_itemlist[ent->boxcontents]);
 	G_SpawnInt("count", "5", &ent->count);
 
 	ent->model = "models/crates/crate.md3";
@@ -137,15 +139,16 @@ crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	gentity_t *tent;
 	vec3_t vel;
-	int i;
+	int i, it;
 
-	if(self->boxcontents == nil)
+	if(self->boxcontents < 1)
 		return;
+	it = self->boxcontents;
 	for(i = 0; i < self->count; i++){
 		vel[0] = crandom()*BOX_CONTENTS_SPEED;
 		vel[1] = crandom()*BOX_CONTENTS_SPEED;
 		vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
-		LaunchItem(self->boxcontents, self->s.pos.trBase, vel);
+		LaunchItem(&bg_itemlist[it], self->s.pos.trBase, vel);
 	}
 	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;

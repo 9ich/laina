@@ -791,8 +791,7 @@ void
 SaveRegisteredItems(void)
 {
 	char string[MAX_ITEMS+1];
-	int i;
-	int count;
+	int i, count;
 
 	count = 0;
 	for(i = 0; i < bg_numItems; i++){
@@ -802,7 +801,8 @@ SaveRegisteredItems(void)
 		}else
 			string[i] = '0';
 	}
-	string[bg_numItems] = 0;
+				
+	string[bg_numItems] = '\0';
 
 	G_Printf("%i items registered\n", count);
 	trap_SetConfigstring(CS_ITEMS, string);

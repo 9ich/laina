@@ -151,7 +151,7 @@ struct gentity_s
 	int		methodOfDeath;
 	int		splashMethodOfDeath;
 
-	gitem_t		*boxcontents;	// breakable_box
+	int		boxcontents;	// bg_itemlist index for crate_*s
 	int		count;
 
 	gentity_t	*chain;
