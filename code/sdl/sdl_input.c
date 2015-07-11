@@ -944,7 +944,7 @@ void IN_Init( void *windowData )
 
 	SDL_window = (SDL_Window *)windowData;
 
-	Com_DPrintf( "\n------- Input Initialization -------\n" );
+	Com_Printf( "\n------- Input Initialization -------\n" );
 
 	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_ARCHIVE );
 
@@ -964,8 +964,9 @@ void IN_Init( void *windowData )
 	Cvar_SetValue( "com_unfocused",	!( appState & SDL_WINDOW_INPUT_FOCUS ) );
 	Cvar_SetValue( "com_minimized", appState & SDL_WINDOW_MINIMIZED );
 
-	IN_InitJoystick( );
-	Com_DPrintf( "------------------------------------\n" );
+	if(0)
+		IN_InitJoystick( );
+	Com_Printf( "------------------------------------\n" );
 }
 
 /*
