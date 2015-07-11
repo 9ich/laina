@@ -699,7 +699,7 @@ void		BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resu
 void		BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerState_t *ps);
 
 void		BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad);
-void		BG_Squish(playerState_t *ps, entityState_t *squishable);
+qboolean	BG_TouchCrate(playerState_t *ps, entityState_t *crate);
 
 void		BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap);
 void		BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int time, qboolean snap);
