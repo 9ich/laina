@@ -111,7 +111,7 @@ static void SNDDMA_PrintAudiospec(const char *str, const SDL_AudioSpec *spec)
 	int		i;
 	char	*fmt = NULL;
 
-	Com_Printf("%s:\n", str);
+	Com_DPrintf("%s:\n", str);
 
 	for( i = 0; i < formatToStringTableSize; i++ ) {
 		if( spec->format == formatToStringTable[ i ].enumFormat ) {
@@ -120,14 +120,14 @@ static void SNDDMA_PrintAudiospec(const char *str, const SDL_AudioSpec *spec)
 	}
 
 	if( fmt ) {
-		Com_Printf( "  Format:   %s\n", fmt );
+		Com_DPrintf( "  Format:   %s\n", fmt );
 	} else {
-		Com_Printf( "  Format:   " S_COLOR_RED "UNKNOWN\n");
+		Com_DPrintf( "  Format:   " S_COLOR_RED "UNKNOWN\n");
 	}
 
-	Com_Printf( "  Freq:     %d\n", (int) spec->freq );
-	Com_Printf( "  Samples:  %d\n", (int) spec->samples );
-	Com_Printf( "  Channels: %d\n", (int) spec->channels );
+	Com_DPrintf( "  Freq:     %d\n", (int) spec->freq );
+	Com_DPrintf( "  Samples:  %d\n", (int) spec->samples );
+	Com_DPrintf( "  Channels: %d\n", (int) spec->channels );
 }
 
 /*
@@ -152,7 +152,7 @@ qboolean SNDDMA_Init(void)
 		s_sdlMixSamps = Cvar_Get("s_sdlMixSamps", "0", CVAR_ARCHIVE);
 	}
 
-	Com_Printf( "SDL_Init( SDL_INIT_AUDIO )... " );
+	Com_Printf( "initializing SDL audio... " );
 
 	if (!SDL_WasInit(SDL_INIT_AUDIO))
 	{
@@ -236,10 +236,10 @@ qboolean SNDDMA_Init(void)
 	dmasize = (dma.samples * (dma.samplebits/8));
 	dma.buffer = calloc(1, dmasize);
 
-	Com_Printf("Starting SDL audio callback...\n");
+	Com_DPrintf("Starting SDL audio callback...\n");
 	SDL_PauseAudio(0);  // start callback.
 
-	Com_Printf("SDL audio initialized.\n");
+	Com_DPrintf("SDL audio initialized\n");
 	snd_inited = qtrue;
 	return qtrue;
 }

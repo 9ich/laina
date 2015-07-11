@@ -498,7 +498,7 @@ static qboolean GLimp_StartDriverAndSetMode(int mode, qboolean fullscreen, qbool
 
 		if (SDL_Init(SDL_INIT_VIDEO) == -1)
 		{
-			ri.Printf( PRINT_ALL, "SDL_Init( SDL_INIT_VIDEO ) FAILED (%s)\n", SDL_GetError());
+			ri.Printf( PRINT_ALL, "SDL_INIT_VIDEO FAILED (%s)\n", SDL_GetError());
 			return qfalse;
 		}
 
