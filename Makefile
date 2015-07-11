@@ -223,7 +223,7 @@ endif
 #############################################################################
 
 BD=$(BUILD_DIR)/debug-$(PLATFORM)-$(ARCH)
-BR=$(BUILD_DIR)/release-$(PLATFORM)-$(ARCH)
+BR=$(BUILD_DIR)/$(PLATFORM)-$(ARCH)
 CDIR=$(MOUNT_DIR)/client
 SDIR=$(MOUNT_DIR)/server
 RCOMMONDIR=$(MOUNT_DIR)/renderercommon
