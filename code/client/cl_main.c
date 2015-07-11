@@ -3381,16 +3381,16 @@ static void CL_GenerateQKey(void)
 	len = FS_SV_FOpenFileRead( QKEY_FILE, &f );
 	FS_FCloseFile( f );
 	if( len == QKEY_SIZE ) {
-		Com_Printf( "QKEY found.\n" );
+		Com_DPrintf( "QKEY found.\n" );
 		return;
 	}
 	else {
 		if( len > 0 ) {
-			Com_Printf( "QKEY file size != %d, regenerating\n",
+			Com_DPrintf( "QKEY file size != %d, regenerating\n",
 				QKEY_SIZE );
 		}
 
-		Com_Printf( "QKEY building random string\n" );
+		Com_DPrintf( "QKEY building random string\n" );
 		Com_RandomBytes( buff, sizeof(buff) );
 
 		f = FS_SV_FOpenFileWrite( QKEY_FILE );
