@@ -158,11 +158,6 @@ G_SetClientSound
 void
 G_SetClientSound(gentity_t *ent)
 {
-#ifdef MISSIONPACK
-	if(ent->s.eFlags & EF_TICKING)
-		ent->client->ps.loopSound = G_SoundIndex("sound/weapons/proxmine/wstbtick.wav");
-	else
-#endif
 	if(ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)))
 		ent->client->ps.loopSound = level.snd_fry;
 	else
@@ -364,9 +359,6 @@ void
 ClientTimerActions(gentity_t *ent, int msec)
 {
 	gclient_t *client;
-#ifdef MISSIONPACK
-	int maxHealth;
-#endif
 
 	client = ent->client;
 	client->timeResidual += msec;
@@ -374,89 +366,6 @@ ClientTimerActions(gentity_t *ent, int msec)
 	while(client->timeResidual >= 1000)
 		client->timeResidual -= 1000;
 
-#ifdef MISSIONPACK
-	if(bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN){
-		int w, max, inc, t, i;
-		int weapList[] = {WP_MACHINEGUN, WP_SHOTGUN, WP_GRENADE_LAUNCHER, WP_ROCKET_LAUNCHER, WP_LIGHTNING, WP_RAILGUN, WP_PLASMAGUN, WP_BFG, WP_NAILGUN, WP_PROX_LAUNCHER, WP_CHAINGUN};
-		int weapCount = ARRAY_LEN(weapList);
-		for(i = 0; i < weapCount; i++){
-			w = weapList[i];
-
-			switch(w){
-			case WP_MACHINEGUN:
-				max = 50;
-				inc = 4;
-				t = 1000;
-				break;
-			case WP_SHOTGUN:
-				max = 10;
-				inc = 1;
-				t = 1500;
-				break;
-			case WP_GRENADE_LAUNCHER:
-				max = 10;
-				inc = 1;
-				t = 2000;
-				break;
-			case WP_ROCKET_LAUNCHER:
-				max = 10;
-				inc = 1;
-				t = 1750;
-				break;
-			case WP_LIGHTNING:
-				max = 50;
-				inc = 5;
-				t = 1500;
-				break;
-			case WP_RAILGUN:
-				max = 10;
-				inc = 1;
-				t = 1750;
-				break;
-			case WP_PLASMAGUN:
-				max = 50;
-				inc = 5;
-				t = 1500;
-				break;
-			case WP_BFG:
-				max = 10;
-				inc = 1;
-				t = 4000;
-				break;
-			case WP_NAILGUN:
-				max = 10;
-				inc = 1;
-				t = 1250;
-				break;
-			case WP_PROX_LAUNCHER:
-				max = 5;
-				inc = 1;
-				t = 2000;
-				break;
-			case WP_CHAINGUN:
-				max = 100;
-				inc = 5;
-				t = 1000;
-				break;
-			default:
-				max = 0;
-				inc = 0;
-				t = 1000;
-				break;
-			}
-			client->ammoTimes[w] += msec;
-			if(client->ps.ammo[w] >= max)
-				client->ammoTimes[w] = 0;
-			if(client->ammoTimes[w] >= t){
-				while(client->ammoTimes[w] >= t)
-					client->ammoTimes[w] -= t;
-				client->ps.ammo[w] += inc;
-				if(client->ps.ammo[w] > max)
-					client->ps.ammo[w] = max;
-			}
-		}
-	}
-#endif
 }
 
 /*
@@ -552,25 +461,6 @@ ClientEvents(gentity_t *ent, int oldEventSequence)
 				ent->client->ps.powerups[j] = 0;
 			}
 
-#ifdef MISSIONPACK
-			if(g_gametype.integer == GT_HARVESTER)
-				if(ent->client->ps.generic1 > 0){
-					if(ent->client->sess.sessionTeam == TEAM_RED)
-						item = BG_FindItem("Blue Cube");
-					else
-						item = BG_FindItem("Red Cube");
-					if(item)
-						for(j = 0; j < ent->client->ps.generic1; j++){
-							drop = Drop_Item(ent, item, 0);
-							if(ent->client->sess.sessionTeam == TEAM_RED)
-								drop->spawnflags = TEAM_BLUE;
-							else
-								drop->spawnflags = TEAM_RED;
-						}
-					ent->client->ps.generic1 = 0;
-				}
-
-#endif
 			SelectSpawnPoint(ent->client->ps.origin, origin, angles, qfalse);
 			TeleportPlayer(ent, origin, angles);
 			break;
@@ -580,24 +470,6 @@ ClientEvents(gentity_t *ent, int oldEventSequence)
 
 			break;
 
-#ifdef MISSIONPACK
-		case EV_USE_ITEM3:	// kamikaze
-			// make sure the invulnerability is off
-			ent->client->invulnerabilityTime = 0;
-			// start the kamikze
-			G_StartKamikaze(ent);
-			break;
-
-		case EV_USE_ITEM4:	// portal
-			if(ent->client->portalID)
-				DropPortalSource(ent);
-			else
-				DropPortalDestination(ent);
-			break;
-		case EV_USE_ITEM5:	// invulnerability
-			ent->client->invulnerabilityTime = level.time + 10000;
-			break;
-#endif
 
 		default:
 			break;
@@ -605,45 +477,6 @@ ClientEvents(gentity_t *ent, int oldEventSequence)
 	}
 }
 
-#ifdef MISSIONPACK
-/*
-==============
-StuckInOtherClient
-==============
-*/
-static int
-StuckInOtherClient(gentity_t *ent)
-{
-	int i;
-	gentity_t *ent2;
-
-	ent2 = &g_entities[0];
-	for(i = 0; i < MAX_CLIENTS; i++, ent2++){
-		if(ent2 == ent)
-			continue;
-		if(!ent2->inuse)
-			continue;
-		if(!ent2->client)
-			continue;
-		if(ent2->health <= 0)
-			continue;
-		if(ent2->r.absmin[0] > ent->r.absmax[0])
-			continue;
-		if(ent2->r.absmin[1] > ent->r.absmax[1])
-			continue;
-		if(ent2->r.absmin[2] > ent->r.absmax[2])
-			continue;
-		if(ent2->r.absmax[0] < ent->r.absmin[0])
-			continue;
-		if(ent2->r.absmax[1] < ent->r.absmin[1])
-			continue;
-		if(ent2->r.absmax[2] < ent->r.absmin[2])
-			continue;
-		return qtrue;
-	}
-	return qfalse;
-}
-#endif
 
 void BotTestSolid(vec3_t origin);
 
@@ -772,11 +605,6 @@ ClientThink_real(gentity_t *ent)
 	// set speed
 	client->ps.speed = g_speed.value;
 
-#ifdef MISSIONPACK
-	if(bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT)
-		client->ps.speed *= 1.5;
-	else
-#endif
 	if(client->ps.powerups[PW_HASTE])
 		client->ps.speed *= 1.3;
 
@@ -801,31 +629,6 @@ ClientThink_real(gentity_t *ent)
 		ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
 	}
 
-#ifdef MISSIONPACK
-	// check for invulnerability expansion before doing the Pmove
-	if(client->ps.powerups[PW_INVULNERABILITY])
-		if(!(client->ps.pm_flags & PMF_INVULEXPAND)){
-			vec3_t mins = {-42, -42, -42};
-			vec3_t maxs = {42, 42, 42};
-			vec3_t oldmins, oldmaxs;
-
-			VectorCopy(ent->r.mins, oldmins);
-			VectorCopy(ent->r.maxs, oldmaxs);
-			// expand
-			VectorCopy(mins, ent->r.mins);
-			VectorCopy(maxs, ent->r.maxs);
-			trap_LinkEntity(ent);
-			// check if this would get anyone stuck in this player
-			if(!StuckInOtherClient(ent))
-				// set flag so the expanded size will be set in PM_CheckDuck
-				client->ps.pm_flags |= PMF_INVULEXPAND;
-			// set back
-			VectorCopy(oldmins, ent->r.mins);
-			VectorCopy(oldmaxs, ent->r.maxs);
-			trap_LinkEntity(ent);
-		}
-
-#endif
 
 	pm.ps = &client->ps;
 	pm.cmd = *ucmd;
@@ -845,21 +648,7 @@ ClientThink_real(gentity_t *ent)
 
 	VectorCopy(client->ps.origin, client->oldOrigin);
 
-#ifdef MISSIONPACK
-	if(level.intermissionQueued != 0 && g_singlePlayer.integer)
-		if(level.time - level.intermissionQueued >= 1000){
-			pm.cmd.buttons = 0;
-			pm.cmd.forwardmove = 0;
-			pm.cmd.rightmove = 0;
-			pm.cmd.upmove = 0;
-			if(level.time - level.intermissionQueued >= 2000 && level.time - level.intermissionQueued <= 2500)
-				trap_SendConsoleCommand(EXEC_APPEND, "centerview\n");
-			ent->client->ps.pm_type = PM_SPINTERMISSION;
-		}
 	Pmove(&pm);
-#else
-	Pmove(&pm);
-#endif
 
 	// save results of pmove
 	if(ent->client->ps.eventSequence != oldEventSequence)
@@ -1031,20 +820,6 @@ ClientEndFrame(gentity_t *ent)
 		if(ent->client->ps.powerups[i] < level.time)
 			ent->client->ps.powerups[i] = 0;
 
-#ifdef MISSIONPACK
-	// set powerup for player animation
-	if(bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD)
-		ent->client->ps.powerups[PW_GUARD] = level.time;
-	if(bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT)
-		ent->client->ps.powerups[PW_SCOUT] = level.time;
-	if(bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_DOUBLER)
-		ent->client->ps.powerups[PW_DOUBLER] = level.time;
-	if(bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN)
-		ent->client->ps.powerups[PW_AMMOREGEN] = level.time;
-	if(ent->client->invulnerabilityTime > level.time)
-		ent->client->ps.powerups[PW_INVULNERABILITY] = level.time;
-
-#endif
 
 	// save network bandwidth
 #if 0

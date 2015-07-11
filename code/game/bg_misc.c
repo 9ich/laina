@@ -304,9 +304,6 @@ qboolean
 BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t *ps)
 {
 	gitem_t *item;
-#ifdef MISSIONPACK
-	int upperBound;
-#endif
 
 	if(ent->modelindex < 1 || ent->modelindex >= bg_numItems)
 		Com_Error(ERR_DROP, "BG_CanItemBeGrabbed: index out of range");
@@ -339,35 +336,8 @@ BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t 
 	case IT_KEY:
 		return qtrue;
 
-#ifdef MISSIONPACK
-	case IT_PERSISTANT_POWERUP:
-		// can only hold one item at a time
-		if(ps->stats[STAT_PERSISTANT_POWERUP])
-			return qfalse;
-
-		// check team only
-		if((ent->generic1 & 2) && (ps->persistant[PERS_TEAM] != TEAM_RED))
-			return qfalse;
-		if((ent->generic1 & 4) && (ps->persistant[PERS_TEAM] != TEAM_BLUE))
-			return qfalse;
-
-		return qtrue;
-#endif
 
 	case IT_TEAM:	// team items, such as flags
-#ifdef MISSIONPACK
-		if(gametype == GT_1FCTF){
-			// neutral flag can always be picked up
-			if(item->giTag == PW_NEUTRALFLAG)
-				return qtrue;
-			if(ps->persistant[PERS_TEAM] == TEAM_RED){
-				if(item->giTag == PW_BLUEFLAG  && ps->powerups[PW_NEUTRALFLAG])
-					return qtrue;
-			}else if(ps->persistant[PERS_TEAM] == TEAM_BLUE)
-				if(item->giTag == PW_REDFLAG  && ps->powerups[PW_NEUTRALFLAG])
-					return qtrue;
-		}
-#endif
 		if(gametype == GT_CTF){
 			// ent->modelindex2 is non-zero on items if they are dropped
 			// we need to know this because we can pick up our dropped flag (and return it)
@@ -384,11 +354,6 @@ BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t 
 					return qtrue;
 		}
 
-#ifdef MISSIONPACK
-		if(gametype == GT_HARVESTER)
-			return qtrue;
-
-#endif
 		return qfalse;
 
 	case IT_HOLDABLE:
@@ -590,17 +555,6 @@ char *eventnames[] = {
 
 	"EV_GIB_PLAYER",	// gib a previously living player
 	"EV_SCOREPLUM",		// score plum
-
-//#ifdef MISSIONPACK
-	"EV_PROXIMITY_MINE_STICK",
-	"EV_PROXIMITY_MINE_TRIGGER",
-	"EV_KAMIKAZE",		// kamikaze explodes
-	"EV_OBELISKEXPLODE",	// obelisk explodes
-	"EV_OBELISKPAIN",	// obelisk pain
-	"EV_INVUL_IMPACT",	// invulnerability sphere impact
-	"EV_JUICED",		// invulnerability juiced effect
-	"EV_LIGHTNINGBOLT",	// lightning bolt bounced of invulnerability sphere
-//#endif
 
 	"EV_DEBUG_LINE",
 	"EV_STOPLOOPINGSOUND",
