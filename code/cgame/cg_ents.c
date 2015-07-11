@@ -359,11 +359,9 @@ CG_Item(centity_t *cent)
 	}else
 		frac = 1.0;
 
-	// items without glow textures need to keep a minimum light value
-	// so they are always visible
-	if((item->giType == IT_WEAPON) ||
-	   (item->giType == IT_ARMOR))
-		ent.renderfx |= RF_MINLIGHT;
+	// items need to keep a minimum light value so they are always
+	// visible
+	ent.renderfx |= RF_MINLIGHT;
 
 	// increase the size of the weapons when they are presented as items
 	if(item->giType == IT_WEAPON){
@@ -610,6 +608,8 @@ CG_Crate(centity_t *cent)
 
 	CG_EntityShadow(cent, &shadowplane);
 	ent.shadowPlane = shadowplane;
+
+	ent.renderfx |= RF_MINLIGHT;
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
