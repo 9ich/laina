@@ -1100,6 +1100,7 @@ Change the volumes of all the playing sounds for changes in their positions
 */
 void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int inwater ) {
 	vec3_t origin;
+	int i;
 
 	if ( !s_soundStarted || s_soundMuted ) {
 		return;
@@ -1113,7 +1114,7 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 
 	// update spatialization for dynamic sounds
 	channel_t* ch = s_channels;
-	for (int i = 0; i < MAX_CHANNELS; ++i, ++ch) {
+	for (i = 0; i < MAX_CHANNELS; ++i, ++ch) {
 		if ( !ch->thesfx ) {
 			continue;
 		}
