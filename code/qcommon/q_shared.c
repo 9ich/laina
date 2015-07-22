@@ -23,32 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // q_shared.c -- stateless support routines that are included in each code dll
 #include "q_shared.h"
 
-int Q_strlcat(char *dst, const char *src, int dstsz)
-{
-	const char *d, *s;
-	int n, dlen;
-
-	d = dst;
-	s = src;
-	n = dstsz;
-
-	while(n-- != 0 && *dst != '\0')
-		dst++;
-	dlen = dst - d;
-	n = dstsz - dlen;
-	if(n-- == 0)
-		return(dlen + strlen(src));
-	while(*src != '\0'){
-		if(n != 0){
-			*dst++ = *src;
-			n--;
-		}
-		src++;
-	}
-	*dst = '\0';
-	return (dlen + (src - s));
-}
-
 float Com_Clamp( float min, float max, float value ) {
 	if ( value < min ) {
 		return min;
@@ -810,26 +784,81 @@ int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 #endif
 
 /*
-=============
-Q_strncpyz
- 
-Safe strncpy that ensures a trailing zero
-=============
-*/
-void Q_strncpyz( char *dest, const char *src, int destsize ) {
-  if ( !dest ) {
-    Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest" );
-  }
-	if ( !src ) {
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
+ * strlcpy.
+ * Copy string src to buffer dst of size dsize.  At most dsize-1
+ * chars will be copied.  Always NUL terminates (unless dsize == 0).
+ * Returns strlen(src); if retval >= dsize, truncation occurred.
+ */
+size_t Q_strncpyz(char *dst, const char *src, int dsize) {
+	const char *osrc = src;
+	size_t nleft = dsize;
+
+	if (!dst)
+		Com_Error(ERR_FATAL, "Q_strncpyz: NULL dst");
+	if (!src)
+		Com_Error(ERR_FATAL, "Q_strncpyz: NULL src");
+	if (dsize < 1)
+		Com_Error(ERR_FATAL,"Q_strncpyz: dsize < 1");
+
+	/* Copy as many bytes as will fit. */
+	if (nleft != 0) {
+		while (--nleft != 0) {
+			if ((*dst++ = *src++) == '\0')
+				break;
+		}
 	}
-	if ( destsize < 1 ) {
-		Com_Error(ERR_FATAL,"Q_strncpyz: destsize < 1" ); 
+	
+	/* Not enough room in dst, add NUL and traverse rest of src. */
+	if (nleft == 0) {
+		if (dsize != 0)
+			*dst = '\0';		/* NUL-terminate dst */
+		while (*src++)
+			;
 	}
 
-	strncpy( dest, src, destsize-1 );
-  dest[destsize-1] = 0;
+	return(src - osrc - 1);	/* count does not include NUL */
 }
+
+/*
+ * Appends src to string dst of size dsize (unlike strncat, dsize is the
+ * full size of dst, not space left).  At most dsize-1 characters
+ * will be copied.  Always NUL terminates (unless dsize <= strlen(dst)).
+ * Returns strlen(src) + MIN(dsize, strlen(initial dst)).
+ * If retval >= dsize, truncation occurred.
+ */
+size_t Q_strlcat(char *dst, const char *src, int dsize) {
+	const char *odst = dst;
+	const char *osrc = src;
+	size_t n = dsize;
+	size_t dlen;
+
+	if (!dst)
+		Com_Error(ERR_FATAL, "Q_strlcat: NULL dst");
+	if (!src)
+		Com_Error(ERR_FATAL, "Q_strlcat: NULL src");
+	if (dsize < 1)
+		Com_Error(ERR_FATAL,"Q_strlcat: dsize < 1");
+
+	/* Find the end of dst and adjust bytes left but don't go past end. */
+	while (n-- != 0 && *dst != '\0')
+		dst++;
+	dlen = dst - odst;
+	n = dsize - dlen;
+
+	if (n-- == 0)
+		return(dlen + strlen(src));
+	while (*src != '\0') {
+		if (n != 0) {
+			*dst++ = *src;
+			n--;
+		}
+		src++;
+	}
+	*dst = '\0';
+
+	return(dlen + (src - osrc));	/* count does not include NUL */
+}
+
                  
 int Q_stricmpn (const char *s1, const char *s2, int n) {
 	int		c1, c2;
@@ -1409,9 +1438,10 @@ Com_CharIsOneOfCharset
 */
 static qboolean Com_CharIsOneOfCharset( char c, char *set )
 {
-	int i;
+	size_t len, i;
 
-	for( i = 0; i < strlen( set ); i++ )
+	len = strlen( set );
+	for( i = 0; i < len; i++ )
 	{
 		if( set[ i ] == c )
 			return qtrue;

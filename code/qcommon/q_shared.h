@@ -698,8 +698,6 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 
 //=============================================
 
-int Q_strlcat(char *dst, const char *src, int dstsz);
-
 float Com_Clamp( float min, float max, float value );
 float Com_Scale(float x, float min, float max, float newmin, float newmax);
 
@@ -789,8 +787,9 @@ char	*Q_strupr( char *s1 );
 const char	*Q_stristr( const char *s, const char *find);
 
 // buffer size safe library replacements
-void	Q_strncpyz( char *dest, const char *src, int destsize );
-void	Q_strcat( char *dest, int size, const char *src );
+size_t	Q_strncpyz(char *dst, const char *src, int dsize);
+size_t	Q_strlcat(char *dst, const char *src, int dsize);
+void	Q_strcat(char *dest, int size, const char *src);
 
 // strlen that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );
