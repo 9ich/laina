@@ -3027,9 +3027,9 @@ Com_TimeVal
 =================
 */
 
-int Com_TimeVal(int minMsec)
+int Com_TimeVal(float minMsec)
 {
-	int timeVal;
+	float timeVal;
 
 	timeVal = Sys_Milliseconds() - com_frameTime;
 
@@ -3047,10 +3047,11 @@ Com_Frame
 =================
 */
 void Com_Frame( void ) {
-
-	int		msec, minMsec;
+	int 		msec;
+	float		minMsec;
 	int		timeVal, timeValSV;
-	static int	lastTime = 0, bias = 0;
+	static int	lastTime = 0;
+	static float	bias = 0;
  
 	int		timeBeforeFirstEvents;
 	int		timeBeforeServer;
@@ -3087,13 +3088,13 @@ void Com_Frame( void ) {
 		else
 		{
 			if(com_minimized->integer && com_maxfpsMinimized->integer > 0)
-				minMsec = 1000 / com_maxfpsMinimized->integer;
+				minMsec = 1000.0f / com_maxfpsMinimized->integer;
 			else if(com_unfocused->integer && com_maxfpsUnfocused->integer > 0)
-				minMsec = 1000 / com_maxfpsUnfocused->integer;
+				minMsec = 1000.0f / com_maxfpsUnfocused->integer;
 			else if(com_maxfps->integer > 0)
-				minMsec = 1000 / com_maxfps->integer;
+				minMsec = 1000.0f / com_maxfps->integer;
 			else
-				minMsec = 1;
+				minMsec = 0.0f;
 			
 			timeVal = com_frameTime - lastTime;
 			bias += timeVal - minMsec;
@@ -3107,7 +3108,7 @@ void Com_Frame( void ) {
 		}
 	}
 	else
-		minMsec = 1;
+		minMsec = 0.0f;
 
 	do
 	{
