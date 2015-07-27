@@ -898,7 +898,7 @@ CG_AddParticles
 ======================
 */
 void
-CG_ParticleSnowFlurry(qhandle_t pshader, centity_t *cent)
+CG_ParticleSnowFlurry(qhandle_t pshader, cent_t *cent)
 {
 	cparticle_t *p;
 	qboolean turb = qtrue;
@@ -1070,7 +1070,7 @@ CG_ParticleBubble(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb, fl
 }
 
 void
-CG_ParticleSmoke(qhandle_t pshader, centity_t *cent)
+CG_ParticleSmoke(qhandle_t pshader, cent_t *cent)
 {
 	// using cent->density = enttime
 	//		 cent->frame = startfade
@@ -1219,7 +1219,7 @@ CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration, int
 
 // Rafael Shrapnel
 void
-CG_AddParticleShrapnel(localEntity_t *le)
+CG_AddParticleShrapnel(localent_t *le)
 {
 }
 
@@ -1294,7 +1294,7 @@ CG_NewParticleArea(int num)
 }
 
 void
-CG_SnowLink(centity_t *cent, qboolean particleOn)
+CG_SnowLink(cent_t *cent, qboolean particleOn)
 {
 	cparticle_t *p, *next;
 	int id;
@@ -1407,7 +1407,7 @@ CG_Particle_Bleed(qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNu
 }
 
 void
-CG_Particle_OilParticle(qhandle_t pshader, centity_t *cent)
+CG_Particle_OilParticle(qhandle_t pshader, cent_t *cent)
 {
 	cparticle_t *p;
 
@@ -1470,7 +1470,7 @@ CG_Particle_OilParticle(qhandle_t pshader, centity_t *cent)
 }
 
 void
-CG_Particle_OilSlick(qhandle_t pshader, centity_t *cent)
+CG_Particle_OilSlick(qhandle_t pshader, cent_t *cent)
 {
 	cparticle_t *p;
 
@@ -1533,7 +1533,7 @@ CG_Particle_OilSlick(qhandle_t pshader, centity_t *cent)
 }
 
 void
-CG_OilSlickRemove(centity_t *cent)
+CG_OilSlickRemove(cent_t *cent)
 {
 	cparticle_t *p, *next;
 	int id;
@@ -1600,7 +1600,7 @@ ValidBloodPool(vec3_t start)
 }
 
 void
-CG_BloodPool(localEntity_t *le, qhandle_t pshader, trace_t *tr)
+CG_BloodPool(localent_t *le, qhandle_t pshader, trace_t *tr)
 {
 	cparticle_t *p;
 	qboolean legit;
@@ -1664,7 +1664,7 @@ CG_BloodPool(localEntity_t *le, qhandle_t pshader, trace_t *tr)
 #define LARGESIZE	32
 
 void
-CG_ParticleBloodCloud(centity_t *cent, vec3_t origin, vec3_t dir)
+CG_ParticleBloodCloud(cent_t *cent, vec3_t origin, vec3_t dir)
 {
 	float length;
 	float dist;
@@ -1786,7 +1786,7 @@ CG_ParticleSparks(vec3_t org, vec3_t vel, int duration, float x, float y, float 
 }
 
 void
-CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir)
+CG_ParticleDust(cent_t *cent, vec3_t origin, vec3_t dir)
 {
 	float length;
 	float dist;

@@ -1256,7 +1256,7 @@ typedef struct {
 // any changes to entityState_t must be mirrored in msg.c:/entityStateFields.*=/
 typedef struct entityState_s {
 	int		number;			// entity index
-	int		eType;			// entityType_t
+	int		eType;			// enttype_t
 	int		eFlags;
 
 	trajectory_t	pos;	// for calculating position

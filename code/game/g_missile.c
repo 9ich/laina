@@ -30,7 +30,7 @@ G_BounceMissile
 ================
 */
 void
-G_BounceMissile(gentity_t *ent, trace_t *trace)
+G_BounceMissile(ent_t *ent, trace_t *trace)
 {
 	vec3_t velocity;
 	float dot;
@@ -65,7 +65,7 @@ Explode a missile without an impact
 ================
 */
 void
-G_ExplodeMissile(gentity_t *ent)
+G_ExplodeMissile(ent_t *ent)
 {
 	vec3_t dir;
 	vec3_t origin;
@@ -99,9 +99,9 @@ G_MissileImpact
 ================
 */
 void
-G_MissileImpact(gentity_t *ent, trace_t *trace)
+G_MissileImpact(ent_t *ent, trace_t *trace)
 {
-	gentity_t *other;
+	ent_t *other;
 	qboolean hitClient = qfalse;
 	other = &g_entities[trace->entityNum];
 
@@ -133,7 +133,7 @@ G_MissileImpact(gentity_t *ent, trace_t *trace)
 
 
 	if(!strcmp(ent->classname, "hook")){
-		gentity_t *nent;
+		ent_t *nent;
 		vec3_t v;
 
 		nent = G_Spawn();
@@ -212,7 +212,7 @@ G_RunMissile
 ================
 */
 void
-G_RunMissile(gentity_t *ent)
+G_RunMissile(ent_t *ent)
 {
 	vec3_t origin;
 	trace_t tr;
@@ -263,10 +263,10 @@ fire_plasma
 
 =================
 */
-gentity_t *
-fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
+ent_t *
+fire_plasma(ent_t *self, vec3_t start, vec3_t dir)
 {
-	gentity_t *bolt;
+	ent_t *bolt;
 
 	VectorNormalize(dir);
 
@@ -303,10 +303,10 @@ fire_plasma(gentity_t *self, vec3_t start, vec3_t dir)
 fire_grenade
 =================
 */
-gentity_t *
-fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
+ent_t *
+fire_grenade(ent_t *self, vec3_t start, vec3_t dir)
 {
-	gentity_t *bolt;
+	ent_t *bolt;
 
 	VectorNormalize(dir);
 
@@ -344,10 +344,10 @@ fire_grenade(gentity_t *self, vec3_t start, vec3_t dir)
 fire_bfg
 =================
 */
-gentity_t *
-fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
+ent_t *
+fire_bfg(ent_t *self, vec3_t start, vec3_t dir)
 {
-	gentity_t *bolt;
+	ent_t *bolt;
 
 	VectorNormalize(dir);
 
@@ -383,10 +383,10 @@ fire_bfg(gentity_t *self, vec3_t start, vec3_t dir)
 fire_rocket
 =================
 */
-gentity_t *
-fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
+ent_t *
+fire_rocket(ent_t *self, vec3_t start, vec3_t dir)
 {
-	gentity_t *bolt;
+	ent_t *bolt;
 
 	VectorNormalize(dir);
 
@@ -422,10 +422,10 @@ fire_rocket(gentity_t *self, vec3_t start, vec3_t dir)
 fire_grapple
 =================
 */
-gentity_t *
-fire_grapple(gentity_t *self, vec3_t start, vec3_t dir)
+ent_t *
+fire_grapple(ent_t *self, vec3_t start, vec3_t dir)
 {
-	gentity_t *hook;
+	ent_t *hook;
 
 	VectorNormalize(dir);
 

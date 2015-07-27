@@ -216,7 +216,7 @@ void
 CG_DrawHead(float x, float y, float w, float h, int clientNum, vec3_t headAngles)
 {
 	clipHandle_t cm;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	float len;
 	vec3_t origin;
 	vec3_t mins, maxs;
@@ -295,7 +295,7 @@ CG_DrawFlagModel(float x, float y, float w, float h, int team, qboolean force2D)
 			return;
 		CG_Draw3DModel(x, y, w, h, handle, 0, origin, angles);
 	}else if(cg_drawIcons.integer){
-		gitem_t *item;
+		item_t *item;
 
 		if(team == TEAM_RED)
 			item = BG_FindItemForPowerup(PW_REDFLAG);
@@ -534,7 +534,7 @@ CG_DrawPowerups(float y)
 	int active;
 	playerState_t *ps;
 	int t;
-	gitem_t *item;
+	item_t *item;
 	int x;
 	int color;
 	float size;
@@ -1470,7 +1470,7 @@ CG_DrawWarmup(void)
 	int sec;
 	int i;
 	int cw;
-	clientInfo_t *ci1, *ci2;
+	clientinfo_t *ci1, *ci2;
 	const char *s;
 
 	sec = cg.warmup;

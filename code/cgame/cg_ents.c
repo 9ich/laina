@@ -92,7 +92,7 @@ Returns the Z component of the surface being shadowed.
 */
 #define SHADOW_DISTANCE 300
 qboolean
-CG_EntityShadow(centity_t *cent, float *shadowPlane)
+CG_EntityShadow(cent_t *cent, float *shadowPlane)
 {
 	vec3_t end, mins = {-15, -15, 0}, maxs = {15, 15, 2};
 	trace_t trace;
@@ -146,7 +146,7 @@ Also called by event processing code
 ======================
 */
 void
-CG_SetEntitySoundPosition(centity_t *cent)
+CG_SetEntitySoundPosition(cent_t *cent)
 {
 	if(cent->currentState.solid == SOLID_BMODEL){
 		vec3_t origin;
@@ -167,7 +167,7 @@ Add continuous entity effects, like local entity emission and lighting
 ==================
 */
 static void
-CG_EntityEffects(centity_t *cent)
+CG_EntityEffects(cent_t *cent)
 {
 	// update sound origins
 	CG_SetEntitySoundPosition(cent);
@@ -202,7 +202,7 @@ CG_General
 ==================
 */
 static void
-CG_General(centity_t *cent)
+CG_General(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
@@ -245,7 +245,7 @@ Speaker entities can automatically play sounds
 ==================
 */
 static void
-CG_Speaker(centity_t *cent)
+CG_Speaker(cent_t *cent)
 {
 	if(!cent->currentState.clientNum)	// FIXME: use something other than clientNum...
 		return;				// not auto triggering
@@ -266,15 +266,15 @@ CG_Item
 ==================
 */
 static void
-CG_Item(centity_t *cent)
+CG_Item(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *es;
-	gitem_t *item;
+	item_t *item;
 	int msec;
 	float frac;
 	float scale;
-	weaponInfo_t *wi;
+	weapinfo_t *wi;
 
 	es = &cent->currentState;
 	if(es->modelindex >= bg_numItems)
@@ -337,7 +337,7 @@ CG_Item(centity_t *cent)
 	}
 
 	if(item->giType == IT_WEAPON && item->giTag == WP_RAILGUN){
-		clientInfo_t *ci = &cgs.clientinfo[cg.snap->ps.clientNum];
+		clientinfo_t *ci = &cgs.clientinfo[cg.snap->ps.clientNum];
 		Byte4Copy(ci->c1RGBA, ent.shaderRGBA);
 	}
 
@@ -408,11 +408,11 @@ CG_Missile
 ===============
 */
 static void
-CG_Missile(centity_t *cent)
+CG_Missile(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
-	const weaponInfo_t *weapon;
+	const weapinfo_t *weapon;
 //	int	col;
 
 	s1 = &cent->currentState;
@@ -502,11 +502,11 @@ This is called when the grapple is sitting up against the wall
 ===============
 */
 static void
-CG_Grapple(centity_t *cent)
+CG_Grapple(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
-	const weaponInfo_t *weapon;
+	const weapinfo_t *weapon;
 
 	s1 = &cent->currentState;
 	if(s1->weapon >= WP_NUM_WEAPONS)
@@ -549,7 +549,7 @@ CG_Mover
 ===============
 */
 static void
-CG_Mover(centity_t *cent)
+CG_Mover(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
@@ -585,7 +585,7 @@ CG_Mover(centity_t *cent)
 }
 
 static void
-CG_Crate(centity_t *cent)
+CG_Crate(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
@@ -630,7 +630,7 @@ Also called as an event
 ===============
 */
 void
-CG_Beam(centity_t *cent)
+CG_Beam(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
@@ -656,7 +656,7 @@ CG_Portal
 ===============
 */
 static void
-CG_Portal(centity_t *cent)
+CG_Portal(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
@@ -694,7 +694,7 @@ Also called by client movement prediction code
 void
 CG_AdjustPositionForMover(const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out, vec3_t angles_in, vec3_t angles_out)
 {
-	centity_t *cent;
+	cent_t *cent;
 	vec3_t oldOrigin, origin, deltaOrigin;
 	vec3_t oldAngles, angles, deltaAngles;
 
@@ -731,7 +731,7 @@ CG_InterpolateEntityPosition
 =============================
 */
 static void
-CG_InterpolateEntityPosition(centity_t *cent)
+CG_InterpolateEntityPosition(cent_t *cent)
 {
 	vec3_t current, next;
 	float f;
@@ -767,7 +767,7 @@ CG_CalcEntityLerpPositions
 ===============
 */
 static void
-CG_CalcEntityLerpPositions(centity_t *cent)
+CG_CalcEntityLerpPositions(cent_t *cent)
 {
 	// if this player does not want to see extrapolated players
 	if(!cg_smoothClients.integer)
@@ -807,7 +807,7 @@ CG_TeamBase
 ===============
 */
 static void
-CG_TeamBase(centity_t *cent)
+CG_TeamBase(cent_t *cent)
 {
 	refEntity_t model;
 	if(cgs.gametype == GT_CTF){
@@ -834,7 +834,7 @@ CG_AddCEntity
 ===============
 */
 static void
-CG_AddCEntity(centity_t *cent)
+CG_AddCEntity(cent_t *cent)
 {
 	// event-only entities will have been dealt with already
 	if(cent->currentState.eType >= ET_EVENTS)
@@ -901,7 +901,7 @@ void
 CG_AddPacketEntities(void)
 {
 	int num;
-	centity_t *cent;
+	cent_t *cent;
 	playerState_t *ps;
 
 	// set cg.frameInterpolation

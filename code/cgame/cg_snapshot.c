@@ -30,7 +30,7 @@ CG_ResetEntity
 ==================
 */
 static void
-CG_ResetEntity(centity_t *cent)
+CG_ResetEntity(cent_t *cent)
 {
 	// if the previous snapshot this entity was updated in is at least
 	// an event window back in time then we can reset the previous event
@@ -53,7 +53,7 @@ cent->nextState is moved to cent->currentState and events are fired
 ===============
 */
 static void
-CG_TransitionEntity(centity_t *cent)
+CG_TransitionEntity(cent_t *cent)
 {
 	cent->currentState = cent->nextState;
 	cent->currentValid = qtrue;
@@ -84,7 +84,7 @@ void
 CG_SetInitialSnapshot(snapshot_t *snap)
 {
 	int i;
-	centity_t *cent;
+	cent_t *cent;
 	entityState_t *state;
 
 	cg.snap = snap;
@@ -126,7 +126,7 @@ The transition point from snap to nextSnap has passed
 static void
 CG_TransitionSnapshot(void)
 {
-	centity_t *cent;
+	cent_t *cent;
 	snapshot_t *oldFrame;
 	int i;
 
@@ -195,7 +195,7 @@ CG_SetNextSnap(snapshot_t *snap)
 {
 	int num;
 	entityState_t *es;
-	centity_t *cent;
+	cent_t *cent;
 
 	cg.nextSnap = snap;
 

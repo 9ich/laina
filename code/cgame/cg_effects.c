@@ -32,7 +32,7 @@ CG_LaunchGib
 static void
 CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
-	localEntity_t *le;
+	localent_t *le;
 	refEntity_t *re;
 
 	le = CG_AllocLocalEntity();
@@ -70,7 +70,7 @@ CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 static void
 CG_LaunchSplinter(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
-	localEntity_t *le;
+	localent_t *le;
 	refEntity_t *re;
 
 	le = CG_AllocLocalEntity();
@@ -133,7 +133,7 @@ CG_BubbleTrail(vec3_t start, vec3_t end, float spacing)
 	VectorScale(vec, spacing, vec);
 
 	for(; i < len; i += spacing){
-		localEntity_t *le;
+		localent_t *le;
 		refEntity_t *re;
 
 		le = CG_AllocLocalEntity();
@@ -175,7 +175,7 @@ CG_SmokePuff
 Adds a smoke puff or blood trail localEntity.
 =====================
 */
-localEntity_t *
+localent_t *
 CG_SmokePuff(const vec3_t p, const vec3_t vel,
 	     float radius,
 	     float r, float g, float b, float a,
@@ -186,7 +186,7 @@ CG_SmokePuff(const vec3_t p, const vec3_t vel,
 	     qhandle_t hShader)
 {
 	static int seed = 0x92;
-	localEntity_t *le;
+	localent_t *le;
 	refEntity_t *re;
 //	int fadeInTime = startTime + duration / 2;
 
@@ -272,7 +272,7 @@ Player teleporting in or out
 void
 CG_SpawnEffect(vec3_t org)
 {
-	localEntity_t *le;
+	localent_t *le;
 	refEntity_t *re;
 
 	le = CG_AllocLocalEntity();
@@ -306,7 +306,7 @@ CG_ScorePlum
 void
 CG_ScorePlum(int client, vec3_t org, int score)
 {
-	localEntity_t *le;
+	localent_t *le;
 	refEntity_t *re;
 	vec3_t angles;
 	static vec3_t lastPos;
@@ -346,13 +346,13 @@ CG_ScorePlum(int client, vec3_t org, int score)
 CG_MakeExplosion
 ====================
 */
-localEntity_t *
+localent_t *
 CG_MakeExplosion(vec3_t origin, vec3_t dir,
 		 qhandle_t hModel, qhandle_t shader,
 		 int msec, qboolean isSprite)
 {
 	float ang;
-	localEntity_t *ex;
+	localent_t *ex;
 	int offset;
 	vec3_t tmpVec, newOrigin;
 
@@ -412,7 +412,7 @@ This is the spurt of blood when a character gets hit
 void
 CG_Bleed(vec3_t origin, int entityNum)
 {
-	localEntity_t *ex;
+	localent_t *ex;
 
 	if(!cg_blood.integer)
 		return;
@@ -528,7 +528,7 @@ CG_LaunchExplode
 void
 CG_LaunchExplode(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
-	localEntity_t *le;
+	localent_t *le;
 	refEntity_t *re;
 
 	le = CG_AllocLocalEntity();

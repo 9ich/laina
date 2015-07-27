@@ -221,7 +221,7 @@ typedef enum
 	STAT_DEAD_YAW,		// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,	// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_ARMOR,
-} statIndex_t;
+} statindex_t;
 
 // player_state->persistant[] indexes
 // these fields are the only part of player_state that isn't
@@ -245,7 +245,7 @@ typedef enum
 	PERS_ASSIST_COUNT,		// assist awards
 	PERS_GAUNTLET_FRAG_COUNT,	// kills with the guantlet
 	PERS_CAPTURES			// captures
-} persEnum_t;
+} persistindex_t;
 
 // entityState_t->eFlags
 #define EF_DEAD			0x00000001	// don't draw a foe marker over players with EF_DEAD
@@ -301,7 +301,7 @@ typedef enum
 	KEY_SAPPHIRE,
 
 	KEY_NUMKEYS
-} doorKey_t;
+} doorkey_t;
 
 typedef enum
 {
@@ -332,7 +332,7 @@ typedef enum
 	WP_GRAPPLING_HOOK,
 
 	WP_NUM_WEAPONS
-} weapon_t;
+} weap_t;
 
 // reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
 #define PLAYEREVENT_DENIEDREWARD	0x0001
@@ -455,7 +455,7 @@ typedef enum
 	EV_TAUNT_GETFLAG,
 	EV_TAUNT_GUARDBASE,
 	EV_TAUNT_PATROL
-} entity_event_t;
+} entevent_t;
 
 typedef enum
 {
@@ -473,7 +473,7 @@ typedef enum
 	GTS_BLUETEAM_TOOK_LEAD,
 	GTS_TEAMS_ARE_TIED,
 	GTS_KAMIKAZE
-} global_team_sound_t;
+} teamsound_t;
 
 // animations
 typedef enum
@@ -529,7 +529,7 @@ typedef enum
 	FLAG_STAND2RUN,
 
 	MAX_TOTALANIMATIONS
-} animNumber_t;
+} animnum_t;
 
 typedef struct animation_s
 {
@@ -554,7 +554,7 @@ typedef enum
 	TEAM_SPECTATOR,
 
 	TEAM_NUM_TEAMS
-} team_t;
+} teamnum_t;
 
 // Time between location updates
 #define TEAM_LOCATION_UPDATE_TIME	1000
@@ -602,11 +602,11 @@ typedef enum
 	MOD_TARGET_LASER,
 	MOD_TRIGGER_HURT,
 	MOD_GRAPPLE
-} meansOfDeath_t;
+} meansofdeath_t;
 
 //---------------------------------------------------------
 
-// gitem_t->type
+// item_t->type
 typedef enum
 {
 	IT_BAD,
@@ -626,7 +626,7 @@ typedef enum
 
 #define MAX_ITEM_MODELS 4
 
-typedef struct gitem_s
+typedef struct item_s
 {
 	char		*classname;	// spawning name
 	char		*pickup_sound;
@@ -642,16 +642,16 @@ typedef struct gitem_s
 
 	char		*precaches;	// string of all models and images this item will use
 	char		*sounds;	// string of all sounds this item will use
-} gitem_t;
+} item_t;
 
 // included in both the game dll and the client
-extern gitem_t bg_itemlist[];
+extern item_t bg_itemlist[];
 extern int bg_numItems;
 
-gitem_t		*BG_FindItem(const char *pickupName);
-gitem_t		*BG_FindItemForWeapon(weapon_t weapon);
-gitem_t		*BG_FindItemForPowerup(powerup_t pw);
-gitem_t		*BG_FindItemForHoldable(holdable_t pw);
+item_t		*BG_FindItem(const char *pickupName);
+item_t		*BG_FindItemForWeapon(weap_t weapon);
+item_t		*BG_FindItemForPowerup(powerup_t pw);
+item_t		*BG_FindItemForHoldable(holdable_t pw);
 #define ITEM_INDEX(x) ((x)-bg_itemlist)
 
 qboolean	BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t *ps);
@@ -691,7 +691,7 @@ typedef enum
 	ET_EVENTS	// any of the EV_* events can be added freestanding
 	// by setting eType to ET_EVENTS + eventNum
 	// this avoids having to set eFlags and eventNum
-} entityType_t;
+} enttype_t;
 
 void		BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result);
 void		BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t result);

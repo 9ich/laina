@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 #define MAX_LOCAL_ENTITIES 512
-localEntity_t cg_localEntities[MAX_LOCAL_ENTITIES];
-localEntity_t cg_activeLocalEntities;	// double linked list
-localEntity_t *cg_freeLocalEntities;	// single linked list
+localent_t cg_localEntities[MAX_LOCAL_ENTITIES];
+localent_t cg_activeLocalEntities;	// double linked list
+localent_t *cg_freeLocalEntities;	// single linked list
 
 /*
 ===================
@@ -56,7 +56,7 @@ CG_FreeLocalEntity
 ==================
 */
 void
-CG_FreeLocalEntity(localEntity_t *le)
+CG_FreeLocalEntity(localent_t *le)
 {
 	if(!le->prev)
 		CG_Error("CG_FreeLocalEntity: not active");
@@ -77,10 +77,10 @@ CG_AllocLocalEntity
 Will always succeed, even if it requires freeing an old active entity
 ===================
 */
-localEntity_t   *
+localent_t   *
 CG_AllocLocalEntity(void)
 {
-	localEntity_t *le;
+	localent_t *le;
 
 	if(!cg_freeLocalEntities)
 		// no free entities, so free the one at the end of the chain
@@ -119,13 +119,13 @@ Leave expanding blood puffs behind gibs
 ================
 */
 void
-CG_BloodTrail(localEntity_t *le)
+CG_BloodTrail(localent_t *le)
 {
 	int t;
 	int t2;
 	int step;
 	vec3_t newOrigin;
-	localEntity_t *blood;
+	localent_t *blood;
 
 	step = 150;
 	t = step * ((cg.time - cg.frametime + step) / step);
@@ -155,7 +155,7 @@ CG_FragmentBounceMark
 ================
 */
 void
-CG_FragmentBounceMark(localEntity_t *le, trace_t *trace)
+CG_FragmentBounceMark(localent_t *le, trace_t *trace)
 {
 	int radius;
 
@@ -180,7 +180,7 @@ CG_FragmentBounceSound
 ================
 */
 void
-CG_FragmentBounceSound(localEntity_t *le, trace_t *trace)
+CG_FragmentBounceSound(localent_t *le, trace_t *trace)
 {
 	if(le->leBounceSoundType == LEBS_BLOOD){
 		// half the gibs will make splat sounds
@@ -214,7 +214,7 @@ CG_ReflectVelocity
 ================
 */
 void
-CG_ReflectVelocity(localEntity_t *le, trace_t *trace)
+CG_ReflectVelocity(localent_t *le, trace_t *trace)
 {
 	vec3_t velocity;
 	float dot;
@@ -246,7 +246,7 @@ CG_AddFragment
 ================
 */
 void
-CG_AddFragment(localEntity_t *le)
+CG_AddFragment(localent_t *le)
 {
 	vec3_t newOrigin;
 	trace_t trace;
@@ -333,7 +333,7 @@ CG_AddFadeRGB
 ====================
 */
 void
-CG_AddFadeRGB(localEntity_t *le)
+CG_AddFadeRGB(localent_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -357,7 +357,7 @@ CG_AddMoveScaleFade
 ==================
 */
 static void
-CG_AddMoveScaleFade(localEntity_t *le)
+CG_AddMoveScaleFade(localent_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -402,7 +402,7 @@ There are often many of these, so it needs to be simple.
 ===================
 */
 static void
-CG_AddScaleFade(localEntity_t *le)
+CG_AddScaleFade(localent_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -440,7 +440,7 @@ There are often 100+ of these, so it needs to be simple.
 =================
 */
 static void
-CG_AddFallScaleFade(localEntity_t *le)
+CG_AddFallScaleFade(localent_t *le)
 {
 	refEntity_t *re;
 	float c;
@@ -476,7 +476,7 @@ CG_AddExplosion
 ================
 */
 static void
-CG_AddExplosion(localEntity_t *ex)
+CG_AddExplosion(localent_t *ex)
 {
 	refEntity_t *ent;
 
@@ -505,7 +505,7 @@ CG_AddSpriteExplosion
 ================
 */
 static void
-CG_AddSpriteExplosion(localEntity_t *le)
+CG_AddSpriteExplosion(localent_t *le)
 {
 	refEntity_t re;
 	float c;
@@ -548,7 +548,7 @@ CG_AddScorePlum
 #define NUMBER_SIZE 8
 
 void
-CG_AddScorePlum(localEntity_t *le)
+CG_AddScorePlum(localent_t *le)
 {
 	refEntity_t *re;
 	vec3_t origin, delta, dir, vec, up = {0, 0, 1};
@@ -635,7 +635,7 @@ CG_AddLocalEntities
 void
 CG_AddLocalEntities(void)
 {
-	localEntity_t *le, *next;
+	localent_t *le, *next;
 
 	// walk the list backwards, so any new local entities generated
 	// (trails, marks, etc) will be present this frame

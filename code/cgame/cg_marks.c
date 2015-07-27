@@ -31,9 +31,9 @@ MARK POLYS
 ===================================================================
 */
 
-markPoly_t cg_activeMarkPolys;	// double linked list
-markPoly_t *cg_freeMarkPolys;	// single linked list
-markPoly_t cg_markPolys[MAX_MARK_POLYS];
+markpoly_t cg_activeMarkPolys;	// double linked list
+markpoly_t *cg_freeMarkPolys;	// single linked list
+markpoly_t cg_markPolys[MAX_MARK_POLYS];
 static int markTotal;
 
 /*
@@ -63,7 +63,7 @@ CG_FreeMarkPoly
 ==================
 */
 void
-CG_FreeMarkPoly(markPoly_t *le)
+CG_FreeMarkPoly(markpoly_t *le)
 {
 	if(!le->prevMark || !le->nextMark)
 		CG_Error("CG_FreeLocalEntity: not active");
@@ -84,10 +84,10 @@ CG_AllocMark
 Will allways succeed, even if it requires freeing an old active mark
 ===================
 */
-markPoly_t      *
+markpoly_t      *
 CG_AllocMark(void)
 {
-	markPoly_t *le;
+	markpoly_t *le;
 	int time;
 
 	if(!cg_freeMarkPolys){
@@ -180,7 +180,7 @@ CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	for(i = 0, mf = markFragments; i < numFragments; i++, mf++){
 		polyVert_t *v;
 		polyVert_t verts[MAX_VERTS_ON_POLY];
-		markPoly_t *mark;
+		markpoly_t *mark;
 
 		// we have an upper limit on the complexity of polygons
 		// that we store persistantly
@@ -230,7 +230,7 @@ void
 CG_AddMarks(void)
 {
 	int j;
-	markPoly_t *mp, *next;
+	markpoly_t *mp, *next;
 	int t;
 	int fade;
 

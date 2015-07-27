@@ -2581,7 +2581,7 @@ this is ugly
 int
 BotModelMinsMaxs(int modelindex, int eType, int contents, vec3_t mins, vec3_t maxs)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	int i;
 
 	ent = &g_entities[0];
@@ -3484,7 +3484,7 @@ BotCheckEvents(bot_state_t *bs, entityState_t *state)
 	int event;
 	char buf[128];
 
-	//NOTE: this sucks, we're accessing the gentity_t directly
+	//NOTE: this sucks, we're accessing the ent_t directly
 	//but there's no other fast way to do it right now
 	if(bs->entityeventTime[state->number] == g_entities[state->number].eventTime)
 		return;
@@ -3872,7 +3872,7 @@ BotSetEntityNumForGoalWithModel
 void
 BotSetEntityNumForGoalWithModel(bot_goal_t *goal, int eType, char *modelname)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	int i, modelindex;
 	vec3_t dir;
 
@@ -3901,7 +3901,7 @@ BotSetEntityNumForGoal
 void
 BotSetEntityNumForGoal(bot_goal_t *goal, char *classname)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	int i;
 	vec3_t dir;
 

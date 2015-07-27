@@ -33,7 +33,7 @@ global pain sound events for all clients.
 ===============
 */
 void
-P_DamageFeedback(gentity_t *player)
+P_DamageFeedback(ent_t *player)
 {
 	gclient_t *client;
 	float count;
@@ -89,7 +89,7 @@ Check for lava / slime contents and drowning
 =============
 */
 void
-P_WorldEffects(gentity_t *ent)
+P_WorldEffects(ent_t *ent)
 {
 	qboolean envirosuit;
 	int waterlevel;
@@ -156,7 +156,7 @@ G_SetClientSound
 ===============
 */
 void
-G_SetClientSound(gentity_t *ent)
+G_SetClientSound(ent_t *ent)
 {
 	if(ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)))
 		ent->client->ps.loopSound = level.snd_fry;
@@ -172,11 +172,11 @@ ClientImpacts
 ==============
 */
 void
-ClientImpacts(gentity_t *ent, pmove_t *pm)
+ClientImpacts(ent_t *ent, pmove_t *pm)
 {
 	int i, j;
 	trace_t trace;
-	gentity_t *other;
+	ent_t *other;
 
 	memset(&trace, 0, sizeof(trace));
 	for(i = 0; i<pm->numtouch; i++){
@@ -206,11 +206,11 @@ Spectators will only interact with teleporters.
 ============
 */
 void
-G_TouchTriggers(gentity_t *ent)
+G_TouchTriggers(ent_t *ent)
 {
 	int i, num;
 	int touch[MAX_GENTITIES];
-	gentity_t *hit;
+	ent_t *hit;
 	trace_t trace;
 	vec3_t mins, maxs;
 	static vec3_t range = {40, 40, 52};
@@ -278,7 +278,7 @@ SpectatorThink
 =================
 */
 void
-SpectatorThink(gentity_t *ent, usercmd_t *ucmd)
+SpectatorThink(ent_t *ent, usercmd_t *ucmd)
 {
 	pmove_t pm;
 	gclient_t *client;
@@ -356,7 +356,7 @@ Actions that happen once a second
 ==================
 */
 void
-ClientTimerActions(gentity_t *ent, int msec)
+ClientTimerActions(ent_t *ent, int msec)
 {
 	gclient_t *client;
 
@@ -398,7 +398,7 @@ but any server game effects are handled here
 ================
 */
 void
-ClientEvents(gentity_t *ent, int oldEventSequence)
+ClientEvents(ent_t *ent, int oldEventSequence)
 {
 	int i, j;
 	int event;
@@ -406,8 +406,8 @@ ClientEvents(gentity_t *ent, int oldEventSequence)
 	int damage;
 	vec3_t origin, angles;
 //	qboolean	fired;
-	gitem_t *item;
-	gentity_t *drop;
+	item_t *item;
+	ent_t *drop;
 
 	client = ent->client;
 
@@ -488,7 +488,7 @@ SendPendingPredictableEvents
 void
 SendPendingPredictableEvents(playerState_t *ps)
 {
-	gentity_t *t;
+	ent_t *t;
 	int event, seq;
 	int extEvent, number;
 
@@ -529,7 +529,7 @@ once for each server frame, which makes for smooth demo recording.
 ==============
 */
 void
-ClientThink_real(gentity_t *ent)
+ClientThink_real(ent_t *ent)
 {
 	gclient_t *client;
 	pmove_t pm;
@@ -729,7 +729,7 @@ A new command has arrived from the client
 void
 ClientThink(int clientNum)
 {
-	gentity_t *ent;
+	ent_t *ent;
 
 	ent = g_entities + clientNum;
 	trap_GetUsercmd(clientNum, &ent->client->pers.cmd);
@@ -743,7 +743,7 @@ ClientThink(int clientNum)
 }
 
 void
-G_RunClient(gentity_t *ent)
+G_RunClient(ent_t *ent)
 {
 	if(!(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer)
 		return;
@@ -758,7 +758,7 @@ SpectatorClientEndFrame
 ==================
 */
 void
-SpectatorClientEndFrame(gentity_t *ent)
+SpectatorClientEndFrame(ent_t *ent)
 {
 	gclient_t *cl;
 
@@ -806,7 +806,7 @@ while a slow client may have multiple ClientEndFrame between ClientThink.
 ==============
 */
 void
-ClientEndFrame(gentity_t *ent)
+ClientEndFrame(ent_t *ent)
 {
 	int i;
 

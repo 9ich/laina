@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-level_locals_t level;
+levelstatic_t level;
 
 typedef struct
 {
@@ -35,7 +35,7 @@ typedef struct
 	qboolean	teamShader;		// track and if changed, update shader state
 } cvarTable_t;
 
-gentity_t g_entities[MAX_GENTITIES];
+ent_t g_entities[MAX_GENTITIES];
 gclient_t g_clients[MAX_CLIENTS];
 
 vmCvar_t g_gametype;
@@ -245,7 +245,7 @@ All but the last will have the teamchain field set to the next one
 void
 G_FindTeams(void)
 {
-	gentity_t *e, *e2;
+	ent_t *e, *e2;
 	int i, j;
 	int c, c2;
 
@@ -432,7 +432,7 @@ G_InitGame(int levelTime, int randomSeed, int restart)
 		g_entities[i].classname = "clientslot";
 
 	// let the server system know where the entites are
-	trap_LocateGameData(level.gentities, level.num_entities, sizeof(gentity_t),
+	trap_LocateGameData(level.gentities, level.num_entities, sizeof(ent_t),
 			    &level.clients[0].ps, sizeof(level.clients[0]));
 
 	// reserve some spots for dead player bodies
@@ -868,7 +868,7 @@ If a new client connects, this will be called after the spawn function.
 ========================
 */
 void
-MoveClientToIntermission(gentity_t *ent)
+MoveClientToIntermission(ent_t *ent)
 {
 	// take out of follow mode if needed
 	if(ent->client->sess.spectatorState == SPECTATOR_FOLLOW)
@@ -903,7 +903,7 @@ This is also used for spectator spawns
 void
 FindIntermissionPoint(void)
 {
-	gentity_t *ent, *target;
+	ent_t *ent, *target;
 	vec3_t dir;
 
 	// find the intermission spot
@@ -933,7 +933,7 @@ void
 BeginIntermission(void)
 {
 	int i;
-	gentity_t *client;
+	ent_t *client;
 
 	if(level.intermissiontime)
 		return;	// already active
@@ -1605,7 +1605,7 @@ Runs thinking code for this frame if necessary
 =============
 */
 void
-G_RunThink(gentity_t *ent)
+G_RunThink(ent_t *ent)
 {
 	int thinktime;
 
@@ -1632,7 +1632,7 @@ void
 G_RunFrame(int levelTime)
 {
 	int i;
-	gentity_t *ent;
+	ent_t *ent;
 
 	// if we are waiting for the level to restart, do nothing
 	if(level.restarted)

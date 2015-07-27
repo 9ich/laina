@@ -29,9 +29,9 @@ ScorePlum
 ============
 */
 void
-ScorePlum(gentity_t *ent, vec3_t origin, int score)
+ScorePlum(ent_t *ent, vec3_t origin, int score)
 {
-	gentity_t *plum;
+	ent_t *plum;
 
 	plum = G_TempEntity(origin, EV_SCOREPLUM);
 	// only send this temp entity to a single client
@@ -49,7 +49,7 @@ Adds score to both the client and his team
 ============
 */
 void
-AddScore(gentity_t *ent, vec3_t origin, int score)
+AddScore(ent_t *ent, vec3_t origin, int score)
 {
 	if(!ent->client)
 		return;
@@ -72,13 +72,13 @@ Toss the weapon and powerups for the killed player
 =================
 */
 void
-TossClientItems(gentity_t *self)
+TossClientItems(ent_t *self)
 {
-	gitem_t *item;
+	item_t *item;
 	int weapon;
 	float angle;
 	int i;
-	gentity_t *drop;
+	ent_t *drop;
 
 	// drop the weapon if not a gauntlet or machinegun
 	weapon = self->s.weapon;
@@ -128,7 +128,7 @@ LookAtKiller
 ==================
 */
 void
-LookAtKiller(gentity_t *self, gentity_t *inflictor, gentity_t *attacker)
+LookAtKiller(ent_t *self, ent_t *inflictor, ent_t *attacker)
 {
 	vec3_t dir;
 
@@ -150,9 +150,9 @@ GibEntity
 ==================
 */
 void
-GibEntity(gentity_t *self, int killer)
+GibEntity(ent_t *self, int killer)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	int i;
 
 	//if this entity still has kamikaze
@@ -181,7 +181,7 @@ body_die
 ==================
 */
 void
-body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath)
+body_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int meansOfDeath)
 {
 	if(self->health > GIB_HEALTH)
 		return;
@@ -228,9 +228,9 @@ CheckAlmostCapture
 ==================
 */
 void
-CheckAlmostCapture(gentity_t *self, gentity_t *attacker)
+CheckAlmostCapture(ent_t *self, ent_t *attacker)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	vec3_t dir;
 	char *classname;
 
@@ -274,9 +274,9 @@ CheckAlmostScored
 ==================
 */
 void
-CheckAlmostScored(gentity_t *self, gentity_t *attacker)
+CheckAlmostScored(ent_t *self, ent_t *attacker)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	vec3_t dir;
 	char *classname;
 
@@ -306,9 +306,9 @@ player_die
 ==================
 */
 void
-player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath)
+player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int meansOfDeath)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	int anim;
 	int contents;
 	int killer;
@@ -513,7 +513,7 @@ CheckArmor
 ================
 */
 int
-CheckArmor(gentity_t *ent, int damage, int dflags)
+CheckArmor(ent_t *ent, int damage, int dflags)
 {
 	gclient_t *client;
 	int save;
@@ -607,7 +607,7 @@ dflags		these flags are used to control how T_Damage works
 */
 
 void
-G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
+G_Damage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 	 vec3_t dir, vec3_t point, int damage, int dflags, int mod)
 {
 	gclient_t *client;
@@ -803,7 +803,7 @@ explosions and melee attacks.
 ============
 */
 qboolean
-CanDamage(gentity_t *targ, vec3_t origin)
+CanDamage(ent_t *targ, vec3_t origin)
 {
 	vec3_t dest;
 	trace_t tr;
@@ -905,11 +905,11 @@ G_RadiusDamage
 ============
 */
 qboolean
-G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float radius,
-	       gentity_t *ignore, int mod)
+G_RadiusDamage(vec3_t origin, ent_t *attacker, float damage, float radius,
+	       ent_t *ignore, int mod)
 {
 	float points, dist;
-	gentity_t *ent;
+	ent_t *ent;
 	int entityList[MAX_GENTITIES];
 	int numListedEntities;
 	vec3_t mins, maxs;

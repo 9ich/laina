@@ -58,7 +58,7 @@ GAUNTLET
 */
 
 void
-Weapon_Gauntlet(gentity_t *ent)
+Weapon_Gauntlet(ent_t *ent)
 {
 }
 
@@ -68,12 +68,12 @@ CheckGauntletAttack
 ===============
 */
 qboolean
-CheckGauntletAttack(gentity_t *ent)
+CheckGauntletAttack(ent_t *ent)
 {
 	trace_t tr;
 	vec3_t end;
-	gentity_t *tent;
-	gentity_t *traceEnt;
+	ent_t *tent;
+	ent_t *traceEnt;
 	int damage;
 
 	// set aiming directions
@@ -153,14 +153,14 @@ SnapVectorTowards(vec3_t v, vec3_t to)
 #define MACHINEGUN_TEAM_DAMAGE	5	// wimpier MG in teamplay
 
 void
-Bullet_Fire(gentity_t *ent, float spread, int damage, int mod)
+Bullet_Fire(ent_t *ent, float spread, int damage, int mod)
 {
 	trace_t tr;
 	vec3_t end;
 	float r;
 	float u;
-	gentity_t *tent;
-	gentity_t *traceEnt;
+	ent_t *tent;
+	ent_t *traceEnt;
 	int i, passent;
 
 	damage *= s_quadFactor;
@@ -212,9 +212,9 @@ BFG
 */
 
 void
-BFG_Fire(gentity_t *ent)
+BFG_Fire(ent_t *ent)
 {
-	gentity_t   *m;
+	ent_t   *m;
 
 	m = fire_bfg(ent, muzzle, forward);
 	m->damage *= s_quadFactor;
@@ -236,11 +236,11 @@ SHOTGUN
 #define DEFAULT_SHOTGUN_DAMAGE 10
 
 qboolean
-ShotgunPellet(vec3_t start, vec3_t end, gentity_t *ent)
+ShotgunPellet(vec3_t start, vec3_t end, ent_t *ent)
 {
 	trace_t tr;
 	int damage, i, passent;
-	gentity_t   *traceEnt;
+	ent_t   *traceEnt;
 	vec3_t tr_start, tr_end;
 
 	passent = ent->s.number;
@@ -268,7 +268,7 @@ ShotgunPellet(vec3_t start, vec3_t end, gentity_t *ent)
 
 // this should match CG_ShotgunPattern
 void
-ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent)
+ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, ent_t *ent)
 {
 	int i;
 	float r, u;
@@ -297,9 +297,9 @@ ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent)
 }
 
 void
-weapon_supershotgun_fire(gentity_t *ent)
+weapon_supershotgun_fire(ent_t *ent)
 {
-	gentity_t           *tent;
+	ent_t           *tent;
 
 	// send shotgun blast
 	tent = G_TempEntity(muzzle, EV_SHOTGUN);
@@ -320,9 +320,9 @@ GRENADE LAUNCHER
 */
 
 void
-weapon_grenadelauncher_fire(gentity_t *ent)
+weapon_grenadelauncher_fire(ent_t *ent)
 {
-	gentity_t   *m;
+	ent_t   *m;
 
 	// extra vertical velocity
 	forward[2] += 0.2f;
@@ -344,9 +344,9 @@ ROCKET
 */
 
 void
-Weapon_RocketLauncher_Fire(gentity_t *ent)
+Weapon_RocketLauncher_Fire(ent_t *ent)
 {
-	gentity_t   *m;
+	ent_t   *m;
 
 	m = fire_rocket(ent, muzzle, forward);
 	m->damage *= s_quadFactor;
@@ -364,9 +364,9 @@ PLASMA GUN
 */
 
 void
-Weapon_Plasmagun_Fire(gentity_t *ent)
+Weapon_Plasmagun_Fire(ent_t *ent)
 {
-	gentity_t   *m;
+	ent_t   *m;
 
 	m = fire_plasma(ent, muzzle, forward);
 	m->damage *= s_quadFactor;
@@ -390,18 +390,18 @@ weapon_railgun_fire
 */
 #define MAX_RAIL_HITS 4
 void
-weapon_railgun_fire(gentity_t *ent)
+weapon_railgun_fire(ent_t *ent)
 {
 	vec3_t end;
 	trace_t trace;
-	gentity_t   *tent;
-	gentity_t   *traceEnt;
+	ent_t   *tent;
+	ent_t   *traceEnt;
 	int damage;
 	int i;
 	int hits;
 	int unlinked;
 	int passent;
-	gentity_t   *unlinkedEntities[MAX_RAIL_HITS];
+	ent_t   *unlinkedEntities[MAX_RAIL_HITS];
 
 	damage = 100 * s_quadFactor;
 
@@ -485,7 +485,7 @@ GRAPPLING HOOK
 */
 
 void
-Weapon_GrapplingHook_Fire(gentity_t *ent)
+Weapon_GrapplingHook_Fire(ent_t *ent)
 {
 	if(!ent->client->fireHeld && !ent->client->hook)
 		fire_grapple(ent, muzzle, forward);
@@ -494,7 +494,7 @@ Weapon_GrapplingHook_Fire(gentity_t *ent)
 }
 
 void
-Weapon_HookFree(gentity_t *ent)
+Weapon_HookFree(ent_t *ent)
 {
 	ent->parent->client->hook = nil;
 	ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
@@ -502,7 +502,7 @@ Weapon_HookFree(gentity_t *ent)
 }
 
 void
-Weapon_HookThink(gentity_t *ent)
+Weapon_HookThink(ent_t *ent)
 {
 	if(ent->enemy){
 		vec3_t v, oldorigin;
@@ -528,11 +528,11 @@ LIGHTNING GUN
 */
 
 void
-Weapon_LightningFire(gentity_t *ent)
+Weapon_LightningFire(ent_t *ent)
 {
 	trace_t tr;
 	vec3_t end;
-	gentity_t   *traceEnt, *tent;
+	ent_t   *traceEnt, *tent;
 	int damage, i, passent;
 
 	damage = 8 * s_quadFactor;
@@ -578,7 +578,7 @@ LogAccuracyHit
 ===============
 */
 qboolean
-LogAccuracyHit(gentity_t *target, gentity_t *attacker)
+LogAccuracyHit(ent_t *target, ent_t *attacker)
 {
 	if(!target->takedamage)
 		return qfalse;
@@ -609,7 +609,7 @@ set muzzle location relative to pivoting eye
 ===============
 */
 void
-CalcMuzzlePoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
+CalcMuzzlePoint(ent_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
 {
 	VectorCopy(ent->s.pos.trBase, muzzlePoint);
 	muzzlePoint[2] += ent->client->ps.viewheight;
@@ -626,7 +626,7 @@ set muzzle location relative to pivoting eye
 ===============
 */
 void
-CalcMuzzlePointOrigin(gentity_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
+CalcMuzzlePointOrigin(ent_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
 {
 	VectorCopy(ent->s.pos.trBase, muzzlePoint);
 	muzzlePoint[2] += ent->client->ps.viewheight;
@@ -641,7 +641,7 @@ FireWeapon
 ===============
 */
 void
-FireWeapon(gentity_t *ent)
+FireWeapon(ent_t *ent)
 {
 	if(ent->client->ps.powerups[PW_QUAD])
 		s_quadFactor = g_quadfactor.value;

@@ -134,7 +134,7 @@ Broadcasts a command to only a specific team
 ================
 */
 void
-G_TeamCommand(team_t team, char *cmd)
+G_TeamCommand(teamnum_t team, char *cmd)
 {
 	int i;
 
@@ -156,8 +156,8 @@ nil will be returned if the end of the list is reached.
 
 =============
 */
-gentity_t *
-G_Find(gentity_t *from, int fieldofs, const char *match)
+ent_t *
+G_Find(ent_t *from, int fieldofs, const char *match)
 {
 	char *s;
 
@@ -188,12 +188,12 @@ Selects a random entity from among the targets
 */
 #define MAXCHOICES 32
 
-gentity_t *
+ent_t *
 G_PickTarget(char *targetname)
 {
-	gentity_t *ent = nil;
+	ent_t *ent = nil;
 	int num_choices = 0;
-	gentity_t *choice[MAXCHOICES];
+	ent_t *choice[MAXCHOICES];
 
 	if(!targetname){
 		G_Printf("G_PickTarget called with nil targetname\n");
@@ -229,9 +229,9 @@ match (string)self.target and call their .use function
 ==============================
 */
 void
-G_UseTargets(gentity_t *ent, gentity_t *activator)
+G_UseTargets(ent_t *ent, ent_t *activator)
 {
-	gentity_t *t;
+	ent_t *t;
 
 	if(!ent)
 		return;
@@ -359,7 +359,7 @@ vectoyaw(const vec3_t vec)
 }
 
 void
-G_InitGentity(gentity_t *e)
+G_InitGentity(ent_t *e)
 {
 	e->inuse = qtrue;
 	e->classname = "noclass";
@@ -382,11 +382,11 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *
+ent_t *
 G_Spawn(void)
 {
 	int i, force;
-	gentity_t *e;
+	ent_t *e;
 
 	if(g_debugAlloc.integer)
 		G_Printf("spawn entity\n");
@@ -423,7 +423,7 @@ G_Spawn(void)
 	level.num_entities++;
 
 	// let the server system know that there are more entities
-	trap_LocateGameData(level.gentities, level.num_entities, sizeof(gentity_t),
+	trap_LocateGameData(level.gentities, level.num_entities, sizeof(ent_t),
 			    &level.clients[0].ps, sizeof(level.clients[0]));
 
 	G_InitGentity(e);
@@ -439,7 +439,7 @@ qboolean
 G_EntitiesFree(void)
 {
 	int i;
-	gentity_t *e;
+	ent_t *e;
 
 	e = &g_entities[MAX_CLIENTS];
 	for(i = MAX_CLIENTS; i < level.num_entities; i++, e++){
@@ -459,7 +459,7 @@ Marks the entity as free
 =================
 */
 void
-G_FreeEntity(gentity_t *ed)
+G_FreeEntity(ent_t *ed)
 {
 	if(g_debugAlloc.integer)
 		G_Printf("free entity\n");
@@ -484,10 +484,10 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *
+ent_t *
 G_TempEntity(vec3_t origin, int event)
 {
-	gentity_t *e;
+	ent_t *e;
 	vec3_t snapped;
 
 	e = G_Spawn();
@@ -524,11 +524,11 @@ of ent.  Ent should be unlinked before calling this!
 =================
 */
 void
-G_KillBox(gentity_t *ent)
+G_KillBox(ent_t *ent)
 {
 	int i, num;
 	int touch[MAX_GENTITIES];
-	gentity_t *hit;
+	ent_t *hit;
 	vec3_t mins, maxs;
 
 	VectorAdd(ent->client->ps.origin, ent->r.mins, mins);
@@ -556,7 +556,7 @@ Adds an event+parm and twiddles the event counter
 ===============
 */
 void
-G_AddPredictableEvent(gentity_t *ent, int event, int eventParm)
+G_AddPredictableEvent(ent_t *ent, int event, int eventParm)
 {
 	if(!ent->client)
 		return;
@@ -571,7 +571,7 @@ Adds an event+parm and twiddles the event counter
 ===============
 */
 void
-G_AddEvent(gentity_t *ent, int event, int eventParm)
+G_AddEvent(ent_t *ent, int event, int eventParm)
 {
 	int bits;
 
@@ -602,9 +602,9 @@ G_Sound
 =============
 */
 void
-G_Sound(gentity_t *ent, int channel, int soundIndex)
+G_Sound(ent_t *ent, int channel, int soundIndex)
 {
-	gentity_t *te;
+	ent_t *te;
 
 	te = G_TempEntity(ent->r.currentOrigin, EV_GENERAL_SOUND);
 	te->s.eventParm = soundIndex;
@@ -618,7 +618,7 @@ Sets the pos trajectory for a fixed position
 ================
 */
 void
-G_SetOrigin(gentity_t *ent, vec3_t origin)
+G_SetOrigin(ent_t *ent, vec3_t origin)
 {
 	VectorCopy(origin, ent->s.pos.trBase);
 	ent->s.pos.trType = TR_STATIONARY;

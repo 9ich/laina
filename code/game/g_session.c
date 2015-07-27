@@ -88,8 +88,8 @@ G_ReadSessionData(gclient_t *client)
 	       &teamLeader
 	       );
 
-	client->sess.sessionTeam = (team_t)sessionTeam;
-	client->sess.spectatorState = (spectatorState_t)spectatorState;
+	client->sess.sessionTeam = (teamnum_t)sessionTeam;
+	client->sess.spectatorState = (specstate_t)spectatorState;
 	client->sess.teamLeader = (qboolean)teamLeader;
 }
 
@@ -103,7 +103,7 @@ Called on a first-time connect
 void
 G_InitSessionData(gclient_t *client, char *userinfo)
 {
-	clientSession_t *sess;
+	clientsess_t *sess;
 	const char *value;
 
 	sess = &client->sess;

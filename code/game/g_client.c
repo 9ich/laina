@@ -34,7 +34,7 @@ Targets will be fired when someone spawns in on them.
 "nohumans" will prevent non-bots from using this spot.
 */
 void
-SP_playerspawn(gentity_t *ent)
+SP_playerspawn(ent_t *ent)
 {
 	int i;
 
@@ -62,11 +62,11 @@ SpotWouldTelefrag
 ================
 */
 qboolean
-SpotWouldTelefrag(gentity_t *spot)
+SpotWouldTelefrag(ent_t *spot)
 {
 	int i, num;
 	int touch[MAX_GENTITIES];
-	gentity_t *hit;
+	ent_t *hit;
 	vec3_t mins, maxs;
 
 	VectorAdd(spot->s.origin, playerMins, mins);
@@ -92,13 +92,13 @@ Find the spot that we DON'T want to use
 ================
 */
 #define MAX_SPAWN_POINTS 128
-gentity_t *
+ent_t *
 SelectNearestDeathmatchSpawnPoint(vec3_t from)
 {
-	gentity_t *spot;
+	ent_t *spot;
 	vec3_t delta;
 	float dist, nearestDist;
-	gentity_t *nearestSpot;
+	ent_t *nearestSpot;
 
 	nearestDist = 999999;
 	nearestSpot = nil;
@@ -124,13 +124,13 @@ go to a random point that doesn't telefrag
 ================
 */
 #define MAX_SPAWN_POINTS 128
-gentity_t *
+ent_t *
 SelectRandomDeathmatchSpawnPoint(qboolean isbot)
 {
-	gentity_t *spot;
+	ent_t *spot;
 	int count;
 	int selection;
-	gentity_t *spots[MAX_SPAWN_POINTS];
+	ent_t *spots[MAX_SPAWN_POINTS];
 
 	count = 0;
 	spot = nil;
@@ -162,14 +162,14 @@ SelectRandomFurthestSpawnPoint
 Chooses a player start, deathmatch start, etc
 ============
 */
-gentity_t *
+ent_t *
 SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot)
 {
-	gentity_t *spot;
+	ent_t *spot;
 	vec3_t delta;
 	float dist;
 	float list_dist[MAX_SPAWN_POINTS];
-	gentity_t *list_spot[MAX_SPAWN_POINTS];
+	ent_t *list_spot[MAX_SPAWN_POINTS];
 	int numSpots, rnd, i, j;
 
 	numSpots = 0;
@@ -240,10 +240,10 @@ SelectSpawnPoint
 Chooses a player start, deathmatch start, etc
 ============
 */
-gentity_t *
+ent_t *
 SelectSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot)
 {
-	gentity_t *spot;
+	ent_t *spot;
 
 	if(level.checkpoint != ENTITYNUM_NONE){
 		spot = &g_entities[level.checkpoint];
@@ -255,8 +255,8 @@ SelectSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot
 	return SelectRandomFurthestSpawnPoint(avoidPoint, origin, angles, isbot);
 
 	/*
-	gentity_t	*spot;
-	gentity_t	*nearestSpot;
+	ent_t	*spot;
+	ent_t	*nearestSpot;
 
 	nearestSpot = SelectNearestDeathmatchSpawnPoint( avoidPoint );
 
@@ -291,10 +291,10 @@ Try to find a spawn point marked 'initial', otherwise
 use normal spawn selection.
 ============
 */
-gentity_t *
+ent_t *
 SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 {
-	gentity_t *spot;
+	ent_t *spot;
 
 	spot = nil;
 
@@ -331,7 +331,7 @@ SelectSpectatorSpawnPoint
 
 ============
 */
-gentity_t *
+ent_t *
 SelectSpectatorSpawnPoint(vec3_t origin, vec3_t angles)
 {
 	FindIntermissionPoint();
@@ -359,7 +359,7 @@ void
 InitBodyQue(void)
 {
 	int i;
-	gentity_t *ent;
+	ent_t *ent;
 
 	level.bodyQueIndex = 0;
 	for(i = 0; i<BODY_QUEUE_SIZE; i++){
@@ -378,7 +378,7 @@ After sitting around for five seconds, fall into the ground and dissapear
 =============
 */
 void
-BodySink(gentity_t *ent)
+BodySink(ent_t *ent)
 {
 	if(level.time - ent->timestamp > 6500){
 		// the body ques are never actually freed, they are just unlinked
@@ -399,9 +399,9 @@ just like the existing corpse to leave behind.
 =============
 */
 void
-CopyToBodyQue(gentity_t *ent)
+CopyToBodyQue(ent_t *ent)
 {
-	gentity_t *body;
+	ent_t *body;
 	int contents;
 
 	trap_UnlinkEntity(ent);
@@ -484,7 +484,7 @@ SetClientViewAngle
 ==================
 */
 void
-SetClientViewAngle(gentity_t *ent, vec3_t angle)
+SetClientViewAngle(ent_t *ent, vec3_t angle)
 {
 	int i;
 
@@ -505,7 +505,7 @@ ClientRespawn
 ================
 */
 void
-ClientRespawn(gentity_t *ent)
+ClientRespawn(ent_t *ent)
 {
 	CopyToBodyQue(ent);
 	ClientSpawn(ent);
@@ -519,7 +519,7 @@ Returns number of players on a team
 ================
 */
 int
-TeamCount(int ignoreClientNum, team_t team)
+TeamCount(int ignoreClientNum, teamnum_t team)
 {
 	int i;
 	int count = 0;
@@ -565,7 +565,7 @@ PickTeam
 
 ================
 */
-team_t
+teamnum_t
 PickTeam(int ignoreClientNum)
 {
 	int counts[TEAM_NUM_TEAMS];
@@ -669,7 +669,7 @@ if desired.
 void
 ClientUserinfoChanged(int clientNum)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	int teamTask, teamLeader, team, health;
 	char *s;
 	char model[MAX_QPATH];
@@ -839,7 +839,7 @@ ClientConnect(int clientNum, qboolean firstTime, qboolean isBot)
 //	char		*areabits;
 	gclient_t *client;
 	char userinfo[MAX_INFO_STRING];
-	gentity_t *ent;
+	ent_t *ent;
 
 	ent = &g_entities[clientNum];
 
@@ -926,7 +926,7 @@ and on transition between teams, but doesn't happen on respawns
 void
 ClientBegin(int clientNum)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	gclient_t *client;
 	int flags;
 
@@ -976,17 +976,17 @@ Initializes all non-persistant parts of playerState
 ============
 */
 void
-ClientSpawn(gentity_t *ent)
+ClientSpawn(ent_t *ent)
 {
 	int index;
 	vec3_t spawn_origin, spawn_angles;
 	gclient_t *client;
 	int i;
-	clientPersistant_t saved;
-	clientSession_t savedSess;
+	clientpersist_t saved;
+	clientsess_t savedSess;
 	int persistant[MAX_PERSISTANT];
-	gentity_t *spawnPoint;
-	gentity_t *tent;
+	ent_t *spawnPoint;
+	ent_t *tent;
 	int flags;
 	int savedPing;
 //	char	*savedAreaBits;
@@ -1171,8 +1171,8 @@ server system housekeeping.
 void
 ClientDisconnect(int clientNum)
 {
-	gentity_t *ent;
-	gentity_t *tent;
+	ent_t *ent;
+	ent_t *tent;
 	int i;
 
 	// cleanup if we are kicking a bot that

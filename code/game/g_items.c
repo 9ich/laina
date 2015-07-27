@@ -46,7 +46,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //======================================================================
 
 int
-Pickup_Powerup(gentity_t *ent, gentity_t *other)
+Pickup_Powerup(ent_t *ent, ent_t *other)
 {
 	int quantity;
 	int i;
@@ -111,7 +111,7 @@ Pickup_Powerup(gentity_t *ent, gentity_t *other)
 
 
 int
-Pickup_Holdable(gentity_t *ent, gentity_t *other)
+Pickup_Holdable(ent_t *ent, ent_t *other)
 {
 	other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
 
@@ -124,7 +124,7 @@ Pickup_Holdable(gentity_t *ent, gentity_t *other)
 //======================================================================
 
 void
-Add_Ammo(gentity_t *ent, int weapon, int count)
+Add_Ammo(ent_t *ent, int weapon, int count)
 {
 	ent->client->ps.ammo[weapon] += count;
 	if(ent->client->ps.ammo[weapon] > 200)
@@ -132,7 +132,7 @@ Add_Ammo(gentity_t *ent, int weapon, int count)
 }
 
 int
-Pickup_Ammo(gentity_t *ent, gentity_t *other)
+Pickup_Ammo(ent_t *ent, ent_t *other)
 {
 	int quantity;
 
@@ -149,7 +149,7 @@ Pickup_Ammo(gentity_t *ent, gentity_t *other)
 //======================================================================
 
 int
-Pickup_Weapon(gentity_t *ent, gentity_t *other)
+Pickup_Weapon(ent_t *ent, ent_t *other)
 {
 	int quantity;
 
@@ -188,7 +188,7 @@ Pickup_Weapon(gentity_t *ent, gentity_t *other)
 }
 
 int
-Pickup_Health(gentity_t *ent, gentity_t *other)
+Pickup_Health(ent_t *ent, ent_t *other)
 {
 	int quantity;
 	if(ent->count)
@@ -201,7 +201,7 @@ Pickup_Health(gentity_t *ent, gentity_t *other)
 }
 
 int
-Pickup_Life(gentity_t *ent, gentity_t *other)
+Pickup_Life(ent_t *ent, ent_t *other)
 {
 	int quantity;
 	if(ent->count)
@@ -214,14 +214,14 @@ Pickup_Life(gentity_t *ent, gentity_t *other)
 }
 
 int
-Pickup_Key(gentity_t *ent, gentity_t *other)
+Pickup_Key(ent_t *ent, ent_t *other)
 {
 	other->client->ps.doorKeys[ent->item->giTag]++;
 	return RESPAWN_KEY;
 }
 
 int
-Pickup_Armor(gentity_t *ent, gentity_t *other)
+Pickup_Armor(ent_t *ent, ent_t *other)
 {
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
 	if(other->client->ps.stats[STAT_ARMOR] > other->client->ps.stats[STAT_MAX_ARMOR])
@@ -237,14 +237,14 @@ RespawnItem
 ===============
 */
 void
-RespawnItem(gentity_t *ent)
+RespawnItem(ent_t *ent)
 {
 	if(!ent)
 		return;
 
 	// randomly select from teamed entities
 	if(ent->team){
-		gentity_t *master;
+		ent_t *master;
 		int count;
 		int choice;
 
@@ -271,7 +271,7 @@ RespawnItem(gentity_t *ent)
 
 	if(ent->item->giType == IT_POWERUP){
 		// play powerup spawn sound to all clients
-		gentity_t *te;
+		ent_t *te;
 
 		// if the powerup respawn sound should Not be global
 		if(ent->speed)
@@ -284,7 +284,7 @@ RespawnItem(gentity_t *ent)
 
 	if(ent->item->giType == IT_HOLDABLE && ent->item->giTag == HI_KAMIKAZE){
 		// play powerup spawn sound to all clients
-		gentity_t *te;
+		ent_t *te;
 
 		// if the powerup respawn sound should Not be global
 		if(ent->speed)
@@ -307,7 +307,7 @@ Touch_Item
 ===============
 */
 void
-Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace)
+Touch_Item(ent_t *ent, ent_t *other, trace_t *trace)
 {
 	int respawn;
 	qboolean predict;
@@ -374,13 +374,13 @@ Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace)
 	if(ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM){
 		// if we want the global sound to play
 		if(!ent->speed){
-			gentity_t *te;
+			ent_t *te;
 
 			te = G_TempEntity(ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP);
 			te->s.eventParm = ent->s.modelindex;
 			te->r.svFlags |= SVF_BROADCAST;
 		}else{
-			gentity_t *te;
+			ent_t *te;
 
 			te = G_TempEntity(ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP);
 			te->s.eventParm = ent->s.modelindex;
@@ -447,10 +447,10 @@ LaunchItem
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *
-LaunchItem(gitem_t *item, vec3_t origin, vec3_t velocity)
+ent_t *
+LaunchItem(item_t *item, vec3_t origin, vec3_t velocity)
 {
-	gentity_t *dropped;
+	ent_t *dropped;
 
 	dropped = G_Spawn();
 
@@ -495,8 +495,8 @@ Drop_Item
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *
-Drop_Item(gentity_t *ent, gitem_t *item, float angle)
+ent_t *
+Drop_Item(ent_t *ent, item_t *item, float angle)
 {
 	vec3_t velocity;
 	vec3_t angles;
@@ -520,7 +520,7 @@ Respawn the item
 ================
 */
 void
-Use_Item(gentity_t *ent, gentity_t *other, gentity_t *activator)
+Use_Item(ent_t *ent, ent_t *other, ent_t *activator)
 {
 	RespawnItem(ent);
 }
@@ -536,7 +536,7 @@ free fall from their spawn points
 ================
 */
 void
-FinishSpawningItem(gentity_t *ent)
+FinishSpawningItem(ent_t *ent)
 {
 	trace_t tr;
 	vec3_t dest;
@@ -608,7 +608,7 @@ G_CheckTeamItems(void)
 	Team_InitGame();
 
 	if(g_gametype.integer == GT_CTF){
-		gitem_t *item;
+		item_t *item;
 
 		// check for the two flags
 		item = BG_FindItem("Red Flag");
@@ -642,7 +642,7 @@ The item will be added to the precache list
 ===============
 */
 void
-RegisterItem(gitem_t *item)
+RegisterItem(item_t *item)
 {
 	if(!item)
 		G_Error("RegisterItem: nil");
@@ -684,7 +684,7 @@ G_ItemDisabled
 ============
 */
 int
-G_ItemDisabled(gitem_t *item)
+G_ItemDisabled(item_t *item)
 {
 	char name[128];
 
@@ -703,7 +703,7 @@ be on an entity that hasn't spawned yet.
 ============
 */
 void
-G_SpawnItem(gentity_t *ent, gitem_t *item)
+G_SpawnItem(ent_t *ent, item_t *item)
 {
 	G_SpawnFloat("random", "0", &ent->random);
 	G_SpawnFloat("wait", "0", &ent->wait);
@@ -734,7 +734,7 @@ G_BounceItem
 ================
 */
 void
-G_BounceItem(gentity_t *ent, trace_t *trace)
+G_BounceItem(ent_t *ent, trace_t *trace)
 {
 	vec3_t velocity;
 	float dot;
@@ -770,7 +770,7 @@ G_RunItem
 ================
 */
 void
-G_RunItem(gentity_t *ent)
+G_RunItem(ent_t *ent)
 {
 	vec3_t origin;
 	trace_t tr;

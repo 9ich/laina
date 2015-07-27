@@ -73,9 +73,9 @@ vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, 
 
 cg_t cg;
 cgs_t cgs;
-centity_t cg_entities[MAX_GENTITIES];
-weaponInfo_t cg_weapons[MAX_WEAPONS];
-itemInfo_t cg_items[MAX_ITEMS];
+cent_t cg_entities[MAX_GENTITIES];
+weapinfo_t cg_weapons[MAX_WEAPONS];
+iteminfo_t cg_items[MAX_ITEMS];
 
 vmCvar_t cg_railTrailTime;
 vmCvar_t cg_centertime;
@@ -451,7 +451,7 @@ The server says this item is used on this level
 static void
 CG_RegisterItemSounds(int itemNum)
 {
-	gitem_t *item;
+	item_t *item;
 	char data[MAX_QPATH];
 	char *s, *start;
 	int len;

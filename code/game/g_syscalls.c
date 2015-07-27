@@ -148,7 +148,7 @@ trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize)
 }
 
 void
-trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t,
+trap_LocateGameData(ent_t *gEnts, int numGEntities, int sizeofGEntity_t,
 		    playerState_t *clients, int sizeofGClient)
 {
 	syscall(G_LOCATE_GAME_DATA, gEnts, numGEntities, sizeofGEntity_t, clients, sizeofGClient);
@@ -197,7 +197,7 @@ trap_GetServerinfo(char *buffer, int bufferSize)
 }
 
 void
-trap_SetBrushModel(gentity_t *ent, const char *name)
+trap_SetBrushModel(ent_t *ent, const char *name)
 {
 	syscall(G_SET_BRUSH_MODEL, ent, name);
 }
@@ -233,7 +233,7 @@ trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 }
 
 void
-trap_AdjustAreaPortalState(gentity_t *ent, qboolean open)
+trap_AdjustAreaPortalState(ent_t *ent, qboolean open)
 {
 	syscall(G_ADJUST_AREA_PORTAL_STATE, ent, open);
 }
@@ -245,13 +245,13 @@ trap_AreasConnected(int area1, int area2)
 }
 
 void
-trap_LinkEntity(gentity_t *ent)
+trap_LinkEntity(ent_t *ent)
 {
 	syscall(G_LINKENTITY, ent);
 }
 
 void
-trap_UnlinkEntity(gentity_t *ent)
+trap_UnlinkEntity(ent_t *ent)
 {
 	syscall(G_UNLINKENTITY, ent);
 }
@@ -263,13 +263,13 @@ trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxcount
 }
 
 qboolean
-trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
+trap_EntityContact(const vec3_t mins, const vec3_t maxs, const ent_t *ent)
 {
 	return syscall(G_ENTITY_CONTACT, mins, maxs, ent);
 }
 
 qboolean
-trap_EntityContactCapsule(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
+trap_EntityContactCapsule(const vec3_t mins, const vec3_t maxs, const ent_t *ent)
 {
 	return syscall(G_ENTITY_CONTACTCAPSULE, mins, maxs, ent);
 }

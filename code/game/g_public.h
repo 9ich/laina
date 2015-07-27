@@ -86,7 +86,7 @@ typedef struct
 	int ownerNum;
 } entityShared_t;
 
-// the server looks at a sharedEntity, which is the start of the game's gentity_t structure
+// the server looks at a sharedEntity, which is the start of the game's ent_t structure
 typedef struct
 {
 	entityState_t	s;	// communicated by server to clients
@@ -135,7 +135,7 @@ typedef enum
 
 	//=========== server specific functionality =============
 
-	G_LOCATE_GAME_DATA,	// ( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t,
+	G_LOCATE_GAME_DATA,	// ( ent_t *gEnts, int numGEntities, int sizeofGEntity_t,
 	//							playerState_t *clients, int sizeofGameClient );
 	// the game needs to let the server system know where and how big the gentities
 	// are, so it can look at them directly without going through an interface
@@ -166,7 +166,7 @@ typedef enum
 	G_GET_SERVERINFO,	// ( char *buffer, int bufferSize );
 	// the serverinfo info string has all the cvars visible to server browsers
 
-	G_SET_BRUSH_MODEL,	// ( gentity_t *ent, const char *name );
+	G_SET_BRUSH_MODEL,	// ( ent_t *ent, const char *name );
 	// sets mins and maxs based on the brushmodel name
 
 	G_TRACE,	// ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
@@ -179,23 +179,23 @@ typedef enum
 
 	G_IN_PVS_IGNORE_PORTALS,	// ( const vec3_t p1, const vec3_t p2 );
 
-	G_ADJUST_AREA_PORTAL_STATE,	// ( gentity_t *ent, qboolean open );
+	G_ADJUST_AREA_PORTAL_STATE,	// ( ent_t *ent, qboolean open );
 
 	G_AREAS_CONNECTED,	// ( int area1, int area2 );
 
-	G_LINKENTITY,		// ( gentity_t *ent );
+	G_LINKENTITY,		// ( ent_t *ent );
 	// an entity will never be sent to a client or used for collision
 	// if it is not passed to linkentity.  If the size, position, or
 	// solidity changes, it must be relinked.
 
-	G_UNLINKENTITY,	// ( gentity_t *ent );
+	G_UNLINKENTITY,	// ( ent_t *ent );
 	// call before removing an interactive entity
 
-	G_ENTITIES_IN_BOX,	// ( const vec3_t mins, const vec3_t maxs, gentity_t **list, int maxcount );
+	G_ENTITIES_IN_BOX,	// ( const vec3_t mins, const vec3_t maxs, ent_t **list, int maxcount );
 	// EntitiesInBox will return brush models based on their bounding box,
 	// so exact determination must still be done with EntityContact
 
-	G_ENTITY_CONTACT,	// ( const vec3_t mins, const vec3_t maxs, const gentity_t *ent );
+	G_ENTITY_CONTACT,	// ( const vec3_t mins, const vec3_t maxs, const ent_t *ent );
 	// perform an exact check against inline brush models of non-square shape
 
 	// access for bots to get and free a server client (FIXME?)
@@ -217,7 +217,7 @@ typedef enum
 	G_SNAPVECTOR,
 
 	G_TRACECAPSULE,			// ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
-	G_ENTITY_CONTACTCAPSULE,	// ( const vec3_t mins, const vec3_t maxs, const gentity_t *ent );
+	G_ENTITY_CONTACTCAPSULE,	// ( const vec3_t mins, const vec3_t maxs, const ent_t *ent );
 
 	// 1.32
 	G_FS_SEEK,

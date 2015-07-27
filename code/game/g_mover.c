@@ -32,7 +32,7 @@ PUSHMOVE
 
 typedef struct
 {
-	gentity_t	*ent;
+	ent_t	*ent;
 	vec3_t		origin;
 	vec3_t		angles;
 	float		deltayaw;
@@ -45,8 +45,8 @@ G_TestEntityPosition
 
 ============
 */
-gentity_t       *
-G_TestEntityPosition(gentity_t *ent)
+ent_t       *
+G_TestEntityPosition(ent_t *ent)
 {
 	trace_t tr;
 	int mask;
@@ -116,11 +116,11 @@ Returns qfalse if the move is blocked
 ==================
 */
 qboolean
-G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove)
+G_TryPushingEntity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 {
 	vec3_t matrix[3], transpose[3];
 	vec3_t org, org2, move2;
-	gentity_t *block;
+	ent_t *block;
 
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
@@ -200,7 +200,7 @@ G_CheckProxMinePosition
 ==================
 */
 qboolean
-G_CheckProxMinePosition(gentity_t *check)
+G_CheckProxMinePosition(ent_t *check)
 {
 	vec3_t start, end;
 	trace_t tr;
@@ -221,7 +221,7 @@ G_TryPushingProxMine
 ==================
 */
 qboolean
-G_TryPushingProxMine(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove)
+G_TryPushingProxMine(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 {
 	vec3_t forward, right, up;
 	vec3_t org, org2, move2;
@@ -250,7 +250,7 @@ G_TryPushingProxMine(gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t am
 	return ret;
 }
 
-void G_ExplodeMissile(gentity_t *ent);
+void G_ExplodeMissile(ent_t *ent);
 
 /*
 ============
@@ -262,10 +262,10 @@ If qfalse is returned, *obstacle will be the blocking entity
 ============
 */
 qboolean
-G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle)
+G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 {
 	int i, e;
-	gentity_t *check;
+	ent_t *check;
 	vec3_t mins, maxs;
 	pushed_t *p;
 	int entityList[MAX_GENTITIES];
@@ -376,10 +376,10 @@ G_MoverTeam
 =================
 */
 void
-G_MoverTeam(gentity_t *ent)
+G_MoverTeam(ent_t *ent)
 {
 	vec3_t move, amove;
-	gentity_t *part, *obstacle;
+	ent_t *part, *obstacle;
 	vec3_t origin, angles;
 
 	obstacle = nil;
@@ -430,7 +430,7 @@ G_RunMover
 ================
 */
 void
-G_RunMover(gentity_t *ent)
+G_RunMover(ent_t *ent)
 {
 	// if not a team captain, don't do anything, because
 	// the captain will handle everything
@@ -461,7 +461,7 @@ SetMoverState
 ===============
 */
 void
-SetMoverState(gentity_t *ent, moverState_t moverState, int time)
+SetMoverState(ent_t *ent, moverstate_t moverState, int time)
 {
 	vec3_t delta;
 	float f;
@@ -506,9 +506,9 @@ in the same amount of time
 ================
 */
 void
-MatchTeam(gentity_t *teamLeader, int moverState, int time)
+MatchTeam(ent_t *teamLeader, int moverState, int time)
 {
-	gentity_t *slave;
+	ent_t *slave;
 
 	for(slave = teamLeader; slave; slave = slave->teamchain)
 		SetMoverState(slave, moverState, time);
@@ -520,7 +520,7 @@ ReturnToPos1
 ================
 */
 void
-ReturnToPos1(gentity_t *ent)
+ReturnToPos1(ent_t *ent)
 {
 	MatchTeam(ent, MOVER_2TO1, level.time);
 
@@ -538,7 +538,7 @@ Reached_BinaryMover
 ================
 */
 void
-Reached_BinaryMover(gentity_t *ent)
+Reached_BinaryMover(ent_t *ent)
 {
 	// stop the looping sound
 	ent->s.loopSound = ent->soundLoop;
@@ -580,7 +580,7 @@ Use_BinaryMover
 ================
 */
 void
-Use_BinaryMover(gentity_t *ent, gentity_t *other, gentity_t *activator)
+Use_BinaryMover(ent_t *ent, ent_t *other, ent_t *activator)
 {
 	int total;
 	int partial;
@@ -655,7 +655,7 @@ so the movement delta can be calculated
 ================
 */
 void
-InitMover(gentity_t *ent)
+InitMover(ent_t *ent)
 {
 	vec3_t move;
 	float distance;
@@ -734,7 +734,7 @@ Blocked_Door
 ================
 */
 void
-Blocked_Door(gentity_t *ent, gentity_t *other)
+Blocked_Door(ent_t *ent, ent_t *other)
 {
 	// remove anything other than a client
 	if(!other->client){
@@ -763,7 +763,7 @@ Touch_DoorTriggerSpectator
 ================
 */
 static void
-Touch_DoorTriggerSpectator(gentity_t *ent, gentity_t *other, trace_t *trace)
+Touch_DoorTriggerSpectator(ent_t *ent, ent_t *other, trace_t *trace)
 {
 	int axis;
 	float doorMin, doorMax;
@@ -793,9 +793,9 @@ Touch_DoorTrigger
 ================
 */
 void
-Touch_DoorTrigger(gentity_t *ent, gentity_t *other, trace_t *trace)
+Touch_DoorTrigger(ent_t *ent, ent_t *other, trace_t *trace)
 {
-	gitem_t *key;
+	item_t *key;
 	int keytype;
 
 	if(other->client != nil && ent->doorKey > 0 && ent->doorKey < bg_numItems){
@@ -832,9 +832,9 @@ a trigger that encloses all of them
 ======================
 */
 void
-Think_SpawnNewDoorTrigger(gentity_t *ent)
+Think_SpawnNewDoorTrigger(ent_t *ent)
 {
-	gentity_t *other;
+	ent_t *other;
 	vec3_t mins, maxs;
 	int i, best;
 
@@ -875,7 +875,7 @@ Think_SpawnNewDoorTrigger(gentity_t *ent)
 }
 
 void
-Think_MatchTeam(gentity_t *ent)
+Think_MatchTeam(ent_t *ent)
 {
 	MatchTeam(ent, ent->moverState, level.time);
 }
@@ -898,7 +898,7 @@ NOMONSTER	monsters will not trigger this door
 "health"	if set, the door must be shot open
 */
 void
-SP_func_door(gentity_t *ent)
+SP_func_door(ent_t *ent)
 {
 	vec3_t abs_movedir;
 	float distance;
@@ -985,7 +985,7 @@ piston
 */
 
 static void
-Blocked_Piston(gentity_t *ent, gentity_t *other)
+Blocked_Piston(ent_t *ent, ent_t *other)
 {
 	// crush clients
 	if(other->client != nil){
@@ -1016,7 +1016,7 @@ START_OPEN	the door to moves to its destination when spawned, and operate in rev
 "light"		constantLight radius
 */
 void
-SP_func_piston(gentity_t *ent)
+SP_func_piston(ent_t *ent)
 {
 	vec3_t abs_movedir;
 	float distance;
@@ -1091,7 +1091,7 @@ Don't allow decent if a living player is on it
 ===============
 */
 void
-Touch_Plat(gentity_t *ent, gentity_t *other, trace_t *trace)
+Touch_Plat(ent_t *ent, ent_t *other, trace_t *trace)
 {
 	if(!other->client || other->client->ps.stats[STAT_HEALTH] <= 0)
 		return;
@@ -1109,7 +1109,7 @@ If the plat is at the bottom position, start it going up
 ===============
 */
 void
-Touch_PlatCenterTrigger(gentity_t *ent, gentity_t *other, trace_t *trace)
+Touch_PlatCenterTrigger(ent_t *ent, ent_t *other, trace_t *trace)
 {
 	if(!other->client)
 		return;
@@ -1128,9 +1128,9 @@ not just sit on top of it.
 ================
 */
 void
-SpawnPlatTrigger(gentity_t *ent)
+SpawnPlatTrigger(ent_t *ent)
 {
-	gentity_t *trigger;
+	ent_t *trigger;
 	vec3_t tmin, tmax;
 
 	// the middle trigger will be a thin trigger just
@@ -1176,7 +1176,7 @@ Plats are always drawn in the extended position so they will light correctly.
 "light"		constantLight radius
 */
 void
-SP_func_plat(gentity_t *ent)
+SP_func_plat(ent_t *ent)
 {
 	float lip, height;
 
@@ -1233,7 +1233,7 @@ Touch_Button
 ===============
 */
 void
-Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace)
+Touch_Button(ent_t *ent, ent_t *other, trace_t *trace)
 {
 	if(!other->client)
 		return;
@@ -1256,7 +1256,7 @@ When a button is touched, it moves some distance in the direction of its angle, 
 "light"		constantLight radius
 */
 void
-SP_func_button(gentity_t *ent)
+SP_func_button(ent_t *ent)
 {
 	vec3_t abs_movedir;
 	float distance;
@@ -1318,7 +1318,7 @@ The wait time at a corner has completed, so start moving again
 ===============
 */
 void
-Think_BeginMoving(gentity_t *ent)
+Think_BeginMoving(ent_t *ent)
 {
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_LINEAR_STOP;
@@ -1330,9 +1330,9 @@ Reached_Train
 ===============
 */
 void
-Reached_Train(gentity_t *ent)
+Reached_Train(ent_t *ent)
 {
-	gentity_t *next;
+	ent_t *next;
 	float speed;
 	vec3_t move;
 	float length;
@@ -1406,9 +1406,9 @@ Link all the corners together
 ===============
 */
 void
-Think_SetupTrainTargets(gentity_t *ent)
+Think_SetupTrainTargets(ent_t *ent)
 {
-	gentity_t *path, *next, *start;
+	ent_t *path, *next, *start;
 
 	ent->nextTrain = G_Find(nil, FOFS(targetname), ent->target);
 	if(!ent->nextTrain){
@@ -1456,7 +1456,7 @@ Target: next path corner and other targets to fire
 "wait" seconds to wait before behining move to next corner
 */
 void
-SP_path_corner(gentity_t *self)
+SP_path_corner(ent_t *self)
 {
 	if(!self->targetname){
 		G_Printf("path_corner with no targetname at %s\n", vtos(self->s.origin));
@@ -1479,7 +1479,7 @@ The train spawns at the first target it is pointing at.
 "light"		constantLight radius
 */
 void
-SP_func_train(gentity_t *self)
+SP_func_train(ent_t *self)
 {
 	VectorClear(self->s.angles);
 
@@ -1524,7 +1524,7 @@ A bmodel that just sits there, doing nothing.  Can be used for conditional walls
 "light"		constantLight radius
 */
 void
-SP_func_static(gentity_t *ent)
+SP_func_static(ent_t *ent)
 {
 	trap_SetBrushModel(ent, ent->model);
 	InitMover(ent);
@@ -1552,7 +1552,7 @@ check either the X_AXIS or Y_AXIS box to change that.
 "light"		constantLight radius
 */
 void
-SP_func_rotating(gentity_t *ent)
+SP_func_rotating(ent_t *ent)
 {
 	if(!ent->speed)
 		ent->speed = 100;
@@ -1598,7 +1598,7 @@ Normally bobs on the Z axis
 "light"		constantLight radius
 */
 void
-SP_func_bobbing(gentity_t *ent)
+SP_func_bobbing(ent_t *ent)
 {
 	float height;
 	float phase;
@@ -1647,7 +1647,7 @@ Pendulum frequency is a physical constant based on the length of the beam and gr
 "light"		constantLight radius
 */
 void
-SP_func_pendulum(gentity_t *ent)
+SP_func_pendulum(ent_t *ent)
 {
 	float freq;
 	float length;

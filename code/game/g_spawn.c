@@ -118,70 +118,70 @@ field_t fields[] = {
 typedef struct
 {
 	char *name;
-	void (*spawn)(gentity_t *ent);
+	void (*spawn)(ent_t *ent);
 } spawn_t;
 
-void	SP_playerspawn(gentity_t *ent);
+void	SP_playerspawn(ent_t *ent);
 
-void	SP_func_plat(gentity_t *ent);
-void	SP_func_static(gentity_t *ent);
-void	SP_func_rotating(gentity_t *ent);
-void	SP_func_bobbing(gentity_t *ent);
-void	SP_func_pendulum(gentity_t *ent);
-void	SP_func_button(gentity_t *ent);
-void	SP_func_door(gentity_t *ent);
-void	SP_func_piston(gentity_t *ent);
-void	SP_func_train(gentity_t *ent);
+void	SP_func_plat(ent_t *ent);
+void	SP_func_static(ent_t *ent);
+void	SP_func_rotating(ent_t *ent);
+void	SP_func_bobbing(ent_t *ent);
+void	SP_func_pendulum(ent_t *ent);
+void	SP_func_button(ent_t *ent);
+void	SP_func_door(ent_t *ent);
+void	SP_func_piston(ent_t *ent);
+void	SP_func_train(ent_t *ent);
 
-void	SP_trigger_always(gentity_t *ent);
-void	SP_trigger_timer(gentity_t *self);
-void	SP_trigger_multiple(gentity_t *ent);
-void	SP_trigger_push(gentity_t *ent);
-void	SP_trigger_teleport(gentity_t *ent);
-void	SP_trigger_hurt(gentity_t *ent);
+void	SP_trigger_always(ent_t *ent);
+void	SP_trigger_timer(ent_t *self);
+void	SP_trigger_multiple(ent_t *ent);
+void	SP_trigger_push(ent_t *ent);
+void	SP_trigger_teleport(ent_t *ent);
+void	SP_trigger_hurt(ent_t *ent);
 
-void	SP_target_remove_powerups(gentity_t *ent);
-void	SP_target_give(gentity_t *ent);
-void	SP_target_delay(gentity_t *ent);
-void	SP_target_speaker(gentity_t *ent);
-void	SP_target_print(gentity_t *ent);
-void	SP_target_laser(gentity_t *self);
-void	SP_target_score(gentity_t *ent);
-void	SP_target_teleporter(gentity_t *ent);
-void	SP_target_relay(gentity_t *ent);
-void	SP_target_kill(gentity_t *ent);
-void	SP_target_position(gentity_t *ent);
-void	SP_target_location(gentity_t *ent);
-void	SP_target_push(gentity_t *ent);
+void	SP_target_remove_powerups(ent_t *ent);
+void	SP_target_give(ent_t *ent);
+void	SP_target_delay(ent_t *ent);
+void	SP_target_speaker(ent_t *ent);
+void	SP_target_print(ent_t *ent);
+void	SP_target_laser(ent_t *self);
+void	SP_target_score(ent_t *ent);
+void	SP_target_teleporter(ent_t *ent);
+void	SP_target_relay(ent_t *ent);
+void	SP_target_kill(ent_t *ent);
+void	SP_target_position(ent_t *ent);
+void	SP_target_location(ent_t *ent);
+void	SP_target_push(ent_t *ent);
 
-void	SP_light(gentity_t *self);
-void	SP_info_null(gentity_t *self);
-void	SP_info_notnull(gentity_t *self);
-void	SP_info_camp(gentity_t *self);
-void	SP_path_corner(gentity_t *self);
+void	SP_light(ent_t *self);
+void	SP_info_null(ent_t *self);
+void	SP_info_notnull(ent_t *self);
+void	SP_info_camp(ent_t *self);
+void	SP_path_corner(ent_t *self);
 
-void	SP_misc_teleporter_dest(gentity_t *self);
-void	SP_misc_model(gentity_t *ent);
-void	SP_misc_portal_camera(gentity_t *ent);
-void	SP_misc_portal_surface(gentity_t *ent);
+void	SP_misc_teleporter_dest(ent_t *self);
+void	SP_misc_model(ent_t *ent);
+void	SP_misc_portal_camera(ent_t *ent);
+void	SP_misc_portal_surface(ent_t *ent);
 
-void	SP_shooter_rocket(gentity_t *ent);
-void	SP_shooter_plasma(gentity_t *ent);
-void	SP_shooter_grenade(gentity_t *ent);
+void	SP_shooter_rocket(ent_t *ent);
+void	SP_shooter_plasma(ent_t *ent);
+void	SP_shooter_grenade(ent_t *ent);
 
-void	SP_crate(gentity_t *ent);
-void	SP_crate_strong(gentity_t *ent);
-void	SP_crate_checkpoint(gentity_t *ent);
-void	SP_crate_bouncy(gentity_t *ent);
+void	SP_crate(ent_t *ent);
+void	SP_crate_strong(ent_t *ent);
+void	SP_crate_checkpoint(ent_t *ent);
+void	SP_crate_bouncy(ent_t *ent);
 
-void	SP_team_CTF_redplayer(gentity_t *ent);
-void	SP_team_CTF_blueplayer(gentity_t *ent);
+void	SP_team_CTF_redplayer(ent_t *ent);
+void	SP_team_CTF_blueplayer(ent_t *ent);
 
-void	SP_team_CTF_redspawn(gentity_t *ent);
-void	SP_team_CTF_bluespawn(gentity_t *ent);
+void	SP_team_CTF_redspawn(ent_t *ent);
+void	SP_team_CTF_bluespawn(ent_t *ent);
 
 void
-SP_item_botroam(gentity_t *ent){ }
+SP_item_botroam(ent_t *ent){ }
 
 spawn_t spawns[] = {
 	{"playerspawn", SP_playerspawn},
@@ -269,10 +269,10 @@ returning qfalse if not found
 ===============
 */
 qboolean
-G_CallSpawn(gentity_t *ent)
+G_CallSpawn(ent_t *ent)
 {
 	spawn_t *s;
-	gitem_t *item;
+	item_t *item;
 
 	if(!ent->classname){
 		G_Printf("G_CallSpawn: nil classname\n");
@@ -341,7 +341,7 @@ in a gentity
 ===============
 */
 void
-G_ParseField(const char *key, const char *value, gentity_t *ent)
+G_ParseField(const char *key, const char *value, ent_t *ent)
 {
 	field_t *f;
 	byte *b;
@@ -399,7 +399,7 @@ void
 G_SpawnGEntityFromSpawnVars(void)
 {
 	int i;
-	gentity_t *ent;
+	ent_t *ent;
 	char *s, *value, *gametypeName;
 	static char *gametypeNames[] = {"ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester"};
 

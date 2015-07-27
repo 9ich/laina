@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 void
-InitTrigger(gentity_t *self)
+InitTrigger(ent_t *self)
 {
 	if(!VectorCompare(self->s.angles, vec3_origin))
 		G_SetMovedir(self->s.angles, self->movedir);
@@ -34,7 +34,7 @@ InitTrigger(gentity_t *self)
 
 // the wait time has passed, so set back up for another activation
 void
-multi_wait(gentity_t *ent)
+multi_wait(ent_t *ent)
 {
 	ent->nextthink = 0;
 }
@@ -43,7 +43,7 @@ multi_wait(gentity_t *ent)
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
 void
-multi_trigger(gentity_t *ent, gentity_t *activator)
+multi_trigger(ent_t *ent, ent_t *activator)
 {
 	ent->activator = activator;
 	if(ent->nextthink)
@@ -73,13 +73,13 @@ multi_trigger(gentity_t *ent, gentity_t *activator)
 }
 
 void
-Use_Multi(gentity_t *ent, gentity_t *other, gentity_t *activator)
+Use_Multi(ent_t *ent, ent_t *other, ent_t *activator)
 {
 	multi_trigger(ent, activator);
 }
 
 void
-Touch_Multi(gentity_t *self, gentity_t *other, trace_t *trace)
+Touch_Multi(ent_t *self, ent_t *other, trace_t *trace)
 {
 	if(!other->client)
 		return;
@@ -94,7 +94,7 @@ so, the basic time between firing is a random time between
 (wait - random) and (wait + random)
 */
 void
-SP_trigger_multiple(gentity_t *ent)
+SP_trigger_multiple(ent_t *ent)
 {
 	G_SpawnFloat("wait", "0.5", &ent->wait);
 	G_SpawnFloat("random", "0", &ent->random);
@@ -120,7 +120,7 @@ trigger_always
 */
 
 void
-trigger_always_think(gentity_t *ent)
+trigger_always_think(ent_t *ent)
 {
 	G_UseTargets(ent, ent);
 	G_FreeEntity(ent);
@@ -132,7 +132,7 @@ This trigger will always fire.  It is activated by the world.
 "delay"		the delay (in seconds) before firing
 */
 void
-SP_trigger_always(gentity_t *ent)
+SP_trigger_always(ent_t *ent)
 {
 	float delay;
 
@@ -153,7 +153,7 @@ trigger_push
 */
 
 void
-trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+trigger_push_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
 	if(!other->client)
 		return;
@@ -169,9 +169,9 @@ Calculate origin2 so the target apogee will be hit
 =================
 */
 void
-AimAtTarget(gentity_t *self)
+AimAtTarget(ent_t *self)
 {
-	gentity_t *ent;
+	ent_t *ent;
 	vec3_t origin;
 	float height, gravity, time, forward;
 	float dist;
@@ -209,7 +209,7 @@ Must point at a target_position, which will be the apex of the leap.
 This will be client side predicted, unlike target_push
 */
 void
-SP_trigger_push(gentity_t *self)
+SP_trigger_push(ent_t *self)
 {
 	InitTrigger(self);
 
@@ -227,7 +227,7 @@ SP_trigger_push(gentity_t *self)
 }
 
 void
-Use_target_push(gentity_t *self, gentity_t *other, gentity_t *activator)
+Use_target_push(ent_t *self, ent_t *other, ent_t *activator)
 {
 	if(!activator->client)
 		return;
@@ -252,7 +252,7 @@ Pushes the activator in the direction.of angle, or towards a target apex.
 if "bouncepad", play bounce noise instead of windfly
 */
 void
-SP_target_push(gentity_t *self)
+SP_target_push(ent_t *self)
 {
 	if(!self->speed)
 		self->speed = 1000;
@@ -281,9 +281,9 @@ trigger_teleport
 */
 
 void
-trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+trigger_teleporter_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
-	gentity_t *dest;
+	ent_t *dest;
 
 	if(!other->client)
 		return;
@@ -313,7 +313,7 @@ Spectator teleporters are not normally placed in the editor, but are created
 automatically near doors to allow spectators to move through them
 */
 void
-SP_trigger_teleport(gentity_t *self)
+SP_trigger_teleport(ent_t *self)
 {
 	InitTrigger(self);
 
@@ -354,7 +354,7 @@ NO_PROTECTION	*nothing* stops the damage
 
 */
 void
-hurt_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+hurt_use(ent_t *self, ent_t *other, ent_t *activator)
 {
 	if(self->r.linked)
 		trap_UnlinkEntity(self);
@@ -363,7 +363,7 @@ hurt_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 }
 
 void
-hurt_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+hurt_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
 	int dflags;
 
@@ -390,7 +390,7 @@ hurt_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 }
 
 void
-SP_trigger_hurt(gentity_t *self)
+SP_trigger_hurt(ent_t *self)
 {
 	InitTrigger(self);
 
@@ -428,7 +428,7 @@ so, the basic time between firing is a random time between
 
 */
 void
-timer_think(gentity_t *self)
+timer_think(ent_t *self)
 {
 	G_UseTargets(self, self->activator);
 	// set time before next firing
@@ -436,7 +436,7 @@ timer_think(gentity_t *self)
 }
 
 void
-timer_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+timer_use(ent_t *self, ent_t *other, ent_t *activator)
 {
 	self->activator = activator;
 
@@ -451,7 +451,7 @@ timer_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 }
 
 void
-SP_trigger_timer(gentity_t *self)
+SP_trigger_timer(ent_t *self)
 {
 	G_SpawnFloat("random", "0", &self->random);
 	G_SpawnFloat("wait", "1", &self->wait);

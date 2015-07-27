@@ -199,7 +199,7 @@ CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops)
 {
 	int i;
 	int event;
-	centity_t *cent;
+	cent_t *cent;
 
 	if(ps->externalEvent && ps->externalEvent != ops->externalEvent){
 		cent = &cg_entities[ps->clientNum];
@@ -237,7 +237,7 @@ CG_CheckChangedPredictableEvents(playerState_t *ps)
 {
 	int i;
 	int event;
-	centity_t *cent;
+	cent_t *cent;
 
 	cent = &cg.predictedPlayerEntity;
 	for(i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++){

@@ -807,7 +807,7 @@ BotFindEntityForLevelItem(levelitem_t *li)
 	}
 }
 
-//NOTE: enum entityType_t in bg_public.h
+//NOTE: enum enttype_t in bg_public.h
 #define ET_ITEM 2
 
 void

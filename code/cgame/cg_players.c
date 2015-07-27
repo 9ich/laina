@@ -47,7 +47,7 @@ CG_CustomSound
 sfxHandle_t
 CG_CustomSound(int clientNum, const char *soundName)
 {
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	int i;
 
 	if(soundName[0] != '*')
@@ -82,7 +82,7 @@ models/players/visor/animation.cfg, etc
 ======================
 */
 static qboolean
-CG_ParseAnimationFile(const char *filename, clientInfo_t *ci)
+CG_ParseAnimationFile(const char *filename, clientinfo_t *ci)
 {
 	char *text_p, *prev;
 	int len;
@@ -291,7 +291,7 @@ CG_FindClientModelFile
 ==========================
 */
 static qboolean
-CG_FindClientModelFile(char *filename, int length, clientInfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *base, const char *ext)
+CG_FindClientModelFile(char *filename, int length, clientinfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *base, const char *ext)
 {
 	char *team, *charactersFolder;
 	int i;
@@ -355,7 +355,7 @@ CG_FindClientHeadFile
 ==========================
 */
 static qboolean
-CG_FindClientHeadFile(char *filename, int length, clientInfo_t *ci, const char *teamName, const char *headModelName, const char *headSkinName, const char *base, const char *ext)
+CG_FindClientHeadFile(char *filename, int length, clientinfo_t *ci, const char *teamName, const char *headModelName, const char *headSkinName, const char *base, const char *ext)
 {
 	char *team, *headsFolder;
 	int i;
@@ -418,7 +418,7 @@ CG_RegisterClientSkin
 ==========================
 */
 static qboolean
-CG_RegisterClientSkin(clientInfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName)
+CG_RegisterClientSkin(clientinfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName)
 {
 	char filename[MAX_QPATH];
 
@@ -471,7 +471,7 @@ CG_RegisterClientModelname
 ==========================
 */
 static qboolean
-CG_RegisterClientModelname(clientInfo_t *ci, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName)
+CG_RegisterClientModelname(clientinfo_t *ci, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName)
 {
 	char filename[MAX_QPATH];
 	const char *headName;
@@ -593,7 +593,7 @@ This will usually be deferred to a safe time
 ===================
 */
 static void
-CG_LoadClientInfo(int clientNum, clientInfo_t *ci)
+CG_LoadClientInfo(int clientNum, clientinfo_t *ci)
 {
 	const char *dir, *fallback;
 	int i, modelloaded;
@@ -661,7 +661,7 @@ CG_CopyClientInfoModel
 ======================
 */
 static void
-CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to)
+CG_CopyClientInfoModel(clientinfo_t *from, clientinfo_t *to)
 {
 	VectorCopy(from->headOffset, to->headOffset);
 	to->footsteps = from->footsteps;
@@ -687,10 +687,10 @@ CG_ScanForExistingClientInfo
 ======================
 */
 static qboolean
-CG_ScanForExistingClientInfo(clientInfo_t *ci)
+CG_ScanForExistingClientInfo(clientinfo_t *ci)
 {
 	int i;
-	clientInfo_t *match;
+	clientinfo_t *match;
 
 	for(i = 0; i < cgs.maxclients; i++){
 		match = &cgs.clientinfo[i];
@@ -728,10 +728,10 @@ client's info to use until we have some spare time.
 ======================
 */
 static void
-CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci)
+CG_SetDeferredClientInfo(int clientNum, clientinfo_t *ci)
 {
 	int i;
-	clientInfo_t *match;
+	clientinfo_t *match;
 
 	// if someone else is already the same models and skins we
 	// can just load the client info
@@ -796,8 +796,8 @@ CG_NewClientInfo
 void
 CG_NewClientInfo(int clientNum)
 {
-	clientInfo_t *ci;
-	clientInfo_t newInfo;
+	clientinfo_t *ci;
+	clientinfo_t newInfo;
 	const char *configstring;
 	const char *v;
 	char *slash;
@@ -991,7 +991,7 @@ void
 CG_LoadDeferredPlayers(void)
 {
 	int i;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 
 	// scan for a deferred player to load
 	for(i = 0, ci = cgs.clientinfo; i < cgs.maxclients; i++, ci++)
@@ -1023,7 +1023,7 @@ may include ANIM_TOGGLEBIT
 ===============
 */
 static void
-CG_SetLerpFrameAnimation(clientInfo_t *ci, lerpFrame_t *lf, int newAnimation)
+CG_SetLerpFrameAnimation(clientinfo_t *ci, lerpframe_t *lf, int newAnimation)
 {
 	animation_t *anim;
 
@@ -1051,7 +1051,7 @@ cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
 static void
-CG_RunLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale)
+CG_RunLerpFrame(clientinfo_t *ci, lerpframe_t *lf, int newAnimation, float speedScale)
 {
 	int f, numFrames;
 	animation_t *anim;
@@ -1129,7 +1129,7 @@ CG_ClearLerpFrame
 ===============
 */
 static void
-CG_ClearLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int animationNumber)
+CG_ClearLerpFrame(clientinfo_t *ci, lerpframe_t *lf, int animationNumber)
 {
 	lf->frameTime = lf->oldFrameTime = cg.time;
 	CG_SetLerpFrameAnimation(ci, lf, animationNumber);
@@ -1142,10 +1142,10 @@ CG_PlayerAnimation
 ===============
 */
 static void
-CG_PlayerAnimation(centity_t *cent, int *legsOld, int *legs, float *legsBackLerp,
+CG_PlayerAnimation(cent_t *cent, int *legsOld, int *legs, float *legsBackLerp,
 		   int *torsoOld, int *torso, float *torsoBackLerp)
 {
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	int clientNum;
 	float speedScale;
 
@@ -1253,7 +1253,7 @@ CG_AddPainTwitch
 =================
 */
 static void
-CG_AddPainTwitch(centity_t *cent, vec3_t torsoAngles)
+CG_AddPainTwitch(cent_t *cent, vec3_t torsoAngles)
 {
 	int t;
 	float f;
@@ -1285,7 +1285,7 @@ Handles seperate torso motion
 ===============
 */
 static void
-CG_PlayerAngles(centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3])
+CG_PlayerAngles(cent_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3])
 {
 	vec3_t legsAngles, torsoAngles, headAngles;
 	float dest;
@@ -1293,7 +1293,7 @@ CG_PlayerAngles(centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3]
 	vec3_t velocity;
 	float speed;
 	int dir, clientNum;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 
 	VectorCopy(cent->lerpAngles, headAngles);
 	headAngles[YAW] = AngleMod(headAngles[YAW]);
@@ -1396,9 +1396,9 @@ CG_HasteTrail
 ===============
 */
 static void
-CG_HasteTrail(centity_t *cent)
+CG_HasteTrail(cent_t *cent)
 {
-	localEntity_t *smoke;
+	localent_t *smoke;
 	vec3_t origin;
 	int anim;
 
@@ -1435,7 +1435,7 @@ CG_TrailItem
 ===============
 */
 static void
-CG_TrailItem(centity_t *cent, qhandle_t hModel)
+CG_TrailItem(cent_t *cent, qhandle_t hModel)
 {
 	refEntity_t ent;
 	vec3_t angles;
@@ -1462,9 +1462,9 @@ CG_PlayerFlag
 ===============
 */
 static void
-CG_PlayerFlag(centity_t *cent, qhandle_t hSkin, refEntity_t *torso)
+CG_PlayerFlag(cent_t *cent, qhandle_t hSkin, refEntity_t *torso)
 {
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	refEntity_t pole;
 	refEntity_t flag;
 	vec3_t angles, dir;
@@ -1575,10 +1575,10 @@ CG_PlayerPowerups
 ===============
 */
 static void
-CG_PlayerPowerups(centity_t *cent, refEntity_t *torso)
+CG_PlayerPowerups(cent_t *cent, refEntity_t *torso)
 {
 	int powerups;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 
 	powerups = cent->currentState.powerups;
 	if(!powerups)
@@ -1633,7 +1633,7 @@ Float a sprite over the player's head
 ===============
 */
 static void
-CG_PlayerFloatSprite(centity_t *cent, qhandle_t shader)
+CG_PlayerFloatSprite(cent_t *cent, qhandle_t shader)
 {
 	int rf;
 	refEntity_t ent;
@@ -1665,7 +1665,7 @@ Float sprites over the player's head
 ===============
 */
 static void
-CG_PlayerSprites(centity_t *cent)
+CG_PlayerSprites(cent_t *cent)
 {
 	int team;
 
@@ -1727,7 +1727,7 @@ Draw a mark at the water surface
 ===============
 */
 static void
-CG_PlayerSplash(centity_t *cent)
+CG_PlayerSplash(cent_t *cent)
 {
 	vec3_t start, end;
 	trace_t trace;
@@ -1901,9 +1901,9 @@ CG_Player
 ===============
 */
 void
-CG_Player(centity_t *cent)
+CG_Player(cent_t *cent)
 {
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	refEntity_t legs;
 	refEntity_t torso;
 	refEntity_t head;
@@ -2025,7 +2025,7 @@ A player just came into view or teleported, so reset all animation info
 ===============
 */
 void
-CG_ResetPlayerEntity(centity_t *cent)
+CG_ResetPlayerEntity(cent_t *cent)
 {
 	cent->errorTime = -99999;	// guarantee no error decay added
 	cent->extrapolated = qfalse;

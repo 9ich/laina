@@ -4,15 +4,15 @@
 #define BOX_CONTENTS_JUMP	100.f
 
 // g_trigger.c jump pad recycling
-extern void	trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace);
-extern void	AimAtTarget(gentity_t *self);
+extern void	trigger_push_touch(ent_t *self, ent_t *other, trace_t *trace);
+extern void	AimAtTarget(ent_t *self);
 
-static void	crate_use(gentity_t*, gentity_t*, gentity_t*);
-static void	crate_touch(gentity_t*, gentity_t*, trace_t*);
-static void	crate_checkpoint_use(gentity_t*, gentity_t*, gentity_t*);
-static void	crate_checkpoint_touch(gentity_t*, gentity_t*, trace_t*);
-static void	crate_bouncy_touch(gentity_t*, gentity_t*, trace_t*);
-static void	SP_checkpoint_halo(gentity_t *ent);
+static void	crate_use(ent_t*, ent_t*, ent_t*);
+static void	crate_touch(ent_t*, ent_t*, trace_t*);
+static void	crate_checkpoint_use(ent_t*, ent_t*, ent_t*);
+static void	crate_checkpoint_touch(ent_t*, ent_t*, trace_t*);
+static void	crate_bouncy_touch(ent_t*, ent_t*, trace_t*);
+static void	SP_checkpoint_halo(ent_t *ent);
 
 /*
 A breakable crate which usually contains items.
@@ -26,7 +26,7 @@ SUSPENDED	no drop to floor
 "wait"		time before respawning (-1 default, -1 = never respawn)
 */
 void
-SP_crate(gentity_t *ent)
+SP_crate(ent_t *ent)
 {
 	char *contents;
 	int i;
@@ -69,7 +69,7 @@ SUSPENDED	no drop to floor
 "target"	target ents to trigger when the box is smashed
 */
 void
-SP_crate_checkpoint(gentity_t *ent)
+SP_crate_checkpoint(ent_t *ent)
 {
 	ent->model = "models/crates/checkpoint.md3";
 	ent->physicsBounce = 0.2;
@@ -91,7 +91,7 @@ SP_crate_checkpoint(gentity_t *ent)
 Recycles ent and transforms it into a checkpoint halo.
 */
 static void
-SP_checkpoint_halo(gentity_t *ent)
+SP_checkpoint_halo(ent_t *ent)
 {
 	ent->model = "models/mapobjects/ckpoint/ckpoint";
 	ent->s.modelindex = G_ModelIndex(ent->model);
@@ -113,7 +113,7 @@ SUSPENDED	no drop to floor
 "target"	a target_position, which will be the apex of the leap
 */
 void
-SP_crate_bouncy(gentity_t *ent)
+SP_crate_bouncy(ent_t *ent)
 {
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 	// make sure the client precaches this sound
@@ -135,9 +135,9 @@ SP_crate_bouncy(gentity_t *ent)
 }
 
 static void
-crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+crate_use(ent_t *self, ent_t *other, ent_t *activator)
 {
-	gentity_t *tent;
+	ent_t *tent;
 	vec3_t vel;
 	int i, it;
 
@@ -157,7 +157,7 @@ crate_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 }
 
 static void
-crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+crate_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;
@@ -166,9 +166,9 @@ crate_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 }
 
 static void
-crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
+crate_checkpoint_use(ent_t *self, ent_t *other, ent_t *activator)
 {
-	gentity_t *tent;
+	ent_t *tent;
 
 	level.checkpoint = self->s.number;
 	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_CRATE);
@@ -179,7 +179,7 @@ crate_checkpoint_use(gentity_t *self, gentity_t *other, gentity_t *activator)
 }
 
 static void
-crate_bouncy_touch(gentity_t *self, gentity_t *other, trace_t *trace)
+crate_bouncy_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;

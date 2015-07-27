@@ -58,14 +58,14 @@ typedef enum
 	MOVER_POS2,
 	MOVER_1TO2,
 	MOVER_2TO1
-} moverState_t;
+} moverstate_t;
 
 #define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
-typedef struct gentity_s	gentity_t;
+typedef struct ent_s	ent_t;
 typedef struct gclient_s	gclient_t;
 
-struct gentity_s
+struct ent_s
 {
 	entityState_t	s;	// communicated by server to clients
 	entityShared_t	r;	// shared by both the server system and game
@@ -102,15 +102,15 @@ struct gentity_s
 	// players, for instance
 
 	// movers
-	moverState_t	moverState;
+	moverstate_t	moverState;
 	int		soundPos1;
 	int		sound1to2;
 	int		sound2to1;
 	int		soundPos2;
 	int		soundLoop;
-	gentity_t	*parent;
-	gentity_t	*nextTrain;
-	gentity_t	*prevTrain;
+	ent_t	*parent;
+	ent_t	*nextTrain;
+	ent_t	*prevTrain;
 	vec3_t		pos1, pos2;
 
 	char		*message;
@@ -122,19 +122,19 @@ struct gentity_s
 	char		*team;
 	char		*targetShaderName;
 	char		*targetShaderNewName;
-	gentity_t	*target_ent;
+	ent_t	*target_ent;
 
 	float		speed;
 	vec3_t		movedir;
 
 	int		nextthink;
-	void		(*think)(gentity_t *self);
-	void		(*reached)(gentity_t *self);	// movers call this when hitting endpoint
-	void		(*blocked)(gentity_t *self, gentity_t *other);
-	void		(*touch)(gentity_t *self, gentity_t *other, trace_t *trace);
-	void		(*use)(gentity_t *self, gentity_t *other, gentity_t *activator);
-	void		(*pain)(gentity_t *self, gentity_t *attacker, int damage);
-	void		(*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+	void		(*think)(ent_t *self);
+	void		(*reached)(ent_t *self);	// movers call this when hitting endpoint
+	void		(*blocked)(ent_t *self, ent_t *other);
+	void		(*touch)(ent_t *self, ent_t *other, trace_t *trace);
+	void		(*use)(ent_t *self, ent_t *other, ent_t *activator);
+	void		(*pain)(ent_t *self, ent_t *attacker, int damage);
+	void		(*die)(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int mod);
 
 	int		pain_debounce_time;
 	int		fly_sound_debounce_time;	// wind tunnel
@@ -154,11 +154,11 @@ struct gentity_s
 	int		boxcontents;	// bg_itemlist index for crate_*s
 	int		count;
 
-	gentity_t	*chain;
-	gentity_t	*enemy;
-	gentity_t	*activator;
-	gentity_t	*teamchain;	// next entity in team
-	gentity_t	*teammaster;	// master of the team
+	ent_t	*chain;
+	ent_t	*enemy;
+	ent_t	*activator;
+	ent_t	*teamchain;	// next entity in team
+	ent_t	*teammaster;	// master of the team
 
 	int		doorKey;	// bg_itemlist index
 
@@ -172,7 +172,7 @@ struct gentity_s
 	float		wait;
 	float		random;
 
-	gitem_t		*item;	// for bonus items
+	item_t		*item;	// for bonus items
 };
 
 typedef enum
@@ -180,7 +180,7 @@ typedef enum
 	CON_DISCONNECTED,
 	CON_CONNECTING,
 	CON_CONNECTED
-} clientConnected_t;
+} clientconnected_t;
 
 typedef enum
 {
@@ -188,17 +188,17 @@ typedef enum
 	SPECTATOR_FREE,
 	SPECTATOR_FOLLOW,
 	SPECTATOR_SCOREBOARD
-} spectatorState_t;
+} specstate_t;
 
 typedef enum
 {
 	TEAM_BEGIN,	// Beginning a team game, spawn at base
 	TEAM_ACTIVE	// Now actively playing
-} playerTeamStateState_t;
+} pteamstatenum;
 
 typedef struct
 {
-	playerTeamStateState_t	state;
+	pteamstatenum	state;
 
 	int			location;
 
@@ -213,7 +213,7 @@ typedef struct
 	float			lastreturnedflag;
 	float			flagsince;
 	float			lastfraggedcarrier;
-} playerTeamState_t;
+} pteamstate_t;
 
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
@@ -221,13 +221,13 @@ typedef struct
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 typedef struct
 {
-	team_t			sessionTeam;
+	teamnum_t			sessionTeam;
 	int			spectatorNum;		// for determining next-in-line to play
-	spectatorState_t	spectatorState;
+	specstate_t	spectatorState;
 	int			spectatorClient;	// for chasecam and follow mode
 	int			wins, losses;		// tournament stats
 	qboolean		teamLeader;		// true when this client is a team leader
-} clientSession_t;
+} clientsess_t;
 
 #define MAX_NETNAME	36
 #define MAX_VOTE_COUNT	3
@@ -236,7 +236,7 @@ typedef struct
 // on each level change or team change at ClientBegin()
 typedef struct
 {
-	clientConnected_t	connected;
+	clientconnected_t	connected;
 	usercmd_t		cmd;			// we would lose angles if not persistant
 	qboolean		localClient;		// true if "ip" info key is "localhost"
 	qboolean		initialSpawn;		// the first spawn should be at a cool location
@@ -245,11 +245,11 @@ typedef struct
 	char			netname[MAX_NETNAME];
 	int			maxHealth;		// for handicapping
 	int			enterTime;		// level.time the client entered the game
-	playerTeamState_t	teamState;		// status in teamplay games
+	pteamstate_t	teamState;		// status in teamplay games
 	int			voteCount;		// to prevent people from constantly calling votes
 	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean		teamInfo;		// send team overlay updates?
-} clientPersistant_t;
+} clientpersist_t;
 
 // this structure is cleared on each ClientSpawn(),
 // except for 'client->pers' and 'client->sess'
@@ -259,8 +259,8 @@ struct gclient_s
 	playerState_t		ps;	// communicated by server to clients
 
 	// the rest of the structure is private to game
-	clientPersistant_t	pers;
-	clientSession_t		sess;
+	clientpersist_t	pers;
+	clientsess_t		sess;
 
 	qboolean		readyToExit;	// wishes to leave the intermission
 
@@ -303,7 +303,7 @@ struct gclient_s
 	int		lastKillTime;	// for multiple kill rewards
 
 	qboolean	fireHeld;	// used for hook
-	gentity_t	*hook;		// grapple hook if out
+	ent_t	*hook;		// grapple hook if out
 
 	int		switchTeamTime;	// time the player switched teams
 
@@ -323,7 +323,7 @@ typedef struct
 {
 	struct gclient_s	*clients;	// [maxclients]
 
-	struct gentity_s	*gentities;
+	struct ent_s	*gentities;
 	int			num_entities;	// MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 
 	int			warmupTime;	// restart match at this time
@@ -397,10 +397,10 @@ typedef struct
 	vec3_t		intermission_angle;
 
 	qboolean	locationLinked;	// target_locations get linked
-	gentity_t	*locationHead;	// head of the location list
+	ent_t	*locationHead;	// head of the location list
 	int		bodyQueIndex;	// dead bodies
-	gentity_t	*bodyQue[BODY_QUEUE_SIZE];
-} level_locals_t;
+	ent_t	*bodyQue[BODY_QUEUE_SIZE];
+} levelstatic_t;
 
 // g_spawn.c
 qboolean	G_SpawnString(const char *key, const char *defaultString, char **out);
@@ -412,71 +412,71 @@ void		G_SpawnEntitiesFromString(void);
 char		*G_NewString(const char *string);
 
 // g_cmds.c
-void		Cmd_Score_f(gentity_t *ent);
-void		StopFollowing(gentity_t *ent);
+void		Cmd_Score_f(ent_t *ent);
+void		StopFollowing(ent_t *ent);
 void		BroadcastTeamChange(gclient_t *client, int oldTeam);
-void		SetTeam(gentity_t *ent, char *s);
-void		Cmd_FollowCycle_f(gentity_t *ent, int dir);
+void		SetTeam(ent_t *ent, char *s);
+void		Cmd_FollowCycle_f(ent_t *ent, int dir);
 
 // g_items.c
 void		G_CheckTeamItems(void);
-void		G_RunItem(gentity_t *ent);
-void		RespawnItem(gentity_t *ent);
+void		G_RunItem(ent_t *ent);
+void		RespawnItem(ent_t *ent);
 
-void		UseHoldableItem(gentity_t *ent);
-void		PrecacheItem(gitem_t *it);
-gentity_t	*Drop_Item(gentity_t *ent, gitem_t *item, float angle);
-gentity_t	*LaunchItem(gitem_t *item, vec3_t origin, vec3_t velocity);
-void		SetRespawn(gentity_t *ent, float delay);
-void		G_SpawnItem(gentity_t *ent, gitem_t *item);
-void		FinishSpawningItem(gentity_t *ent);
-void		Think_Weapon(gentity_t *ent);
-int		ArmorIndex(gentity_t *ent);
-void		Add_Ammo(gentity_t *ent, int weapon, int count);
-void		Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace);
+void		UseHoldableItem(ent_t *ent);
+void		PrecacheItem(item_t *it);
+ent_t	*Drop_Item(ent_t *ent, item_t *item, float angle);
+ent_t	*LaunchItem(item_t *item, vec3_t origin, vec3_t velocity);
+void		SetRespawn(ent_t *ent, float delay);
+void		G_SpawnItem(ent_t *ent, item_t *item);
+void		FinishSpawningItem(ent_t *ent);
+void		Think_Weapon(ent_t *ent);
+int		ArmorIndex(ent_t *ent);
+void		Add_Ammo(ent_t *ent, int weapon, int count);
+void		Touch_Item(ent_t *ent, ent_t *other, trace_t *trace);
 
 void		ClearRegisteredItems(void);
-void		RegisterItem(gitem_t *item);
+void		RegisterItem(item_t *item);
 void		SaveRegisteredItems(void);
 
 // g_utils.c
 int		G_ModelIndex(char *name);
 int		G_SoundIndex(char *name);
-void		G_TeamCommand(team_t team, char *cmd);
-void		G_KillBox(gentity_t *ent);
-gentity_t	*G_Find(gentity_t *from, int fieldofs, const char *match);
-gentity_t	*G_PickTarget(char *targetname);
-void		G_UseTargets(gentity_t *ent, gentity_t *activator);
+void		G_TeamCommand(teamnum_t team, char *cmd);
+void		G_KillBox(ent_t *ent);
+ent_t	*G_Find(ent_t *from, int fieldofs, const char *match);
+ent_t	*G_PickTarget(char *targetname);
+void		G_UseTargets(ent_t *ent, ent_t *activator);
 void		G_SetMovedir(vec3_t angles, vec3_t movedir);
 
-void		G_InitGentity(gentity_t *e);
-gentity_t	*G_Spawn(void);
-gentity_t	*G_TempEntity(vec3_t origin, int event);
-void		G_Sound(gentity_t *ent, int channel, int soundIndex);
-void		G_FreeEntity(gentity_t *e);
+void		G_InitGentity(ent_t *e);
+ent_t	*G_Spawn(void);
+ent_t	*G_TempEntity(vec3_t origin, int event);
+void		G_Sound(ent_t *ent, int channel, int soundIndex);
+void		G_FreeEntity(ent_t *e);
 qboolean	G_EntitiesFree(void);
 
-void		G_TouchTriggers(gentity_t *ent);
+void		G_TouchTriggers(ent_t *ent);
 
 float		*tv(float x, float y, float z);
 char		*vtos(const vec3_t v);
 
 float		vectoyaw(const vec3_t vec);
 
-void		G_AddPredictableEvent(gentity_t *ent, int event, int eventParm);
-void		G_AddEvent(gentity_t *ent, int event, int eventParm);
-void		G_SetOrigin(gentity_t *ent, vec3_t origin);
+void		G_AddPredictableEvent(ent_t *ent, int event, int eventParm);
+void		G_AddEvent(ent_t *ent, int event, int eventParm);
+void		G_SetOrigin(ent_t *ent, vec3_t origin);
 void		AddRemap(const char *oldShader, const char *newShader, float timeOffset);
 const char	*BuildShaderStateConfig(void);
 
 // g_combat.c
-qboolean	CanDamage(gentity_t *targ, vec3_t origin);
-void		G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
-qboolean	G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
-int		G_InvulnerabilityEffect(gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir);
-void		body_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath);
-void		TossClientItems(gentity_t *self);
-void		TossClientCubes(gentity_t *self);
+qboolean	CanDamage(ent_t *targ, vec3_t origin);
+void		G_Damage(ent_t *targ, ent_t *inflictor, ent_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
+qboolean	G_RadiusDamage(vec3_t origin, ent_t *attacker, float damage, float radius, ent_t *ignore, int mod);
+int		G_InvulnerabilityEffect(ent_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir);
+void		body_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int meansOfDeath);
+void		TossClientItems(ent_t *self);
+void		TossClientCubes(ent_t *self);
 
 // damage flags
 #define DAMAGE_RADIUS			0x00000001	// damage was indirect
@@ -485,47 +485,47 @@ void		TossClientCubes(gentity_t *self);
 #define DAMAGE_NO_PROTECTION		0x00000008	// armor, shields, invulnerability, and godmode have no effect
 
 // g_missile.c
-void		G_RunMissile(gentity_t *ent);
+void		G_RunMissile(ent_t *ent);
 
-gentity_t	*fire_plasma(gentity_t *self, vec3_t start, vec3_t aimdir);
-gentity_t	*fire_grenade(gentity_t *self, vec3_t start, vec3_t aimdir);
-gentity_t	*fire_rocket(gentity_t *self, vec3_t start, vec3_t dir);
-gentity_t	*fire_bfg(gentity_t *self, vec3_t start, vec3_t dir);
-gentity_t	*fire_grapple(gentity_t *self, vec3_t start, vec3_t dir);
+ent_t	*fire_plasma(ent_t *self, vec3_t start, vec3_t aimdir);
+ent_t	*fire_grenade(ent_t *self, vec3_t start, vec3_t aimdir);
+ent_t	*fire_rocket(ent_t *self, vec3_t start, vec3_t dir);
+ent_t	*fire_bfg(ent_t *self, vec3_t start, vec3_t dir);
+ent_t	*fire_grapple(ent_t *self, vec3_t start, vec3_t dir);
 
 // g_mover.c
-void	G_RunMover(gentity_t *ent);
-void	Touch_DoorTrigger(gentity_t *ent, gentity_t *other, trace_t *trace);
+void	G_RunMover(ent_t *ent);
+void	Touch_DoorTrigger(ent_t *ent, ent_t *other, trace_t *trace);
 
 // g_trigger.c
-void	trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace);
+void	trigger_teleporter_touch(ent_t *self, ent_t *other, trace_t *trace);
 
 // g_misc.c
-void	TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles);
+void	TeleportPlayer(ent_t *player, vec3_t origin, vec3_t angles);
 
 // g_weapon.c
-qboolean	LogAccuracyHit(gentity_t *target, gentity_t *attacker);
-void		CalcMuzzlePoint(gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint);
+qboolean	LogAccuracyHit(ent_t *target, ent_t *attacker);
+void		CalcMuzzlePoint(ent_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint);
 void		SnapVectorTowards(vec3_t v, vec3_t to);
-qboolean	CheckGauntletAttack(gentity_t *ent);
-void		Weapon_HookFree(gentity_t *ent);
-void		Weapon_HookThink(gentity_t *ent);
+qboolean	CheckGauntletAttack(ent_t *ent);
+void		Weapon_HookFree(ent_t *ent);
+void		Weapon_HookThink(ent_t *ent);
 
 // g_client.c
-int		TeamCount(int ignoreClientNum, team_t team);
+int		TeamCount(int ignoreClientNum, teamnum_t team);
 int		TeamLeader(int team);
-team_t		PickTeam(int ignoreClientNum);
-void		SetClientViewAngle(gentity_t *ent, vec3_t angle);
-gentity_t	*SelectSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot);
-void		CopyToBodyQue(gentity_t *ent);
-void		ClientRespawn(gentity_t *ent);
+teamnum_t		PickTeam(int ignoreClientNum);
+void		SetClientViewAngle(ent_t *ent, vec3_t angle);
+ent_t	*SelectSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot);
+void		CopyToBodyQue(ent_t *ent);
+void		ClientRespawn(ent_t *ent);
 void		BeginIntermission(void);
 void		InitBodyQue(void);
-void		ClientSpawn(gentity_t *ent);
-void		player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
-void		AddScore(gentity_t *ent, vec3_t origin, int score);
+void		ClientSpawn(ent_t *ent);
+void		player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int mod);
+void		AddScore(ent_t *ent, vec3_t origin, int score);
 void		CalculateRanks(void);
-qboolean	SpotWouldTelefrag(gentity_t *spot);
+qboolean	SpotWouldTelefrag(ent_t *spot);
 
 // g_svcmds.c
 qboolean	ConsoleCommand(void);
@@ -533,17 +533,17 @@ void		G_ProcessIPBans(void);
 qboolean	G_FilterPacket(char *from);
 
 // g_weapon.c
-void		FireWeapon(gentity_t *ent);
+void		FireWeapon(ent_t *ent);
 
 // g_cmds.c
-void		DeathmatchScoreboardMessage(gentity_t *ent);
+void		DeathmatchScoreboardMessage(ent_t *ent);
 
 // g_main.c
-void		MoveClientToIntermission(gentity_t *ent);
+void		MoveClientToIntermission(ent_t *ent);
 void		FindIntermissionPoint(void);
 void		SetLeader(int team, int client);
 void		CheckTeamLeader(int team);
-void		G_RunThink(gentity_t *ent);
+void		G_RunThink(ent_t *ent);
 void		AddTournamentQueue(gclient_t *client);
 void QDECL	G_LogPrintf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 void		SendScoreboardMessageToAllClients(void);
@@ -559,13 +559,13 @@ void		ClientCommand(int clientNum);
 
 // g_active.c
 void		ClientThink(int clientNum);
-void		ClientEndFrame(gentity_t *ent);
-void		G_RunClient(gentity_t *ent);
+void		ClientEndFrame(ent_t *ent);
+void		G_RunClient(ent_t *ent);
 
 // g_team.c
-qboolean	OnSameTeam(gentity_t *ent1, gentity_t *ent2);
-void		Team_CheckDroppedItem(gentity_t *dropped);
-qboolean	CheckObeliskAttack(gentity_t *obelisk, gentity_t *attacker);
+qboolean	OnSameTeam(ent_t *ent1, ent_t *ent2);
+void		Team_CheckDroppedItem(ent_t *dropped);
+qboolean	CheckObeliskAttack(ent_t *obelisk, ent_t *attacker);
 
 // g_mem.c
 void		*G_Alloc(int size);
@@ -616,10 +616,10 @@ void	BotTestAAS(vec3_t origin);
 
 #include "g_team.h"	// teamplay specific stuff
 
-extern level_locals_t level;
-extern gentity_t g_entities[MAX_GENTITIES];
+extern levelstatic_t level;
+extern ent_t g_entities[MAX_GENTITIES];
 
-#define FOFS(x) ((size_t)&(((gentity_t*)0)->x))
+#define FOFS(x) ((size_t)&(((ent_t*)0)->x))
 
 extern vmCvar_t g_gametype;
 extern vmCvar_t g_dedicated;
@@ -692,7 +692,7 @@ void		trap_Cvar_Set(const char *var_name, const char *value);
 int		trap_Cvar_VariableIntegerValue(const char *var_name);
 float		trap_Cvar_VariableValue(const char *var_name);
 void		trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
-void		trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *gameClients, int sizeofGameClient);
+void		trap_LocateGameData(ent_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *gameClients, int sizeofGameClient);
 void		trap_DropClient(int clientNum, const char *reason);
 void		trap_SendServerCommand(int clientNum, const char *text);
 void		trap_SetConfigstring(int num, const char *string);
@@ -700,17 +700,17 @@ void		trap_GetConfigstring(int num, char *buffer, int bufferSize);
 void		trap_GetUserinfo(int num, char *buffer, int bufferSize);
 void		trap_SetUserinfo(int num, const char *buffer);
 void		trap_GetServerinfo(char *buffer, int bufferSize);
-void		trap_SetBrushModel(gentity_t *ent, const char *name);
+void		trap_SetBrushModel(ent_t *ent, const char *name);
 void		trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask);
 int		trap_PointContents(const vec3_t point, int passEntityNum);
 qboolean	trap_InPVS(const vec3_t p1, const vec3_t p2);
 qboolean	trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2);
-void		trap_AdjustAreaPortalState(gentity_t *ent, qboolean open);
+void		trap_AdjustAreaPortalState(ent_t *ent, qboolean open);
 qboolean	trap_AreasConnected(int area1, int area2);
-void		trap_LinkEntity(gentity_t *ent);
-void		trap_UnlinkEntity(gentity_t *ent);
+void		trap_LinkEntity(ent_t *ent);
+void		trap_UnlinkEntity(ent_t *ent);
 int		trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount);
-qboolean	trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent);
+qboolean	trap_EntityContact(const vec3_t mins, const vec3_t maxs, const ent_t *ent);
 int		trap_BotAllocateClient(void);
 void		trap_BotFreeClient(int clientNum);
 void		trap_GetUsercmd(int clientNum, usercmd_t *cmd);

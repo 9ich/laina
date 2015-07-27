@@ -87,7 +87,7 @@ CG_Obituary(entityState_t *ent)
 	char targetName[32];
 	char attackerName[32];
 	gender_t gender;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
@@ -294,11 +294,11 @@ CG_UseItem
 ===============
 */
 static void
-CG_UseItem(centity_t *cent)
+CG_UseItem(cent_t *cent)
 {
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	int itemNum, clientNum;
-	gitem_t *item;
+	item_t *item;
 	entityState_t *es;
 
 	es = &cent->currentState;
@@ -369,7 +369,7 @@ Returns waterlevel for entity origin
 ================
 */
 int
-CG_WaterLevel(centity_t *cent)
+CG_WaterLevel(cent_t *cent)
 {
 	vec3_t point;
 	int contents, sample1, sample2, anim, waterlevel;
@@ -415,7 +415,7 @@ Also called by playerstate transition
 ================
 */
 void
-CG_PainEvent(centity_t *cent, int health)
+CG_PainEvent(cent_t *cent, int health)
 {
 	char *snd;
 
@@ -454,14 +454,14 @@ also called by CG_CheckPlayerstateEvents
 */
 #define DEBUGNAME(x) if(cg_debugEvents.integer){CG_Printf(x "\n"); }
 void
-CG_EntityEvent(centity_t *cent, vec3_t position)
+CG_EntityEvent(cent_t *cent, vec3_t position)
 {
 	entityState_t *es;
 	int event;
 	vec3_t dir;
 	const char *s;
 	int clientNum;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 
 	es = &cent->currentState;
 	event = es->event & ~EV_EVENT_BITS;
@@ -641,7 +641,7 @@ CG_EntityEvent(centity_t *cent, vec3_t position)
 	case EV_ITEM_PICKUP:
 		DEBUGNAME("EV_ITEM_PICKUP");
 		{
-			gitem_t *item;
+			item_t *item;
 			int index;
 
 			index = es->eventParm;	// player predicted
@@ -667,7 +667,7 @@ CG_EntityEvent(centity_t *cent, vec3_t position)
 	case EV_GLOBAL_ITEM_PICKUP:
 		DEBUGNAME("EV_GLOBAL_ITEM_PICKUP");
 		{
-			gitem_t *item;
+			item_t *item;
 			int index;
 
 			index = es->eventParm;	// player predicted
@@ -1048,7 +1048,7 @@ CG_CheckEvents
 ==============
 */
 void
-CG_CheckEvents(centity_t *cent)
+CG_CheckEvents(cent_t *cent)
 {
 	// check for event-only entities
 	if(cent->currentState.eType > ET_EVENTS){

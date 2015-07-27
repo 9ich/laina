@@ -34,9 +34,9 @@ static char* testerror(playerState_t*, playerState_t*);
 static pmove_t cg_pmove;
 
 static int cg_numSolidEntities;
-static centity_t *cg_solidEntities[MAX_ENTITIES_IN_SNAPSHOT];
+static cent_t *cg_solidEntities[MAX_ENTITIES_IN_SNAPSHOT];
 static int cg_numTriggerEntities;
-static centity_t *cg_triggerEntities[MAX_ENTITIES_IN_SNAPSHOT];
+static cent_t *cg_triggerEntities[MAX_ENTITIES_IN_SNAPSHOT];
 
 /*
 When a new cg.snap has been set, this function builds a sublist
@@ -47,7 +47,7 @@ void
 CG_BuildSolidList(void)
 {
 	int i;
-	centity_t *cent;
+	cent_t *cent;
 	snapshot_t *snap;
 	entityState_t *ent;
 
@@ -96,7 +96,7 @@ CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 	clipHandle_t cmodel;
 	vec3_t bmins, bmaxs;
 	vec3_t origin, angles;
-	centity_t *cent;
+	cent_t *cent;
 
 	for(i = 0; i < cg_numSolidEntities; i++){
 		cent = cg_solidEntities[i];
@@ -158,7 +158,7 @@ CG_PointContents(const vec3_t point, int passEntityNum)
 {
 	int i;
 	entityState_t *ent;
-	centity_t *cent;
+	cent_t *cent;
 	clipHandle_t cmodel;
 	int contents;
 
@@ -239,9 +239,9 @@ CG_InterpolatePlayerState(qboolean grabAngles)
 }
 
 static void
-CG_TouchItem(centity_t *cent)
+CG_TouchItem(cent_t *cent)
 {
-	gitem_t *item;
+	item_t *item;
 
 	if(!cg_predictItems.integer)
 		return;
@@ -295,7 +295,7 @@ CG_TouchTriggerPrediction(void)
 	trace_t trace;
 	entityState_t *ent;
 	clipHandle_t cmodel;
-	centity_t *cent;
+	cent_t *cent;
 	qboolean spectator;
 
 	// dead clients don't activate triggers

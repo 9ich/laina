@@ -309,7 +309,7 @@ void
 Svcmd_EntityList_f(void)
 {
 	int e;
-	gentity_t *check;
+	ent_t *check;
 
 	check = g_entities+1;
 	for(e = 1; e < level.num_entities; e++, check++){

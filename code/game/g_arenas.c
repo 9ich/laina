@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-gentity_t *podium1;
-gentity_t *podium2;
-gentity_t *podium3;
+ent_t *podium1;
+ent_t *podium2;
+ent_t *podium3;
 
 /*
 ==================
@@ -36,7 +36,7 @@ void
 UpdateTournamentInfo(void)
 {
 	int i;
-	gentity_t *player;
+	ent_t *player;
 	int playerClientNum;
 	int n, accuracy, perfect, msglen;
 	char buf[32];
@@ -85,10 +85,10 @@ UpdateTournamentInfo(void)
 	trap_SendConsoleCommand(EXEC_APPEND, msg);
 }
 
-static gentity_t *
-SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_t *ent, int place)
+static ent_t *
+SpawnModelOnVictoryPad(ent_t *pad, vec3_t offset, ent_t *ent, int place)
 {
-	gentity_t *body;
+	ent_t *body;
 	vec3_t vec;
 	vec3_t f, r, u;
 
@@ -149,7 +149,7 @@ SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_t *ent, int place)
 }
 
 static void
-CelebrateStop(gentity_t *player)
+CelebrateStop(ent_t *player)
 {
 	int anim;
 
@@ -162,7 +162,7 @@ CelebrateStop(gentity_t *player)
 
 #define TIMER_GESTURE (34*66+50)
 static void
-CelebrateStart(gentity_t *player)
+CelebrateStart(ent_t *player)
 {
 	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | TORSO_GESTURE;
 	player->nextthink = level.time + TIMER_GESTURE;
@@ -181,7 +181,7 @@ static vec3_t offsetSecond = {-10, 60, 54};
 static vec3_t offsetThird = {-19, -60, 45};
 
 static void
-PodiumPlacementThink(gentity_t *podium)
+PodiumPlacementThink(ent_t *podium)
 {
 	vec3_t vec;
 	vec3_t origin;
@@ -237,10 +237,10 @@ PodiumPlacementThink(gentity_t *podium)
 	}
 }
 
-static gentity_t *
+static ent_t *
 SpawnPodium(void)
 {
-	gentity_t *podium;
+	ent_t *podium;
 	vec3_t vec;
 	vec3_t origin;
 
@@ -277,8 +277,8 @@ SpawnModelsOnVictoryPads
 void
 SpawnModelsOnVictoryPads(void)
 {
-	gentity_t *player;
-	gentity_t *podium;
+	ent_t *player;
+	ent_t *podium;
 
 	podium1 = nil;
 	podium2 = nil;

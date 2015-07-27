@@ -31,7 +31,7 @@ Used to group brushes together just for editor convenience.  They are turned int
 Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
 */
 void
-SP_info_camp(gentity_t *self)
+SP_info_camp(ent_t *self)
 {
 	G_SetOrigin(self, self->s.origin);
 }
@@ -40,7 +40,7 @@ SP_info_camp(gentity_t *self)
 Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
 */
 void
-SP_info_null(gentity_t *self)
+SP_info_null(ent_t *self)
 {
 	G_FreeEntity(self);
 }
@@ -50,7 +50,7 @@ Used as a positional target for in-game calculation, like jumppad targets.
 target_position does the same thing
 */
 void
-SP_info_notnull(gentity_t *self)
+SP_info_notnull(ent_t *self)
 {
 	G_SetOrigin(self, self->s.origin);
 }
@@ -63,7 +63,7 @@ Lights pointed at a target will be spotlights.
 "radius" overrides the default 64 unit radius of a spotlight at the target point.
 */
 void
-SP_light(gentity_t *self)
+SP_light(ent_t *self)
 {
 	G_FreeEntity(self);
 }
@@ -77,9 +77,9 @@ TELEPORTERS
 */
 
 void
-TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles)
+TeleportPlayer(ent_t *player, vec3_t origin, vec3_t angles)
 {
-	gentity_t *tent;
+	ent_t *tent;
 	qboolean noAngles;
 
 	noAngles = (angles[0] > 999999.0);
@@ -129,7 +129,7 @@ Now that we don't have teleport destination pads, this is just
 an info_notnull
 */
 void
-SP_misc_teleporter_dest(gentity_t *ent)
+SP_misc_teleporter_dest(ent_t *ent)
 {
 }
 
@@ -139,7 +139,7 @@ SP_misc_teleporter_dest(gentity_t *ent)
 "model"		arbitrary .md3 file to display
 */
 void
-SP_misc_model(gentity_t *ent)
+SP_misc_model(ent_t *ent)
 {
 #if 0
 	ent->s.modelindex = G_ModelIndex(ent->model);
@@ -157,11 +157,11 @@ SP_misc_model(gentity_t *ent)
 //===========================================================
 
 void
-locateCamera(gentity_t *ent)
+locateCamera(ent_t *ent)
 {
 	vec3_t dir;
-	gentity_t *target;
-	gentity_t *owner;
+	ent_t *target;
+	ent_t *owner;
 
 	owner = G_PickTarget(ent->target);
 	if(!owner){
@@ -205,7 +205,7 @@ The portal surface nearest this entity will show a view from the targeted misc_p
 This must be within 64 world units of the surface!
 */
 void
-SP_misc_portal_surface(gentity_t *ent)
+SP_misc_portal_surface(ent_t *ent)
 {
 	VectorClear(ent->r.mins);
 	VectorClear(ent->r.maxs);
@@ -227,7 +227,7 @@ The target for a misc_portal_director.  You can set either angles or target anot
 "roll" an angle modifier to orient the camera around the target vector;
 */
 void
-SP_misc_portal_camera(gentity_t *ent)
+SP_misc_portal_camera(ent_t *ent)
 {
 	float roll;
 
@@ -249,7 +249,7 @@ SP_misc_portal_camera(gentity_t *ent)
 */
 
 void
-Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator)
+Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 {
 	vec3_t dir;
 	float deg;
@@ -290,7 +290,7 @@ Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator)
 }
 
 static void
-InitShooter_Finish(gentity_t *ent)
+InitShooter_Finish(ent_t *ent)
 {
 	ent->enemy = G_PickTarget(ent->target);
 	ent->think = 0;
@@ -298,7 +298,7 @@ InitShooter_Finish(gentity_t *ent)
 }
 
 void
-InitShooter(gentity_t *ent, int weapon)
+InitShooter(ent_t *ent, int weapon)
 {
 	ent->use = Use_Shooter;
 	ent->s.weapon = weapon;
@@ -323,7 +323,7 @@ Fires at either the target or the current direction.
 "random" the number of degrees of deviance from the taget. (1.0 default)
 */
 void
-SP_shooter_rocket(gentity_t *ent)
+SP_shooter_rocket(ent_t *ent)
 {
 	InitShooter(ent, WP_ROCKET_LAUNCHER);
 }
@@ -333,7 +333,7 @@ Fires at either the target or the current direction.
 "random" is the number of degrees of deviance from the taget. (1.0 default)
 */
 void
-SP_shooter_plasma(gentity_t *ent)
+SP_shooter_plasma(ent_t *ent)
 {
 	InitShooter(ent, WP_PLASMAGUN);
 }
@@ -343,7 +343,7 @@ Fires at either the target or the current direction.
 "random" is the number of degrees of deviance from the taget. (1.0 default)
 */
 void
-SP_shooter_grenade(gentity_t *ent)
+SP_shooter_grenade(ent_t *ent)
 {
 	InitShooter(ent, WP_GRENADE_LAUNCHER);
 }

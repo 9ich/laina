@@ -32,8 +32,8 @@ G_RankRunFrame
 void
 G_RankRunFrame()
 {
-	gentity_t *ent;
-	gentity_t *ent2;
+	ent_t *ent;
+	ent_t *ent2;
 	grank_status_t old_status;
 	grank_status_t status;
 	int time;

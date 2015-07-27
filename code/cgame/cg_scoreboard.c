@@ -75,7 +75,7 @@ CG_DrawClientScore(int y, score_t *score, float *color, float fade, qboolean lar
 {
 	char string[1024];
 	vec3_t headAngles;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	int iconx, headx;
 
 	if(score->client < 0 || score->client >= cgs.maxclients){
@@ -198,13 +198,13 @@ CG_TeamScoreboard
 =================
 */
 static int
-CG_TeamScoreboard(int y, team_t team, float fade, int maxClients, int lineHeight)
+CG_TeamScoreboard(int y, teamnum_t team, float fade, int maxClients, int lineHeight)
 {
 	int i;
 	score_t *score;
 	float color[4];
 	int count;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = fade;
@@ -416,7 +416,7 @@ CG_DrawOldTourneyScoreboard(void)
 	const char *s;
 	vec4_t color;
 	int min, tens, ones;
-	clientInfo_t *ci;
+	clientinfo_t *ci;
 	int y;
 	int i;
 
