@@ -11,7 +11,7 @@ ifndef SHELL
   SHELL:=sh
 endif
 
-COMPILE_PLATFORM:=$(shell uname | tr [:upper:] [:lower:] | sed 's/_.*//; s:/:_:g; s/32//; s/mingw/windows/')
+COMPILE_PLATFORM:=$(shell uname | tr [:upper:] [:lower:] | sed 's/[_-].*//; s:/:_:g; s/32//; s/mingw/windows/; s/msys/windows/')
 
 COMPILE_ARCH:=$(shell uname -m | tr [:upper:] [:lower:] | sed 's/i.86/x86/; s/\-pc//')
 
