@@ -4,21 +4,24 @@
 # GNU Make required
 #
 
+# cope with spaces in gow's default installation path
+MAKE:="$(MAKE)"
+
 ifndef SHELL
-  SHELL=sh
+  SHELL:=sh
 endif
 
-COMPILE_PLATFORM=$(shell uname | sed s/_.*// | tr [:upper:] [:lower:] | sed s:/:_:g | sed s/32// | sed s/mingw/windows/)
+COMPILE_PLATFORM:=$(shell uname | tr [:upper:] [:lower:] | sed 's/_.*//; s:/:_:g; s/32//; s/mingw/windows/')
 
-COMPILE_ARCH=$(shell uname -m | sed s/i.86/x86/ | sed s/\-pc//)
+COMPILE_ARCH:=$(shell uname -m | tr [:upper:] [:lower:] | sed 's/i.86/x86/; s/\-pc//')
 
 ifeq ($(COMPILE_PLATFORM),sunos)
   # Solaris uname and GNU uname differ
-  COMPILE_ARCH=$(shell uname -p | sed s/i.86/x86/ | sed s/\-pc//)
+  COMPILE_ARCH:=$(shell uname -p | sed 's/i.86/x86/; s/\-pc//')
 endif
 ifeq ($(COMPILE_PLATFORM),darwin)
   # Apple does some things a little differently...
-  COMPILE_ARCH=$(shell uname -p | sed s/i.86/x86/ | sed s/\-pc//)
+  COMPILE_ARCH:=$(shell uname -p | sed 's/i.86/x86/; s/\-pc//')
 endif
 
 ifndef BUILD_STANDALONE
