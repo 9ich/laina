@@ -142,7 +142,7 @@ typedef struct serverStatus_s
 {
 	char string[BIG_INFO_STRING];
 	netadr_t address;
-	int time, startTime;
+	int time, starttime;
 	qboolean pending;
 	qboolean print;
 	qboolean retrieved;
@@ -185,7 +185,7 @@ void CL_UpdateMumble(void)
 		return;
 
 	// !!! FIXME: not sure if this is even close to correct.
-	AngleVectors( cl.snap.ps.viewangles, forward, NULL, up);
+	anglevecs( cl.snap.ps.viewangles, forward, NULL, up);
 
 	pos[0] = cl.snap.ps.origin[0] * scale;
 	pos[1] = cl.snap.ps.origin[2] * scale;
@@ -845,26 +845,26 @@ CL_DemoFrameDurationSDev
 static float CL_DemoFrameDurationSDev( void )
 {
 	int i;
-	int numFrames;
+	int nframes;
 	float mean = 0.0f;
 	float variance = 0.0f;
 
 	if( ( clc.timeDemoFrames - 1 ) > MAX_TIMEDEMO_DURATIONS )
-		numFrames = MAX_TIMEDEMO_DURATIONS;
+		nframes = MAX_TIMEDEMO_DURATIONS;
 	else
-		numFrames = clc.timeDemoFrames - 1;
+		nframes = clc.timeDemoFrames - 1;
 
-	for( i = 0; i < numFrames; i++ )
+	for( i = 0; i < nframes; i++ )
 		mean += clc.timeDemoDurations[ i ];
-	mean /= numFrames;
+	mean /= nframes;
 
-	for( i = 0; i < numFrames; i++ )
+	for( i = 0; i < nframes; i++ )
 	{
 		float x = clc.timeDemoDurations[ i ];
 
 		variance += ( ( x - mean ) * ( x - mean ) );
 	}
-	variance /= numFrames;
+	variance /= nframes;
 
 	return sqrt( variance );
 }
@@ -902,20 +902,20 @@ void CL_DemoCompleted( void )
 			if( cl_timedemoLog && strlen( cl_timedemoLog->string ) > 0 )
 			{
 				int i;
-				int numFrames;
+				int nframes;
 				fileHandle_t f;
 
 				if( ( clc.timeDemoFrames - 1 ) > MAX_TIMEDEMO_DURATIONS )
-					numFrames = MAX_TIMEDEMO_DURATIONS;
+					nframes = MAX_TIMEDEMO_DURATIONS;
 				else
-					numFrames = clc.timeDemoFrames - 1;
+					nframes = clc.timeDemoFrames - 1;
 
 				f = FS_FOpenFileWrite( cl_timedemoLog->string );
 				if( f )
 				{
 					FS_Printf( f, "# %s", buffer );
 
-					for( i = 0; i < numFrames; i++ )
+					for( i = 0; i < nframes; i++ )
 						FS_Printf( f, "%d\n", clc.timeDemoDurations[ i ] );
 
 					FS_FCloseFile( f );
@@ -3869,9 +3869,9 @@ serverStatus_t *CL_GetServerStatus( netadr_t from ) {
 	oldest = -1;
 	oldestTime = 0;
 	for (i = 0; i < MAX_SERVERSTATUSREQUESTS; i++) {
-		if (oldest == -1 || cl_serverStatusList[i].startTime < oldestTime) {
+		if (oldest == -1 || cl_serverStatusList[i].starttime < oldestTime) {
 			oldest = i;
-			oldestTime = cl_serverStatusList[i].startTime;
+			oldestTime = cl_serverStatusList[i].starttime;
 		}
 	}
 	if (oldest != -1) {
@@ -3916,16 +3916,16 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 		if (!serverStatus->pending) {
 			Q_strncpyz(serverStatusString, serverStatus->string, maxLen);
 			serverStatus->retrieved = qtrue;
-			serverStatus->startTime = 0;
+			serverStatus->starttime = 0;
 			return qtrue;
 		}
 		// resend the request regularly
-		else if ( serverStatus->startTime < Com_Milliseconds() - cl_serverStatusResendTime->integer ) {
+		else if ( serverStatus->starttime < Com_Milliseconds() - cl_serverStatusResendTime->integer ) {
 			serverStatus->print = qfalse;
 			serverStatus->pending = qtrue;
 			serverStatus->retrieved = qfalse;
 			serverStatus->time = 0;
-			serverStatus->startTime = Com_Milliseconds();
+			serverStatus->starttime = Com_Milliseconds();
 			NET_OutOfBandPrint( NS_CLIENT, to, "getstatus" );
 			return qfalse;
 		}
@@ -3936,7 +3936,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 		serverStatus->print = qfalse;
 		serverStatus->pending = qtrue;
 		serverStatus->retrieved = qfalse;
-		serverStatus->startTime = Com_Milliseconds();
+		serverStatus->starttime = Com_Milliseconds();
 		serverStatus->time = 0;
 		NET_OutOfBandPrint( NS_CLIENT, to, "getstatus" );
 		return qfalse;

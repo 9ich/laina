@@ -1206,6 +1206,7 @@ ifeq ($(PLATFORM),windows)
 	@echo "  WINDRES: $(WINDRES)"
 endif
 	@echo ""
+ifeq ($(V),1)
 	@echo "  CFLAGS:"
 	$(call print_wrapped, $(CFLAGS) $(OPTFLAGS))
 	@echo ""
@@ -1224,6 +1225,7 @@ endif
 	@echo "  CLIENT_LIBS:"
 	$(call print_wrapped, $(CLIENT_LIBS))
 	@echo ""
+endif
 	@echo "  Output:"
 	$(call print_list, $(NAKED_TARGETS))
 	@echo ""
@@ -2230,8 +2232,12 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/g_mem.o \
   $(B)/$(BASEGAME)/game/g_misc.o \
   $(B)/$(BASEGAME)/game/g_missile.o \
+  $(B)/$(BASEGAME)/game/g_npc.o \
+  $(B)/$(BASEGAME)/game/g_npcai.o \
+  $(B)/$(BASEGAME)/game/g_npcmove.o \
   $(B)/$(BASEGAME)/game/g_mover.o \
   $(B)/$(BASEGAME)/game/g_session.o \
+  $(B)/$(BASEGAME)/game/g_trail.o \
   $(B)/$(BASEGAME)/game/g_spawn.o \
   $(B)/$(BASEGAME)/game/g_svcmds.o \
   $(B)/$(BASEGAME)/game/g_target.o \
@@ -2239,6 +2245,7 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/g_trigger.o \
   $(B)/$(BASEGAME)/game/g_utils.o \
   $(B)/$(BASEGAME)/game/g_weapon.o \
+  $(B)/$(BASEGAME)/game/npc_test.o \
   \
   $(B)/$(BASEGAME)/qcommon/q_math.o \
   $(B)/$(BASEGAME)/qcommon/q_shared.o

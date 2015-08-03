@@ -59,6 +59,7 @@ vmCvar_t g_inactivity;
 vmCvar_t g_debugMove;
 vmCvar_t g_debugDamage;
 vmCvar_t g_debugAlloc;
+vmCvar_t g_debugNPC;
 vmCvar_t g_weaponRespawn;
 vmCvar_t g_weaponTeamRespawn;
 vmCvar_t g_motd;
@@ -135,6 +136,7 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_debugMove, "g_debugMove", "0", 0, 0, qfalse},
 	{&g_debugDamage, "g_debugDamage", "0", 0, 0, qfalse},
 	{&g_debugAlloc, "g_debugAlloc", "0", 0, 0, qfalse},
+	{&g_debugNPC, "g_debugNPC", "1", 0, 0, qfalse},
 	{&g_motd, "g_motd", "", 0, 0, qfalse},
 	{&g_blood, "com_blood", "1", 0, 0, qfalse},
 
@@ -1668,6 +1670,9 @@ runframe(int levelTime)
 
 	if(level.gameovertime > 0 && level.time > level.gameovertime)
 		trap_SendConsoleCommand(EXEC_APPEND, "map limbo\n");
+
+	// choose an entity for NPCs to target this frame
+	setsightclient();
 
 	// go through all allocated objects
 	ent = &g_entities[0];

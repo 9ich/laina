@@ -689,15 +689,20 @@ void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 void PerpendicularVector( vec3_t dst, const vec3_t src );
 
 #ifndef MAX
-#define MAX(x,y) ((x)>(y)?(x):(y))
+#define MAX(x, y)	((x)>(y)? (x) : (y))
 #endif
 
 #ifndef MIN
-#define MIN(x,y) ((x)<(y)?(x):(y))
+#define MIN(x, y)	((x)<(y)? (x) : (y))
+#endif
+
+#ifndef CLAMP
+#define CLAMP(x, lo, hi)	(MAX((lo), MIN((x), (hi))))
 #endif
 
 // tough on RSI, tough on the causes of RSI
 #define vecset		VectorSet
+#define veccopy		VectorCopy
 #define vecclear	VectorClear
 #define veccopy		VectorCopy
 #define veccmp		VectorCompare
@@ -1261,11 +1266,11 @@ typedef enum {
 } trType_t;
 
 typedef struct {
-	trType_t	trType;
-	int		trTime;
-	int		trDuration;			// if non 0, trTime + trDuration = stop time
-	vec3_t	trBase;
-	vec3_t	trDelta;			// velocity, etc
+	trType_t	trType;			// trajectory path type
+	int		trTime;			// start time of this path type
+	int		trDuration;		// how much elapsed time to spend in this trajectory model. if non-0, trTime + trDuration = stop time
+	vec3_t		trBase;				// initial position at start time. 
+	vec3_t		trDelta;			// vector describing the next frame of movement: velocity, etc
 } trajectory_t;
 
 // entityState_t is the information conveyed from the server

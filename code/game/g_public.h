@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // TTimo
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=551
 #define SVF_CLIENTMASK		0x00000002
+#define SVF_NPC			0x00000004	// set if the entity is an NPC
 
 #define SVF_BOT			0x00000008	// set if the entity is a bot
 #define SVF_BROADCAST		0x00000020	// send to all connected clients

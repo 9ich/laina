@@ -1059,7 +1059,7 @@ clientspawn(ent_t *ent)
 	client->ps.persistant[PERS_SPAWN_COUNT]++;
 	client->ps.persistant[PERS_TEAM] = client->sess.team;
 
-	client->airouttime = level.time + 12000;
+	ent->airouttime = level.time + 12000;
 
 	trap_GetUserinfo(index, userinfo, sizeof(userinfo));
 	// set max health

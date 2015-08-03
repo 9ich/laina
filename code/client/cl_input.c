@@ -573,7 +573,7 @@ usercmd_t CL_CreateCmd( void ) {
 	usercmd_t	cmd;
 	vec3_t		oldAngles;
 
-	VectorCopy( cl.viewangles, oldAngles );
+	veccopy( cl.viewangles, oldAngles );
 
 	// keyboard angle adjustment
 	CL_AdjustAngles ();

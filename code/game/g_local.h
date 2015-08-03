@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define INTERMISSION_DELAY_TIME		1000
 #define SP_INTERMISSION_DELAY_TIME	5000
 
-// gentity->flags
+// ent_t->flags
 #define FL_GODMODE			0x00000010
 #define FL_NOTARGET			0x00000020
 #define FL_TEAMSLAVE			0x00000400	// not the first on the team
@@ -60,10 +60,116 @@ typedef enum
 	MOVER_2TO1
 } moverstate_t;
 
+// NPC AI flags
+enum
+{
+	AI_STANDGROUND		= (1<<0),
+	AI_SOUNDTARGET		= (1<<1),
+	AI_LOSTSIGHT		= (1<<2),
+	AI_PURSUITLASTSEEN	= (1<<3),
+	AI_PURSUENEXT		= (1<<4),
+	AI_PURSUETEMP		= (1<<5),
+	AI_HOLDFRAME		= (1<<6),
+	AI_GOODGUY		= (1<<7),
+	AI_NOSTEP		= (1<<8),
+	AI_COMBATPOINT		= (1<<9),
+	AI_MEDIC		= (1<<10),
+	AI_SWIM			= (1<<11),
+	AI_FLY			= (1<<12),
+	AI_PARTIALGROUND	= (1<<13),
+	AI_TEMPSTANDGROUND	= (1<<14)	// why
+};
+
+// NPC attack state
+enum
+{
+	AS_STRAIGHT,
+	AS_SLIDING,
+	AS_MELEE,
+	AS_MISSILE
+};
+
+// NPC range
+enum
+{
+	RANGE_MELEE,
+	RANGE_NEAR,
+	RANGE_MID,
+	RANGE_FAR
+};
+
 #define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
+typedef struct npcframe_t	npcframe_t;
+typedef struct npcmove_t	npcmove_t;
+typedef struct npc_t		npc_t;
 typedef struct ent_s	ent_t;
 typedef struct gclient_s	gclient_t;
+
+struct npcframe_t
+{
+	void	(*aifn)(ent_t*, float dist);
+	float	dist;
+	void	(*think)(ent_t*);
+};
+
+struct npcmove_t
+{
+	int		firstframe, lastframe;
+	npcframe_t	*frame;
+	void		(*endfn)(ent_t*);
+};
+
+// NPCs are stupid bots.
+struct npc_t
+{
+	pmove_t		pm;
+	playerState_t	ps;
+	usercmd_t	ucmd;
+	npcmove_t	*mv;
+	float		idealyaw;
+	float		yawspeed;
+	float		enemyyaw;
+	qboolean	enemyvis;
+	qboolean	enemyinfront;
+	int		pausetime;
+	int		nextframe;
+	float		scale;
+	vec3_t		goal;
+	vec3_t		savedgoal;
+	vec3_t		lastsighting;
+	float		searchtime;
+	float		trailtime;
+	int		idletime;
+	int		attackstate;
+	int		aiflags;
+	ent_t		*goalent;
+	ent_t		*enemy;
+	ent_t		*oldenemy;
+	int		enemyrange;
+	ent_t		*movetarg;
+	char		*combattarg;
+	float		viewheight;
+	int		showhostile;
+	// derived from ent->s.pos and ent->s.apos
+	vec3_t		pos;
+	vec3_t		vel;
+	vec3_t		angles;
+	vec3_t		anglesvel;
+	qboolean	ongroundplane;
+	trace_t		groundtrace;
+
+	void		(*stand)(ent_t*);
+	void		(*idle)(ent_t*);
+	void		(*search)(ent_t*);
+	void		(*walk)(ent_t*);
+	void		(*run)(ent_t*);
+	//void		(*attack)(ent_t*, ent_t *targ, float eta);
+	void		(*attack)(ent_t*);
+	void		(*melee)(ent_t*);
+	void		(*sight)(ent_t*, ent_t*);
+	qboolean	(*checkattack)(ent_t *);
+};
 
 struct ent_s
 {
@@ -74,15 +180,16 @@ struct ent_s
 	// EXPECTS THE FIELDS IN THAT ORDER!
 	//================================
 
-	struct gclient_s	*client;	// nil if not a client
+	gclient_t		*client;	// nil if not a client
+	npc_t			npc;		// just for NPCs
 
 	qboolean		inuse;
 
-	char			*classname;	// set in QuakeEd
-	int			spawnflags;	// set in QuakeEd
+	char			*classname;	// set in radiant
+	int			spawnflags;	// set in radiant
 
 	qboolean		neverfree;	// if true, FreeEntity will only unlink
-	// bodyque uses this
+						// bodyque uses this
 
 	int			flags;	// FL_* variables
 
@@ -173,6 +280,8 @@ struct ent_s
 	float		random;
 
 	item_t		*item;	// for bonus items
+
+	int		airouttime;
 };
 
 typedef enum
@@ -298,8 +407,6 @@ struct gclient_s
 	qboolean	inactivitywarning;	// qtrue if the five seoond warning has been given
 	int		rewardtime;		// clear the EF_AWARD_IMPRESSIVE, etc when time > this
 
-	int		airouttime;
-
 	int		lastkilltime;	// for multiple kill rewards
 
 	qboolean	fireheld;	// used for hook
@@ -397,14 +504,21 @@ typedef struct
 	vec3_t		intermissionangle;
 
 	qboolean	loclinked;	// target_locations get linked
-	ent_t	*lochead;	// head of the location list
+	ent_t		*lochead;	// head of the location list
 	int		bodyqueueindex;	// dead bodies
-	ent_t	*bodyqueue[BODY_QUEUE_SIZE];
+	ent_t		*bodyqueue[BODY_QUEUE_SIZE];
 
 	int		gameovertime;
 
 	int		nsecrets;
 	int		secretsfound;
+
+	int		numnpcs;
+	ent_t		*sightclient;
+	ent_t		*sightent;	// FIXME: what's the difference here?
+	int		sightentframenum;
+	ent_t		*soundent;
+	int		soundentframe;
 } levelstatic_t;
 
 // g_spawn.c
@@ -444,6 +558,7 @@ void		registeritem(item_t *item);
 void		mkitemsconfigstr(void);
 
 // g_utils.c
+void		G_ProjectSource(vec3_t pt, vec3_t dist, vec3_t fwd, vec3_t right, vec3_t out);
 int		modelindex(char *name);
 int		soundindex(char *name);
 void		teamcmd(teamnum_t team, char *cmd);
@@ -466,6 +581,7 @@ float		*tv(float x, float y, float z);
 char		*vtos(const vec3_t v);
 
 float		vectoyaw(const vec3_t vec);
+float		anglemod(float a);
 
 void		addpredictable(ent_t *ent, int event, int eventParm);
 void		addevent(ent_t *ent, int event, int eventParm);
@@ -499,6 +615,36 @@ ent_t	*fire_grapple(ent_t *self, vec3_t start, vec3_t dir);
 // g_mover.c
 void	runmover(ent_t *ent);
 void	doortrigger_touch(ent_t *ent, ent_t *other, trace_t *trace);
+
+// g_npc.c
+void	npcstart(ent_t *e);
+void	npcstartgo(ent_t *e);
+void	npcdroptofloor(ent_t *ent);
+void	npcthink(ent_t *e);
+void	walknpcstart(ent_t *e);
+void	swimnpcstart(ent_t *e);
+void	flynpcstart(ent_t *e);
+void	npcattackfinished(ent_t *e, float time);
+void	npcdeathuse(ent_t *e);
+void	npccategorizepos(ent_t *ent);
+qboolean	npccheckattack(ent_t *e);
+void	npccheckfly(ent_t *e);
+void	npccheckground(ent_t *ent);
+
+// g_npcai.c
+void	aistand(ent_t *e, float dist);
+void	aiwalk(ent_t *e, float dist);
+void	aimove(ent_t *e, float dist);
+void	aiturn(ent_t *e, float dist);
+void	airun(ent_t *e, float dist);
+void	aicharge(ent_t *e, float dist);
+qboolean	visible(ent_t *e, ent_t *other);
+void	setsightclient(void);
+
+// g_npcmove.c
+void	npcchangeyaw(ent_t*);
+void	npcmovetogoal(ent_t *e, float dist);
+qboolean	npcwalkmove(ent_t *e, float yaw, float dist);
 
 // g_trigger.c
 void	trigger_teleporter_touch(ent_t *self, ent_t *other, trace_t *trace);
@@ -577,11 +723,21 @@ void		*alloc(int size);
 void		initmem(void);
 void		Svcmd_GameMem_f(void);
 
+// g_npcai.c
+void		foundtarget(ent_t *e);
+
 // g_session.c
 void		sessread(gclient_t *client);
 void		sesswrite(void);
 void		sessinit(gclient_t *client, char *userinfo);
 void		worldsessinit(void);
+
+// g_trail.c
+void		trailinit(void);
+void		trailadd(vec3_t spot);
+ent_t*		trailfirst(ent_t *e);
+ent_t*		trailnext(ent_t *e);
+ent_t*		traillastspot(void);
 
 // g_arenas.c
 void		updatetourney(void);
@@ -623,7 +779,7 @@ void	BotTestAAS(vec3_t origin);
 extern levelstatic_t level;
 extern ent_t g_entities[MAX_GENTITIES];
 
-#define FOFS(x) ((size_t)&(((ent_t*)0)->x))
+#define FOFS(x)		((size_t)&(((ent_t*)0)->x))
 
 extern vmCvar_t g_gametype;
 extern vmCvar_t g_dedicated;
@@ -648,6 +804,7 @@ extern vmCvar_t g_inactivity;
 extern vmCvar_t g_debugMove;
 extern vmCvar_t g_debugAlloc;
 extern vmCvar_t g_debugDamage;
+extern vmCvar_t	g_debugNPC;
 extern vmCvar_t g_weaponRespawn;
 extern vmCvar_t g_weaponTeamRespawn;
 extern vmCvar_t g_synchronousClients;

@@ -70,6 +70,14 @@ mkshaderstateconfigstr(void)
 	return buff;
 }
 
+void
+G_ProjectSource(vec3_t pt, vec3_t dist, vec3_t fwd, vec3_t right, vec3_t out)
+{
+	out[0] = pt[0] + fwd[0] * dist[0] + right[0] * dist[1];
+	out[1] = pt[1] + fwd[1] * dist[0] + right[1] * dist[1];
+	out[2] = pt[2] + fwd[2] * dist[0] + right[2] * dist[1] + dist[2];
+}
+
 /*
 =========================================================================
 
@@ -356,6 +364,12 @@ vectoyaw(const vec3_t vec)
 	}
 
 	return yaw;
+}
+
+float
+anglemod(float a)
+{
+	return (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
 }
 
 void

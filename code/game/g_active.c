@@ -95,7 +95,7 @@ P_WorldEffects(ent_t *ent)
 	int waterlevel;
 
 	if(ent->client->noclip){
-		ent->client->airouttime = level.time + 12000;	// don't need air
+		ent->airouttime = level.time + 12000;	// don't need air
 		return;
 	}
 
@@ -107,12 +107,12 @@ P_WorldEffects(ent_t *ent)
 	if(waterlevel == 3){
 		// envirosuit give air
 		if(envirosuit)
-			ent->client->airouttime = level.time + 10000;
+			ent->airouttime = level.time + 10000;
 
 		// if out of air, start drowning
-		if(ent->client->airouttime < level.time){
+		if(ent->airouttime < level.time){
 			// drown!
-			ent->client->airouttime += 1000;
+			ent->airouttime += 1000;
 			if(ent->health > 0){
 				// take more damage the longer underwater
 				ent->damage += 2;
@@ -127,7 +127,7 @@ P_WorldEffects(ent_t *ent)
 			}
 		}
 	}else{
-		ent->client->airouttime = level.time + 12000;
+		ent->airouttime = level.time + 12000;
 		ent->damage = 2;
 	}
 
@@ -845,4 +845,11 @@ clientendframe(ent_t *ent)
 	// set the bit for the reachability area the client is currently in
 //	i = trap_AAS_PointReachabilityAreaIndex( ent->client->ps.origin );
 //	ent->client->areabits[i >> 3] |= 1 << (i & 7);
+
+	// add player trail so monsters can follow
+	if(!visible(ent, traillastspot())){
+		gprintf("adding a trail %s %s\n", vtos(ent->s.pos.trBase),
+		   vtos(traillastspot()->s.pos.trBase));
+		trailadd(ent->s.pos.trBase);
+	}
 }

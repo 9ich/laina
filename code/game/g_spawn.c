@@ -178,6 +178,8 @@ void	SP_crate_strong(ent_t *ent);
 void	SP_crate_checkpoint(ent_t *ent);
 void	SP_crate_bouncy(ent_t *ent);
 
+void	SP_npc_test(ent_t *ent);
+
 void	SP_team_CTF_redplayer(ent_t *ent);
 void	SP_team_CTF_blueplayer(ent_t *ent);
 
@@ -193,6 +195,8 @@ spawn_t spawns[] = {
 	{"crate_", SP_crate},	// underscore for radiant menu
 	{"crate_checkpoint", SP_crate_checkpoint},
 	{"crate_bouncy", SP_crate_bouncy},
+
+	{"npc_test", SP_npc_test},
 
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
@@ -616,6 +620,8 @@ spawnall(void)
 	// allow calls to spawn*()
 	level.spawning = qtrue;
 	level.nspawnvars = 0;
+
+	trailinit();
 
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup

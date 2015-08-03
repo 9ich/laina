@@ -311,11 +311,10 @@ Svcmd_EntityList_f(void)
 	int e;
 	ent_t *check;
 
-	check = g_entities+1;
-	for(e = 1; e < level.nentities; e++, check++){
-		if(!check->inuse)
-			continue;
+	check = g_entities;
+	for(e = 0; e < level.nentities; e++, check++){
 		gprintf("%3i:", e);
+		gprintf("  %s  ", check->inuse ? "u": " ");
 		switch(check->s.eType){
 		case ET_GENERAL:
 			gprintf("ET_GENERAL          ");
@@ -366,7 +365,7 @@ Svcmd_EntityList_f(void)
 
 		if(check->classname)
 			gprintf("%s", check->classname);
-		gprintf("\n");
+		gprintf(" %s\n", vtos(check->s.pos.trBase));
 	}
 }
 

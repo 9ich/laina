@@ -421,8 +421,8 @@ static void S_SpatializeOrigin( const vec3_t origin, int master_vol, int* left_v
 	vec3_t		vec;
 
 	// calculate stereo separation and distance attenuation
-	VectorSubtract( origin, listener_origin, source_vec );
-	dist = VectorNormalize( source_vec );
+	vecsub( origin, listener_origin, source_vec );
+	dist = vecnorm( source_vec );
 
 	if (dist >= SOUND_MAX_DIST) {
 		*left_vol = *right_vol = 0;
@@ -437,7 +437,7 @@ static void S_SpatializeOrigin( const vec3_t origin, int master_vol, int* left_v
 		return;
 	}
 
-	VectorRotate( source_vec, listener_axis, vec );
+	vecrotate( source_vec, listener_axis, vec );
 	dot = -vec[1];
 
 	rscale = 0.5 * (1.0 + dot);
@@ -477,9 +477,9 @@ static qboolean S_Base_HearingThroughEntity( int entityNum, vec3_t origin )
 	vec3_t	sorigin;
 
 	if (origin)
-		VectorCopy(origin, sorigin);
+		veccopy(origin, sorigin);
 	else
-		VectorCopy(loopSounds[entityNum].origin, sorigin);
+		veccopy(loopSounds[entityNum].origin, sorigin);
 
 	if( listener_number == entityNum )
 	{
@@ -489,7 +489,7 @@ static qboolean S_Base_HearingThroughEntity( int entityNum, vec3_t origin )
 		// can't ask cgame since that would involve changing the API and hence mod
 		// compatibility. I don't think there is any way around this, but I'll leave
 		// the FIXME just in case anyone has a bright idea.
-		distanceSq = DistanceSquared(
+		distanceSq = vecdistsq(
 				sorigin,
 				listener_origin );
 
@@ -617,7 +617,7 @@ static void S_Base_StartSoundEx( vec3_t origin, int entityNum, int entchannel, s
 	}
 
 	if (origin) {
-		VectorCopy (origin, ch->origin);
+		veccopy (origin, ch->origin);
 		ch->fixed_origin = qtrue;
 	} else {
 		ch->fixed_origin = qfalse;
@@ -774,8 +774,8 @@ void S_Base_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t ve
 		Com_Error( ERR_DROP, "%s has length 0", sfx->soundName );
 	}
 
-	VectorCopy( origin, loopSounds[entityNum].origin );
-	VectorCopy( velocity, loopSounds[entityNum].velocity );
+	veccopy( origin, loopSounds[entityNum].origin );
+	veccopy( velocity, loopSounds[entityNum].velocity );
 	loopSounds[entityNum].active = qtrue;
 	loopSounds[entityNum].kill = qtrue;
 	loopSounds[entityNum].doppler = qfalse;
@@ -783,14 +783,14 @@ void S_Base_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t ve
 	loopSounds[entityNum].dopplerScale = 1.0;
 	loopSounds[entityNum].sfx = sfx;
 
-	if (s_doppler->integer && VectorLengthSquared(velocity)>0.0) {
+	if (s_doppler->integer && veclensq(velocity)>0.0) {
 		vec3_t	out;
 		float	lena, lenb;
 
 		loopSounds[entityNum].doppler = qtrue;
-		lena = DistanceSquared(loopSounds[listener_number].origin, loopSounds[entityNum].origin);
-		VectorAdd(loopSounds[entityNum].origin, loopSounds[entityNum].velocity, out);
-		lenb = DistanceSquared(loopSounds[listener_number].origin, out);
+		lena = vecdistsq(loopSounds[listener_number].origin, loopSounds[entityNum].origin);
+		vecadd(loopSounds[entityNum].origin, loopSounds[entityNum].velocity, out);
+		lenb = vecdistsq(loopSounds[listener_number].origin, out);
 		if ((loopSounds[entityNum].framenum+1) != cls.framecount) {
 			loopSounds[entityNum].oldDopplerScale = 1.0;
 		} else {
@@ -836,8 +836,8 @@ void S_Base_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_
 	if ( !sfx->soundLength ) {
 		Com_Error( ERR_DROP, "%s has length 0", sfx->soundName );
 	}
-	VectorCopy( origin, loopSounds[entityNum].origin );
-	VectorCopy( velocity, loopSounds[entityNum].velocity );
+	veccopy( origin, loopSounds[entityNum].origin );
+	veccopy( velocity, loopSounds[entityNum].velocity );
 	loopSounds[entityNum].sfx = sfx;
 	loopSounds[entityNum].active = qtrue;
 	loopSounds[entityNum].kill = qfalse;
@@ -1087,7 +1087,7 @@ void S_Base_UpdateEntityPosition( int entityNum, const vec3_t origin ) {
 	if ( entityNum < 0 || entityNum >= MAX_GENTITIES ) {
 		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}
-	VectorCopy( origin, loopSounds[entityNum].origin );
+	veccopy( origin, loopSounds[entityNum].origin );
 }
 
 
@@ -1107,10 +1107,10 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 	}
 
 	listener_number = entityNum;
-	VectorCopy( head, listener_origin );
-	VectorCopy( axis[0], listener_axis[0] );
-	VectorCopy( axis[1], listener_axis[1] );
-	VectorCopy( axis[2], listener_axis[2] );
+	veccopy( head, listener_origin );
+	veccopy( axis[0], listener_axis[0] );
+	veccopy( axis[1], listener_axis[1] );
+	veccopy( axis[2], listener_axis[2] );
 
 	// update spatialization for dynamic sounds
 	channel_t* ch = s_channels;
@@ -1119,9 +1119,9 @@ void S_Base_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int 
 			continue;
 		}
 		if (ch->fixed_origin) {
-			VectorCopy( ch->origin, origin );
+			veccopy( ch->origin, origin );
 		} else {
-			VectorCopy( loopSounds[ ch->entnum ].origin, origin );
+			veccopy( loopSounds[ ch->entnum ].origin, origin );
 		}
 		S_SpatializeOrigin( origin, ch->master_vol, &ch->leftvol, &ch->rightvol );
 	}

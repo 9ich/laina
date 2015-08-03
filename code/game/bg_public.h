@@ -215,7 +215,8 @@ typedef enum
 	STAT_ARMOR,
 	STAT_DEAD_YAW,		// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,	// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_ARMOR,
+	STAT_MAX_HEALTH,	// for NPCs; not relevant to players
+	STAT_MAX_ARMOR
 } statindex_t;
 
 // player_state->persistant[] indexes
@@ -666,6 +667,7 @@ qboolean	cangrabitem(int gametype, const entityState_t *ent, const playerState_t
 #define MASK_ALL		(-1)
 #define MASK_SOLID		(CONTENTS_SOLID)
 #define MASK_PLAYERSOLID	(CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_BODY)
+#define MASK_NPCSOLID	(CONTENTS_SOLID|CONTENTS_NPCCLIP|CONTENTS_BODY)
 #define MASK_DEADSOLID		(CONTENTS_SOLID|CONTENTS_PLAYERCLIP)
 #define MASK_WATER		(CONTENTS_WATER|CONTENTS_LAVA|CONTENTS_SLIME)
 #define MASK_OPAQUE		(CONTENTS_SOLID|CONTENTS_SLIME|CONTENTS_LAVA)
@@ -676,6 +678,7 @@ typedef enum
 {
 	ET_GENERAL,
 	ET_PLAYER,
+	ET_NPC,
 	ET_ITEM,
 	ET_MISSILE,
 	ET_MOVER,
@@ -691,10 +694,9 @@ typedef enum
 	ET_GRAPPLE,	// grapple hooked on wall
 	ET_TEAM,
 
-	ET_MAX,
-	ET_EVENTS	= ET_MAX	// any of the EV_* events can be added freestanding
-	// by setting eType to ET_EVENTS + eventNum
-	// this avoids having to set eFlags and eventNum
+	ET_EVENTS	// any of the EV_* events can be added freestanding
+			// by setting eType to ET_EVENTS + eventNum
+			// this avoids having to set eFlags and eventNum
 } enttype_t;
 
 void		evaltrajectory(const trajectory_t *tr, int atTime, vec3_t result);
