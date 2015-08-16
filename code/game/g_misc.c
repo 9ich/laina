@@ -33,7 +33,7 @@ Used as a positional target for calculations in the utilities (spotlights, etc),
 void
 SP_info_camp(ent_t *self)
 {
-	G_SetOrigin(self, self->s.origin);
+	setorigin(self, self->s.origin);
 }
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -42,7 +42,7 @@ Used as a positional target for calculations in the utilities (spotlights, etc),
 void
 SP_info_null(ent_t *self)
 {
-	G_FreeEntity(self);
+	entfree(self);
 }
 
 /*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -52,7 +52,7 @@ target_position does the same thing
 void
 SP_info_notnull(ent_t *self)
 {
-	G_SetOrigin(self, self->s.origin);
+	setorigin(self, self->s.origin);
 }
 
 /*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
@@ -65,7 +65,7 @@ Lights pointed at a target will be spotlights.
 void
 SP_light(ent_t *self)
 {
-	G_FreeEntity(self);
+	entfree(self);
 }
 
 /*
@@ -77,7 +77,7 @@ TELEPORTERS
 */
 
 void
-TeleportPlayer(ent_t *player, vec3_t origin, vec3_t angles)
+teleportentity(ent_t *player, vec3_t origin, vec3_t angles)
 {
 	ent_t *tent;
 	qboolean noAngles;
@@ -85,41 +85,41 @@ TeleportPlayer(ent_t *player, vec3_t origin, vec3_t angles)
 	noAngles = (angles[0] > 999999.0);
 	// use temp events at source and destination to prevent the effect
 	// from getting dropped by a second player event
-	if(player->client->sess.sessionTeam != TEAM_SPECTATOR){
-		tent = G_TempEntity(player->client->ps.origin, EV_PLAYER_TELEPORT_OUT);
+	if(player->client->sess.team != TEAM_SPECTATOR){
+		tent = enttemp(player->client->ps.origin, EV_PLAYER_TELEPORT_OUT);
 		tent->s.clientNum = player->s.clientNum;
 
-		tent = G_TempEntity(origin, EV_PLAYER_TELEPORT_IN);
+		tent = enttemp(origin, EV_PLAYER_TELEPORT_IN);
 		tent->s.clientNum = player->s.clientNum;
 	}
 
-	// unlink to make sure it can't possibly interfere with G_KillBox
+	// unlink to make sure it can't possibly interfere with killbox
 	trap_UnlinkEntity(player);
 
-	VectorCopy(origin, player->client->ps.origin);
+	veccopy(origin, player->client->ps.origin);
 	player->client->ps.origin[2] += 1;
 	if(!noAngles){
 		// spit the player out
-		AngleVectors(angles, player->client->ps.velocity, nil, nil);
-		VectorScale(player->client->ps.velocity, 400, player->client->ps.velocity);
+		anglevecs(angles, player->client->ps.velocity, nil, nil);
+		vecscale(player->client->ps.velocity, 400, player->client->ps.velocity);
 		player->client->ps.pm_time = 160;	// hold time
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		// set angles
-		SetClientViewAngle(player, angles);
+		setviewangles(player, angles);
 	}
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	// kill anything at the destination
-	if(player->client->sess.sessionTeam != TEAM_SPECTATOR)
-		G_KillBox(player);
+	if(player->client->sess.team != TEAM_SPECTATOR)
+		killbox(player);
 
 	// save results of pmove
-	BG_PlayerStateToEntityState(&player->client->ps, &player->s, qtrue);
+	playerstate2entstate(&player->client->ps, &player->s, qtrue);
 
 	// use the precise origin for linking
-	VectorCopy(player->client->ps.origin, player->r.currentOrigin);
+	veccopy(player->client->ps.origin, player->r.currentOrigin);
 
-	if(player->client->sess.sessionTeam != TEAM_SPECTATOR)
+	if(player->client->sess.team != TEAM_SPECTATOR)
 		trap_LinkEntity(player);
 }
 
@@ -142,15 +142,15 @@ void
 SP_misc_model(ent_t *ent)
 {
 #if 0
-	ent->s.modelindex = G_ModelIndex(ent->model);
-	VectorSet(ent->mins, -16, -16, -16);
-	VectorSet(ent->maxs, 16, 16, 16);
+	ent->s.modelindex = modelindex(ent->model);
+	vecset(ent->mins, -16, -16, -16);
+	vecset(ent->maxs, 16, 16, 16);
 	trap_LinkEntity(ent);
 
-	G_SetOrigin(ent, ent->s.origin);
-	VectorCopy(ent->s.angles, ent->s.apos.trBase);
+	setorigin(ent, ent->s.origin);
+	veccopy(ent->s.angles, ent->s.apos.trBase);
 #else
-	G_FreeEntity(ent);
+	entfree(ent);
 #endif
 }
 
@@ -163,10 +163,10 @@ locateCamera(ent_t *ent)
 	ent_t *target;
 	ent_t *owner;
 
-	owner = G_PickTarget(ent->target);
+	owner = picktarget(ent->target);
 	if(!owner){
-		G_Printf("Couldn't find target for misc_partal_surface\n");
-		G_FreeEntity(ent);
+		gprintf("Couldn't find target for misc_partal_surface\n");
+		entfree(ent);
 		return;
 	}
 	ent->r.ownerNum = owner->s.number;
@@ -187,15 +187,15 @@ locateCamera(ent_t *ent)
 	// clientNum holds the rotate offset
 	ent->s.clientNum = owner->s.clientNum;
 
-	VectorCopy(owner->s.origin, ent->s.origin2);
+	veccopy(owner->s.origin, ent->s.origin2);
 
 	// see if the portal_camera has a target
-	target = G_PickTarget(owner->target);
+	target = picktarget(owner->target);
 	if(target){
-		VectorSubtract(target->s.origin, owner->s.origin, dir);
-		VectorNormalize(dir);
+		vecsub(target->s.origin, owner->s.origin, dir);
+		vecnorm(dir);
 	}else
-		G_SetMovedir(owner->s.angles, dir);
+		setmovedir(owner->s.angles, dir);
 
 	ent->s.eventParm = DirToByte(dir);
 }
@@ -207,15 +207,15 @@ This must be within 64 world units of the surface!
 void
 SP_misc_portal_surface(ent_t *ent)
 {
-	VectorClear(ent->r.mins);
-	VectorClear(ent->r.maxs);
+	vecclear(ent->r.mins);
+	vecclear(ent->r.maxs);
 	trap_LinkEntity(ent);
 
 	ent->r.svFlags = SVF_PORTAL;
 	ent->s.eType = ET_PORTAL;
 
 	if(!ent->target)
-		VectorCopy(ent->s.origin, ent->s.origin2);
+		veccopy(ent->s.origin, ent->s.origin2);
 	else{
 		ent->think = locateCamera;
 		ent->nextthink = level.time + 100;
@@ -231,11 +231,11 @@ SP_misc_portal_camera(ent_t *ent)
 {
 	float roll;
 
-	VectorClear(ent->r.mins);
-	VectorClear(ent->r.maxs);
+	vecclear(ent->r.mins);
+	vecclear(ent->r.maxs);
 	trap_LinkEntity(ent);
 
-	G_SpawnFloat("roll", "0", &roll);
+	spawnfloat("roll", "0", &roll);
 
 	ent->s.clientNum = roll/360.0 * 256;
 }
@@ -257,22 +257,22 @@ Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 
 	// see if we have a target
 	if(ent->enemy){
-		VectorSubtract(ent->enemy->r.currentOrigin, ent->s.origin, dir);
-		VectorNormalize(dir);
+		vecsub(ent->enemy->r.currentOrigin, ent->s.origin, dir);
+		vecnorm(dir);
 	}else
-		VectorCopy(ent->movedir, dir);
+		veccopy(ent->movedir, dir);
 
 	// randomize a bit
-	PerpendicularVector(up, dir);
-	CrossProduct(up, dir, right);
+	vecperp(up, dir);
+	veccross(up, dir, right);
 
 	deg = crandom() * ent->random;
-	VectorMA(dir, deg, up, dir);
+	vecsadd(dir, deg, up, dir);
 
 	deg = crandom() * ent->random;
-	VectorMA(dir, deg, right, dir);
+	vecsadd(dir, deg, right, dir);
 
-	VectorNormalize(dir);
+	vecnorm(dir);
 
 	switch(ent->s.weapon){
 	case WP_GRENADE_LAUNCHER:
@@ -286,13 +286,13 @@ Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 		break;
 	}
 
-	G_AddEvent(ent, EV_FIRE_WEAPON, 0);
+	addevent(ent, EV_FIRE_WEAPON, 0);
 }
 
 static void
 InitShooter_Finish(ent_t *ent)
 {
-	ent->enemy = G_PickTarget(ent->target);
+	ent->enemy = picktarget(ent->target);
 	ent->think = 0;
 	ent->nextthink = 0;
 }
@@ -303,9 +303,9 @@ InitShooter(ent_t *ent, int weapon)
 	ent->use = Use_Shooter;
 	ent->s.weapon = weapon;
 
-	RegisterItem(BG_FindItemForWeapon(weapon));
+	registeritem(finditemforweapon(weapon));
 
-	G_SetMovedir(ent->s.angles, ent->movedir);
+	setmovedir(ent->s.angles, ent->movedir);
 
 	if(!ent->random)
 		ent->random = 1.0;

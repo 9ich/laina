@@ -41,12 +41,12 @@ pushed_t pushed[MAX_GENTITIES], *pushed_p;
 
 /*
 ============
-G_TestEntityPosition
+testentityposition
 
 ============
 */
 ent_t       *
-G_TestEntityPosition(ent_t *ent)
+testentityposition(ent_t *ent)
 {
 	trace_t tr;
 	int mask;
@@ -68,23 +68,23 @@ G_TestEntityPosition(ent_t *ent)
 
 /*
 ================
-G_CreateRotationMatrix
+createrotationmatrix
 ================
 */
 void
-G_CreateRotationMatrix(vec3_t angles, vec3_t matrix[3])
+createrotationmatrix(vec3_t angles, vec3_t matrix[3])
 {
-	AngleVectors(angles, matrix[0], matrix[1], matrix[2]);
-	VectorInverse(matrix[1]);
+	anglevecs(angles, matrix[0], matrix[1], matrix[2]);
+	vecinv(matrix[1]);
 }
 
 /*
 ================
-G_TransposeMatrix
+transposematrix
 ================
 */
 void
-G_TransposeMatrix(vec3_t matrix[3], vec3_t transpose[3])
+transposematrix(vec3_t matrix[3], vec3_t transpose[3])
 {
 	int i, j;
 	for(i = 0; i < 3; i++)
@@ -94,29 +94,29 @@ G_TransposeMatrix(vec3_t matrix[3], vec3_t transpose[3])
 
 /*
 ================
-G_RotatePoint
+rotatepoint
 ================
 */
 void
-G_RotatePoint(vec3_t point, vec3_t matrix[3])
+rotatepoint(vec3_t point, vec3_t matrix[3])
 {
 	vec3_t tvec;
 
-	VectorCopy(point, tvec);
-	point[0] = DotProduct(matrix[0], tvec);
-	point[1] = DotProduct(matrix[1], tvec);
-	point[2] = DotProduct(matrix[2], tvec);
+	veccopy(point, tvec);
+	point[0] = vecdot(matrix[0], tvec);
+	point[1] = vecdot(matrix[1], tvec);
+	point[2] = vecdot(matrix[2], tvec);
 }
 
 /*
 ==================
-G_TryPushingEntity
+trypushingentity
 
 Returns qfalse if the move is blocked
 ==================
 */
 qboolean
-G_TryPushingEntity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
+trypushingentity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 {
 	vec3_t matrix[3], transpose[3];
 	vec3_t org, org2, move2;
@@ -130,33 +130,33 @@ G_TryPushingEntity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 
 	// save off the old position
 	if(pushed_p > &pushed[MAX_GENTITIES])
-		G_Error("pushed_p > &pushed[MAX_GENTITIES]");
+		errorf("pushed_p > &pushed[MAX_GENTITIES]");
 	pushed_p->ent = check;
-	VectorCopy(check->s.pos.trBase, pushed_p->origin);
-	VectorCopy(check->s.apos.trBase, pushed_p->angles);
+	veccopy(check->s.pos.trBase, pushed_p->origin);
+	veccopy(check->s.apos.trBase, pushed_p->angles);
 	if(check->client){
 		pushed_p->deltayaw = check->client->ps.delta_angles[YAW];
-		VectorCopy(check->client->ps.origin, pushed_p->origin);
+		veccopy(check->client->ps.origin, pushed_p->origin);
 	}
 	pushed_p++;
 
 	// try moving the contacted entity
 	// figure movement due to the pusher's amove
-	G_CreateRotationMatrix(amove, transpose);
-	G_TransposeMatrix(transpose, matrix);
+	createrotationmatrix(amove, transpose);
+	transposematrix(transpose, matrix);
 	if(check->client)
-		VectorSubtract(check->client->ps.origin, pusher->r.currentOrigin, org);
+		vecsub(check->client->ps.origin, pusher->r.currentOrigin, org);
 	else
-		VectorSubtract(check->s.pos.trBase, pusher->r.currentOrigin, org);
-	VectorCopy(org, org2);
-	G_RotatePoint(org2, matrix);
-	VectorSubtract(org2, org, move2);
+		vecsub(check->s.pos.trBase, pusher->r.currentOrigin, org);
+	veccopy(org, org2);
+	rotatepoint(org2, matrix);
+	vecsub(org2, org, move2);
 	// add movement
-	VectorAdd(check->s.pos.trBase, move, check->s.pos.trBase);
-	VectorAdd(check->s.pos.trBase, move2, check->s.pos.trBase);
+	vecadd(check->s.pos.trBase, move, check->s.pos.trBase);
+	vecadd(check->s.pos.trBase, move2, check->s.pos.trBase);
 	if(check->client){
-		VectorAdd(check->client->ps.origin, move, check->client->ps.origin);
-		VectorAdd(check->client->ps.origin, move2, check->client->ps.origin);
+		vecadd(check->client->ps.origin, move, check->client->ps.origin);
+		vecadd(check->client->ps.origin, move2, check->client->ps.origin);
 		// make sure the client's view rotates when on a rotating mover
 		check->client->ps.delta_angles[YAW] += ANGLE2SHORT(amove[YAW]);
 	}
@@ -165,13 +165,13 @@ G_TryPushingEntity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 	if(check->s.groundEntityNum != pusher->s.number)
 		check->s.groundEntityNum = ENTITYNUM_NONE;
 
-	block = G_TestEntityPosition(check);
+	block = testentityposition(check);
 	if(!block){
 		// pushed ok
 		if(check->client)
-			VectorCopy(check->client->ps.origin, check->r.currentOrigin);
+			veccopy(check->client->ps.origin, check->r.currentOrigin);
 		else
-			VectorCopy(check->s.pos.trBase, check->r.currentOrigin);
+			veccopy(check->s.pos.trBase, check->r.currentOrigin);
 		trap_LinkEntity(check);
 		return qtrue;
 	}
@@ -179,11 +179,11 @@ G_TryPushingEntity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 	// if it is ok to leave in the old position, do it
 	// this is only relevent for riding entities, not pushed
 	// Sliding trapdoors can cause this.
-	VectorCopy((pushed_p-1)->origin, check->s.pos.trBase);
+	veccopy((pushed_p-1)->origin, check->s.pos.trBase);
 	if(check->client)
-		VectorCopy((pushed_p-1)->origin, check->client->ps.origin);
-	VectorCopy((pushed_p-1)->angles, check->s.apos.trBase);
-	block = G_TestEntityPosition(check);
+		veccopy((pushed_p-1)->origin, check->client->ps.origin);
+	veccopy((pushed_p-1)->angles, check->s.apos.trBase);
+	block = testentityposition(check);
 	if(!block){
 		check->s.groundEntityNum = ENTITYNUM_NONE;
 		pushed_p--;
@@ -196,17 +196,17 @@ G_TryPushingEntity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 
 /*
 ==================
-G_CheckProxMinePosition
+checkproxmineposition
 ==================
 */
 qboolean
-G_CheckProxMinePosition(ent_t *check)
+checkproxmineposition(ent_t *check)
 {
 	vec3_t start, end;
 	trace_t tr;
 
-	VectorMA(check->s.pos.trBase, 0.125, check->movedir, start);
-	VectorMA(check->s.pos.trBase, 2, check->movedir, end);
+	vecsadd(check->s.pos.trBase, 0.125, check->movedir, start);
+	vecsadd(check->s.pos.trBase, 2, check->movedir, end);
 	trap_Trace(&tr, start, nil, nil, end, check->s.number, MASK_SOLID);
 
 	if(tr.startsolid || tr.fraction < 1)
@@ -217,44 +217,44 @@ G_CheckProxMinePosition(ent_t *check)
 
 /*
 ==================
-G_TryPushingProxMine
+trypushingproxmine
 ==================
 */
 qboolean
-G_TryPushingProxMine(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
+trypushingproxmine(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 {
 	vec3_t forward, right, up;
 	vec3_t org, org2, move2;
 	int ret;
 
 	// we need this for pushing things later
-	VectorSubtract(vec3_origin, amove, org);
-	AngleVectors(org, forward, right, up);
+	vecsub(vec3_origin, amove, org);
+	anglevecs(org, forward, right, up);
 
 	// try moving the contacted entity
-	VectorAdd(check->s.pos.trBase, move, check->s.pos.trBase);
+	vecadd(check->s.pos.trBase, move, check->s.pos.trBase);
 
 	// figure movement due to the pusher's amove
-	VectorSubtract(check->s.pos.trBase, pusher->r.currentOrigin, org);
-	org2[0] = DotProduct(org, forward);
-	org2[1] = -DotProduct(org, right);
-	org2[2] = DotProduct(org, up);
-	VectorSubtract(org2, org, move2);
-	VectorAdd(check->s.pos.trBase, move2, check->s.pos.trBase);
+	vecsub(check->s.pos.trBase, pusher->r.currentOrigin, org);
+	org2[0] = vecdot(org, forward);
+	org2[1] = -vecdot(org, right);
+	org2[2] = vecdot(org, up);
+	vecsub(org2, org, move2);
+	vecadd(check->s.pos.trBase, move2, check->s.pos.trBase);
 
-	ret = G_CheckProxMinePosition(check);
+	ret = checkproxmineposition(check);
 	if(ret){
-		VectorCopy(check->s.pos.trBase, check->r.currentOrigin);
+		veccopy(check->s.pos.trBase, check->r.currentOrigin);
 		trap_LinkEntity(check);
 	}
 	return ret;
 }
 
-void G_ExplodeMissile(ent_t *ent);
+void explodemissile(ent_t *ent);
 
 /*
 ============
-G_MoverPush
+moverpush
 
 Objects need to be moved back on a failed push,
 otherwise riders would continue to slide.
@@ -262,7 +262,7 @@ If qfalse is returned, *obstacle will be the blocking entity
 ============
 */
 qboolean
-G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
+moverpush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 {
 	int i, e;
 	ent_t *check;
@@ -293,8 +293,8 @@ G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 			maxs[i] = pusher->r.absmax[i] + move[i];
 		}
 
-		VectorCopy(pusher->r.absmin, totalMins);
-		VectorCopy(pusher->r.absmax, totalMaxs);
+		veccopy(pusher->r.absmin, totalMins);
+		veccopy(pusher->r.absmax, totalMaxs);
 		for(i = 0; i<3; i++){
 			if(move[i] > 0)
 				totalMaxs[i] += move[i];
@@ -309,8 +309,8 @@ G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 	listedEntities = trap_EntitiesInBox(totalMins, totalMaxs, entityList, MAX_GENTITIES);
 
 	// move the pusher to its final position
-	VectorAdd(pusher->r.currentOrigin, move, pusher->r.currentOrigin);
-	VectorAdd(pusher->r.currentAngles, amove, pusher->r.currentAngles);
+	vecadd(pusher->r.currentOrigin, move, pusher->r.currentOrigin);
+	vecadd(pusher->r.currentAngles, amove, pusher->r.currentAngles);
 	trap_LinkEntity(pusher);
 
 	// see if any solid entities are inside the final position
@@ -318,7 +318,7 @@ G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 		check = &g_entities[entityList[e]];
 
 		// only push items and players
-		if(check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER && !check->physicsObject)
+		if(check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER && !check->physobj)
 			continue;
 
 		// if the entity is standing on the pusher, it will definitely be moved
@@ -333,19 +333,19 @@ G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 				continue;
 			// see if the ent's bbox is inside the pusher's final position
 			// this does allow a fast moving object to pass through a thin entity...
-			if(!G_TestEntityPosition(check))
+			if(!testentityposition(check))
 				continue;
 		}
 
 		// the entity needs to be pushed
-		if(G_TryPushingEntity(check, pusher, move, amove))
+		if(trypushingentity(check, pusher, move, amove))
 			continue;
 
 		// the move was blocked an entity
 
 		// bobbing entities are instant-kill and never get blocked
 		if(pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE){
-			G_Damage(check, pusher, pusher, nil, nil, 99999, 0, MOD_CRUSH);
+			entdamage(check, pusher, pusher, nil, nil, 99999, 0, MOD_CRUSH);
 			continue;
 		}
 
@@ -356,11 +356,11 @@ G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 		// go backwards, so if the same entity was pushed
 		// twice, it goes back to the original position
 		for(p = pushed_p-1; p>=pushed; p--){
-			VectorCopy(p->origin, p->ent->s.pos.trBase);
-			VectorCopy(p->angles, p->ent->s.apos.trBase);
+			veccopy(p->origin, p->ent->s.pos.trBase);
+			veccopy(p->angles, p->ent->s.apos.trBase);
 			if(p->ent->client){
 				p->ent->client->ps.delta_angles[YAW] = p->deltayaw;
-				VectorCopy(p->origin, p->ent->client->ps.origin);
+				veccopy(p->origin, p->ent->client->ps.origin);
 			}
 			trap_LinkEntity(p->ent);
 		}
@@ -372,11 +372,11 @@ G_MoverPush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 
 /*
 =================
-G_MoverTeam
+moverteam
 =================
 */
 void
-G_MoverTeam(ent_t *ent)
+moverteam(ent_t *ent)
 {
 	vec3_t move, amove;
 	ent_t *part, *obstacle;
@@ -390,21 +390,21 @@ G_MoverTeam(ent_t *ent)
 	pushed_p = pushed;
 	for(part = ent; part; part = part->teamchain){
 		// get current position
-		BG_EvaluateTrajectory(&part->s.pos, level.time, origin);
-		BG_EvaluateTrajectory(&part->s.apos, level.time, angles);
-		VectorSubtract(origin, part->r.currentOrigin, move);
-		VectorSubtract(angles, part->r.currentAngles, amove);
-		if(!G_MoverPush(part, move, amove, &obstacle))
+		evaltrajectory(&part->s.pos, level.time, origin);
+		evaltrajectory(&part->s.apos, level.time, angles);
+		vecsub(origin, part->r.currentOrigin, move);
+		vecsub(angles, part->r.currentAngles, amove);
+		if(!moverpush(part, move, amove, &obstacle))
 			break;	// move was blocked
 	}
 
 	if(part){
 		// go back to the previous position
 		for(part = ent; part; part = part->teamchain){
-			part->s.pos.trTime += level.time - level.previousTime;
-			part->s.apos.trTime += level.time - level.previousTime;
-			BG_EvaluateTrajectory(&part->s.pos, level.time, part->r.currentOrigin);
-			BG_EvaluateTrajectory(&part->s.apos, level.time, part->r.currentAngles);
+			part->s.pos.trTime += level.time - level.prevtime;
+			part->s.apos.trTime += level.time - level.prevtime;
+			evaltrajectory(&part->s.pos, level.time, part->r.currentOrigin);
+			evaltrajectory(&part->s.apos, level.time, part->r.currentAngles);
 			trap_LinkEntity(part);
 		}
 
@@ -425,12 +425,12 @@ G_MoverTeam(ent_t *ent)
 
 /*
 ================
-G_RunMover
+runmover
 
 ================
 */
 void
-G_RunMover(ent_t *ent)
+runmover(ent_t *ent)
 {
 	// if not a team captain, don't do anything, because
 	// the captain will handle everything
@@ -439,10 +439,10 @@ G_RunMover(ent_t *ent)
 
 	// if stationary at one of the positions, don't move anything
 	if(ent->s.pos.trType != TR_STATIONARY || ent->s.apos.trType != TR_STATIONARY)
-		G_MoverTeam(ent);
+		moverteam(ent);
 
 	// check think function
-	G_RunThink(ent);
+	runthink(ent);
 }
 
 /*
@@ -461,57 +461,57 @@ SetMoverState
 ===============
 */
 void
-SetMoverState(ent_t *ent, moverstate_t moverState, int time)
+SetMoverState(ent_t *ent, moverstate_t moverstate, int time)
 {
 	vec3_t delta;
 	float f;
 
-	ent->moverState = moverState;
+	ent->moverstate = moverstate;
 
 	ent->s.pos.trTime = time;
-	switch(moverState){
+	switch(moverstate){
 	case MOVER_POS1:
-		VectorCopy(ent->pos1, ent->s.pos.trBase);
+		veccopy(ent->pos1, ent->s.pos.trBase);
 		ent->s.pos.trType = TR_STATIONARY;
 		break;
 	case MOVER_POS2:
-		VectorCopy(ent->pos2, ent->s.pos.trBase);
+		veccopy(ent->pos2, ent->s.pos.trBase);
 		ent->s.pos.trType = TR_STATIONARY;
 		break;
 	case MOVER_1TO2:
-		VectorCopy(ent->pos1, ent->s.pos.trBase);
-		VectorSubtract(ent->pos2, ent->pos1, delta);
+		veccopy(ent->pos1, ent->s.pos.trBase);
+		vecsub(ent->pos2, ent->pos1, delta);
 		f = 1000.0 / ent->s.pos.trDuration;
-		VectorScale(delta, f, ent->s.pos.trDelta);
+		vecscale(delta, f, ent->s.pos.trDelta);
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;
 	case MOVER_2TO1:
-		VectorCopy(ent->pos2, ent->s.pos.trBase);
-		VectorSubtract(ent->pos1, ent->pos2, delta);
+		veccopy(ent->pos2, ent->s.pos.trBase);
+		vecsub(ent->pos1, ent->pos2, delta);
 		f = 1000.0 / ent->s.pos.trDuration;
-		VectorScale(delta, f, ent->s.pos.trDelta);
+		vecscale(delta, f, ent->s.pos.trDelta);
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;
 	}
-	BG_EvaluateTrajectory(&ent->s.pos, level.time, ent->r.currentOrigin);
+	evaltrajectory(&ent->s.pos, level.time, ent->r.currentOrigin);
 	trap_LinkEntity(ent);
 }
 
 /*
 ================
-MatchTeam
+matchteam
 
 All entities in a mover team will move from pos1 to pos2
 in the same amount of time
 ================
 */
 void
-MatchTeam(ent_t *teamLeader, int moverState, int time)
+matchteam(ent_t *teamleader, int moverstate, int time)
 {
 	ent_t *slave;
 
-	for(slave = teamLeader; slave; slave = slave->teamchain)
-		SetMoverState(slave, moverState, time);
+	for(slave = teamleader; slave; slave = slave->teamchain)
+		SetMoverState(slave, moverstate, time);
 }
 
 /*
@@ -522,14 +522,14 @@ ReturnToPos1
 void
 ReturnToPos1(ent_t *ent)
 {
-	MatchTeam(ent, MOVER_2TO1, level.time);
+	matchteam(ent, MOVER_2TO1, level.time);
 
 	// looping sound
-	ent->s.loopSound = ent->soundLoop;
+	ent->s.loopSound = ent->soundloop;
 
 	// starting sound
 	if(ent->sound2to1)
-		G_AddEvent(ent, EV_GENERAL_SOUND, ent->sound2to1);
+		addevent(ent, EV_GENERAL_SOUND, ent->sound2to1);
 }
 
 /*
@@ -541,15 +541,15 @@ void
 Reached_BinaryMover(ent_t *ent)
 {
 	// stop the looping sound
-	ent->s.loopSound = ent->soundLoop;
+	ent->s.loopSound = ent->soundloop;
 
-	if(ent->moverState == MOVER_1TO2){
+	if(ent->moverstate == MOVER_1TO2){
 		// reached pos2
 		SetMoverState(ent, MOVER_POS2, level.time);
 
 		// play sound
-		if(ent->soundPos2)
-			G_AddEvent(ent, EV_GENERAL_SOUND, ent->soundPos2);
+		if(ent->soundpos2)
+			addevent(ent, EV_GENERAL_SOUND, ent->soundpos2);
 
 		// return to pos1 after a delay, -50ms to account for +50ms delay on trigger
 		ent->think = ReturnToPos1;
@@ -558,20 +558,20 @@ Reached_BinaryMover(ent_t *ent)
 		// fire targets
 		if(!ent->activator)
 			ent->activator = ent;
-		G_UseTargets(ent, ent->activator);
-	}else if(ent->moverState == MOVER_2TO1){
+		usetargets(ent, ent->activator);
+	}else if(ent->moverstate == MOVER_2TO1){
 		// reached pos1
 		SetMoverState(ent, MOVER_POS1, level.time);
 
 		// play sound
-		if(ent->soundPos1)
-			G_AddEvent(ent, EV_GENERAL_SOUND, ent->soundPos1);
+		if(ent->soundpos1)
+			addevent(ent, EV_GENERAL_SOUND, ent->soundpos1);
 
 		// close areaportals
 		if(ent->teammaster == ent || !ent->teammaster)
 			trap_AdjustAreaPortalState(ent, qfalse);
 	}else
-		G_Error("Reached_BinaryMover: bad moverState");
+		errorf("Reached_BinaryMover: bad moverstate");
 }
 
 /*
@@ -593,17 +593,17 @@ Use_BinaryMover(ent_t *ent, ent_t *other, ent_t *activator)
 
 	ent->activator = activator;
 
-	if(ent->moverState == MOVER_POS1){
+	if(ent->moverstate == MOVER_POS1){
 		// start moving 50 msec later, becase if this was player
 		// triggered, level.time hasn't been advanced yet
-		MatchTeam(ent, MOVER_1TO2, level.time + 50);
+		matchteam(ent, MOVER_1TO2, level.time + 50);
 
 		// starting sound
 		if(ent->sound1to2)
-			G_AddEvent(ent, EV_GENERAL_SOUND, ent->sound1to2);
+			addevent(ent, EV_GENERAL_SOUND, ent->sound1to2);
 
 		// looping sound
-		ent->s.loopSound = ent->soundLoop;
+		ent->s.loopSound = ent->soundloop;
 
 		// open areaportal
 		if(ent->teammaster == ent || !ent->teammaster)
@@ -612,36 +612,36 @@ Use_BinaryMover(ent_t *ent, ent_t *other, ent_t *activator)
 	}
 
 	// if all the way up, just delay before coming down
-	if(ent->moverState == MOVER_POS2){
+	if(ent->moverstate == MOVER_POS2){
 		ent->nextthink = level.time + ent->wait - ent->s.pos.trDuration - 50;
 		return;
 	}
 
 	// only partway down before reversing
-	if(ent->moverState == MOVER_2TO1){
+	if(ent->moverstate == MOVER_2TO1){
 		total = ent->s.pos.trDuration;
 		partial = level.time - ent->s.pos.trTime;
 		if(partial > total)
 			partial = total;
 
-		MatchTeam(ent, MOVER_1TO2, level.time - (total - partial));
+		matchteam(ent, MOVER_1TO2, level.time - (total - partial));
 
 		if(ent->sound1to2)
-			G_AddEvent(ent, EV_GENERAL_SOUND, ent->sound1to2);
+			addevent(ent, EV_GENERAL_SOUND, ent->sound1to2);
 		return;
 	}
 
 	// only partway up before reversing
-	if(ent->moverState == MOVER_1TO2){
+	if(ent->moverstate == MOVER_1TO2){
 		total = ent->s.pos.trDuration;
 		partial = level.time - ent->s.pos.trTime;
 		if(partial > total)
 			partial = total;
 
-		MatchTeam(ent, MOVER_2TO1, level.time - (total - partial));
+		matchteam(ent, MOVER_2TO1, level.time - (total - partial));
 
 		if(ent->sound2to1)
-			G_AddEvent(ent, EV_GENERAL_SOUND, ent->sound2to1);
+			addevent(ent, EV_GENERAL_SOUND, ent->sound2to1);
 		return;
 	}
 }
@@ -667,15 +667,15 @@ InitMover(ent_t *ent)
 	// if the "model2" key is set, use a seperate model
 	// for drawing, but clip against the brushes
 	if(ent->model2)
-		ent->s.modelindex2 = G_ModelIndex(ent->model2);
+		ent->s.modelindex2 = modelindex(ent->model2);
 
 	// if the "loopsound" key is set, use a constant looping sound when moving
-	if(G_SpawnString("noise", "100", &sound))
-		ent->s.loopSound = G_SoundIndex(sound);
+	if(spawnstr("noise", "100", &sound))
+		ent->s.loopSound = soundindex(sound);
 
 	// if the "color" or "light" keys are set, setup constantLight
-	lightSet = G_SpawnFloat("light", "100", &light);
-	colorSet = G_SpawnVector("color", "1 1 1", color);
+	lightSet = spawnfloat("light", "100", &light);
+	colorSet = spawnvec("color", "1 1 1", color);
 	if(lightSet || colorSet){
 		int r, g, b, i;
 
@@ -697,21 +697,21 @@ InitMover(ent_t *ent)
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
 
-	ent->moverState = MOVER_POS1;
+	ent->moverstate = MOVER_POS1;
 	ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	ent->s.eType = ET_MOVER;
-	VectorCopy(ent->pos1, ent->r.currentOrigin);
+	veccopy(ent->pos1, ent->r.currentOrigin);
 	trap_LinkEntity(ent);
 
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorCopy(ent->pos1, ent->s.pos.trBase);
+	veccopy(ent->pos1, ent->s.pos.trBase);
 
 	// calculate time to reach second position from speed
-	VectorSubtract(ent->pos2, ent->pos1, move);
-	distance = VectorLength(move);
+	vecsub(ent->pos2, ent->pos1, move);
+	distance = veclen(move);
 	if(!ent->speed)
 		ent->speed = 100;
-	VectorScale(move, ent->speed, ent->s.pos.trDelta);
+	vecscale(move, ent->speed, ent->s.pos.trDelta);
 	ent->s.pos.trDuration = distance * 1000 / ent->speed;
 	if(ent->s.pos.trDuration <= 0)
 		ent->s.pos.trDuration = 1;
@@ -739,17 +739,17 @@ Blocked_Door(ent_t *ent, ent_t *other)
 	// remove anything other than a client
 	if(!other->client){
 		// except CTF flags!!!!
-		if(other->s.eType == ET_ITEM && other->item->giType == IT_TEAM){
-			Team_DroppedFlagThink(other);
+		if(other->s.eType == ET_ITEM && other->item->type == IT_TEAM){
+			teamdroppedflag_think(other);
 			return;
 		}
-		G_TempEntity(other->s.origin, EV_ITEM_POP);
-		G_FreeEntity(other);
+		enttemp(other->s.origin, EV_ITEM_POP);
+		entfree(other);
 		return;
 	}
 
 	if(ent->damage)
-		G_Damage(other, ent, ent, nil, nil, ent->damage, 0, MOD_CRUSH);
+		entdamage(other, ent, ent, nil, nil, ent->damage, 0, MOD_CRUSH);
 	if(ent->spawnflags & 4)
 		return;	// crushers don't reverse
 
@@ -774,7 +774,7 @@ Touch_DoorTriggerSpectator(ent_t *ent, ent_t *other, trace_t *trace)
 	doorMin = ent->r.absmin[axis] + 100;
 	doorMax = ent->r.absmax[axis] - 100;
 
-	VectorCopy(other->client->ps.origin, origin);
+	veccopy(other->client->ps.origin, origin);
 
 	if(origin[axis] < doorMin || origin[axis] > doorMax)
 		return;
@@ -784,42 +784,42 @@ Touch_DoorTriggerSpectator(ent_t *ent, ent_t *other, trace_t *trace)
 	else
 		origin[axis] = doorMax + 10;
 
-	TeleportPlayer(other, origin, tv(10000000.0, 0, 0));
+	teleportentity(other, origin, tv(10000000.0, 0, 0));
 }
 
 /*
 ================
-Touch_DoorTrigger
+doortrigger_touch
 ================
 */
 void
-Touch_DoorTrigger(ent_t *ent, ent_t *other, trace_t *trace)
+doortrigger_touch(ent_t *ent, ent_t *other, trace_t *trace)
 {
 	item_t *key;
 	int keytype;
 
-	if(other->client != nil && ent->doorKey > 0 && ent->doorKey < bg_numItems){
-		key = &bg_itemlist[ent->doorKey];
-		keytype = key->giTag;
+	if(other->client != nil && ent->doorkey > 0 && ent->doorkey < bg_nitems){
+		key = &bg_itemlist[ent->doorkey];
+		keytype = key->tag;
 		if(other->client->ps.doorKeys[keytype] <= 0){
-			if(level.time > other->keyDebounceTime){
+			if(level.time > other->keymsgdebouncetime){
 				char s[128];
 
-				Com_sprintf(s, sizeof s, "You need the %s", key->pickup_name);
+				Com_sprintf(s, sizeof s, "You need the %s", key->pickupname);
 				trap_SendServerCommand(other-g_entities, va("cp \"%s\"", s));
-				other->keyDebounceTime = level.time + 3000;
+				other->keymsgdebouncetime = level.time + 3000;
 			}
 			return;
 		}
-		other->client->ps.doorKeys[ent->doorKey]--;
-		ent->doorKey = -1;	// permanently unlock door
+		other->client->ps.doorKeys[ent->doorkey]--;
+		ent->doorkey = -1;	// permanently unlock door
 	}
-	if(other->client != nil && other->client->sess.sessionTeam == TEAM_SPECTATOR){
+	if(other->client != nil && other->client->sess.team == TEAM_SPECTATOR){
 		// if the door is not open and not opening
-		if(ent->parent->moverState != MOVER_1TO2 &&
-		   ent->parent->moverState != MOVER_POS2)
+		if(ent->parent->moverstate != MOVER_1TO2 &&
+		   ent->parent->moverstate != MOVER_POS2)
 			Touch_DoorTriggerSpectator(ent, other, trace);
-	}else if(ent->parent->moverState != MOVER_1TO2)
+	}else if(ent->parent->moverstate != MOVER_1TO2)
 		Use_BinaryMover(ent->parent, ent, other);
 }
 
@@ -842,8 +842,8 @@ Think_SpawnNewDoorTrigger(ent_t *ent)
 		return;
 
 	// find the bounds of everything on the team
-	VectorCopy(ent->r.absmin, mins);
-	VectorCopy(ent->r.absmax, maxs);
+	veccopy(ent->r.absmin, mins);
+	veccopy(ent->r.absmax, maxs);
 
 	for(other = ent->teamchain; other; other = other->teamchain){
 		AddPointToBounds(other->r.absmin, mins, maxs);
@@ -859,30 +859,30 @@ Think_SpawnNewDoorTrigger(ent_t *ent)
 	mins[best] -= 120;
 
 	// create a trigger with this size
-	other = G_Spawn();
+	other = entspawn();
 	other->classname = "door_trigger";
-	other->doorKey = ent->doorKey;
-	VectorCopy(mins, other->r.mins);
-	VectorCopy(maxs, other->r.maxs);
+	other->doorkey = ent->doorkey;
+	veccopy(mins, other->r.mins);
+	veccopy(maxs, other->r.maxs);
 	other->parent = ent;
 	other->r.contents = CONTENTS_TRIGGER;
-	other->touch = Touch_DoorTrigger;
+	other->touch = doortrigger_touch;
 	// remember the thinnest axis
 	other->count = best;
 	trap_LinkEntity(other);
 
-	MatchTeam(ent, ent->moverState, level.time);
+	matchteam(ent, ent->moverstate, level.time);
 }
 
 void
 Think_MatchTeam(ent_t *ent)
 {
-	MatchTeam(ent, ent->moverState, level.time);
+	matchteam(ent, ent->moverstate, level.time);
 }
 
 /*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER
 TOGGLE		wait in both the start and end states for a trigger event.
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedmg doors).
 NOMONSTER	monsters will not trigger this door
 
 "key"	the item classname that must be in the activating player's inventory to unlock this door, such as as key
@@ -907,8 +907,8 @@ SP_func_door(ent_t *ent)
 	char *keyclass;
 	int i;
 
-	ent->sound1to2 = ent->sound2to1 = G_SoundIndex("sound/movers/doors/dr1_strt.wav");
-	ent->soundPos1 = ent->soundPos2 = G_SoundIndex("sound/movers/doors/dr1_end.wav");
+	ent->sound1to2 = ent->sound2to1 = soundindex("sound/movers/doors/dr1_strt.wav");
+	ent->soundpos1 = ent->soundpos2 = soundindex("sound/movers/doors/dr1_end.wav");
 
 	ent->blocked = Blocked_Door;
 
@@ -922,42 +922,42 @@ SP_func_door(ent_t *ent)
 	ent->wait *= 1000;
 
 	// default lip of 8 units
-	G_SpawnFloat("lip", "8", &lip);
+	spawnfloat("lip", "8", &lip);
 
 	// default damage of 2 points
-	G_SpawnInt("dmg", "2", &ent->damage);
+	spawnint("dmg", "2", &ent->damage);
 
 	// pick the key itemnum
-	ent->doorKey = -1;
-	G_SpawnString("key", "", &keyclass);
-	for(i = 0; i < bg_numItems; i++)
+	ent->doorkey = -1;
+	spawnstr("key", "", &keyclass);
+	for(i = 0; i < bg_nitems; i++)
 		if(Q_stricmp(bg_itemlist[i].classname, keyclass) == 0){
-			ent->doorKey = i;
+			ent->doorkey = i;
 			break;
 		}
-	if(ent->doorKey == -1 && Q_stricmp(keyclass, "") == 0)
-		G_Printf("%s: bad item classname for door key\n", keyclass);
+	if(ent->doorkey == -1 && Q_stricmp(keyclass, "") == 0)
+		gprintf("%s: bad item classname for door key\n", keyclass);
 
 	// first position at start
-	VectorCopy(ent->s.origin, ent->pos1);
+	veccopy(ent->s.origin, ent->pos1);
 
 	// calculate second position
 	trap_SetBrushModel(ent, ent->model);
-	G_SetMovedir(ent->s.angles, ent->movedir);
+	setmovedir(ent->s.angles, ent->movedir);
 	abs_movedir[0] = fabs(ent->movedir[0]);
 	abs_movedir[1] = fabs(ent->movedir[1]);
 	abs_movedir[2] = fabs(ent->movedir[2]);
-	VectorSubtract(ent->r.maxs, ent->r.mins, size);
-	distance = DotProduct(abs_movedir, size) - lip;
-	VectorMA(ent->pos1, distance, ent->movedir, ent->pos2);
+	vecsub(ent->r.maxs, ent->r.mins, size);
+	distance = vecdot(abs_movedir, size) - lip;
+	vecsadd(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	// if "start_open", reverse position 1 and 2
 	if(ent->spawnflags & 1){
 		vec3_t temp;
 
-		VectorCopy(ent->pos2, temp);
-		VectorCopy(ent->s.origin, ent->pos2);
-		VectorCopy(temp, ent->pos1);
+		veccopy(ent->pos2, temp);
+		veccopy(ent->s.origin, ent->pos2);
+		veccopy(temp, ent->pos1);
 	}
 
 	InitMover(ent);
@@ -967,9 +967,9 @@ SP_func_door(ent_t *ent)
 	if(!(ent->flags & FL_TEAMSLAVE)){
 		int health;
 
-		G_SpawnInt("health", "0", &health);
+		spawnint("health", "0", &health);
 		if(health)
-			ent->takedamage = qtrue;
+			ent->takedmg = qtrue;
 		if(ent->targetname || health)
 			// non touch/shoot doors
 			ent->think = Think_MatchTeam;
@@ -989,22 +989,22 @@ Blocked_Piston(ent_t *ent, ent_t *other)
 {
 	// crush clients
 	if(other->client != nil){
-		G_Damage(other, ent, ent, nil, nil, 99999, 0, MOD_CRUSH);
+		entdamage(other, ent, ent, nil, nil, 99999, 0, MOD_CRUSH);
 		return;
 	}
 	
 	// remove anything other than a client, except CTF flags
-	if(other->s.eType == ET_ITEM && other->item->giType == IT_TEAM){
-		Team_DroppedFlagThink(other);
+	if(other->s.eType == ET_ITEM && other->item->type == IT_TEAM){
+		teamdroppedflag_think(other);
 		return;
 	}
-	G_TempEntity(other->s.origin, EV_ITEM_POP);
-	G_FreeEntity(other);
+	enttemp(other->s.origin, EV_ITEM_POP);
+	entfree(other);
 }
 
 /*QUAKED func_piston (.8 .2 .2) ? START_OPEN
 TOGGLE		wait in both the start and end states for a trigger event.
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedmg doors).
 
 "model2"	.md3 model to also draw
 "angle"		determines the opening direction
@@ -1025,8 +1025,8 @@ SP_func_piston(ent_t *ent)
 	char *keyclass;
 	int i;
 
-	ent->sound1to2 = ent->sound2to1 = G_SoundIndex("sound/movers/piston/start");
-	ent->soundPos1 = ent->soundPos2 = G_SoundIndex("sound/movers/piston/end");
+	ent->sound1to2 = ent->sound2to1 = soundindex("sound/movers/piston/start");
+	ent->soundpos1 = ent->soundpos2 = soundindex("sound/movers/piston/end");
 
 	ent->blocked = Blocked_Piston;
 
@@ -1040,28 +1040,28 @@ SP_func_piston(ent_t *ent)
 	ent->wait *= 1000;
 
 	// default lip of 8 units
-	G_SpawnFloat("lip", "8", &lip);
+	spawnfloat("lip", "8", &lip);
 
 	// first position at start
-	VectorCopy(ent->s.origin, ent->pos1);
+	veccopy(ent->s.origin, ent->pos1);
 
 	// calculate second position
 	trap_SetBrushModel(ent, ent->model);
-	G_SetMovedir(ent->s.angles, ent->movedir);
+	setmovedir(ent->s.angles, ent->movedir);
 	abs_movedir[0] = fabs(ent->movedir[0]);
 	abs_movedir[1] = fabs(ent->movedir[1]);
 	abs_movedir[2] = fabs(ent->movedir[2]);
-	VectorSubtract(ent->r.maxs, ent->r.mins, size);
-	distance = DotProduct(abs_movedir, size) - lip;
-	VectorMA(ent->pos1, distance, ent->movedir, ent->pos2);
+	vecsub(ent->r.maxs, ent->r.mins, size);
+	distance = vecdot(abs_movedir, size) - lip;
+	vecsadd(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	// if "start_open", reverse position 1 and 2
 	if(ent->spawnflags & 1){
 		vec3_t temp;
 
-		VectorCopy(ent->pos2, temp);
-		VectorCopy(ent->s.origin, ent->pos2);
-		VectorCopy(temp, ent->pos1);
+		veccopy(ent->pos2, temp);
+		veccopy(ent->s.origin, ent->pos2);
+		veccopy(temp, ent->pos1);
 	}
 
 	InitMover(ent);
@@ -1097,7 +1097,7 @@ Touch_Plat(ent_t *ent, ent_t *other, trace_t *trace)
 		return;
 
 	// delay return-to-pos1 by one second
-	if(ent->moverState == MOVER_POS2)
+	if(ent->moverstate == MOVER_POS2)
 		ent->nextthink = level.time + 1000;
 }
 
@@ -1114,7 +1114,7 @@ Touch_PlatCenterTrigger(ent_t *ent, ent_t *other, trace_t *trace)
 	if(!other->client)
 		return;
 
-	if(ent->parent->moverState == MOVER_POS1)
+	if(ent->parent->moverstate == MOVER_POS1)
 		Use_BinaryMover(ent->parent, ent, other);
 }
 
@@ -1135,7 +1135,7 @@ SpawnPlatTrigger(ent_t *ent)
 
 	// the middle trigger will be a thin trigger just
 	// above the starting position
-	trigger = G_Spawn();
+	trigger = entspawn();
 	trigger->classname = "plat_trigger";
 	trigger->touch = Touch_PlatCenterTrigger;
 	trigger->r.contents = CONTENTS_TRIGGER;
@@ -1158,8 +1158,8 @@ SpawnPlatTrigger(ent_t *ent)
 		tmax[1] = tmin[1] + 1;
 	}
 
-	VectorCopy(tmin, trigger->r.mins);
-	VectorCopy(tmax, trigger->r.maxs);
+	veccopy(tmin, trigger->r.mins);
+	veccopy(tmax, trigger->r.maxs);
 
 	trap_LinkEntity(trigger);
 }
@@ -1180,27 +1180,27 @@ SP_func_plat(ent_t *ent)
 {
 	float lip, height;
 
-	ent->sound1to2 = ent->sound2to1 = G_SoundIndex("sound/movers/plats/pt1_strt.wav");
-	ent->soundPos1 = ent->soundPos2 = G_SoundIndex("sound/movers/plats/pt1_end.wav");
+	ent->sound1to2 = ent->sound2to1 = soundindex("sound/movers/plats/pt1_strt.wav");
+	ent->soundpos1 = ent->soundpos2 = soundindex("sound/movers/plats/pt1_end.wav");
 
-	VectorClear(ent->s.angles);
+	vecclear(ent->s.angles);
 
-	G_SpawnFloat("speed", "200", &ent->speed);
-	G_SpawnInt("dmg", "2", &ent->damage);
-	G_SpawnFloat("wait", "1", &ent->wait);
-	G_SpawnFloat("lip", "8", &lip);
+	spawnfloat("speed", "200", &ent->speed);
+	spawnint("dmg", "2", &ent->damage);
+	spawnfloat("wait", "1", &ent->wait);
+	spawnfloat("lip", "8", &lip);
 
 	ent->wait = 1000;
 
 	// create second position
 	trap_SetBrushModel(ent, ent->model);
 
-	if(!G_SpawnFloat("height", "0", &height))
+	if(!spawnfloat("height", "0", &height))
 		height = (ent->r.maxs[2] - ent->r.mins[2]) - lip;
 
 	// pos1 is the rest (bottom) position, pos2 is the top
-	VectorCopy(ent->s.origin, ent->pos2);
-	VectorCopy(ent->pos2, ent->pos1);
+	veccopy(ent->s.origin, ent->pos2);
+	veccopy(ent->pos2, ent->pos1);
 	ent->pos1[2] -= height;
 
 	InitMover(ent);
@@ -1238,7 +1238,7 @@ Touch_Button(ent_t *ent, ent_t *other, trace_t *trace)
 	if(!other->client)
 		return;
 
-	if(ent->moverState == MOVER_POS1)
+	if(ent->moverstate == MOVER_POS1)
 		Use_BinaryMover(ent, other, other);
 }
 
@@ -1263,7 +1263,7 @@ SP_func_button(ent_t *ent)
 	vec3_t size;
 	float lip;
 
-	ent->sound1to2 = G_SoundIndex("sound/movers/switches/butn2.wav");
+	ent->sound1to2 = soundindex("sound/movers/switches/butn2.wav");
 
 	if(!ent->speed)
 		ent->speed = 40;
@@ -1273,24 +1273,24 @@ SP_func_button(ent_t *ent)
 	ent->wait *= 1000;
 
 	// first position
-	VectorCopy(ent->s.origin, ent->pos1);
+	veccopy(ent->s.origin, ent->pos1);
 
 	// calculate second position
 	trap_SetBrushModel(ent, ent->model);
 
-	G_SpawnFloat("lip", "4", &lip);
+	spawnfloat("lip", "4", &lip);
 
-	G_SetMovedir(ent->s.angles, ent->movedir);
+	setmovedir(ent->s.angles, ent->movedir);
 	abs_movedir[0] = fabs(ent->movedir[0]);
 	abs_movedir[1] = fabs(ent->movedir[1]);
 	abs_movedir[2] = fabs(ent->movedir[2]);
-	VectorSubtract(ent->r.maxs, ent->r.mins, size);
+	vecsub(ent->r.maxs, ent->r.mins, size);
 	distance = abs_movedir[0] * size[0] + abs_movedir[1] * size[1] + abs_movedir[2] * size[2] - lip;
-	VectorMA(ent->pos1, distance, ent->movedir, ent->pos2);
+	vecsadd(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	if(ent->health)
 		// shootable button
-		ent->takedamage = qtrue;
+		ent->takedmg = qtrue;
 	else
 		// touchable button
 		ent->touch = Touch_Button;
@@ -1338,17 +1338,17 @@ Reached_Train(ent_t *ent)
 	float length;
 
 	// copy the apropriate values
-	next = ent->nextTrain;
-	if(!next || !next->nextTrain)
+	next = ent->nexttrain;
+	if(!next || !next->nexttrain)
 		return;	// just stop
 
 	// fire all other targets
-	G_UseTargets(next, nil);
+	usetargets(next, nil);
 
 	// set the new trajectory
-	ent->nextTrain = next->nextTrain;
-	VectorCopy(next->s.origin, ent->pos1);
-	VectorCopy(next->nextTrain->s.origin, ent->pos2);
+	ent->nexttrain = next->nexttrain;
+	veccopy(next->s.origin, ent->pos1);
+	veccopy(next->nexttrain->s.origin, ent->pos2);
 
 	// if the path_corner has a speed, use that
 	if(next->speed)
@@ -1360,8 +1360,8 @@ Reached_Train(ent_t *ent)
 		speed = 1;
 
 	// calculate duration
-	VectorSubtract(ent->pos2, ent->pos1, move);
-	length = VectorLength(move);
+	vecsub(ent->pos2, ent->pos1, move);
+	length = veclen(move);
 
 	ent->s.pos.trDuration = length * 1000 / speed;
 
@@ -1385,7 +1385,7 @@ Reached_Train(ent_t *ent)
 	}
 
 	// looping sound
-	ent->s.loopSound = next->soundLoop;
+	ent->s.loopSound = next->soundloop;
 
 	// start it going
 	SetMoverState(ent, MOVER_1TO2, level.time);
@@ -1410,20 +1410,20 @@ Think_SetupTrainTargets(ent_t *ent)
 {
 	ent_t *path, *next, *start;
 
-	ent->nextTrain = G_Find(nil, FOFS(targetname), ent->target);
-	if(!ent->nextTrain){
-		G_Printf("func_train at %s with an unfound target\n",
+	ent->nexttrain = findent(nil, FOFS(targetname), ent->target);
+	if(!ent->nexttrain){
+		gprintf("func_train at %s with an unfound target\n",
 			 vtos(ent->r.absmin));
 		return;
 	}
 
 	start = nil;
-	for(path = ent->nextTrain; path != start; path = next){
+	for(path = ent->nexttrain; path != start; path = next){
 		if(!start)
 			start = path;
 
 		if(!path->target){
-			G_Printf("Train corner at %s without a target\n",
+			gprintf("Train corner at %s without a target\n",
 				 vtos(path->s.origin));
 			return;
 		}
@@ -1433,16 +1433,16 @@ Think_SetupTrainTargets(ent_t *ent)
 		// is reached
 		next = nil;
 		do{
-			next = G_Find(next, FOFS(targetname), path->target);
+			next = findent(next, FOFS(targetname), path->target);
 			if(!next){
-				G_Printf("Train corner at %s without a target path_corner\n",
+				gprintf("Train corner at %s without a target path_corner\n",
 					 vtos(path->s.origin));
 				return;
 			}
 		}while(strcmp(next->classname, "path_corner"))
 		;
 
-		path->nextTrain = next;
+		path->nexttrain = next;
 	}
 
 	// start the train moving from the first corner
@@ -1459,8 +1459,8 @@ void
 SP_path_corner(ent_t *self)
 {
 	if(!self->targetname){
-		G_Printf("path_corner with no targetname at %s\n", vtos(self->s.origin));
-		G_FreeEntity(self);
+		gprintf("path_corner with no targetname at %s\n", vtos(self->s.origin));
+		entfree(self);
 		return;
 	}
 	// path corners don't need to be linked in
@@ -1481,7 +1481,7 @@ The train spawns at the first target it is pointing at.
 void
 SP_func_train(ent_t *self)
 {
-	VectorClear(self->s.angles);
+	vecclear(self->s.angles);
 
 	if(self->spawnflags & TRAIN_BLOCK_STOPS)
 		self->damage = 0;
@@ -1493,8 +1493,8 @@ SP_func_train(ent_t *self)
 		self->speed = 100;
 
 	if(!self->target){
-		G_Printf("func_train without a target at %s\n", vtos(self->r.absmin));
-		G_FreeEntity(self);
+		gprintf("func_train without a target at %s\n", vtos(self->r.absmin));
+		entfree(self);
 		return;
 	}
 
@@ -1528,8 +1528,8 @@ SP_func_static(ent_t *ent)
 {
 	trap_SetBrushModel(ent, ent->model);
 	InitMover(ent);
-	VectorCopy(ent->s.origin, ent->s.pos.trBase);
-	VectorCopy(ent->s.origin, ent->r.currentOrigin);
+	veccopy(ent->s.origin, ent->s.pos.trBase);
+	veccopy(ent->s.origin, ent->r.currentOrigin);
 }
 
 /*
@@ -1572,9 +1572,9 @@ SP_func_rotating(ent_t *ent)
 	trap_SetBrushModel(ent, ent->model);
 	InitMover(ent);
 
-	VectorCopy(ent->s.origin, ent->s.pos.trBase);
-	VectorCopy(ent->s.pos.trBase, ent->r.currentOrigin);
-	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
+	veccopy(ent->s.origin, ent->s.pos.trBase);
+	veccopy(ent->s.pos.trBase, ent->r.currentOrigin);
+	veccopy(ent->s.apos.trBase, ent->r.currentAngles);
 
 	trap_LinkEntity(ent);
 }
@@ -1603,16 +1603,16 @@ SP_func_bobbing(ent_t *ent)
 	float height;
 	float phase;
 
-	G_SpawnFloat("speed", "4", &ent->speed);
-	G_SpawnFloat("height", "32", &height);
-	G_SpawnInt("dmg", "2", &ent->damage);
-	G_SpawnFloat("phase", "0", &phase);
+	spawnfloat("speed", "4", &ent->speed);
+	spawnfloat("height", "32", &height);
+	spawnint("dmg", "2", &ent->damage);
+	spawnfloat("phase", "0", &phase);
 
 	trap_SetBrushModel(ent, ent->model);
 	InitMover(ent);
 
-	VectorCopy(ent->s.origin, ent->s.pos.trBase);
-	VectorCopy(ent->s.origin, ent->r.currentOrigin);
+	veccopy(ent->s.origin, ent->s.pos.trBase);
+	veccopy(ent->s.origin, ent->r.currentOrigin);
 
 	ent->s.pos.trDuration = ent->speed * 1000;
 	ent->s.pos.trTime = ent->s.pos.trDuration * phase;
@@ -1654,9 +1654,9 @@ SP_func_pendulum(ent_t *ent)
 	float phase;
 	float speed;
 
-	G_SpawnFloat("speed", "30", &speed);
-	G_SpawnInt("dmg", "2", &ent->damage);
-	G_SpawnFloat("phase", "0", &phase);
+	spawnfloat("speed", "30", &speed);
+	spawnint("dmg", "2", &ent->damage);
+	spawnfloat("phase", "0", &phase);
 
 	trap_SetBrushModel(ent, ent->model);
 
@@ -1671,10 +1671,10 @@ SP_func_pendulum(ent_t *ent)
 
 	InitMover(ent);
 
-	VectorCopy(ent->s.origin, ent->s.pos.trBase);
-	VectorCopy(ent->s.origin, ent->r.currentOrigin);
+	veccopy(ent->s.origin, ent->s.pos.trBase);
+	veccopy(ent->s.origin, ent->r.currentOrigin);
 
-	VectorCopy(ent->s.angles, ent->s.apos.trBase);
+	veccopy(ent->s.angles, ent->s.apos.trBase);
 
 	ent->s.apos.trDuration = 1000 / freq;
 	ent->s.apos.trTime = ent->s.apos.trDuration * phase;

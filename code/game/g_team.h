@@ -46,23 +46,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define OVERLOAD_ATTACK_BASE_SOUND_TIME		20000
 
-// Prototypes
+int		otherteam(int team);
+const char	*teamname(int team);
+const char	*teamcolorstr(int team);
+void		addteamscore(vec3_t origin, int team, int score);
 
-int		OtherTeam(int team);
-const char	*TeamName(int team);
-const char	*TeamColorString(int team);
-void		AddTeamScore(vec3_t origin, int team, int score);
+void		teamdroppedflag_think(ent_t *ent);
+void		teamfragbonuses(ent_t *targ, ent_t *inflictor, ent_t *attacker);
+void		teamcheckhurtcarrier(ent_t *targ, ent_t *attacker);
+void		teaminitgame(void);
+void		teamreturnflag(int team);
+void		teamfreeent(ent_t *ent);
+ent_t	*selctfspawnpoint(teamnum_t team, int teamstate, vec3_t origin, vec3_t angles, qboolean isbot);
+ent_t	*teamgetlocation(ent_t *ent);
+qboolean	teamgetlocationmsg(ent_t *ent, char *loc, int loclen);
+void		teamplayinfomsg(ent_t *ent);
+void		checkteamstatus(void);
 
-void		Team_DroppedFlagThink(ent_t *ent);
-void		Team_FragBonuses(ent_t *targ, ent_t *inflictor, ent_t *attacker);
-void		Team_CheckHurtCarrier(ent_t *targ, ent_t *attacker);
-void		Team_InitGame(void);
-void		Team_ReturnFlag(int team);
-void		Team_FreeEntity(ent_t *ent);
-ent_t	*SelectCTFSpawnPoint(teamnum_t team, int teamstate, vec3_t origin, vec3_t angles, qboolean isbot);
-ent_t	*Team_GetLocation(ent_t *ent);
-qboolean	Team_GetLocationMsg(ent_t *ent, char *loc, int loclen);
-void		TeamplayInfoMessage(ent_t *ent);
-void		CheckTeamStatus(void);
-
-int		Pickup_Team(ent_t *ent, ent_t *other);
+int		pickupteam(ent_t *ent, ent_t *other);

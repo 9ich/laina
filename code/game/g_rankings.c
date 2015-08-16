@@ -26,11 +26,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ================
-G_RankRunFrame
+rankrunframe
 ================
 */
 void
-G_RankRunFrame()
+rankrunframe()
 {
 	ent_t *ent;
 	ent_t *ent2;
@@ -74,10 +74,10 @@ G_RankRunFrame()
 			switch(status){
 			case QGR_STATUS_NEW:
 			case QGR_STATUS_SPECTATOR:
-				if(ent->client->sess.sessionTeam != TEAM_SPECTATOR){
-					ent->client->sess.sessionTeam = TEAM_SPECTATOR;
-					ent->client->sess.spectatorState = SPECTATOR_FREE;
-					ClientSpawn(ent);
+				if(ent->client->sess.team != TEAM_SPECTATOR){
+					ent->client->sess.team = TEAM_SPECTATOR;
+					ent->client->sess.specstate = SPECTATOR_FREE;
+					clientspawn(ent);
 					// make sure by now CS_GRAND rankingsGameID is ready
 					trap_SendServerCommand(i, va("rank_status %i\n", status));
 					trap_SendServerCommand(i, "rank_menu\n");
@@ -93,9 +93,9 @@ G_RankRunFrame()
 					trap_RankUserReset(ent->s.clientNum);
 				break;
 			case QGR_STATUS_ACTIVE:
-				if((ent->client->sess.sessionTeam == TEAM_SPECTATOR) &&
+				if((ent->client->sess.team == TEAM_SPECTATOR) &&
 				   (g_gametype.integer < GT_TEAM))
-					SetTeam(ent, "free");
+					setteam(ent, "free");
 
 				if(old_status != QGR_STATUS_ACTIVE)
 					// player has just become active
@@ -113,7 +113,7 @@ G_RankRunFrame()
 
 						// send current scores so the player's rank will show
 						// up under the crosshair immediately
-						DeathmatchScoreboardMessage(ent2);
+						deathmatchscoreboardmsg(ent2);
 					}
 				break;
 			default:
@@ -134,20 +134,20 @@ G_RankRunFrame()
 			if(ent->client == nil)
 				continue;
 
-			time = (level.time - ent->client->pers.enterTime) / 1000;
+			time = (level.time - ent->client->pers.entertime) / 1000;
 			ent->client->ps.persistant[PERS_MATCH_TIME] = time;
 		}
 }
 
 /*
 ================
-G_RankFireWeapon
+rankfireweapon
 ================
 */
 void
-G_RankFireWeapon(int self, int weapon)
+rankfireweapon(int self, int weapon)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -192,11 +192,11 @@ G_RankFireWeapon(int self, int weapon)
 
 /*
 ================
-G_RankDamage
+rankdamage
 ================
 */
 void
-G_RankDamage(int self, int attacker, int damage, int means_of_death)
+rankdamage(int self, int attacker, int damage, int means_of_death)
 {
 	// state information to avoid counting each shotgun pellet as a hit
 	static int last_framenum = -1;
@@ -210,7 +210,7 @@ G_RankDamage(int self, int attacker, int damage, int means_of_death)
 	int key_damage;
 	int key_splash;
 
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -413,7 +413,7 @@ G_RankDamage(int self, int attacker, int damage, int means_of_death)
 
 	// friendly fire
 	if((attacker != self) &&
-	   OnSameTeam(&(g_entities[self]), &(g_entities[attacker])) &&
+	   onsameteam(&(g_entities[self]), &(g_entities[attacker])) &&
 	   (g_entities[attacker].client)){
 		// report teammate hit
 		if(new_hit){
@@ -440,16 +440,16 @@ G_RankDamage(int self, int attacker, int damage, int means_of_death)
 
 /*
 ================
-G_RankPlayerDie
+rankplayerdie
 ================
 */
 void
-G_RankPlayerDie(int self, int attacker, int means_of_death)
+rankplayerdie(int self, int attacker, int means_of_death)
 {
 	int p1;
 	int p2;
 
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -583,16 +583,16 @@ G_RankPlayerDie(int self, int attacker, int means_of_death)
 
 /*
 ================
-G_RankWeaponTime
+rankweapontime
 ================
 */
 void
-G_RankWeaponTime(int self, int weapon)
+rankweapontime(int self, int weapon)
 {
 	gclient_t *client;
 	int time;
 
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -643,13 +643,13 @@ G_RankWeaponTime(int self, int weapon)
 
 /*
 ================
-G_RankPickupWeapon
+rankpickupweapon
 ================
 */
 void
-G_RankPickupWeapon(int self, int weapon)
+rankpickupweapon(int self, int weapon)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -692,13 +692,13 @@ G_RankPickupWeapon(int self, int weapon)
 
 /*
 ================
-G_RankPickupAmmo
+rankpickupammo
 ================
 */
 void
-G_RankPickupAmmo(int self, int weapon, int quantity)
+rankpickupammo(int self, int weapon, int quantity)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -745,13 +745,13 @@ G_RankPickupAmmo(int self, int weapon, int quantity)
 
 /*
 ================
-G_RankPickupHealth
+rankpickuphealth
 ================
 */
 void
-G_RankPickupHealth(int self, int quantity)
+rankpickuphealth(int self, int quantity)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -778,13 +778,13 @@ G_RankPickupHealth(int self, int quantity)
 
 /*
 ================
-G_RankPickupArmor
+rankpickuparmor
 ================
 */
 void
-G_RankPickupArmor(int self, int quantity)
+rankpickuparmor(int self, int quantity)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -808,13 +808,13 @@ G_RankPickupArmor(int self, int quantity)
 
 /*
 ================
-G_RankPickupPowerup
+rankpickuppowerup
 ================
 */
 void
-G_RankPickupPowerup(int self, int powerup)
+rankpickuppowerup(int self, int powerup)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -852,13 +852,13 @@ G_RankPickupPowerup(int self, int powerup)
 
 /*
 ================
-G_RankPickupHoldable
+rankpickupholdable
 ================
 */
 void
-G_RankPickupHoldable(int self, int holdable)
+rankpickupholdable(int self, int holdable)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -876,13 +876,13 @@ G_RankPickupHoldable(int self, int holdable)
 
 /*
 ================
-G_RankUseHoldable
+rankuseholdable
 ================
 */
 void
-G_RankUseHoldable(int self, int holdable)
+rankuseholdable(int self, int holdable)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -900,13 +900,13 @@ G_RankUseHoldable(int self, int holdable)
 
 /*
 ================
-G_RankReward
+rankreward
 ================
 */
 void
-G_RankReward(int self, int award)
+rankreward(int self, int award)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -924,13 +924,13 @@ G_RankReward(int self, int award)
 
 /*
 ================
-G_RankCapture
+rankcapture
 ================
 */
 void
-G_RankCapture(int self)
+rankcapture(int self)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -939,13 +939,13 @@ G_RankCapture(int self)
 
 /*
 ================
-G_RankUserTeamName
+rankuserteamname
 ================
 */
 void
-G_RankUserTeamName(int self, char *team_name)
+rankuserteamname(int self, char *team_name)
 {
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
@@ -954,23 +954,23 @@ G_RankUserTeamName(int self, char *team_name)
 
 /*
 ================
-G_RankClientDisconnect
+rankclientdisconnect
 ================
 */
 void
-G_RankClientDisconnect(int self)
+rankclientdisconnect(int self)
 {
 	gclient_t *client;
 	int time;
 	int match_rating;
 
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
 	// match rating
 	client = g_entities[self].client;
-	time = (level.time - client->pers.enterTime) / 1000;
+	time = (level.time - client->pers.entertime) / 1000;
 	if(time < 60)
 		match_rating = 0;
 	else
@@ -980,23 +980,23 @@ G_RankClientDisconnect(int self)
 
 /*
 ================
-G_RankGameOver
+rankgameover
 ================
 */
 void
-G_RankGameOver(void)
+rankgameover(void)
 {
 	int i;
 	char str[MAX_INFO_VALUE];
 	int num;
 
-	if(level.warmupTime != 0)
+	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
 
 	for(i = 0; i < level.maxclients; i++)
 		if(trap_RankUserStatus(i) == QGR_STATUS_ACTIVE)
-			G_RankClientDisconnect(i);
+			rankclientdisconnect(i);
 
 	// hostname
 	trap_Cvar_VariableStringBuffer("sv_hostname", str, sizeof(str));

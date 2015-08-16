@@ -32,31 +32,31 @@ SP_crate(ent_t *ent)
 	int i;
 
 	// prepare the crate contents
-	G_SpawnString("contents", "item_token", &contents);
-	for(i = 0; i < bg_numItems; i++)
+	spawnstr("contents", "item_token", &contents);
+	for(i = 0; i < bg_nitems; i++)
 		if(strcmp(bg_itemlist[i].classname, contents) == 0){
 			ent->boxcontents = i;
 			break;
 		}
 	if(ent->boxcontents < 1)
-		G_Printf(S_COLOR_YELLOW "WARNING: bad item %s in crate\n", contents);
+		gprintf(S_COLOR_YELLOW "WARNING: bad item %s in crate\n", contents);
 	else
-		RegisterItem(&bg_itemlist[ent->boxcontents]);
-	G_SpawnInt("count", "5", &ent->count);
+		registeritem(&bg_itemlist[ent->boxcontents]);
+	spawnint("count", "5", &ent->count);
 
 	ent->model = "models/crates/crate.md3";
-	ent->physicsBounce = 0.2;
+	ent->physbounce = 0.2;
 	ent->touch = crate_touch;
 	ent->use = crate_use;
 	ent->nextthink = -1;
-	ent->takedamage = qtrue;
+	ent->takedmg = qtrue;
 	ent->s.eType = ET_CRATE;
-	ent->s.modelindex = G_ModelIndex(ent->model);
-	G_SetOrigin(ent, ent->s.origin);
-	VectorCopy(ent->s.angles, ent->s.apos.trBase);
+	ent->s.modelindex = modelindex(ent->model);
+	setorigin(ent, ent->s.origin);
+	veccopy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
-	VectorSet(ent->r.mins, -16, -16, -16);
-	VectorSet(ent->r.maxs, 16, 16, 16);
+	vecset(ent->r.mins, -16, -16, -16);
+	vecset(ent->r.maxs, 16, 16, 16);
 	trap_LinkEntity(ent);
 }
 
@@ -72,18 +72,18 @@ void
 SP_crate_checkpoint(ent_t *ent)
 {
 	ent->model = "models/crates/checkpoint.md3";
-	ent->physicsBounce = 0.2;
+	ent->physbounce = 0.2;
 	ent->use = crate_checkpoint_use;
 	ent->touch = crate_touch;
 	ent->nextthink = -1;
-	ent->takedamage = qtrue;
+	ent->takedmg = qtrue;
 	ent->s.eType = ET_CRATE;
-	ent->s.modelindex = G_ModelIndex(ent->model);
-	G_SetOrigin(ent, ent->s.origin);
-	VectorCopy(ent->s.angles, ent->s.apos.trBase);
+	ent->s.modelindex = modelindex(ent->model);
+	setorigin(ent, ent->s.origin);
+	veccopy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
-	VectorSet(ent->r.mins, -16, -16, -16);
-	VectorSet(ent->r.maxs, 16, 16, 16);
+	vecset(ent->r.mins, -16, -16, -16);
+	vecset(ent->r.maxs, 16, 16, 16);
 	trap_LinkEntity(ent);
 }
 
@@ -94,15 +94,15 @@ static void
 SP_checkpoint_halo(ent_t *ent)
 {
 	ent->model = "models/mapobjects/ckpoint/ckpoint";
-	ent->s.modelindex = G_ModelIndex(ent->model);
+	ent->s.modelindex = modelindex(ent->model);
 	ent->s.eType = ET_GENERAL;
 	ent->use = nil;
 	ent->touch = nil;
-	ent->takedamage = qfalse;
+	ent->takedmg = qfalse;
 	ent->r.contents = 0;
 	// reposition on ground
 	ent->s.origin[2] += ent->r.mins[2];
-	G_SetOrigin(ent, ent->s.origin);
+	setorigin(ent, ent->s.origin);
 	trap_LinkEntity(ent);
 }
 
@@ -117,19 +117,19 @@ SP_crate_bouncy(ent_t *ent)
 {
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 	// make sure the client precaches this sound
-	G_SoundIndex("sound/world/jumppad.wav");
-	G_SetOrigin(ent, ent->s.origin);
-	VectorSet(ent->r.mins, -16, -16, -16);
-	VectorSet(ent->r.maxs, 16, 16, 16);
+	soundindex("sound/world/jumppad.wav");
+	setorigin(ent, ent->s.origin);
+	vecset(ent->r.mins, -16, -16, -16);
+	vecset(ent->r.maxs, 16, 16, 16);
 	ent->model = "models/crates/bouncy.md3";
-	ent->s.modelindex = G_ModelIndex(ent->model);
-	ent->physicsBounce = 0.2;
+	ent->s.modelindex = modelindex(ent->model);
+	ent->physbounce = 0.2;
 	ent->touch = crate_bouncy_touch;
 	ent->think = AimAtTarget;
 	ent->nextthink = level.time + FRAMETIME;
-	ent->takedamage = qfalse;
+	ent->takedmg = qfalse;
 	ent->s.eType = ET_CRATE_BOUNCY;
-	VectorCopy(ent->s.angles, ent->s.apos.trBase);
+	veccopy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 	trap_LinkEntity(ent);
 }
@@ -148,12 +148,12 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 		vel[0] = crandom()*BOX_CONTENTS_SPEED;
 		vel[1] = crandom()*BOX_CONTENTS_SPEED;
 		vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
-		LaunchItem(&bg_itemlist[it], self->s.pos.trBase, vel);
+		itemlaunch(&bg_itemlist[it], self->s.pos.trBase, vel);
 	}
-	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_CRATE);
+	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
-	G_UseTargets(self, activator);
-	G_FreeEntity(self);
+	usetargets(self, activator);
+	entfree(self);
 }
 
 static void
@@ -161,7 +161,7 @@ crate_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
 	if(other->client == nil)
 		return;
-	if(BG_TouchCrate(&other->client->ps, &self->s))
+	if(touchcrate(&other->client->ps, &self->s))
 		self->use(self, nil, other);
 }
 
@@ -171,9 +171,9 @@ crate_checkpoint_use(ent_t *self, ent_t *other, ent_t *activator)
 	ent_t *tent;
 
 	level.checkpoint = self->s.number;
-	tent = G_TempEntity(self->s.pos.trBase, EV_SMASH_CRATE);
+	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
-	G_UseTargets(self, activator);
+	usetargets(self, activator);
 	trap_UnlinkEntity(self);
 	SP_checkpoint_halo(self);
 }

@@ -699,6 +699,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 // tough on RSI, tough on the causes of RSI
 #define vecset		VectorSet
 #define vecclear	VectorClear
+#define veccopy		VectorCopy
 #define veccmp		VectorCompare
 #define vecdot		DotProduct
 #define veccross	CrossProduct

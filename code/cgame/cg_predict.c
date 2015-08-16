@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /*
-This file generates cg.predictedPlayerState by either interpolating
+This file generates cg.pps by either interpolating
 between snapshots from the server or locally predicting ahead the
 client's movement.  It also handles local physics interaction, like
 fragments bouncing off walls
@@ -44,7 +44,7 @@ of the entities that are actually solid, to make for more
 efficient collision detection
 */
 void
-CG_BuildSolidList(void)
+mksolidlist(void)
 {
 	int i;
 	cent_t *cent;
@@ -54,14 +54,14 @@ CG_BuildSolidList(void)
 	cg_numSolidEntities = 0;
 	cg_numTriggerEntities = 0;
 
-	if(cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport)
-		snap = cg.nextSnap;
+	if(cg.nextsnap && !cg.teleportnextframe && !cg.teleportthisframe)
+		snap = cg.nextsnap;
 	else
 		snap = cg.snap;
 
 	for(i = 0; i < snap->numEntities; i++){
 		cent = &cg_entities[snap->entities[i].number];
-		ent = &cent->currentState;
+		ent = &cent->currstate;
 
 		if(ent->eType == ET_ITEM ||
 		   ent->eType == ET_PUSH_TRIGGER ||
@@ -73,12 +73,12 @@ CG_BuildSolidList(void)
 		// for prediction, crates are considered both as triggers
 		// and solids when landed on
 		if((ent->eType == ET_CRATE || ent->eType == ET_CRATE_BOUNCY) &&
-		   ent->number == cg.predictedPlayerState.groundEntityNum){
+		   ent->number == cg.pps.groundEntityNum){
 			cg_triggerEntities[cg_numTriggerEntities] = cent;
 			cg_numTriggerEntities++;
 		}
 
-		if(cent->nextState.solid){
+		if(cent->nextstate.solid){
 			cg_solidEntities[cg_numSolidEntities] = cent;
 			cg_numSolidEntities++;
 			continue;
@@ -87,8 +87,8 @@ CG_BuildSolidList(void)
 }
 
 static void
-CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-		      int skipNumber, int mask, trace_t *tr)
+clipmovetoentities(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+   int skipNumber, int mask, trace_t *tr)
 {
 	int i, x, zd, zu;
 	trace_t trace;
@@ -100,7 +100,7 @@ CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 
 	for(i = 0; i < cg_numSolidEntities; i++){
 		cent = cg_solidEntities[i];
-		ent = &cent->currentState;
+		ent = &cent->currstate;
 
 		if(ent->number == skipNumber)
 			continue;
@@ -108,8 +108,8 @@ CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 		if(ent->solid == SOLID_BMODEL){
 			// special value for bmodel
 			cmodel = trap_CM_InlineModel(ent->modelindex);
-			VectorCopy(cent->lerpAngles, angles);
-			BG_EvaluateTrajectory(&cent->currentState.pos, cg.physicsTime, origin);
+			veccopy(cent->lerpangles, angles);
+			evaltrajectory(&cent->currstate.pos, cg.phystime, origin);
 		}else{
 			// encoded bbox
 			x = (ent->solid & 255);
@@ -122,8 +122,8 @@ CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 			bmaxs[2] = zu;
 
 			cmodel = trap_CM_TempBoxModel(bmins, bmaxs);
-			VectorCopy(vec3_origin, angles);
-			VectorCopy(cent->lerpOrigin, origin);
+			veccopy(vec3_origin, angles);
+			veccopy(cent->lerporigin, origin);
 		}
 
 		trap_CM_TransformedBoxTrace(&trace, start, end,
@@ -140,21 +140,21 @@ CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 }
 
 void
-CG_Trace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	 int skipNumber, int mask)
+cgtrace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+   int skipNumber, int mask)
 {
 	trace_t t;
 
 	trap_CM_BoxTrace(&t, start, end, mins, maxs, 0, mask);
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities(start, mins, maxs, end, skipNumber, mask, &t);
+	clipmovetoentities(start, mins, maxs, end, skipNumber, mask, &t);
 
 	*result = t;
 }
 
 int
-CG_PointContents(const vec3_t point, int passEntityNum)
+pointcontents(const vec3_t point, int passEntityNum)
 {
 	int i;
 	entityState_t *ent;
@@ -167,7 +167,7 @@ CG_PointContents(const vec3_t point, int passEntityNum)
 	for(i = 0; i < cg_numSolidEntities; i++){
 		cent = cg_solidEntities[i];
 
-		ent = &cent->currentState;
+		ent = &cent->currstate;
 
 		if(ent->number == passEntityNum)
 			continue;
@@ -179,27 +179,27 @@ CG_PointContents(const vec3_t point, int passEntityNum)
 		if(!cmodel)
 			continue;
 
-		contents |= trap_CM_TransformedPointContents(point, cmodel, cent->lerpOrigin, cent->lerpAngles);
+		contents |= trap_CM_TransformedPointContents(point, cmodel, cent->lerporigin, cent->lerpangles);
 	}
 
 	return contents;
 }
 
 /*
-Generates cg.predictedPlayerState by interpolating between
+Generates cg.pps by interpolating between
 cg.snap->player_state and cg.nextFrame->player_state
 */
 static void
-CG_InterpolatePlayerState(qboolean grabAngles)
+interpolateplayerstate(qboolean grabAngles)
 {
 	float f;
 	int i;
 	playerState_t *out;
 	snapshot_t *prev, *next;
 
-	out = &cg.predictedPlayerState;
+	out = &cg.pps;
 	prev = cg.snap;
-	next = cg.nextSnap;
+	next = cg.nextsnap;
 
 	*out = cg.snap->ps;
 
@@ -211,11 +211,11 @@ CG_InterpolatePlayerState(qboolean grabAngles)
 		cmdNum = trap_GetCurrentCmdNumber();
 		trap_GetUserCmd(cmdNum, &cmd);
 
-		PM_UpdateViewAngles(out, &cmd);
+		updateviewangles(out, &cmd);
 	}
 
 	// if the next frame is a teleport, we can't lerp to it
-	if(cg.nextFrameTeleport)
+	if(cg.teleportnextframe)
 		return;
 
 	if(!next || next->serverTime <= prev->serverTime)
@@ -239,49 +239,49 @@ CG_InterpolatePlayerState(qboolean grabAngles)
 }
 
 static void
-CG_TouchItem(cent_t *cent)
+touchitem(cent_t *cent)
 {
 	item_t *item;
 
 	if(!cg_predictItems.integer)
 		return;
-	if(!BG_PlayerTouchesItem(&cg.predictedPlayerState, &cent->currentState, cg.time))
+	if(!playertouchingitem(&cg.pps, &cent->currstate, cg.time))
 		return;
 
 	// never pick an item up twice in a prediction
-	if(cent->miscTime == cg.time)
+	if(cent->misctime == cg.time)
 		return;
 
-	if(!BG_CanItemBeGrabbed(cgs.gametype, &cent->currentState, &cg.predictedPlayerState))
+	if(!cangrabitem(cgs.gametype, &cent->currstate, &cg.pps))
 		return;	// can't hold it
 
-	item = &bg_itemlist[cent->currentState.modelindex];
+	item = &bg_itemlist[cent->currstate.modelindex];
 
 	// Special case for flags.
 	// We don't predict touching our own flag
 	if(cgs.gametype == GT_CTF){
-		if(cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED &&
-		   item->giType == IT_TEAM && item->giTag == PW_REDFLAG)
+		if(cg.pps.persistant[PERS_TEAM] == TEAM_RED &&
+		   item->type == IT_TEAM && item->tag == PW_REDFLAG)
 			return;
-		if(cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE &&
-		   item->giType == IT_TEAM && item->giTag == PW_BLUEFLAG)
+		if(cg.pps.persistant[PERS_TEAM] == TEAM_BLUE &&
+		   item->type == IT_TEAM && item->tag == PW_BLUEFLAG)
 			return;
 	}
 
 	// grab it
-	BG_AddPredictableEventToPlayerstate(EV_ITEM_PICKUP, cent->currentState.modelindex, &cg.predictedPlayerState);
+	bgaddpredictableevent(EV_ITEM_PICKUP, cent->currstate.modelindex, &cg.pps);
 
 	// remove it from the frame so it won't be drawn
-	cent->currentState.eFlags |= EF_NODRAW;
+	cent->currstate.eFlags |= EF_NODRAW;
 
 	// don't touch it again this prediction
-	cent->miscTime = cg.time;
+	cent->misctime = cg.time;
 
 	// if it's a weapon, give them some predicted ammo so the autoswitch will work
-	if(item->giType == IT_WEAPON){
-		cg.predictedPlayerState.stats[STAT_WEAPONS] |= 1 << item->giTag;
-		if(!cg.predictedPlayerState.ammo[item->giTag])
-			cg.predictedPlayerState.ammo[item->giTag] = 1;
+	if(item->type == IT_WEAPON){
+		cg.pps.stats[STAT_WEAPONS] |= 1 << item->tag;
+		if(!cg.pps.ammo[item->tag])
+			cg.pps.ammo[item->tag] = 1;
 	}
 }
 
@@ -289,7 +289,7 @@ CG_TouchItem(cent_t *cent)
 Predict push triggers and items
 */
 static void
-CG_TouchTriggerPrediction(void)
+touchtriggerprediction(void)
 {
 	int i;
 	trace_t trace;
@@ -299,29 +299,29 @@ CG_TouchTriggerPrediction(void)
 	qboolean spectator;
 
 	// dead clients don't activate triggers
-	if(cg.predictedPlayerState.stats[STAT_HEALTH] <= 0)
+	if(cg.pps.stats[STAT_HEALTH] <= 0)
 		return;
 
-	spectator = (cg.predictedPlayerState.pm_type == PM_SPECTATOR);
+	spectator = (cg.pps.pm_type == PM_SPECTATOR);
 
-	if(cg.predictedPlayerState.pm_type != PM_NORMAL && !spectator)
+	if(cg.pps.pm_type != PM_NORMAL && !spectator)
 		return;
 
 	for(i = 0; i < cg_numTriggerEntities; i++){
 		cent = cg_triggerEntities[i];
-		ent = &cent->currentState;
+		ent = &cent->currstate;
 
 		if(ent->eType == ET_ITEM && !spectator){
-			CG_TouchItem(cent);
+			touchitem(cent);
 			continue;
 		}
 
 		if(ent->solid != SOLID_BMODEL){
 			if(ent->eType == ET_CRATE)
-				BG_TouchCrate(&cg.predictedPlayerState, ent);
+				touchcrate(&cg.pps, ent);
 			else if(ent->eType == ET_CRATE_BOUNCY
-				&& ent->number == cg.predictedPlayerState.groundEntityNum)
-				BG_TouchJumpPad(&cg.predictedPlayerState, ent);
+				&& ent->number == cg.pps.groundEntityNum)
+				touchjumppad(&cg.pps, ent);
 			continue;
 		}
 
@@ -329,8 +329,8 @@ CG_TouchTriggerPrediction(void)
 		if(!cmodel)
 			continue;
 
-		trap_CM_BoxTrace(&trace, cg.predictedPlayerState.origin,
-				 cg.predictedPlayerState.origin, cg_pmove.mins,
+		trap_CM_BoxTrace(&trace, cg.pps.origin,
+				 cg.pps.origin, cg_pmove.mins,
 				 cg_pmove.maxs, cmodel, -1);
 		if(!trace.startsolid)
 			continue;
@@ -338,13 +338,13 @@ CG_TouchTriggerPrediction(void)
 		if(ent->eType == ET_TELEPORT_TRIGGER)
 			cg.hyperspace = qtrue;
 		else if(ent->eType == ET_PUSH_TRIGGER)
-			BG_TouchJumpPad(&cg.predictedPlayerState, ent);
+			touchjumppad(&cg.pps, ent);
 	}
 
 	// if we didn't touch a jump pad this pmove frame
-	if(cg.predictedPlayerState.jumppad_frame != cg.predictedPlayerState.pmove_framecount){
-		cg.predictedPlayerState.jumppad_frame = 0;
-		cg.predictedPlayerState.jumppad_ent = 0;
+	if(cg.pps.jumppad_frame != cg.pps.pmove_framecount){
+		cg.pps.jumppad_frame = 0;
+		cg.pps.jumppad_ent = 0;
 	}
 }
 
@@ -359,17 +359,17 @@ testerror(playerState_t *ps, playerState_t *pps)
 	   pps->pm_time != ps->pm_time)
 		return "pmove discrepancy";
 
-	VectorSubtract(pps->origin, ps->origin, delta);
-	if(VectorLengthSquared(delta) > 0.1f*0.1f){
+	vecsub(pps->origin, ps->origin, delta);
+	if(veclensq(delta) > 0.1f*0.1f){
 		if(cg_showmiss.integer)
-			CG_Printf("delta=%.2f  ", VectorLength(delta));
+			cgprintf("delta=%.2f  ", veclen(delta));
 		return "origin delta too large";
 	}
 
-	VectorSubtract(pps->velocity, ps->velocity, delta);
-	if(VectorLengthSquared(delta) > 0.1f*0.1f){
+	vecsub(pps->velocity, ps->velocity, delta);
+	if(veclensq(delta) > 0.1f*0.1f){
 		if(cg_showmiss.integer)
-			CG_Printf("delta=%.2f  ", VectorLength(delta));
+			cgprintf("delta=%.2f  ", veclen(delta));
 		return "velocity delta too large";
 	}
 
@@ -428,47 +428,47 @@ optimize(int current, int *stateindex)
 	char *err;
 	int i;
 
-	pps = &cg.predictedPlayerState;
+	pps = &cg.pps;
 
-	if(cg.nextFrameTeleport || cg.thisFrameTeleport){
+	if(cg.teleportnextframe || cg.teleportthisframe){
 		// predict fully
-		cg.lastPredictedCmd = 0;
-		cg.stateTail = cg.stateHead;
+		cg.lastpredictedcmd = 0;
+		cg.statetail = cg.statehead;
 		predictcmd = current - CMD_BACKUP + 1;
-	}else if(cg.physicsTime == cg.lastServerTime){
+	}else if(cg.phystime == cg.lastsrvtime){
 		// no new information; predict incrementally
-		predictcmd = cg.lastPredictedCmd + 1;
+		predictcmd = cg.lastpredictedcmd + 1;
 	}else{
 		// we have a new snapshot
-		for(i = cg.stateHead; i != cg.stateTail; i = (i+1) % STATEBUFLEN){
-			if(cg.stateBuf[i].commandTime == pps->commandTime){
-				err = testerror(pps, &cg.stateBuf[i]);
+		for(i = cg.statehead; i != cg.statetail; i = (i+1) % STATEBUFLEN){
+			if(cg.statebuf[i].commandTime == pps->commandTime){
+				err = testerror(pps, &cg.statebuf[i]);
 				if(err != nil){
 					if(cg_showmiss.integer)
-						CG_Printf("%d: %s\n", cg.time, err);
+						cgprintf("%d: %s\n", cg.time, err);
 				}else{
-					*cg_pmove.ps = cg.stateBuf[i];
-					cg.stateHead = (i+1) % STATEBUFLEN;
-					predictcmd = cg.lastPredictedCmd + 1;
+					*cg_pmove.ps = cg.statebuf[i];
+					cg.statehead = (i+1) % STATEBUFLEN;
+					predictcmd = cg.lastpredictedcmd + 1;
 				}
 				break;
 			}
 		}
 		// if no saved states matched, predict fully
-		if(err != nil || i == cg.stateTail){
-			cg.lastPredictedCmd = 0;
-			cg.stateTail = cg.stateHead;
+		if(err != nil || i == cg.statetail){
+			cg.lastpredictedcmd = 0;
+			cg.statetail = cg.statehead;
 			predictcmd = current - CMD_BACKUP + 1;
 		}
 	}
-	cg.lastServerTime = cg.physicsTime;
-	*stateindex = cg.stateHead;
+	cg.lastsrvtime = cg.phystime;
+	*stateindex = cg.statehead;
 	return predictcmd;
 }
 
 /*
-Generates cg.predictedPlayerState for the current cg.time
-cg.predictedPlayerState is guaranteed to be valid after exiting.
+Generates cg.pps for the current cg.time
+cg.pps is guaranteed to be valid after exiting.
 
 For demo playback, this will be an interpolation between two valid
 playerState_t.
@@ -489,7 +489,7 @@ We detect prediction errors and allow them to be decayed off over several frames
 to ease the jerk.
 */
 void
-CG_PredictPlayerState(void)
+predictplayerstate(void)
 {
 	int cmdNum, current;
 	playerState_t oldPlayerState;
@@ -502,39 +502,39 @@ CG_PredictPlayerState(void)
 	si = 0;
 
 	// if this is the first frame we must guarantee
-	// predictedPlayerState is valid even if there is some
+	// pps is valid even if there is some
 	// other error condition
-	if(!cg.validPPS){
-		cg.validPPS = qtrue;
-		cg.predictedPlayerState = cg.snap->ps;
+	if(!cg.validpps){
+		cg.validpps = qtrue;
+		cg.pps = cg.snap->ps;
 	}
 
 	// demo playback just copies the moves
-	if(cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW)){
-		CG_InterpolatePlayerState(qfalse);
+	if(cg.demoplayback || (cg.snap->ps.pm_flags & PMF_FOLLOW)){
+		interpolateplayerstate(qfalse);
 		return;
 	}
 
 	// non-predicting local movement will grab the latest angles
 	if(cg_nopredict.integer || cg_synchronousClients.integer){
-		CG_InterpolatePlayerState(qtrue);
+		interpolateplayerstate(qtrue);
 		return;
 	}
 
 	// prepare for pmove
-	cg_pmove.ps = &cg.predictedPlayerState;
-	cg_pmove.trace = CG_Trace;
-	cg_pmove.pointcontents = CG_PointContents;
+	cg_pmove.ps = &cg.pps;
+	cg_pmove.trace = cgtrace;
+	cg_pmove.pointcontents = pointcontents;
 	if(cg_pmove.ps->pm_type == PM_DEAD)
 		cg_pmove.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
 	else
 		cg_pmove.tracemask = MASK_PLAYERSOLID;
 	if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR)
 		cg_pmove.tracemask &= ~CONTENTS_BODY;	// spectators can fly through bodies
-	cg_pmove.noFootsteps = (cgs.dmflags & DF_NO_FOOTSTEPS) > 0;
+	cg_pmove.nofootsteps = (cgs.dmflags & DF_NO_FOOTSTEPS) > 0;
 
 	// save the state before the pmove so we can detect transitions
-	oldPlayerState = cg.predictedPlayerState;
+	oldPlayerState = cg.pps;
 
 	current = trap_GetCurrentCmdNumber();
 
@@ -546,7 +546,7 @@ CG_PredictPlayerState(void)
 	if(oldestCmd.serverTime > cg.snap->ps.commandTime
 	   && oldestCmd.serverTime < cg.time){	// special check for map_restart
 		if(cg_showmiss.integer)
-			CG_Printf("exceeded PACKET_BACKUP on commands\n");
+			cgprintf("exceeded PACKET_BACKUP on commands\n");
 		return;
 	}
 
@@ -557,12 +557,12 @@ CG_PredictPlayerState(void)
 	// the server time is beyond our current cg.time,
 	// because predicted player positions are going to
 	// be ahead of everything else anyway
-	if(cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport){
-		cg.predictedPlayerState = cg.nextSnap->ps;
-		cg.physicsTime = cg.nextSnap->serverTime;
+	if(cg.nextsnap && !cg.teleportnextframe && !cg.teleportthisframe){
+		cg.pps = cg.nextsnap->ps;
+		cg.phystime = cg.nextsnap->serverTime;
 	}else{
-		cg.predictedPlayerState = cg.snap->ps;
-		cg.physicsTime = cg.snap->serverTime;
+		cg.pps = cg.snap->ps;
+		cg.phystime = cg.snap->serverTime;
 	}
 
 	if(pmove_msec.integer < 8)
@@ -583,10 +583,10 @@ CG_PredictPlayerState(void)
 		trap_GetUserCmd(cmdNum, &cg_pmove.cmd);
 
 		if(cg_pmove.pmove_fixed)
-			PM_UpdateViewAngles(cg_pmove.ps, &cg_pmove.cmd);
+			updateviewangles(cg_pmove.ps, &cg_pmove.cmd);
 
 		// don't do anything if the time is before the snapshot player time
-		if(cg_pmove.cmd.serverTime <= cg.predictedPlayerState.commandTime)
+		if(cg_pmove.cmd.serverTime <= cg.pps.commandTime)
 			continue;
 
 		// don't do anything if the command was from a previous map_restart
@@ -598,51 +598,51 @@ CG_PredictPlayerState(void)
 		// from the snapshot, but on a wan we will have
 		// to predict several commands to get to the point
 		// we want to compare
-		if(cg.predictedPlayerState.commandTime == oldPlayerState.commandTime){
+		if(cg.pps.commandTime == oldPlayerState.commandTime){
 			vec3_t delta;
 			float len;
 
-			if(cg.thisFrameTeleport){
+			if(cg.teleportthisframe){
 				// a teleport will not cause an error decay
-				VectorClear(cg.predictedError);
+				vecclear(cg.predictederr);
 				if(cg_showmiss.integer)
-					CG_Printf("PredictionTeleport\n");
-				cg.thisFrameTeleport = qfalse;
+					cgprintf("PredictionTeleport\n");
+				cg.teleportthisframe = qfalse;
 			}else{
 				vec3_t adjusted, new_angles;
-				CG_AdjustPositionForMover(cg.predictedPlayerState.origin,
-							  cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, cg.predictedPlayerState.viewangles, new_angles);
+				adjustposformover(cg.pps.origin,
+							  cg.pps.groundEntityNum, cg.phystime, cg.oldtime, adjusted, cg.pps.viewangles, new_angles);
 
 				if(cg_showmiss.integer)
-					if(!VectorCompare(oldPlayerState.origin, adjusted))
-						CG_Printf("prediction error\n");
-				VectorSubtract(oldPlayerState.origin, adjusted, delta);
-				len = VectorLength(delta);
+					if(!veccmp(oldPlayerState.origin, adjusted))
+						cgprintf("prediction error\n");
+				vecsub(oldPlayerState.origin, adjusted, delta);
+				len = veclen(delta);
 				if(len > 0.1){
 					if(cg_showmiss.integer)
-						CG_Printf("Prediction miss: %f\n", len);
+						cgprintf("Prediction miss: %f\n", len);
 					if(cg_errorDecay.integer){
 						int t;
 						float f;
 
-						t = cg.time - cg.predictedErrorTime;
+						t = cg.time - cg.predictederrtime;
 						f = (cg_errorDecay.value - t) / cg_errorDecay.value;
 						if(f < 0)
 							f = 0;
 						if(f > 0 && cg_showmiss.integer)
-							CG_Printf("Double prediction decay: %f\n", f);
-						VectorScale(cg.predictedError, f, cg.predictedError);
+							cgprintf("Double prediction decay: %f\n", f);
+						vecscale(cg.predictederr, f, cg.predictederr);
 					}else
-						VectorClear(cg.predictedError);
-					VectorAdd(delta, cg.predictedError, cg.predictedError);
-					cg.predictedErrorTime = cg.oldTime;
+						vecclear(cg.predictederr);
+					vecadd(delta, cg.predictederr, cg.predictederr);
+					cg.predictederrtime = cg.oldtime;
 				}
 			}
 		}
 
 		// don't predict gauntlet firing, which is only supposed to happen
 		// when it actually inflicts damage
-		cg_pmove.gauntletHit = qfalse;
+		cg_pmove.gauntlethit = qfalse;
 
 		if(cg_pmove.pmove_fixed)
 			cg_pmove.cmd.serverTime = ((cg_pmove.cmd.serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
@@ -650,21 +650,21 @@ CG_PredictPlayerState(void)
 		if(!cg_optimizeprediction.integer){
 			Pmove(&cg_pmove);
 		}else{
-			if(cmdNum >= predictcmd || (si+1) % STATEBUFLEN == cg.stateHead){
+			if(cmdNum >= predictcmd || (si+1) % STATEBUFLEN == cg.statehead){
 				Pmove(&cg_pmove);
-				cg.lastPredictedCmd = cmdNum;
-				if((si+1) % STATEBUFLEN != cg.stateHead){
-					cg.stateBuf[si] = *cg_pmove.ps;
+				cg.lastpredictedcmd = cmdNum;
+				if((si+1) % STATEBUFLEN != cg.statehead){
+					cg.statebuf[si] = *cg_pmove.ps;
 					si = (si+1) & STATEBUFLEN;
-					cg.stateTail = si;
+					cg.statetail = si;
 				}
 			}else{
 				if(cg_showmiss.integer &&
-				   cg.stateBuf[si].commandTime != cg_pmove.cmd.serverTime)
-					CG_Printf("saved state miss\n");
+				   cg.statebuf[si].commandTime != cg_pmove.cmd.serverTime)
+					cgprintf("saved state miss\n");
 				
 				// play back the command from state buffer
-				*cg_pmove.ps = cg.stateBuf[si];
+				*cg_pmove.ps = cg.statebuf[si];
 				si = (si+1) % STATEBUFLEN;
 			}
 		}
@@ -672,36 +672,36 @@ CG_PredictPlayerState(void)
 		moved = qtrue;
 
 		// add push trigger movement effects
-		CG_TouchTriggerPrediction();
+		touchtriggerprediction();
 
 		// check for predictable events that changed from previous predictions
-		//CG_CheckChangedPredictableEvents(&cg.predictedPlayerState);
+		//chkchangedpredictableevents(&cg.pps);
 	}
 
 	if(cg_showmiss.integer > 1)
-		CG_Printf("[%i : %i] ", cg_pmove.cmd.serverTime, cg.time);
+		cgprintf("[%i : %i] ", cg_pmove.cmd.serverTime, cg.time);
 
 	if(!moved){
 		if(cg_showmiss.integer)
-			CG_Printf("not moved\n");
+			cgprintf("not moved\n");
 		return;
 	}
 
 	// adjust for the movement of the groundentity
-	CG_AdjustPositionForMover(cg.predictedPlayerState.origin,
-				  cg.predictedPlayerState.groundEntityNum,
-				  cg.physicsTime, cg.time, cg.predictedPlayerState.origin, cg.predictedPlayerState.viewangles, cg.predictedPlayerState.viewangles);
+	adjustposformover(cg.pps.origin,
+				  cg.pps.groundEntityNum,
+				  cg.phystime, cg.time, cg.pps.origin, cg.pps.viewangles, cg.pps.viewangles);
 
 	if(cg_showmiss.integer)
-		if(cg.predictedPlayerState.eventSequence > oldPlayerState.eventSequence + MAX_PS_EVENTS)
-			CG_Printf("WARNING: dropped event\n");
+		if(cg.pps.eventSequence > oldPlayerState.eventSequence + MAX_PS_EVENTS)
+			cgprintf("WARNING: dropped event\n");
 
 	// fire events and other transition triggered things
-	CG_TransitionPlayerState(&cg.predictedPlayerState, &oldPlayerState);
+	transitionplayerstate(&cg.pps, &oldPlayerState);
 
 	if(cg_showmiss.integer)
-		if(cg.eventSequence > cg.predictedPlayerState.eventSequence){
-			CG_Printf("WARNING: double event\n");
-			cg.eventSequence = cg.predictedPlayerState.eventSequence;
+		if(cg.eventSequence > cg.pps.eventSequence){
+			cgprintf("WARNING: double event\n");
+			cg.eventSequence = cg.pps.eventSequence;
 		}
 }

@@ -187,23 +187,23 @@ item_t bg_itemlist[] = {
 	{nil}
 };
 
-int bg_numItems = ARRAY_LEN(bg_itemlist) - 1;
+int bg_nitems = ARRAY_LEN(bg_itemlist) - 1;
 
 /*
 ==============
-BG_FindItemForPowerup
+finditemforpowerup
 ==============
 */
 item_t *
-BG_FindItemForPowerup(powerup_t pw)
+finditemforpowerup(powerup_t pw)
 {
 	int i;
 
-	for(i = 0; i < bg_numItems; i++)
-		if((bg_itemlist[i].giType == IT_POWERUP ||
-		    bg_itemlist[i].giType == IT_TEAM ||
-		    bg_itemlist[i].giType == IT_PERSISTANT_POWERUP) &&
-		   bg_itemlist[i].giTag == pw)
+	for(i = 0; i < bg_nitems; i++)
+		if((bg_itemlist[i].type == IT_POWERUP ||
+		    bg_itemlist[i].type == IT_TEAM ||
+		    bg_itemlist[i].type == IT_PERSISTANT_POWERUP) &&
+		   bg_itemlist[i].tag == pw)
 			return &bg_itemlist[i];
 
 	return nil;
@@ -211,16 +211,16 @@ BG_FindItemForPowerup(powerup_t pw)
 
 /*
 ==============
-BG_FindItemForHoldable
+finditemforholdable
 ==============
 */
 item_t *
-BG_FindItemForHoldable(holdable_t pw)
+finditemforholdable(holdable_t pw)
 {
 	int i;
 
-	for(i = 0; i < bg_numItems; i++)
-		if(bg_itemlist[i].giType == IT_HOLDABLE && bg_itemlist[i].giTag == pw)
+	for(i = 0; i < bg_nitems; i++)
+		if(bg_itemlist[i].type == IT_HOLDABLE && bg_itemlist[i].tag == pw)
 			return &bg_itemlist[i];
 
 	Com_Error(ERR_DROP, "HoldableItem not found");
@@ -230,17 +230,17 @@ BG_FindItemForHoldable(holdable_t pw)
 
 /*
 ===============
-BG_FindItemForWeapon
+finditemforweapon
 
 ===============
 */
 item_t *
-BG_FindItemForWeapon(weap_t weapon)
+finditemforweapon(weap_t weapon)
 {
 	item_t *it;
 
 	for(it = bg_itemlist + 1; it->classname; it++)
-		if(it->giType == IT_WEAPON && it->giTag == weapon)
+		if(it->type == IT_WEAPON && it->tag == weapon)
 			return it;
 
 	Com_Error(ERR_DROP, "Couldn't find item for weapon %i", weapon);
@@ -249,17 +249,17 @@ BG_FindItemForWeapon(weap_t weapon)
 
 /*
 ===============
-BG_FindItem
+finditem
 
 ===============
 */
 item_t *
-BG_FindItem(const char *pickupName)
+finditem(const char *pickupName)
 {
 	item_t *it;
 
 	for(it = bg_itemlist + 1; it->classname; it++)
-		if(!Q_stricmp(it->pickup_name, pickupName))
+		if(!Q_stricmp(it->pickupname, pickupName))
 			return it;
 
 	return nil;
@@ -267,18 +267,18 @@ BG_FindItem(const char *pickupName)
 
 /*
 ============
-BG_PlayerTouchesItem
+playertouchingitem
 
 Items can be picked up without actually touching their physical bounds to make
 grabbing them easier
 ============
 */
 qboolean
-BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime)
+playertouchingitem(playerState_t *ps, entityState_t *item, int atTime)
 {
 	vec3_t origin;
 
-	BG_EvaluateTrajectory(&item->pos, atTime, origin);
+	evaltrajectory(&item->pos, atTime, origin);
 
 	// we are ignoring ducked differences here
 	if(ps->origin[0] - origin[0] > 44
@@ -294,28 +294,28 @@ BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime)
 
 /*
 ================
-BG_CanItemBeGrabbed
+cangrabitem
 
 Returns false if the item should not be picked up.
 This needs to be the same for client side prediction and server use.
 ================
 */
 qboolean
-BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t *ps)
+cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps)
 {
 	item_t *item;
 
-	if(ent->modelindex < 1 || ent->modelindex >= bg_numItems)
-		Com_Error(ERR_DROP, "BG_CanItemBeGrabbed: index out of range");
+	if(ent->modelindex < 1 || ent->modelindex >= bg_nitems)
+		Com_Error(ERR_DROP, "cangrabitem: index out of range");
 
 	item = &bg_itemlist[ent->modelindex];
 
-	switch(item->giType){
+	switch(item->type){
 	case IT_WEAPON:
 		return qtrue;	// weapons are always picked up
 
 	case IT_AMMO:
-		if(ps->ammo[item->giTag] >= 200)
+		if(ps->ammo[item->tag] >= 200)
 			return qfalse;	// can't hold any more
 		return qtrue;
 
@@ -343,14 +343,14 @@ BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t 
 			// we need to know this because we can pick up our dropped flag (and return it)
 			// but we can't pick up our flag at base
 			if(ps->persistant[PERS_TEAM] == TEAM_RED){
-				if(item->giTag == PW_BLUEFLAG ||
-				   (item->giTag == PW_REDFLAG && ent->modelindex2) ||
-				   (item->giTag == PW_REDFLAG && ps->powerups[PW_BLUEFLAG]))
+				if(item->tag == PW_BLUEFLAG ||
+				   (item->tag == PW_REDFLAG && ent->modelindex2) ||
+				   (item->tag == PW_REDFLAG && ps->powerups[PW_BLUEFLAG]))
 					return qtrue;
 			}else if(ps->persistant[PERS_TEAM] == TEAM_BLUE)
-				if(item->giTag == PW_REDFLAG ||
-				   (item->giTag == PW_BLUEFLAG && ent->modelindex2) ||
-				   (item->giTag == PW_BLUEFLAG && ps->powerups[PW_REDFLAG]))
+				if(item->tag == PW_REDFLAG ||
+				   (item->tag == PW_BLUEFLAG && ent->modelindex2) ||
+				   (item->tag == PW_BLUEFLAG && ps->powerups[PW_REDFLAG]))
 					return qtrue;
 		}
 
@@ -363,11 +363,11 @@ BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t 
 		return qtrue;
 
 	case IT_BAD:
-		Com_Error(ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD");
+		Com_Error(ERR_DROP, "cangrabitem: IT_BAD");
 	default:
 #ifndef Q3_VM
 #ifndef NDEBUG
-		Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType);
+		Com_Printf("cangrabitem: unknown enum %d\n", item->type);
 #endif
 #endif
 		break;
@@ -379,12 +379,12 @@ BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t 
 
 /*
 ================
-BG_EvaluateTrajectory
+evaltrajectory
 
 ================
 */
 void
-BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result)
+evaltrajectory(const trajectory_t *tr, int atTime, vec3_t result)
 {
 	float deltaTime;
 	float phase;
@@ -392,16 +392,16 @@ BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result)
 	switch(tr->trType){
 	case TR_STATIONARY:
 	case TR_INTERPOLATE:
-		VectorCopy(tr->trBase, result);
+		veccopy(tr->trBase, result);
 		break;
 	case TR_LINEAR:
 		deltaTime = (atTime - tr->trTime) * 0.001;	// milliseconds to seconds
-		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		vecsadd(tr->trBase, deltaTime, tr->trDelta, result);
 		break;
 	case TR_SINE:
 		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
 		phase = sin(deltaTime * M_PI * 2);
-		VectorMA(tr->trBase, phase, tr->trDelta, result);
+		vecsadd(tr->trBase, phase, tr->trDelta, result);
 		break;
 	case TR_LINEAR_STOP:
 		if(atTime > tr->trTime + tr->trDuration)
@@ -409,28 +409,28 @@ BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result)
 		deltaTime = (atTime - tr->trTime) * 0.001;	// milliseconds to seconds
 		if(deltaTime < 0)
 			deltaTime = 0;
-		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		vecsadd(tr->trBase, deltaTime, tr->trDelta, result);
 		break;
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001;			// milliseconds to seconds
-		VectorMA(tr->trBase, deltaTime, tr->trDelta, result);
+		vecsadd(tr->trBase, deltaTime, tr->trDelta, result);
 		result[2] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime;	// FIXME: local gravity...
 		break;
 	default:
-		Com_Error(ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trType);
+		Com_Error(ERR_DROP, "evaltrajectory: unknown trType: %i", tr->trType);
 		break;
 	}
 }
 
 /*
 ================
-BG_EvaluateTrajectoryDelta
+evaltrajectorydelta
 
 For determining velocity at a given time
 ================
 */
 void
-BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t result)
+evaltrajectorydelta(const trajectory_t *tr, int atTime, vec3_t result)
 {
 	float deltaTime;
 	float phase;
@@ -438,31 +438,31 @@ BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t result)
 	switch(tr->trType){
 	case TR_STATIONARY:
 	case TR_INTERPOLATE:
-		VectorClear(result);
+		vecclear(result);
 		break;
 	case TR_LINEAR:
-		VectorCopy(tr->trDelta, result);
+		veccopy(tr->trDelta, result);
 		break;
 	case TR_SINE:
 		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
 		phase = cos(deltaTime * M_PI * 2);	// derivative of sin = cos
 		phase *= 0.5;
-		VectorScale(tr->trDelta, phase, result);
+		vecscale(tr->trDelta, phase, result);
 		break;
 	case TR_LINEAR_STOP:
 		if(atTime > tr->trTime + tr->trDuration){
-			VectorClear(result);
+			vecclear(result);
 			return;
 		}
-		VectorCopy(tr->trDelta, result);
+		veccopy(tr->trDelta, result);
 		break;
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001;	// milliseconds to seconds
-		VectorCopy(tr->trDelta, result);
+		veccopy(tr->trDelta, result);
 		result[2] -= DEFAULT_GRAVITY * deltaTime;	// FIXME: local gravity...
 		break;
 	default:
-		Com_Error(ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trType);
+		Com_Error(ERR_DROP, "evaltrajectorydelta: unknown trType: %i", tr->trType);
 		break;
 	}
 }
@@ -569,7 +569,7 @@ char *eventnames[] = {
 
 /*
 ===============
-BG_AddPredictableEventToPlayerstate
+bgaddpredictableevent
 
 Handles the sequence numbers
 ===============
@@ -578,7 +578,7 @@ Handles the sequence numbers
 void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 
 void
-BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerState_t *ps)
+bgaddpredictableevent(int newEvent, int eventParm, playerState_t *ps)
 {
 #ifdef _DEBUG
 	{
@@ -600,11 +600,11 @@ BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerState_t *
 
 /*
 ========================
-BG_TouchJumpPad
+touchjumppad
 ========================
 */
 void
-BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad)
+touchjumppad(playerState_t *ps, entityState_t *jumppad)
 {
 	vec3_t angles;
 	float p;
@@ -627,17 +627,17 @@ BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad)
 			effectNum = 0;
 		else
 			effectNum = 1;
-		BG_AddPredictableEventToPlayerstate(EV_JUMP_PAD, effectNum, ps);
+		bgaddpredictableevent(EV_JUMP_PAD, effectNum, ps);
 	}
 	// remember hitting this jumppad this frame
 	ps->jumppad_ent = jumppad->number;
 	ps->jumppad_frame = ps->pmove_framecount;
 	// give the player the velocity from the jumppad
-	VectorCopy(jumppad->origin2, ps->velocity);
+	veccopy(jumppad->origin2, ps->velocity);
 }
 
 qboolean
-BG_TouchCrate(playerState_t *pps, entityState_t *crate)
+touchcrate(playerState_t *pps, entityState_t *crate)
 {
 	if(pps->pm_type != PM_NORMAL || pps->powerups[PW_FLIGHT])
 		return qfalse;
@@ -647,7 +647,7 @@ BG_TouchCrate(playerState_t *pps, entityState_t *crate)
 		return qfalse;		// didn't land hard enough
 
 	if(pps->jumppad_ent != crate->number)
-		BG_AddPredictableEventToPlayerstate(EV_SMASH_CRATE, 0, pps);
+		bgaddpredictableevent(EV_SMASH_CRATE, 0, pps);
 	// remember hitting this crate this frame (recycle jumppad fields)
 	pps->jumppad_ent = crate->number;
 	pps->jumppad_frame = pps->pmove_framecount;
@@ -658,14 +658,14 @@ BG_TouchCrate(playerState_t *pps, entityState_t *crate)
 
 /*
 ========================
-BG_PlayerStateToEntityState
+playerstate2entstate
 
 This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
 void
-BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap)
+playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 {
 	int i;
 
@@ -679,14 +679,14 @@ BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap)
 	s->number = ps->clientNum;
 
 	s->pos.trType = TR_INTERPOLATE;
-	VectorCopy(ps->origin, s->pos.trBase);
+	veccopy(ps->origin, s->pos.trBase);
 	if(snap)
 		SnapVector(s->pos.trBase);
 	// set the trDelta for flag direction
-	VectorCopy(ps->velocity, s->pos.trDelta);
+	veccopy(ps->velocity, s->pos.trDelta);
 
 	s->apos.trType = TR_INTERPOLATE;
-	VectorCopy(ps->viewangles, s->apos.trBase);
+	veccopy(ps->viewangles, s->apos.trBase);
 	if(snap)
 		SnapVector(s->apos.trBase);
 
@@ -730,14 +730,14 @@ BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap)
 
 /*
 ========================
-BG_PlayerStateToEntityStateExtraPolate
+playerstate2entstatexerp
 
 This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
 void
-BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int time, qboolean snap)
+playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean snap)
 {
 	int i;
 
@@ -751,18 +751,18 @@ BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int 
 	s->number = ps->clientNum;
 
 	s->pos.trType = TR_LINEAR_STOP;
-	VectorCopy(ps->origin, s->pos.trBase);
+	veccopy(ps->origin, s->pos.trBase);
 	if(snap)
 		SnapVector(s->pos.trBase);
 	// set the trDelta for flag direction and linear prediction
-	VectorCopy(ps->velocity, s->pos.trDelta);
+	veccopy(ps->velocity, s->pos.trDelta);
 	// set the time for linear prediction
 	s->pos.trTime = time;
 	// set maximum extra polation time
 	s->pos.trDuration = 50;	// 1000 / sv_fps (default = 20)
 
 	s->apos.trType = TR_INTERPOLATE;
-	VectorCopy(ps->viewangles, s->apos.trBase);
+	veccopy(ps->viewangles, s->apos.trBase);
 	if(snap)
 		SnapVector(s->apos.trBase);
 
