@@ -276,20 +276,19 @@ grabbing them easier
 qboolean
 playertouchingitem(playerState_t *ps, entityState_t *item, int atTime)
 {
-	vec3_t origin;
+	const int pad = 3;
+	vec3_t mins, maxs, itpos;
 
-	evaltrajectory(&item->pos, atTime, origin);
+	// mins extends 10u down on Z so that items that spawning
+	// following crate smashes are picked up immediately.
+	vecset(mins, MINS_X, MINS_Y, MINS_Z-10);
+	vecset(maxs, MAXS_X, MAXS_Y, MAXS_Z);
+	vecadd(mins, ps->origin, mins);
+	vecadd(maxs, ps->origin, maxs);
 
-	// we are ignoring ducked differences here
-	if(ps->origin[0] - origin[0] > 44
-	   || ps->origin[0] - origin[0] < -50
-	   || ps->origin[1] - origin[1] > 36
-	   || ps->origin[1] - origin[1] < -36
-	   || ps->origin[2] - origin[2] > 36
-	   || ps->origin[2] - origin[2] < -36)
-		return qfalse;
-
-	return qtrue;
+	evaltrajectory(&item->pos, atTime, itpos);
+	
+	return BoundsIntersectSphere(mins, maxs, itpos, ITEM_RADIUS+pad);
 }
 
 /*
