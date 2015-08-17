@@ -716,6 +716,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 #define vecrotate	VectorRotate
 #define anglevecs	AngleVectors
 #define vecperp		PerpendicularVector
+#define vecsnap		SnapVector
 
 //=============================================
 
