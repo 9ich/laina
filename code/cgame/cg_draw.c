@@ -364,7 +364,7 @@ drawstatusbar(void)
 	origin[0] = 55;
 	origin[1] = 0;
 	origin[2] = 0;
-	angles[YAW] = (cg.time & 2047) * 360 / 2048.0;
+	angles[YAW] = (cg.time & 2047) * 360 / 2048.0f;
 	x = margin;
 	y = margin;
 	drawmodel(x, y, ICON_SIZE, ICON_SIZE, cgs.media.tokenModel, 0, origin, angles);
@@ -373,7 +373,7 @@ drawstatusbar(void)
 	origin[0] = 40;
 	origin[1] = 0;
 	origin[2] = 0;
-	angles[YAW] = (cg.time & 2047) * 360 / 2048.0;
+	angles[YAW] = (cg.time & 2047) * 360 / 2048.0f;
 	x = SCREEN_WIDTH - ICON_SIZE - margin;
 	drawmodel(x, y, ICON_SIZE, ICON_SIZE, cgs.media.lifeModel, 0, origin, angles);
 
@@ -674,6 +674,75 @@ drawlowerleft(void)
 
 	y = 480 - ICON_SIZE;
 	drawpickup(y);
+}
+
+void
+queuepickupanim(const char *classname)
+{
+	item_t *it;
+	int i;
+
+	i = cg.npickupanims;
+
+	if(i >= MAXPICKUPANIMS)
+		return;
+	for(it = bg_itemlist + 1; it->classname != nil; it++)
+		if(Q_stricmp(it->classname, classname) == 0)
+			break;
+	if(it->classname == nil)
+		return;
+
+	switch(it->type){
+	case IT_KEY:
+		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
+		vecset(cg.pickupanimstk[i].end, 0, 10, 100);
+		break;
+	case IT_LIFE:
+	case IT_HEALTH:
+		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
+		vecset(cg.pickupanimstk[i].end, 0, 10, 10);
+		break;
+	default:
+		return;
+	}
+	cg.pickupanimstk[i].item = it - bg_itemlist;
+	cg.npickupanims++;
+}
+
+static void
+drawpickupanim(void)
+{
+	pickupanim_t *pa;
+	qhandle_t model;
+	vec3_t pos, viewportpos, angles;
+	float t;
+
+	if(cg.npickupanims == 0)
+		return;
+	if(cg.time > cg.pickupanimtime){
+		if(cg.pickupanimtime != 0)
+			cg.npickupanims--;
+		cg.pickupanimstarttime = cg.time;
+		cg.pickupanimtime = cg.time + PICKUPANIMTIME;
+		if(cg.npickupanims == 0){
+			cg.pickupanimtime = 0;
+			return;
+		}
+	}
+
+	pa = &cg.pickupanimstk[cg.npickupanims-1];
+	model = cg_items[pa->item].models[0];
+	t = 1 - (cg.pickupanimtime - cg.time) / (float)(cg.pickupanimtime - cg.pickupanimstarttime);
+	t = MIN(1.0f, t);
+	pos[0] = 0;
+	pos[1] = pa->beg[1] + t * (pa->end[1] - pa->beg[1]);
+	pos[2] = pa->beg[2] + t * (pa->end[2] - pa->beg[2]);
+	vecset(viewportpos, 200, 0, 0);
+	vecclear(angles);
+	// quick rotation
+	angles[YAW] = (cg.pickupanimtime - cg.time & 255) * 360 / 256.0f;
+	drawmodel(pos[1], pos[2], pos[1]+ICON_SIZE, pos[2]+ICON_SIZE,
+	   model, 0, viewportpos, angles);
 }
 
 /*
@@ -1638,6 +1707,8 @@ draw2d(stereoFrame_t stereoFrame)
 
 	drawlowerright();
 	drawlowerleft();
+
+	drawpickupanim();
 
 	if(!drawfollow())
 		drawwarmup();

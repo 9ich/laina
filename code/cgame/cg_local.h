@@ -54,6 +54,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define PULSE_SCALE			1.5	// amount to scale up the icons when activating
 
+#define MAXPICKUPANIMS			64	// stack capacity for item pickups flying across hud
+#define PICKUPANIMTIME			150
+
 #define MAX_STEP_CHANGE			32
 
 #define MAX_VERTS_ON_POLY		10
@@ -272,6 +275,13 @@ typedef struct localent_s
 
 	refEntity_t		refEntity;
 } localent_t;
+
+typedef struct pickupanim_s
+{
+	int	item;	// index of item that was picked up
+	vec3_t	beg;	// animation start pos
+	vec3_t	end;	// end pos
+} pickupanim_t;
 
 //======================================================================
 
@@ -595,6 +605,12 @@ typedef struct
 	int	itemPickup;
 	int	itemPickupTime;
 	int	itemPickupBlendTime;	// the pulse around the crosshair is timed seperately
+
+	// special item pickups that fly across the screen
+	pickupanim_t	pickupanimstk[MAXPICKUPANIMS];
+	int	pickupanimtime;
+	int	pickupanimstarttime;
+	int	npickupanims;
 
 	int	weapseltime;
 	int	weapanim;
@@ -1143,6 +1159,7 @@ void		drawflag(float x, float y, float w, float h, int team, qboolean force2D);
 void		drawteambg(int x, int y, int w, int h, float alpha, int team);
 qboolean	ownerdrawvisible(int flags);
 void		drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles);
+void		queuepickupanim(const char *classname);
 
 // cg_player.c
 void		doplayer(cent_t *cent);

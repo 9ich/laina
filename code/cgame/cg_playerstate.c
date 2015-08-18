@@ -284,7 +284,7 @@ checklocalsounds
 void
 checklocalsounds(playerState_t *ps, playerState_t *ops)
 {
-	int highScore, reward;
+	int i, highScore, reward;
 	sfxHandle_t sfx;
 
 	// don't play the sounds if the player just changed teams
@@ -302,6 +302,15 @@ checklocalsounds(playerState_t *ps, playerState_t *ops)
 		if(ps->stats[STAT_HEALTH] > 0)
 			painevent(&cg.pplayerent, ps->stats[STAT_HEALTH]);
 
+	// hud pickup animations
+	for(i = 0; i < ps->stats[STAT_HEALTH] - ops->stats[STAT_HEALTH]; i++)
+		queuepickupanim("item_token");
+	if(ps->doorKeys[KEY_JADE] > ops->doorKeys[KEY_JADE])
+		queuepickupanim("item_key_jade");
+	if(ps->doorKeys[KEY_RUBY] > ops->doorKeys[KEY_RUBY])
+		queuepickupanim("item_key_ruby");
+	if(ps->doorKeys[KEY_SAPPHIRE] > ops->doorKeys[KEY_SAPPHIRE])
+		queuepickupanim("item_key_sapphire");
 
 	// if we are going into the intermission, don't start any voices
 	if(cg.intermissionstarted)

@@ -339,11 +339,7 @@ useitem(cent_t *cent)
 }
 
 /*
-================
-itempickup
-
-A new item was picked up this frame
-================
+A new item was picked up this frame.
 */
 static void
 itempickup(int itemNum)
@@ -358,7 +354,6 @@ itempickup(int itemNum)
 			cg.weapseltime = cg.time;
 			cg.weapsel = bg_itemlist[itemNum].tag;
 		}
-
 }
 
 /*
