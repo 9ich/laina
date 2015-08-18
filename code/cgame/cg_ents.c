@@ -94,7 +94,7 @@ Returns the Z component of the surface being shadowed.
 qboolean
 drawentshadow(cent_t *cent, float *shadowPlane)
 {
-	vec3_t end, mins = {-15, -15, 0}, maxs = {15, 15, 2};
+	vec3_t end, mins = {-8, -8, 0}, maxs = {8, 8, 2};
 	trace_t trace;
 	float alpha, size;
 
