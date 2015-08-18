@@ -1819,17 +1819,7 @@ addrefentitywithpowerups(refEntity_t *ent, entityState_t *state, int team)
 		ent->customShader = cgs.media.invisShader;
 		trap_R_AddRefEntityToScene(ent);
 	}else{
-		/*
-		if( state->eFlags & EF_KAMIKAZE ){
-		        if(team == TEAM_BLUE)
-		                ent->customShader = cgs.media.blueKamikazeShader;
-		        else
-		                ent->customShader = cgs.media.redKamikazeShader;
-		        trap_R_AddRefEntityToScene( ent );
-		}
-		else{*/
 		trap_R_AddRefEntityToScene(ent);
-		//}
 
 		if(state->powerups & (1 << PW_QUAD)){
 			if(team == TEAM_RED)

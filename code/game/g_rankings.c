@@ -861,17 +861,6 @@ rankpickupholdable(int self, int holdable)
 	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
-
-	switch(holdable){
-	case HI_MEDKIT:
-		trap_RankReportInt(self, -1, QGR_KEY_MEDKIT, 1, 1);
-		break;
-	case HI_TELEPORTER:
-		trap_RankReportInt(self, -1, QGR_KEY_TELEPORTER, 1, 1);
-		break;
-	default:
-		break;
-	}
 }
 
 /*
@@ -885,17 +874,6 @@ rankuseholdable(int self, int holdable)
 	if(level.warmuptime != 0)
 		// no reports during warmup period
 		return;
-
-	switch(holdable){
-	case HI_MEDKIT:
-		trap_RankReportInt(self, -1, QGR_KEY_MEDKIT_USE, 1, 1);
-		break;
-	case HI_TELEPORTER:
-		trap_RankReportInt(self, -1, QGR_KEY_TELEPORTER_USE, 1, 1);
-		break;
-	default:
-		break;
-	}
 }
 
 /*

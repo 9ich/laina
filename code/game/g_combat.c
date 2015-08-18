@@ -155,20 +155,6 @@ GibEntity(ent_t *self, int killer)
 	ent_t *ent;
 	int i;
 
-	//if this entity still has kamikaze
-	if(self->s.eFlags & EF_KAMIKAZE)
-		// check if there is a kamikaze timer around for this owner
-		for(i = 0; i < level.nentities; i++){
-			ent = &g_entities[i];
-			if(!ent->inuse)
-				continue;
-			if(ent->activator != self)
-				continue;
-			if(strcmp(ent->classname, "kamikaze timer"))
-				continue;
-			entfree(ent);
-			break;
-		}
 	addevent(self, EV_GIB_PLAYER, killer);
 	self->takedmg = qfalse;
 	self->s.eType = ET_INVISIBLE;

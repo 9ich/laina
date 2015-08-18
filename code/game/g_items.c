@@ -115,9 +115,6 @@ Pickup_Holdable(ent_t *ent, ent_t *other)
 {
 	other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
 
-	if(ent->item->tag == HI_KAMIKAZE)
-		other->client->ps.eFlags |= EF_KAMIKAZE;
-
 	return RESPAWN_HOLDABLE;
 }
 
@@ -279,19 +276,6 @@ itemrespawn(ent_t *ent)
 		else
 			te = enttemp(ent->s.pos.trBase, EV_GLOBAL_SOUND);
 		te->s.eventParm = soundindex("sound/items/poweruprespawn.wav");
-		te->r.svFlags |= SVF_BROADCAST;
-	}
-
-	if(ent->item->type == IT_HOLDABLE && ent->item->tag == HI_KAMIKAZE){
-		// play powerup spawn sound to all clients
-		ent_t *te;
-
-		// if the powerup respawn sound should Not be global
-		if(ent->speed)
-			te = enttemp(ent->s.pos.trBase, EV_GENERAL_SOUND);
-		else
-			te = enttemp(ent->s.pos.trBase, EV_GLOBAL_SOUND);
-		te->s.eventParm = soundindex("sound/items/kamikazerespawn.wav");
 		te->r.svFlags |= SVF_BROADCAST;
 	}
 

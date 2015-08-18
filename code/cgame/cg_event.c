@@ -288,54 +288,10 @@ obituary(entityState_t *ent)
 
 //==========================================================================
 
-/*
-===============
-useitem
-===============
-*/
 static void
 useitem(cent_t *cent)
 {
-	clientinfo_t *ci;
-	int itemNum, clientNum;
-	item_t *item;
-	entityState_t *es;
-
-	es = &cent->currstate;
-
-	itemNum = (es->event & ~EV_EVENT_BITS) - EV_USE_ITEM0;
-	if(itemNum < 0 || itemNum > HI_NUM_HOLDABLE)
-		itemNum = 0;
-
-	// print a message if the local player
-	if(es->number == cg.snap->ps.clientNum){
-		if(!itemNum)
-			centerprint("No item to use", SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
-		else{
-			item = finditemforholdable(itemNum);
-			centerprint(va("Use %s", item->pickupname), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
-		}
-	}
-
-	switch(itemNum){
-	default:
-	case HI_NONE:
-		trap_S_StartSound(nil, es->number, CHAN_BODY, cgs.media.useNothingSound);
-		break;
-
-	case HI_TELEPORTER:
-		break;
-
-	case HI_MEDKIT:
-		clientNum = cent->currstate.clientNum;
-		if(clientNum >= 0 && clientNum < MAX_CLIENTS){
-			ci = &cgs.clientinfo[clientNum];
-			ci->medkitUsageTime = cg.time;
-		}
-		trap_S_StartSound(nil, es->number, CHAN_BODY, cgs.media.medkitSound);
-		break;
-
-	}
+	// there are no holdables at the moment
 }
 
 /*
@@ -1010,11 +966,7 @@ entevent(cent_t *cent, vec3_t position)
 
 	case EV_GIB_PLAYER:
 		DEBUGNAME("EV_GIB_PLAYER");
-		// don't play gib sound when using the kamikaze because it interferes
-		// with the kamikaze sound, downside is that the gib sound will also
-		// not be played when someone is gibbed while just carrying the kamikaze
-		if(!(es->eFlags & EF_KAMIKAZE))
-			trap_S_StartSound(nil, es->number, CHAN_BODY, cgs.media.gibSound);
+		trap_S_StartSound(nil, es->number, CHAN_BODY, cgs.media.gibSound);
 		gibplayer(cent->lerporigin);
 		break;
 

@@ -258,7 +258,6 @@ typedef enum
 #define EF_AWARD_GAUNTLET	0x00000040	// draw a gauntlet sprite
 #define EF_NODRAW		0x00000080	// may have an event, but no model (unspawned items)
 #define EF_FIRING		0x00000100	// for lightning gun
-#define EF_KAMIKAZE		0x00000200
 #define EF_MOVER_STOP		0x00000400	// will push otherwise
 #define EF_AWARD_CAP		0x00000800	// draw the capture sprite
 #define EF_TALK			0x00001000	// draw a talk balloon
@@ -307,12 +306,6 @@ typedef enum
 typedef enum
 {
 	HI_NONE,
-
-	HI_TELEPORTER,
-	HI_MEDKIT,
-	HI_KAMIKAZE,
-	HI_PORTAL,
-	HI_INVULNERABILITY,
 
 	HI_NUM_HOLDABLE
 } holdable_t;
@@ -472,8 +465,7 @@ typedef enum
 	GTS_BLUETEAM_SCORED,
 	GTS_REDTEAM_TOOK_LEAD,
 	GTS_BLUETEAM_TOOK_LEAD,
-	GTS_TEAMS_ARE_TIED,
-	GTS_KAMIKAZE
+	GTS_TEAMS_ARE_TIED
 } teamsound_t;
 
 // animations
@@ -714,24 +706,3 @@ qboolean	playertouchingitem(playerState_t *ps, entityState_t *item, int atTime);
 #define MAX_BOTS	1024
 #define MAX_BOTS_TEXT	8192
 
-// Kamikaze
-
-// 1st shockwave times
-#define KAMI_SHOCKWAVE_STARTTIME	0
-#define KAMI_SHOCKWAVEFADE_STARTTIME	1500
-#define KAMI_SHOCKWAVE_ENDTIME		2000
-// explosion/implosion times
-#define KAMI_EXPLODE_STARTTIME		250
-#define KAMI_IMPLODE_STARTTIME		2000
-#define KAMI_IMPLODE_ENDTIME		2250
-// 2nd shockwave times
-#define KAMI_SHOCKWAVE2_STARTTIME	2000
-#define KAMI_SHOCKWAVE2FADE_STARTTIME	2500
-#define KAMI_SHOCKWAVE2_ENDTIME		3000
-// radius of the models without scaling
-#define KAMI_SHOCKWAVEMODEL_RADIUS	88
-#define KAMI_BOOMSPHEREMODEL_RADIUS	72
-// maximum radius of the models during the effect
-#define KAMI_SHOCKWAVE_MAXRADIUS	1320
-#define KAMI_BOOMSPHERE_MAXRADIUS	720
-#define KAMI_SHOCKWAVE2_MAXRADIUS	704
