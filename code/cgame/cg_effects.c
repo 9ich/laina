@@ -252,7 +252,7 @@ cratesmash(vec3_t pt)
 	int i;
 	vec3_t up = {0, 0, 1};
 
-	smokepuff(pt, up, 64, 0.85f, 0.58f, 0.44f, 0.6f, 300, cg.time, 
+	smokepuff(pt, up, 64, 0.85f, 0.58f, 0.44f, 1.0f, 300, cg.time,
 	   0, LEF_PUFF_DONT_SCALE, cgs.media.smokePuffShader);
 	for(i = 0; i < NSPLINTERS; i++){
 		vel[0] = crandom() * 300;
