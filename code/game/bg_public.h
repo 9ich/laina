@@ -204,17 +204,12 @@ typedef struct
 void	updateviewangles(playerState_t *ps, const usercmd_t *cmd);
 void	Pmove(pmove_t *pmove);
 
-// tokens <-> lives
-#define LIFE2TOK(x)	((x)*100)
-#define TOK2LIFE(x)	(floor((double)(x)/LIFE2TOK(1)))
-
-#define SPAWNHEALTH LIFE2TOK(2)
-
 // player_state->stats[] indexes
-// NOTE: may not have more than 16
+// NOTE: may not have more than MAX_STATS
 typedef enum
 {
-	STAT_HEALTH,
+	STAT_HEALTH,		// health is an invisible stat
+	STAT_TOKENS,		// carrots
 	STAT_HOLDABLE_ITEM,
 	STAT_WEAPONS,		// 16 bit fields
 	STAT_ARMOR,
@@ -226,10 +221,12 @@ typedef enum
 // player_state->persistant[] indexes
 // these fields are the only part of player_state that isn't
 // cleared on respawn
-// NOTE: may not have more than 16
+// NOTE: may not have more than MAX_PERSISTANT
 typedef enum
 {
 	PERS_SCORE,			// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
+	PERS_LIVES,			// lives remaining
+	PERS_SPAWNS,			// incremented each respawn
 	PERS_HITS,			// total points damage inflicted so damage beeps can sound on change
 	PERS_RANK,			// player rank or team rank
 	PERS_TEAM,			// player team
@@ -431,6 +428,7 @@ typedef enum
 	EV_DEATH2,
 	EV_DEATH3,
 	EV_OBITUARY,
+	EV_GAMEOVER,	// parm=1 means total gameover, parm=0 means just for this player
 
 	EV_POWERUP_QUAD,
 	EV_POWERUP_BATTLESUIT,
@@ -605,14 +603,14 @@ typedef enum
 	IT_WEAPON,	// EFX: rotate + upscale + minlight
 	IT_AMMO,	// EFX: rotate
 	IT_ARMOR,	// EFX: rotate + minlight
-	IT_HEALTH,	// EFX: static external sphere + rotating internal
+	IT_TOKEN,	// EFX: rotate + minlight
+	IT_LIFE,	// EFX: rotate + minlight
 	IT_POWERUP,	// instant on, timer based
 	// EFX: rotate + external ring that rotates
 	IT_HOLDABLE,	// single use, holdable item
 	// EFX: rotate + bob
 	IT_PERSISTANT_POWERUP,
 	IT_TEAM,
-	IT_LIFE,
 	IT_KEY
 } itemType_t;
 

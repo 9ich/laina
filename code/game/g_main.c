@@ -1621,6 +1621,20 @@ runthink(ent_t *ent)
 	ent->think(ent);
 }
 
+void
+gameover(void)
+{
+	ent_t *ent;
+	int i;
+
+	for(i = 0; i < MAX_CLIENTS; i++){
+		ent = &g_entities[i];
+		if(ent->inuse)
+			addevent(ent, EV_GAMEOVER, 2);
+	}
+	level.gameovertime = level.time + 5000;
+}
+
 /*
 ================
 runframe
@@ -1644,6 +1658,9 @@ runframe(int levelTime)
 
 	// get any cvar changes
 	updatecvars();
+
+	if(level.gameovertime > 0 && level.time > level.gameovertime)
+		trap_SendConsoleCommand(EXEC_APPEND, "map limbo\n");
 
 	// go through all allocated objects
 	ent = &g_entities[0];

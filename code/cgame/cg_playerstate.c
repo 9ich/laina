@@ -297,26 +297,44 @@ checklocalsounds(playerState_t *ps, playerState_t *ops)
 	}else if(ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS])
 		trap_S_StartLocalSound(cgs.media.hitTeamSound, CHAN_LOCAL_SOUND);
 
-	// health changes of more than -1 should make pain sounds
-	if(ps->stats[STAT_HEALTH] < ops->stats[STAT_HEALTH] - 1)
+	// health changes downward cause pain fx
+	if(ps->stats[STAT_HEALTH] < ops->stats[STAT_HEALTH])
 		if(ps->stats[STAT_HEALTH] > 0)
 			painevent(&cg.pplayerent, ps->stats[STAT_HEALTH]);
-
+	
+	//
 	// hud pickup animations
-	for(i = 0; i < ps->stats[STAT_HEALTH] - ops->stats[STAT_HEALTH]; i++)
+	//
+
+	for(i = 0; i < ps->stats[STAT_TOKENS] - ops->stats[STAT_TOKENS]; i++)
 		queuepickupanim("item_token");
-	if(ps->doorKeys[KEY_JADE] > ops->doorKeys[KEY_JADE])
+
+	// If carrots pushed us over the extra-life threshold, also add anims for
+	// the number of carrots that were required to reach that threshold.
+	if(ps->persistant[PERS_LIVES] > ops->persistant[PERS_LIVES] &&
+	   ps->stats[STAT_TOKENS] < ops->stats[STAT_TOKENS]){
+		for(i = 0; i < 100 - ops->stats[STAT_TOKENS]; i++)
+			queuepickupanim("item_token");
+	}
+
+	for(i = 0; i < ps->persistant[PERS_LIVES] - ops->persistant[PERS_LIVES]; i++)
+		queuepickupanim("item_life");
+
+	for(i = 0; i < ps->doorKeys[KEY_JADE] - ops->doorKeys[KEY_JADE]; i++)
 		queuepickupanim("item_key_jade");
-	if(ps->doorKeys[KEY_RUBY] > ops->doorKeys[KEY_RUBY])
+	for(i = 0; i < ps->doorKeys[KEY_RUBY] - ops->doorKeys[KEY_RUBY]; i++)
 		queuepickupanim("item_key_ruby");
-	if(ps->doorKeys[KEY_SAPPHIRE] > ops->doorKeys[KEY_SAPPHIRE])
+	for(i = 0; i < ps->doorKeys[KEY_SAPPHIRE] - ops->doorKeys[KEY_SAPPHIRE]; i++)
 		queuepickupanim("item_key_sapphire");
+
+	//
+	// reward sounds
+	//
 
 	// if we are going into the intermission, don't start any voices
 	if(cg.intermissionstarted)
 		return;
 
-	// reward sounds
 	reward = qfalse;
 	if(ps->persistant[PERS_CAPTURES] != ops->persistant[PERS_CAPTURES]){
 		pushReward(cgs.media.captureAwardSound, cgs.media.medalCapture, ps->persistant[PERS_CAPTURES]);

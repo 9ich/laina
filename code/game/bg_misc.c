@@ -72,7 +72,7 @@ item_t bg_itemlist[] = {
 		/* icon */ "icons/token",
 		/* pickup */ "Token",
 		1,
-		IT_HEALTH,
+		IT_TOKEN,
 		0,
 		/* precache */ "",
 		/* sounds */ ""
@@ -88,8 +88,8 @@ item_t bg_itemlist[] = {
 		},
 		/* icon */ "icons/token_large",
 		/* pickup */ "Big Token",
-		25,
-		IT_HEALTH,
+		10,
+		IT_TOKEN,
 		0,
 		/* precache */ "",
 		/* sounds */ ""
@@ -105,8 +105,8 @@ item_t bg_itemlist[] = {
 		},
 		/* icon */ "icons/life",
 		/* pickup */ "Extra Life",
-		LIFE2TOK(1),
-		IT_HEALTH,
+		1,
+		IT_LIFE,
 		0,
 		/* precache */ "",
 		/* sounds */ ""
@@ -323,7 +323,7 @@ cangrabitem(int gametype, const entityState_t *ent, const playerState_t *ps)
 			return qfalse;
 		return qtrue;
 
-	case IT_HEALTH:
+	case IT_TOKEN:
 		return qtrue;
 
 	case IT_LIFE:

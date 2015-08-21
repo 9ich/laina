@@ -696,17 +696,13 @@ registeritemgfx(int itemNum)
 	itemInfo->registered = qtrue;
 
 	itemInfo->models[0] = trap_R_RegisterModel(item->model[0]);
+	if(item->model[1])
+		itemInfo->models[1] = trap_R_RegisterModel(item->model[1]);
 
 	itemInfo->icon = trap_R_RegisterShader(item->icon);
 
 	if(item->type == IT_WEAPON)
 		registerweap(item->tag);
-
-	// powerups have an accompanying ring or sphere
-	if(item->type == IT_POWERUP || item->type == IT_HEALTH ||
-	   item->type == IT_ARMOR || item->type == IT_HOLDABLE)
-		if(item->model[1])
-			itemInfo->models[1] = trap_R_RegisterModel(item->model[1]);
 }
 
 /*

@@ -938,6 +938,13 @@ entevent(cent_t *cent, vec3_t position)
 		obituary(es);
 		break;
 
+	case EV_GAMEOVER:
+		DEBUGNAME("EV_GAMEOVER");
+		cg.gameovertime = cg.time + 5000;
+		cg.gameover = es->eventParm;
+		break;
+		
+
 	// powerup events
 	case EV_POWERUP_QUAD:
 		DEBUGNAME("EV_POWERUP_QUAD");

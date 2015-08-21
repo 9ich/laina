@@ -642,6 +642,9 @@ typedef struct
 
 	//qboolean cameramode;		// if rendering from a loaded camera
 
+	int	gameover;		// 1: just me, 2: game over completely
+	int	gameovertime;
+
 	// development tool
 	refEntity_t	testmodelent;
 	char		testmodelname[MAX_QPATH];

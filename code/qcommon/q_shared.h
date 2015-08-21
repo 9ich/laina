@@ -1114,12 +1114,12 @@ typedef struct {
 
 // bit field limits
 #define	MAX_STATS				16
-#define	MAX_PERSISTANT			16
+#define	MAX_PERSISTANT			32
 #define	MAX_POWERUPS			16
 #define	MAX_WEAPONS				16
 #define	MAX_DOORKEYS				16
 
-#define	MAX_PS_EVENTS			2
+#define	MAX_PS_EVENTS			8
 
 #define PS_PMOVEFRAMECOUNTBITS	6
 

@@ -400,6 +400,8 @@ typedef struct
 	ent_t	*lochead;	// head of the location list
 	int		bodyqueueindex;	// dead bodies
 	ent_t	*bodyqueue[BODY_QUEUE_SIZE];
+
+	int		gameovertime;
 } levelstatic_t;
 
 // g_spawn.c
@@ -523,6 +525,7 @@ void		player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int
 void		addscore(ent_t *ent, vec3_t origin, int score);
 void		calcranks(void);
 qboolean	possibletelefrag(ent_t *spot);
+void		clientgameover(ent_t *e);
 
 // g_svcmds.c
 qboolean	consolecmd(void);
@@ -542,6 +545,7 @@ void		setleader(int team, int client);
 void		chkteamleader(int team);
 void		runthink(ent_t *ent);
 void		addtourneyqueue(gclient_t *client);
+void		gameover(void);
 void QDECL	logprintf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 void		sendscoreboardmsgall(void);
 void QDECL	gprintf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));

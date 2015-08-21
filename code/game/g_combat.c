@@ -487,7 +487,12 @@ player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int means
 
 		// globally cycle through the different death animations
 		i = (i + 1) % 3;
+	}
 
+	self->client->ps.persistant[PERS_LIVES]--;
+	if(self->client->ps.persistant[PERS_LIVES] <= 0){
+		self->client->respawntime = -1;
+		clientgameover(self);
 	}
 
 	trap_LinkEntity(self);

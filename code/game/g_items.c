@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #define RESPAWN_ARMOR		-1
-#define RESPAWN_HEALTH		-1
+#define RESPAWN_TOKEN		-1
 #define RESPAWN_LIFE		-1
 #define RESPAWN_AMMO		-1
 #define RESPAWN_HOLDABLE	60
@@ -185,16 +185,19 @@ Pickup_Weapon(ent_t *ent, ent_t *other)
 }
 
 int
-Pickup_Health(ent_t *ent, ent_t *other)
+Pickup_Token(ent_t *ent, ent_t *other)
 {
 	int quantity;
 	if(ent->count)
 		quantity = ent->count;
 	else
 		quantity = ent->item->quantity;
-	other->health += quantity;
-	other->client->ps.stats[STAT_HEALTH] = other->health;
-	return RESPAWN_HEALTH;
+	other->client->ps.stats[STAT_TOKENS] += quantity;
+	while(other->client->ps.stats[STAT_TOKENS] >= 100){
+		other->client->ps.persistant[PERS_LIVES]++;
+		other->client->ps.stats[STAT_TOKENS] -= 100;
+	}
+	return RESPAWN_TOKEN;
 }
 
 int
@@ -205,9 +208,8 @@ Pickup_Life(ent_t *ent, ent_t *other)
 		quantity = ent->count;
 	else
 		quantity = ent->item->quantity;
-	other->health += LIFE2TOK(quantity);
-	other->client->ps.stats[STAT_HEALTH] = other->health;
-	return RESPAWN_HEALTH;
+	other->client->ps.persistant[PERS_LIVES] += quantity;
+	return RESPAWN_LIFE;
 }
 
 int
@@ -322,8 +324,8 @@ item_touch(ent_t *ent, ent_t *other, trace_t *trace)
 	case IT_ARMOR:
 		respawn = Pickup_Armor(ent, other);
 		break;
-	case IT_HEALTH:
-		respawn = Pickup_Health(ent, other);
+	case IT_TOKEN:
+		respawn = Pickup_Token(ent, other);
 		break;
 	case IT_LIFE:
 		respawn = Pickup_Life(ent, other);

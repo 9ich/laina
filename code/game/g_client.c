@@ -1090,7 +1090,12 @@ clientspawn(ent_t *ent)
 	client->ps.ammo[WP_GAUNTLET] = -1;
 	client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
 
-	ent->health = client->ps.stats[STAT_HEALTH] = SPAWNHEALTH;
+	if(client->ps.persistant[PERS_SPAWNS] == 0){
+		client->ps.persistant[PERS_LIVES] = 3;
+	}
+
+	ent->health = client->ps.stats[STAT_HEALTH] = 1;
+	client->ps.persistant[PERS_SPAWNS]++;
 
 	setorigin(ent, spawn_origin);
 	veccopy(spawn_origin, client->ps.origin);
@@ -1231,4 +1236,35 @@ clientdisconnect(int clientNum)
 
 	if(ent->r.svFlags & SVF_BOT)
 		BotAIShutdownClient(clientNum, qfalse);
+}
+
+/*
+Game over for this client.  If they were the only active client left,
+the game ends.  If not, they're moved to spectate.
+*/
+void
+clientgameover(ent_t *e)
+{
+	ent_t *ent;
+	int i;
+
+	e->client->ps.persistant[PERS_TEAM] = TEAM_SPECTATOR;
+	e->client->sess.team = TEAM_SPECTATOR;
+	e->client->sess.specstate = SPECTATOR_FREE;
+	e->r.svFlags &= ~SVF_BOT;
+	// don't use dead view angles
+	e->client->ps.stats[STAT_HEALTH] = 1;
+
+	trap_SendConsoleCommand(e->client - level.clients, "follownext");
+
+	for(i = 0; i < MAX_CLIENTS; i++){
+		ent = &g_entities[i];
+		if(ent->client != nil &&
+		   e->client->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR)
+			break;
+	}
+	if(i == MAX_CLIENTS)
+		gameover();
+	else
+		addevent(e, EV_GAMEOVER, 1);
 }

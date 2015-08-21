@@ -240,8 +240,14 @@ Cmd_Give_f(ent_t *ent)
 	else
 		give_all = qfalse;
 
-	if(give_all || Q_stricmp(name, "health") == 0){
-		ent->health += LIFE2TOK(1);
+	if(give_all || Q_stricmp(name, "tokens") == 0){
+		ent->client->ps.stats[STAT_TOKENS] = 999;
+		if(!give_all)
+			return;
+	}
+
+	if(give_all || Q_stricmp(name, "lives") == 0){
+		ent->client->ps.persistant[PERS_LIVES] = 999;
 		if(!give_all)
 			return;
 	}

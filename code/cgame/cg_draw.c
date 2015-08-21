@@ -378,16 +378,14 @@ drawstatusbar(void)
 	drawmodel(x, y, ICON_SIZE, ICON_SIZE, cgs.media.lifeModel, 0, origin, angles);
 
 	// tokens
-	value = ps->stats[STAT_HEALTH] % LIFE2TOK(1);
 	trap_R_SetColor(colour);
 	x = margin + ICON_SIZE + TEXT_ICON_SPACE;
-	draw0field(x, y, 2, value);
+	draw0field(x, y, 2, ps->stats[STAT_TOKENS]);
 
 	// lives
-	value = TOK2LIFE(ps->stats[STAT_HEALTH]);
 	trap_R_SetColor(colour);
 	x = SCREEN_WIDTH - CHAR_WIDTH*3 - ICON_SIZE - TEXT_ICON_SPACE - margin;
-	drawfield(x, y, 3, value);
+	drawfield(x, y, 3, ps->persistant[PERS_LIVES]);
 }
 
 /*
@@ -693,14 +691,17 @@ queuepickupanim(const char *classname)
 		return;
 
 	switch(it->type){
+	case IT_TOKEN:
+		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
+		vecset(cg.pickupanimstk[i].end, 0, 10, 10);
+		break;
+	case IT_LIFE:
+		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
+		vecset(cg.pickupanimstk[i].end, 0, 200, 200);
+		break;
 	case IT_KEY:
 		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
 		vecset(cg.pickupanimstk[i].end, 0, 10, 100);
-		break;
-	case IT_LIFE:
-	case IT_HEALTH:
-		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
-		vecset(cg.pickupanimstk[i].end, 0, 10, 10);
 		break;
 	default:
 		return;
@@ -1648,6 +1649,19 @@ drawwarmup(void)
 			 qfalse, qtrue, cw, (int)(cw * 1.5), 0);
 }
 
+void
+drawgameover(void)
+{
+	switch(cg.gameover){
+	case 0:
+		return;
+	case 1:
+		centerprint("Game over for you!", 0.4f*SCREEN_HEIGHT, 18);
+	case 2:
+		centerprint("Game over!", 0.4f*SCREEN_HEIGHT, 18);
+	}
+}
+
 /*
 =================
 draw2d
@@ -1712,6 +1726,8 @@ draw2d(stereoFrame_t stereoFrame)
 
 	if(!drawfollow())
 		drawwarmup();
+
+	drawgameover();
 
 	// don't draw center string if scoreboard is up
 	cg.scoreboardshown = drawscoreboard();

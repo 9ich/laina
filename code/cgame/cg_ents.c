@@ -306,7 +306,7 @@ doitem(cent_t *cent)
 	memset(&ent, 0, sizeof(ent));
 
 	// autorotate at one of two speeds
-	if(item->type == IT_HEALTH){
+	if(item->type == IT_LIFE){
 		veccopy(cg.autoanglesfast, cent->lerpangles);
 		AxisCopy(cg.autoaxisfast, ent.axis);
 	}else{
@@ -375,14 +375,14 @@ doitem(cent_t *cent)
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
 
-
-	// accompanying rings / spheres for powerups
 	if(!cg_simpleItems.integer){
 		vec3_t spinAngles;
 
 		vecclear(spinAngles);
 
-		if(item->type == IT_HEALTH || item->type == IT_POWERUP)
+		if(item->type == IT_TOKEN ||
+		   item->type == IT_LIFE ||
+		   item->type == IT_POWERUP)
 			if((ent.hModel = cg_items[es->modelindex].models[1]) != 0){
 				if(item->type == IT_POWERUP){
 					ent.origin[2] += 12;
