@@ -500,10 +500,6 @@ typedef struct
 	playerState_t	pps;
 	cent_t	pplayerent;
 	qboolean	validpps;	// clear until the first call to predictplayerstate
-	playerState_t	statebuf[STATEBUFLEN];	// ring buffer of saved states
-	int		statehead, statetail;
-	int		lastpredictedcmd;
-	int		lastsrvtime;
 	int		predictederrtime;
 	vec3_t		predictederr;
 
@@ -1027,7 +1023,6 @@ extern vmCvar_t cg_debugEvents;
 extern vmCvar_t cg_railTrailTime;
 extern vmCvar_t cg_errorDecay;
 extern vmCvar_t cg_nopredict;
-extern vmCvar_t cg_optimizeprediction;
 extern vmCvar_t cg_noPlayerAnims;
 extern vmCvar_t cg_showmiss;
 extern vmCvar_t cg_footsteps;

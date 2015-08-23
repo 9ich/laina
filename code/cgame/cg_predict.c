@@ -29,14 +29,11 @@ fragments bouncing off walls
 
 #include "cg_local.h"
 
-static char* testerror(playerState_t*, playerState_t*);
-
 static pmove_t cg_pmove;
-
-static int cg_numSolidEntities;
 static cent_t *cg_solidEntities[MAX_ENTITIES_IN_SNAPSHOT];
-static int cg_numTriggerEntities;
+static int cg_numSolidEntities;
 static cent_t *cg_triggerEntities[MAX_ENTITIES_IN_SNAPSHOT];
+static int cg_numTriggerEntities;
 
 /*
 When a new cg.snap has been set, this function builds a sublist
@@ -348,124 +345,6 @@ touchtriggerprediction(void)
 	}
 }
 
-static char*
-testerror(playerState_t *ps, playerState_t *pps)
-{
-	vec3_t delta;
-	int i;
-
-	if(pps->pm_type != ps->pm_type ||
-	   pps->pm_flags != ps->pm_flags ||
-	   pps->pm_time != ps->pm_time)
-		return "pmove discrepancy";
-
-	vecsub(pps->origin, ps->origin, delta);
-	if(veclensq(delta) > 0.1f*0.1f){
-		if(cg_showmiss.integer)
-			cgprintf("delta=%.2f  ", veclen(delta));
-		return "origin delta too large";
-	}
-
-	vecsub(pps->velocity, ps->velocity, delta);
-	if(veclensq(delta) > 0.1f*0.1f){
-		if(cg_showmiss.integer)
-			cgprintf("delta=%.2f  ", veclen(delta));
-		return "velocity delta too large";
-	}
-
-	if(pps->weaponTime != ps->weaponTime ||
-	   pps->gravity != ps->gravity ||
-	   pps->delta_angles[0] != ps->delta_angles[0] ||
-	   pps->delta_angles[1] != ps->delta_angles[1] ||
-	   pps->delta_angles[2] != ps->delta_angles[2])
-		return "values discrepancy";
-
-	if(pps->groundEntityNum != ps->groundEntityNum)
-		return "ground entity discrepancy";
-
-	if(pps->eFlags != ps->eFlags)
-		return "entity flags discrepancy";
-
-	if(pps->eventSequence != ps->eventSequence)
-		return "eventSequence discrepancy";
-
-	for(i = 0; i < MAX_PS_EVENTS; i++){
-		if(pps->events[i] != ps->events[i] ||
-		   pps->eventParms[i] != ps->eventParms[i])
-			return "events discrepancy";
-	}
-
-	if(pps->externalEvent != ps->externalEvent ||
-	   pps->externalEventParm != ps->externalEventParm ||
-	   pps->externalEventTime != ps->externalEventTime)
-		return "externalEvent discrepancy";
-
-	if(pps->clientNum != ps->clientNum ||
-	   pps->weapon != ps->weapon ||
-	   pps->weaponstate != ps->weaponstate)
-		return "client state discrepancy";
-
-	if(fabs(pps->viewangles[0] - ps->viewangles[0]) > 1.0f ||
-	   fabs(pps->viewangles[1] - ps->viewangles[1]) > 1.0f ||
-	   fabs(pps->viewangles[2] - ps->viewangles[2]) > 1.0f)
-	   	return "viewangle discrepancy";
-	
-	for(i = 0; i < MAX_STATS; i++)
-		if(pps->stats[i] != ps->stats[i])
-			return "stats discrepancy";
-
-	if(pps->jumppad_ent != ps->jumppad_ent)
-		return "jumppad discrepancy";
-	
-	return nil;
-}
-
-static int
-optimize(int current, int *stateindex)
-{
-	int predictcmd;
-	playerState_t *pps;
-	char *err;
-	int i;
-
-	pps = &cg.pps;
-
-	if(cg.teleportnextframe || cg.teleportthisframe){
-		// predict fully
-		cg.lastpredictedcmd = 0;
-		cg.statetail = cg.statehead;
-		predictcmd = current - CMD_BACKUP + 1;
-	}else if(cg.phystime == cg.lastsrvtime){
-		// no new information; predict incrementally
-		predictcmd = cg.lastpredictedcmd + 1;
-	}else{
-		// we have a new snapshot
-		for(i = cg.statehead; i != cg.statetail; i = (i+1) % STATEBUFLEN){
-			if(cg.statebuf[i].commandTime == pps->commandTime){
-				err = testerror(pps, &cg.statebuf[i]);
-				if(err != nil){
-					if(cg_showmiss.integer)
-						cgprintf("%d: %s\n", cg.time, err);
-				}else{
-					*cg_pmove.ps = cg.statebuf[i];
-					cg.statehead = (i+1) % STATEBUFLEN;
-					predictcmd = cg.lastpredictedcmd + 1;
-				}
-				break;
-			}
-		}
-		// if no saved states matched, predict fully
-		if(err != nil || i == cg.statetail){
-			cg.lastpredictedcmd = 0;
-			cg.statetail = cg.statehead;
-			predictcmd = current - CMD_BACKUP + 1;
-		}
-	}
-	cg.lastsrvtime = cg.phystime;
-	*stateindex = cg.statehead;
-	return predictcmd;
-}
-
 /*
 Generates cg.pps for the current cg.time
 cg.pps is guaranteed to be valid after exiting.
@@ -496,10 +375,8 @@ predictplayerstate(void)
 	qboolean moved;
 	usercmd_t oldestCmd;
 	usercmd_t latestCmd;
-	int si, predictcmd;
 
 	cg.hyperspace = qfalse;	// will be set if touching a trigger_teleport
-	si = 0;
 
 	// if this is the first frame we must guarantee
 	// pps is valid even if there is some
@@ -573,9 +450,6 @@ predictplayerstate(void)
 	cg_pmove.pmove_fixed = pmove_fixed.integer;	// | cg_pmove_fixed.integer;
 	cg_pmove.pmove_msec = pmove_msec.integer;
 
-	if(cg_optimizeprediction.integer)
-		predictcmd = optimize(current, &si);
-
 	// run cmds
 	moved = qfalse;
 	for(cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++){
@@ -647,27 +521,7 @@ predictplayerstate(void)
 		if(cg_pmove.pmove_fixed)
 			cg_pmove.cmd.serverTime = ((cg_pmove.cmd.serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
 
-		if(!cg_optimizeprediction.integer){
-			Pmove(&cg_pmove);
-		}else{
-			if(cmdNum >= predictcmd || (si+1) % STATEBUFLEN == cg.statehead){
-				Pmove(&cg_pmove);
-				cg.lastpredictedcmd = cmdNum;
-				if((si+1) % STATEBUFLEN != cg.statehead){
-					cg.statebuf[si] = *cg_pmove.ps;
-					si = (si+1) & STATEBUFLEN;
-					cg.statetail = si;
-				}
-			}else{
-				if(cg_showmiss.integer &&
-				   cg.statebuf[si].commandTime != cg_pmove.cmd.serverTime)
-					cgprintf("saved state miss\n");
-				
-				// play back the command from state buffer
-				*cg_pmove.ps = cg.statebuf[si];
-				si = (si+1) % STATEBUFLEN;
-			}
-		}
+		Pmove(&cg_pmove);
 
 		moved = qtrue;
 
