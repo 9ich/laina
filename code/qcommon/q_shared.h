@@ -1119,7 +1119,7 @@ typedef struct {
 #define	MAX_WEAPONS				16
 #define	MAX_DOORKEYS				16
 
-#define	MAX_PS_EVENTS			8
+#define	MAX_PS_EVENTS			2
 
 #define PS_PMOVEFRAMECOUNTBITS	6
 
