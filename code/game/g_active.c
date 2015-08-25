@@ -419,16 +419,6 @@ ClientEvents(ent_t *ent, int oldEventSequence)
 		switch(event){
 		case EV_FALL_MEDIUM:
 		case EV_FALL_FAR:
-			if(ent->s.eType != ET_PLAYER)
-				break;	// not in the player model
-			if(g_dmflags.integer & DF_NO_FALLING)
-				break;
-			if(event == EV_FALL_FAR)
-				damage = 10;
-			else
-				damage = 5;
-			ent->paindebouncetime = level.time + 200;	// no normal pain sound
-			entdamage(ent, nil, nil, nil, nil, damage, 0, MOD_FALLING);
 			break;
 
 		case EV_FIRE_WEAPON:
