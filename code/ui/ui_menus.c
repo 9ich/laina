@@ -84,15 +84,15 @@ static struct
 static void
 getmodes(void)
 {
-	uint i;
+	int i;
 	char *p;
 
 	Q_strncpyz(resbuf, UI_Cvar_VariableString("r_availablemodes"), sizeof resbuf);
 	if(*resbuf == '\0')
 		return;
-	for(p = resbuf, i = 0; p != nil && i < ARRAY_LEN(detectedres)-1; ){
+	for(p = resbuf, i = 0; p != nil && i < ARRAY_LEN(detectedres)-1; i++){
 		// XxY
-		detectedres[i++] = p;
+		detectedres[i] = p;
 
 		// @Hz
 		p = strchr(p, '@');
@@ -182,7 +182,7 @@ optionsbuttons(void)
 		push(soundmenu);
 	}
 	y += spc;
-	if(button(".o.c", x, y, UI_RIGHT, "Controls"))
+	if(button(".o.c", x, y, UI_RIGHT, "Input"))
 		push(placeholder);
 	y += spc;
 	if(button(".o.d", x, y, UI_RIGHT, "Defaults"))
@@ -203,16 +203,20 @@ mkmodelists(const char *ratio)
 {
 	int i, j;
 
+	vo.nres = vo.nhz = 0;
+	memset(vo.reslist, 0, sizeof vo.reslist);
+	memset(vo.hzlist, 0, sizeof vo.hzlist);
 	for(i = 0; resolutions[i] != nil; i++){
 		if(Q_stricmp(ratios[i], ratio) != 0)
-			continue;
+			continue;	// res not in this aspect ratio
+
 		for(j = 0; j < vo.nres; j++)
 			if(Q_stricmp(vo.reslist[j], resolutions[i]) == 0)
 				break;	// res already in list
 		if(j == vo.nres)
 			vo.reslist[vo.nres++] = resolutions[i];
 
-		for(j = 0; j < vo.nhz; i++)
+		for(j = 0; j < vo.nhz; j++)
 			if(Q_stricmp(vo.hzlist[j], refreshrates[i]) == 0)
 				break;	// refresh rate already in list
 		if(j == vo.nhz)
@@ -227,23 +231,13 @@ static void
 mkratlist(void)
 {
 	int i, j;
-	qboolean present;
 
 	for(i = 0; ratios[i] != nil; i++){
-		present = qfalse;
-		for(j = 0; vo.ratlist[j] != nil; j++)
-			if(Q_stricmp(vo.ratlist[j], ratios[i]) == 0){
-				present = qtrue;
-				break;
-			}
-		if(present)
-			continue;
-		for(j = 0; j < ARRAY_LEN(vo.ratlist)-1; j++)
-			if(vo.ratlist[j] == nil){
-				vo.ratlist[j] = ratios[i];
-				vo.nrat++;
-				break;
-			}
+		for(j = 0; j < vo.nrat; j++)
+			if(Q_stricmp(vo.ratlist[j], ratios[i]) == 0)
+				break;	// ratio already in list
+		if(j == vo.nrat)
+				vo.ratlist[vo.nrat++] = ratios[i];
 	}
 }
 
@@ -268,13 +262,10 @@ initvideomenu(void)
 	for(i = 0; resolutions[i] != nil; i++)
 		if(Q_stricmp(resolutions[i], resstr) == 0)
 			ratio = ratios[i];
-
 	mkmodelists(ratio);
 
 	// init menu values
-	vo.resi = 0;
-	vo.rati = 0;
-	vo.hzi = 0;
+	vo.resi = vo.rati = vo.hzi = 0;
 	for(i = 0; vo.reslist[i] != nil; i++)
 		if(Q_stricmp(vo.reslist[i], resstr) == 0)
 			vo.resi = i;
@@ -348,25 +339,27 @@ videomenu(void)
 
 	drawstr(x, y, "Aspect ratio", UI_RIGHT|UI_DROPSHADOW, color_white);
 	if(textspinner(".v.rat", xx, y, 0, vo.ratlist, &vo.rati, vo.nrat)){
-		// show resolutions for this aspect ratio
-		int w, h;
-		char resstr[16];
+		int w, h, hz;
+		char resstr[16], hzstr[16];
 
-		vo.nres = 0;
-		vo.resi = 0;
+		vo.needrestart = qtrue;
+
+		// show res & hz combinations for the selected ratio
+		mkmodelists(vo.ratlist[vo.rati]);
+
+		// set the textspinner indices
 		w = trap_Cvar_VariableValue("r_customwidth");
 		h = trap_Cvar_VariableValue("r_customheight");
+		hz = trap_Cvar_VariableValue("r_displayrefresh");
 		Com_sprintf(resstr, sizeof resstr, "%dx%d", w, h);
-		memset(vo.reslist, 0, sizeof vo.reslist);
-		for(i = 0, j = 0; resolutions[i] != nil; i++)
-			if(Q_stricmp(ratios[i], vo.ratlist[vo.rati]) == 0){
-				vo.reslist[j++] = resolutions[i];
-				vo.nres++;
-			}
-		for(i = 0; vo.reslist[i] != nil; i++)
+		Com_sprintf(hzstr, sizeof hzstr, "%d", hz);
+		vo.resi = vo.hzi = 0;
+		for(i = 0; i < vo.nres; i++)
 			if(Q_stricmp(vo.reslist[i], resstr) == 0)
 				vo.resi = i;
-		vo.needrestart = qtrue;
+		for(i = 0; i < vo.nhz; i++)
+			if(Q_stricmp(vo.hzlist[i], hzstr) == 0)
+				vo.hzi = i;
 	}
 	y += spc;
 
