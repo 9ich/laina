@@ -644,6 +644,7 @@ setactivemenu(uiMenuCommand_t menu)
 		char buf[MAX_STRING_CHARS];
 
 		uis.sp = -1;
+		memset(uis.keys, 0, sizeof uis.keys);
 		trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
 		if(strlen(buf) > 0)
 			push(errormenu);
