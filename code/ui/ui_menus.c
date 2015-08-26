@@ -485,7 +485,7 @@ soundmenu(void)
 		so.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Effects volume", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Master volume", UI_RIGHT|UI_DROPSHADOW, color_white);
 	if(slider(".s.vol", xx, y, 0, 0.0f, 1.0f, &so.vol, "%.2f"))
 		trap_Cvar_SetValue("s_volume", so.vol);
 	y += spc;
