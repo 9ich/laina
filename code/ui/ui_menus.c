@@ -251,8 +251,7 @@ static void
 initvideomenu(void)
 {
 	int i, w, h, hz;
-	char resstr[16], hzstr[16];
-	char *ratio;
+	char resstr[16], hzstr[16], *ratio, buf[MAX_STRING_CHARS];
 
 	memset(&vo, 0, sizeof vo);
 	ratio = nil;
@@ -286,7 +285,8 @@ initvideomenu(void)
 		if(Q_stricmp(vo.hzlist[i], hzstr) == 0)
 			vo.hzi = i;
 	vo.texquality = 0;
-	if(trap_Cvar_VariableValue("r_texturebits") == 16)
+	trap_Cvar_VariableStringBuffer("r_texturemode", buf, sizeof buf);
+	if(Q_stricmp(buf, "gl_nearest") == 0)
 		vo.texquality = 1;
 	vo.vsync = (qboolean)trap_Cvar_VariableValue("r_swapinterval");
 	vo.fov = trap_Cvar_VariableValue("cg_fov");
@@ -311,25 +311,13 @@ savevideochanges(void)
 	trap_Cvar_SetValue("r_mode -1", -1);
 	trap_Cvar_SetValue("cg_fov", (int)vo.fov);
 	trap_Cvar_SetValue("cg_drawfps", (int)vo.drawfps);
+	trap_Cvar_SetValue("r_fullscreen", (int)vo.fullscr);
+	trap_Cvar_SetValue("r_swapinterval", (int)vo.vsync);
 	trap_Cvar_SetValue("r_gamma", vo.gamma);
-
-	if(Q_stricmp(texqualities[vo.texquality], "PS1") == 0){
-		trap_Cvar_SetValue("r_texturebits", 16);
+	if(Q_stricmp(texqualities[vo.texquality], "PS1") == 0)
 		trap_Cvar_Set("r_texturemode", "GL_NEAREST");
-	}else{
-		trap_Cvar_SetValue("r_texturebits", 32);
+	else
 		trap_Cvar_Set("r_texturemode", "GL_LINEAR_MIPMAP_LINEAR");
-	}
-
-	if(vo.fullscr)
-		trap_Cvar_SetValue("r_fullscreen", 1);
-	else
-		trap_Cvar_SetValue("r_fullscreen", 0);
-
-	if(vo.vsync)
-		trap_Cvar_SetValue("r_swapinterval", 1);
-	else
-		trap_Cvar_SetValue("r_swapinterval", 0);
 
 	if(vo.needrestart)
 		trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
