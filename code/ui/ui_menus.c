@@ -1,8 +1,8 @@
 #include "ui_local.h"
 
-enum {NRES = 32};
+enum {NRES = 128};
 
-static char *builtinres[] = {
+static char *fallbackres[] = {
 	"320x240",
 	"400x300",
 	"512x384",
@@ -18,33 +18,39 @@ static char *builtinres[] = {
 	nil
 };
 
-static char *builtinhz[] = {"60"};
+static char *fallbackhz[] = {
+	"60",
+	"85",
+	"120",
+	"144",
+	"160"
+};
 
 static struct
 {
 	float	r;
 	char	*s;
 } knownratios[] = {
-	{4./3, "4:3"},
-	{16./10, "16:10"},
-	{16./9, "16:9"},
-	{5./4, "5:4"},
-	{3./2, "3:2"},
-	{14./9, "14:9"},
-	{5./3, "5:3"}
+	{4/3.0f, "4:3"},
+	{16/10.0f, "16:10"},
+	{16/9.0f, "16:9"},
+	{5/4.0f, "5:4"},
+	{3/2.0f, "3:2"},
+	{14/9.0f, "14:9"},
+	{5/3.0f, "5:3"}
 };
 
-static char *qualitylist[] = {"N64", "PS1"};
-static char *gqualitylist[] = {"Low", "High"};
-static char *sndqualitylist[] = {"Default", "Low", "Normal", "Silly"};
+static char *texqualities[] = {"N64", "PS1"};
+static char *geomqualities[] = {"Low", "High"};
+static char *sndqualities[] = {"Default", "Low", "Normal", "Silly"};
 
 static char *ratios[NRES];
 static char ratiobuf[NRES][16];
-static char resbuf[512];
+static char resbuf[MAX_STRING_CHARS];
 static char *detectedres[NRES];
 static char *detectedhz[NRES];
-static char **resolutions = builtinres;
-static char **refreshrates = builtinhz;
+static char **resolutions = fallbackres;
+static char **refreshrates = fallbackhz;
 
 // video options
 static struct
@@ -307,7 +313,7 @@ savevideochanges(void)
 	trap_Cvar_SetValue("cg_drawfps", (int)vo.drawfps);
 	trap_Cvar_SetValue("r_gamma", vo.gamma);
 
-	if(Q_stricmp(qualitylist[vo.texquality], "PS1") == 0){
+	if(Q_stricmp(texqualities[vo.texquality], "PS1") == 0){
 		trap_Cvar_SetValue("r_texturebits", 16);
 		trap_Cvar_Set("r_texturemode", "GL_NEAREST");
 	}else{
@@ -407,12 +413,12 @@ videomenu(void)
 	y += spc;
 
 	drawstr(x, y, "Texture quality", UI_RIGHT|UI_DROPSHADOW, color_white);
-	if(textspinner(".v.tq", xx, y, 0, qualitylist, &vo.texquality, ARRAY_LEN(qualitylist)))
+	if(textspinner(".v.tq", xx, y, 0, texqualities, &vo.texquality, ARRAY_LEN(texqualities)))
 		vo.needrestart = qtrue;
 	y += spc;
 
 	drawstr(x, y, "Geometry quality", UI_RIGHT|UI_DROPSHADOW, color_white);
-	if(textspinner(".v.gq", xx, y, 0, gqualitylist, &vo.gquality, ARRAY_LEN(gqualitylist)))
+	if(textspinner(".v.gq", xx, y, 0, geomqualities, &vo.gquality, ARRAY_LEN(geomqualities)))
 		vo.dirty = qtrue;
 
 	if(vo.dirty || vo.needrestart)
@@ -487,7 +493,7 @@ soundmenu(void)
 	y = 100;
 
 	drawstr(x, y, "Quality", UI_RIGHT|UI_DROPSHADOW, color_white);
-	if(textspinner(".s.qual", xx, y, 0, sndqualitylist, &so.qual, ARRAY_LEN(sndqualitylist)))
+	if(textspinner(".s.qual", xx, y, 0, sndqualities, &so.qual, ARRAY_LEN(sndqualities)))
 		so.needrestart = qtrue;
 	y += spc;
 
