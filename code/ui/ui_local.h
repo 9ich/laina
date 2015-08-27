@@ -153,6 +153,7 @@ void		quitmenu(void);
 void		videomenu(void);
 void		soundmenu(void);
 void		inputmenu(void);
+void		defaultsmenu(void);
 void		errormenu(void);
 void		placeholder(void);
 

@@ -228,7 +228,7 @@ optionsbuttons(void)
 	}
 	y += spc;
 	if(button(".o.d", x, y, UI_RIGHT, "Defaults"))
-		push(placeholder);
+		push(defaultsmenu);
 	y += spc;
 	if(button(".o.bk", 10, SCREEN_HEIGHT-30, UI_LEFT, "Back")){
 		vo.initialized = qfalse;
@@ -707,6 +707,27 @@ inputmenu(void)
 			saveinputchanges();
 			pop();
 		}
+}
+
+// misc menus
+
+void
+defaultsmenu(void)
+{
+	uis.fullscreen = qtrue;
+	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+
+	drawstr(320, 180, "CAREFUL NOW",
+	   UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_red);
+	drawstr(320, 200, "This will completely wipe your game config",
+	   UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_white);
+
+	if(button(".dm.yes", SCREEN_WIDTH/2 - 20, 320, UI_RIGHT, "Reset")){
+		trap_Cmd_ExecuteText(EXEC_APPEND, "cvar_restart\n");
+		trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
+	}
+	if(button(".dm.no", SCREEN_WIDTH/2 + 20, 320, UI_LEFT, "Cancel"))
+		pop();
 }
 
 void
