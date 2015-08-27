@@ -91,6 +91,7 @@ static struct
 	qboolean	vsync;
 	float		fov;
 	qboolean	drawfps;
+	qboolean	thirdperson;
 	int		texquality;
 	int		gquality;
 	float		gamma;
@@ -326,6 +327,7 @@ initvideomenu(void)
 	vo.vsync = (qboolean)trap_Cvar_VariableValue("r_swapinterval");
 	vo.fov = trap_Cvar_VariableValue("cg_fov");
 	vo.drawfps = trap_Cvar_VariableValue("cg_drawfps");
+	vo.thirdperson = trap_Cvar_VariableValue("cg_thirdperson");
 	vo.fullscr = (qboolean)trap_Cvar_VariableValue("r_fullscreen");
 	vo.gamma = trap_Cvar_VariableValue("r_gamma");
 	vo.initialized = qtrue;
@@ -346,6 +348,7 @@ savevideochanges(void)
 	trap_Cvar_SetValue("r_mode -1", -1);
 	trap_Cvar_SetValue("cg_fov", (int)vo.fov);
 	trap_Cvar_SetValue("cg_drawfps", (int)vo.drawfps);
+	trap_Cvar_SetValue("cg_thirdperson", (int)vo.thirdperson);
 	trap_Cvar_SetValue("r_fullscreen", (int)vo.fullscr);
 	trap_Cvar_SetValue("r_swapinterval", (int)vo.vsync);
 	trap_Cvar_SetValue("r_gamma", vo.gamma);
@@ -444,6 +447,11 @@ videomenu(void)
 
 	drawstr(x, y, "Geometry quality", UI_RIGHT|UI_DROPSHADOW, color_white);
 	if(textspinner(".v.gq", xx, y, 0, geomqualities, &vo.gquality, ARRAY_LEN(geomqualities)))
+		vo.dirty = qtrue;
+	y += spc;
+
+	drawstr(x, y, "Third person", UI_RIGHT|UI_DROPSHADOW, color_white);
+	if(checkbox(".v.3rd", xx, y, 0, &vo.thirdperson))
 		vo.dirty = qtrue;
 
 	if(vo.dirty || vo.needrestart)
