@@ -19,7 +19,8 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_scoreboard -- draw the scoreboard on top of the game screen
+// draws the scoreboard on top of the game screen
+
 #include "cg_local.h"
 
 #define SCOREBOARD_X		(0)
@@ -36,40 +37,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SB_MAXCLIENTS_NORMAL	((SB_STATUSBAR - SB_TOP) / SB_NORMAL_HEIGHT)
 #define SB_MAXCLIENTS_INTER	((SB_STATUSBAR - SB_TOP) / SB_INTER_HEIGHT - 1)
 
-// Used when interleaved
-
-#define SB_LEFT_BOTICON_X	(SCOREBOARD_X+0)
-#define SB_LEFT_HEAD_X		(SCOREBOARD_X+32)
-#define SB_RIGHT_BOTICON_X	(SCOREBOARD_X+64)
-#define SB_RIGHT_HEAD_X		(SCOREBOARD_X+96)
-// Normal
 #define SB_BOTICON_X		(SCOREBOARD_X+32)
 #define SB_HEAD_X		(SCOREBOARD_X+64)
 
 #define SB_SCORELINE_X		112
 
-#define SB_RATING_WIDTH		(6 * BIGCHAR_WIDTH)	// width 6
-#define SB_SCORE_X		(SB_SCORELINE_X + BIGCHAR_WIDTH)	// width 6
+#define SB_RATING_WIDTH		(6 * BIGCHAR_WIDTH)				// width 6
+#define SB_SCORE_X		(SB_SCORELINE_X + BIGCHAR_WIDTH)		// width 6
 #define SB_RATING_X		(SB_SCORELINE_X + 6 * BIGCHAR_WIDTH)		// width 6
-#define SB_PING_X		(SB_SCORELINE_X + 12 * BIGCHAR_WIDTH + 8)		// width 5
-#define SB_TIME_X		(SB_SCORELINE_X + 17 * BIGCHAR_WIDTH + 8)		// width 5
+#define SB_PING_X		(SB_SCORELINE_X + 12 * BIGCHAR_WIDTH + 8)	// width 5
+#define SB_TIME_X		(SB_SCORELINE_X + 17 * BIGCHAR_WIDTH + 8)	// width 5
 #define SB_NAME_X		(SB_SCORELINE_X + 22 * BIGCHAR_WIDTH)		// width 15
-
-// The new and improved score board
-// In cases where the number of clients is high, the score board heads are interleaved
-// here's the layout
-
-//	0   32   80  112  144   240  320  400   <-- pixel position
-//  bot head bot head score ping time name
-//  wins/losses are drawn on bot icon now
 
 static qboolean localclient;	// true if local client has been displayed
 
-/*
-=================
-drawscoreboard
-=================
-*/
 static void
 drawclientscore(int y, score_t *score, float *color, float fade, qboolean largeFormat)
 {
@@ -91,26 +72,31 @@ drawclientscore(int y, score_t *score, float *color, float fade, qboolean largeF
 	// draw the handicap or bot skill marker (unless player has flag)
 	if(ci->powerups & (1 << PW_NEUTRALFLAG)){
 		if(largeFormat)
-			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, TEAM_FREE, qfalse);
+			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32,
+			   TEAM_FREE, qfalse);
 		else
 			drawflag(iconx, y, 16, 16, TEAM_FREE, qfalse);
 	}else if(ci->powerups & (1 << PW_REDFLAG)){
 		if(largeFormat)
-			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, TEAM_RED, qfalse);
+			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32,
+			   TEAM_RED, qfalse);
 		else
 			drawflag(iconx, y, 16, 16, TEAM_RED, qfalse);
 	}else if(ci->powerups & (1 << PW_BLUEFLAG)){
 		if(largeFormat)
-			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, TEAM_BLUE, qfalse);
+			drawflag(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32,
+			   TEAM_BLUE, qfalse);
 		else
 			drawflag(iconx, y, 16, 16, TEAM_BLUE, qfalse);
 	}else{
 		if(ci->botskill > 0 && ci->botskill <= 5){
 			if(cg_drawIcons.integer){
 				if(largeFormat)
-					drawpic(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32, cgs.media.botSkillShaders[ci->botskill - 1]);
+					drawpic(iconx, y - (32 - BIGCHAR_HEIGHT) / 2, 32, 32,
+					   cgs.media.botSkillShaders[ci->botskill - 1]);
 				else
-					drawpic(iconx, y, 16, 16, cgs.media.botSkillShaders[ci->botskill - 1]);
+					drawpic(iconx, y, 16, 16,
+					   cgs.media.botSkillShaders[ci->botskill - 1]);
 			}
 		}else if(ci->handicap < 100){
 			Com_sprintf(string, sizeof(string), "%i", ci->handicap);
@@ -130,25 +116,16 @@ drawclientscore(int y, score_t *score, float *color, float fade, qboolean largeF
 		}
 	}
 
-	// draw the face
-	vecclear(headAngles);
-	headAngles[YAW] = 180;
-	if(largeFormat)
-		drawhead(headx, y - (ICON_SIZE - BIGCHAR_HEIGHT) / 2, ICON_SIZE, ICON_SIZE,
-			    score->client, headAngles);
-	else
-		drawhead(headx, y, 16, 16, score->client, headAngles);
-
 	// draw the score line
 	if(score->ping == -1)
 		Com_sprintf(string, sizeof(string),
-			    " connecting    %s", ci->name);
+		   " connecting    %s", ci->name);
 	else if(ci->team == TEAM_SPECTATOR)
 		Com_sprintf(string, sizeof(string),
-			    " SPECT %3i %4i %s", score->ping, score->time, ci->name);
+		   " SPEC %3i %4i %s", score->ping, score->time, ci->name);
 	else
 		Com_sprintf(string, sizeof(string),
-			    "%5i %4i %4i %s", score->score, score->ping, score->time, ci->name);
+		   "%5i %4i %4i %s", score->score, score->ping, score->time, ci->name);
 
 	// highlight your position
 	if(score->client == cg.snap->ps.clientNum){
@@ -192,11 +169,6 @@ drawclientscore(int y, score_t *score, float *color, float fade, qboolean largeF
 		drawbigstrcolor(iconx, y, "READY", color);
 }
 
-/*
-=================
-teamscoreboard
-=================
-*/
 static int
 teamscoreboard(int y, teamnum_t team, float fade, int maxClients, int lineHeight)
 {
@@ -217,7 +189,8 @@ teamscoreboard(int y, teamnum_t team, float fade, int maxClients, int lineHeight
 		if(team != ci->team)
 			continue;
 
-		drawclientscore(y + lineHeight * count, score, color, fade, lineHeight == SB_NORMAL_HEIGHT);
+		drawclientscore(y + lineHeight * count, score, color, fade,
+		   lineHeight == SB_NORMAL_HEIGHT);
 
 		count++;
 	}
@@ -226,14 +199,10 @@ teamscoreboard(int y, teamnum_t team, float fade, int maxClients, int lineHeight
 }
 
 /*
-=================
-drawscoreboard
-
 Draw the normal in-game scoreboard
-=================
 */
 qboolean
-drawoldscoreboard(void)
+drawscoreboard(void)
 {
 	int x, y, w, i, n1, n2;
 	float fade;
@@ -339,20 +308,24 @@ drawoldscoreboard(void)
 
 		if(cg.teamscores[0] >= cg.teamscores[1]){
 			n1 = teamscoreboard(y, TEAM_RED, fade, maxClients, lineHeight);
-			drawteambg(0, y - topBorderSize, 640, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED);
+			drawteambg(0, y - topBorderSize, 640,
+			   n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED);
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n1;
 			n2 = teamscoreboard(y, TEAM_BLUE, fade, maxClients, lineHeight);
-			drawteambg(0, y - topBorderSize, 640, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE);
+			drawteambg(0, y - topBorderSize, 640,
+			   n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE);
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n2;
 		}else{
 			n1 = teamscoreboard(y, TEAM_BLUE, fade, maxClients, lineHeight);
-			drawteambg(0, y - topBorderSize, 640, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE);
+			drawteambg(0, y - topBorderSize, 640,
+			   n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE);
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n1;
 			n2 = teamscoreboard(y, TEAM_RED, fade, maxClients, lineHeight);
-			drawteambg(0, y - topBorderSize, 640, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED);
+			drawteambg(0, y - topBorderSize, 640,
+			   n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED);
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n2;
 		}
@@ -370,7 +343,8 @@ drawoldscoreboard(void)
 		// draw local client at the bottom
 		for(i = 0; i < cg.nscores; i++)
 			if(cg.scores[i].client == cg.snap->ps.clientNum){
-				drawclientscore(y, &cg.scores[i], fadeColor, fade, lineHeight == SB_NORMAL_HEIGHT);
+				drawclientscore(y, &cg.scores[i], fadeColor, fade,
+				   lineHeight == SB_NORMAL_HEIGHT);
 				break;
 			}
 	}
@@ -382,23 +356,3 @@ drawoldscoreboard(void)
 	return qtrue;
 }
 
-/*
-================
-centergiantline
-================
-*/
-static void
-centergiantline(float y, const char *string)
-{
-	float x;
-	vec4_t color;
-
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 1;
-
-	x = 0.5 * (640 - GIANT_WIDTH * drawstrlen(string));
-
-	drawstr2(x, y, string, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0);
-}

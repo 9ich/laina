@@ -1263,7 +1263,7 @@ void		loadingclient(int clientNum);
 void		drawinfo(void);
 
 // cg_scoreboard.c
-qboolean	drawoldscoreboard(void);
+qboolean	drawscoreboard(void);
 
 // cg_consolecmds.c
 qboolean	consolecmd(void);

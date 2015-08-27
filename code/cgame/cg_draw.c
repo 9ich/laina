@@ -19,27 +19,37 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_draw.c -- draw all of the graphical elements during
+// draws all of the graphical elements during
 // active (after loading) gameplay
 
 #include "cg_local.h"
 
-int drawTeamOverlayModificationCount = -1;
+enum
+{
+	FPS_FRAMES		= 4,
+	LAG_SAMPLES		= 128,
+	MAX_LAGOMETER_PING	= 900,
+	MAX_LAGOMETER_RANGE	= 300
+};
 
+struct
+{
+	int	framesamples[LAG_SAMPLES];
+	int	nframes;
+	int	snapflags[LAG_SAMPLES];
+	int	snapsamples[LAG_SAMPLES];
+	int	nsnaps;
+} lagometer;
+
+int drawTeamOverlayModificationCount = -1;
 int sortedteamplayers[TEAM_MAXOVERLAY];
 int nsortedteamplayers;
-
 char syschat[256];
 char teamchat1[256];
 char teamchat2[256];
 
-
 /*
-==============
-drawfield
-
 Draws large numbers for status bar and powerups
-==============
 */
 static void
 drawfield(int x, int y, int width, int value)
@@ -101,7 +111,7 @@ drawfield(int x, int y, int width, int value)
 }
 
 /*
- * Same as drawfield, but pads with a zero if necessary.
+Same as drawfield, but pads with a zero if necessary.
  */
 static void
 draw0field(int x, int y, int width, int value)
@@ -160,12 +170,6 @@ draw0field(int x, int y, int width, int value)
 	}
 }
 
-/*
-================
-drawmodel
-
-================
-*/
 void
 drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles)
 {
@@ -206,57 +210,7 @@ drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, v
 }
 
 /*
-================
-drawhead
-
 Used for both the status bar and the scoreboard
-================
-*/
-void
-drawhead(float x, float y, float w, float h, int clientNum, vec3_t headAngles)
-{
-	clipHandle_t cm;
-	clientinfo_t *ci;
-	float len;
-	vec3_t origin;
-	vec3_t mins, maxs;
-
-	ci = &cgs.clientinfo[clientNum];
-
-	if(cg_draw3dIcons.integer){
-		cm = ci->headmodel;
-		if(!cm)
-			return;
-
-		// offset the origin y and z to center the head
-		trap_R_ModelBounds(cm, mins, maxs);
-
-		origin[2] = -0.5 * (mins[2] + maxs[2]);
-		origin[1] = 0.5 * (mins[1] + maxs[1]);
-
-		// calculate distance so the head nearly fills the box
-		// assume heads are taller than wide
-		len = 0.7 * (maxs[2] - mins[2]);
-		origin[0] = len / 0.268;	// len / tan( fov/2 )
-
-		// allow per-model tweaking
-		vecadd(origin, ci->headoffset, origin);
-
-		drawmodel(x, y, w, h, ci->headmodel, ci->headskin, origin, headAngles);
-	}else if(cg_drawIcons.integer)
-		drawpic(x, y, w, h, ci->modelicon);
-
-	// if they are deferred, draw a cross out
-	if(ci->deferred)
-		drawpic(x, y, w, h, cgs.media.deferShader);
-}
-
-/*
-================
-drawflag
-
-Used for both the status bar and the scoreboard
-================
 */
 void
 drawflag(float x, float y, float w, float h, int team, qboolean force2D)
@@ -310,12 +264,6 @@ drawflag(float x, float y, float w, float h, int team, qboolean force2D)
 	}
 }
 
-/*
-================
-drawteambg
-
-================
-*/
 void
 drawteambg(int x, int y, int w, int h, float alpha, int team)
 {
@@ -337,12 +285,6 @@ drawteambg(int x, int y, int w, int h, float alpha, int team)
 	trap_R_SetColor(nil);
 }
 
-/*
-================
-drawstatusbar
-
-================
-*/
 static void
 drawstatusbar(void)
 {
@@ -388,18 +330,9 @@ drawstatusbar(void)
 }
 
 /*
-===========================================================================================
-
-  UPPER RIGHT CORNER
-
-===========================================================================================
+upper right corner
 */
 
-/*
-==================
-drawsnap
-==================
-*/
 static float
 drawsnap(float y)
 {
@@ -415,12 +348,6 @@ drawsnap(float y)
 	return y + BIGCHAR_HEIGHT + 4;
 }
 
-/*
-==================
-drawfps
-==================
-*/
-#define FPS_FRAMES 4
 static float
 drawfps(float y)
 {
@@ -459,11 +386,6 @@ drawfps(float y)
 	return y + BIGCHAR_HEIGHT + 4;
 }
 
-/*
-=================
-drawtimer
-=================
-*/
 static float
 drawtimer(float y)
 {
@@ -488,12 +410,6 @@ drawtimer(float y)
 	return y + BIGCHAR_HEIGHT + 4;
 }
 
-/*
-=====================
-drawupperright
-
-=====================
-*/
 static void
 drawupperright(stereoFrame_t stereoFrame)
 {
@@ -510,18 +426,9 @@ drawupperright(stereoFrame_t stereoFrame)
 }
 
 /*
-===========================================================================================
-
-  LOWER RIGHT CORNER
-
-===========================================================================================
+lower right corner
 */
 
-/*
-================
-drawpowerups
-================
-*/
 static float
 drawpowerups(float y)
 {
@@ -612,12 +519,6 @@ drawpowerups(float y)
 	return y;
 }
 
-/*
-=====================
-drawlowerright
-
-=====================
-*/
 static void
 drawlowerright(void)
 {
@@ -702,21 +603,15 @@ drawpickupanim(void)
 	   ICON_SIZE*3, ICON_SIZE*3, model, 0, viewportpos, angles);
 }
 
-/*
-=================
-drawteaminfo
-=================
-*/
 static void
 drawteaminfo(void)
 {
+	const int CHATLOC_Y = 420;	// bottom end
+	const int CHATLOC_X = 0;
 	int h;
 	int i;
 	vec4_t hcolor;
 	int chatHeight;
-
-#define CHATLOC_Y	420	// bottom end
-#define CHATLOC_X	0
 
 	if(cg_teamChatHeight.integer < TEAMCHAT_HEIGHT)
 		chatHeight = cg_teamChatHeight.integer;
@@ -757,17 +652,12 @@ drawteaminfo(void)
 
 		for(i = cgs.teamchatpos - 1; i >= cgs.teamlastchatpos; i--)
 			drawstr2(CHATLOC_X + TINYCHAR_WIDTH,
-					 CHATLOC_Y - (cgs.teamchatpos - i)*TINYCHAR_HEIGHT,
-					 cgs.teamchatmsgs[i % chatHeight], hcolor, qfalse, qfalse,
-					 TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
+			   CHATLOC_Y - (cgs.teamchatpos - i)*TINYCHAR_HEIGHT,
+			   cgs.teamchatmsgs[i % chatHeight], hcolor, qfalse, qfalse,
+			   TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
 	}
 }
 
-/*
-===================
-drawholdable
-===================
-*/
 static void
 drawholdable(void)
 {
@@ -776,16 +666,11 @@ drawholdable(void)
 	value = cg.snap->ps.stats[STAT_HOLDABLE_ITEM];
 	if(value){
 		registeritemgfx(value);
-		drawpic(640-ICON_SIZE, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
+		drawpic(640-ICON_SIZE, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE,
+		   cg_items[value].icon);
 	}
 }
 
-
-/*
-===================
-drawreward
-===================
-*/
 static void
 drawreward(void)
 {
@@ -799,36 +684,20 @@ drawreward(void)
 
 	color = fadecolor(cg.rewardtime, REWARD_TIME);
 	if(!color){
-		if(cg.rewardstack > 0){
-			for(i = 0; i < cg.rewardstack; i++){
-				cg.rewardsounds[i] = cg.rewardsounds[i+1];
-				cg.rewardshaders[i] = cg.rewardshaders[i+1];
-				cg.nrewards[i] = cg.nrewards[i+1];
-			}
-			cg.rewardtime = cg.time;
-			cg.rewardstack--;
-			color = fadecolor(cg.rewardtime, REWARD_TIME);
-			trap_S_StartLocalSound(cg.rewardsounds[0], CHAN_ANNOUNCER);
-		}else
+		if(cg.rewardstack <= 0)
 			return;
+		for(i = 0; i < cg.rewardstack; i++){
+			cg.rewardsounds[i] = cg.rewardsounds[i+1];
+			cg.rewardshaders[i] = cg.rewardshaders[i+1];
+			cg.nrewards[i] = cg.nrewards[i+1];
+		}
+		cg.rewardtime = cg.time;
+		cg.rewardstack--;
+		color = fadecolor(cg.rewardtime, REWARD_TIME);
+		trap_S_StartLocalSound(cg.rewardsounds[0], CHAN_ANNOUNCER);
 	}
 
 	trap_R_SetColor(color);
-
-	/*
-	count = cg.nrewards[0]/10;				// number of big rewards to draw
-
-	if(count){
-	    y = 4;
-	    x = 320 - count * ICON_SIZE;
-	    for( i = 0 ; i < count ; i++ ){
-	            drawpic( x, y, (ICON_SIZE*2)-4, (ICON_SIZE*2)-4, cg.rewardshaders[0] );
-	            x += (ICON_SIZE*2);
-	    }
-	}
-
-	count = cg.nrewards[0] - count*10;		// number of small rewards to draw
-	*/
 
 	if(cg.nrewards[0] >= 10){
 		y = 56;
@@ -852,32 +721,11 @@ drawreward(void)
 }
 
 /*
-===============================================================================
-
-LAGOMETER
-
-===============================================================================
+lagometer
 */
 
-#define LAG_SAMPLES 128
-
-typedef struct
-{
-	int	frameSamples[LAG_SAMPLES];
-	int	frameCount;
-	int	snapshotFlags[LAG_SAMPLES];
-	int	snapshotSamples[LAG_SAMPLES];
-	int	snapshotCount;
-} lagometer_t;
-
-lagometer_t lagometer;
-
 /*
-==============
-addlagometerframeinfo
-
 Adds the current interpolate / extrapolate bar for this frame
-==============
 */
 void
 addlagometerframeinfo(void)
@@ -885,42 +733,34 @@ addlagometerframeinfo(void)
 	int offset;
 
 	offset = cg.time - cg.latestsnapttime;
-	lagometer.frameSamples[lagometer.frameCount & (LAG_SAMPLES - 1)] = offset;
-	lagometer.frameCount++;
+	lagometer.framesamples[lagometer.nframes & (LAG_SAMPLES - 1)] = offset;
+	lagometer.nframes++;
 }
 
 /*
-==============
-addlagometersnapinfo
-
 Each time a snapshot is received, log its ping time and
 the number of snapshots that were dropped before it.
 
 Pass nil for a dropped packet.
-==============
 */
 void
 addlagometersnapinfo(snapshot_t *snap)
 {
 	// dropped packet
 	if(!snap){
-		lagometer.snapshotSamples[lagometer.snapshotCount & (LAG_SAMPLES - 1)] = -1;
-		lagometer.snapshotCount++;
+		lagometer.snapsamples[lagometer.nsnaps & (LAG_SAMPLES - 1)] = -1;
+		lagometer.nsnaps++;
 		return;
 	}
 
 	// add this snapshot's info
-	lagometer.snapshotSamples[lagometer.snapshotCount & (LAG_SAMPLES - 1)] = snap->ping;
-	lagometer.snapshotFlags[lagometer.snapshotCount & (LAG_SAMPLES - 1)] = snap->snapFlags;
-	lagometer.snapshotCount++;
+	lagometer.snapsamples[lagometer.nsnaps & (LAG_SAMPLES - 1)] = snap->ping;
+	lagometer.snapflags[lagometer.nsnaps & (LAG_SAMPLES - 1)] = snap->snapFlags;
+	lagometer.nsnaps++;
 }
 
 /*
-==============
-drawdisconnect
-
 Should we draw something differnet for long lag vs no packets?
-==============
 */
 static void
 drawdisconnect(void)
@@ -953,14 +793,6 @@ drawdisconnect(void)
 	drawpic(x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net.tga"));
 }
 
-#define MAX_LAGOMETER_PING	900
-#define MAX_LAGOMETER_RANGE	300
-
-/*
-==============
-drawlagometer
-==============
-*/
 static void
 drawlagometer(void)
 {
@@ -996,8 +828,8 @@ drawlagometer(void)
 
 	// draw the frame interpoalte / extrapolate graph
 	for(a = 0; a < aw; a++){
-		i = (lagometer.frameCount - 1 - a) & (LAG_SAMPLES - 1);
-		v = lagometer.frameSamples[i];
+		i = (lagometer.nframes - 1 - a) & (LAG_SAMPLES - 1);
+		v = lagometer.framesamples[i];
 		v *= vscale;
 		if(v > 0){
 			if(color != 1){
@@ -1024,10 +856,10 @@ drawlagometer(void)
 	vscale = range / MAX_LAGOMETER_PING;
 
 	for(a = 0; a < aw; a++){
-		i = (lagometer.snapshotCount - 1 - a) & (LAG_SAMPLES - 1);
-		v = lagometer.snapshotSamples[i];
+		i = (lagometer.nsnaps - 1 - a) & (LAG_SAMPLES - 1);
+		v = lagometer.snapsamples[i];
 		if(v > 0){
-			if(lagometer.snapshotFlags[i] & SNAPFLAG_RATE_DELAYED){
+			if(lagometer.snapflags[i] & SNAPFLAG_RATE_DELAYED){
 				if(color != 5){
 					color = 5;	// YELLOW for rate delay
 					trap_R_SetColor(g_color_table[ColorIndex(COLOR_YELLOW)]);
@@ -1058,20 +890,12 @@ drawlagometer(void)
 }
 
 /*
-===============================================================================
-
-CENTER PRINTING
-
-===============================================================================
+center printing
 */
 
 /*
-==============
-centerprint
-
 Called for important messages that should stay in the center of the screen
 for a few moments
-==============
 */
 void
 centerprint(const char *str, int y, int charWidth)
@@ -1094,11 +918,6 @@ centerprint(const char *str, int y, int charWidth)
 	}
 }
 
-/*
-===================
-drawcenterstr
-===================
-*/
 static void
 drawcenterstr(void)
 {
@@ -1149,18 +968,9 @@ drawcenterstr(void)
 }
 
 /*
-================================================================================
-
-CROSSHAIR
-
-================================================================================
+crosshair
 */
 
-/*
-=================
-drawxhair
-=================
-*/
 static void
 drawxhair(void)
 {
@@ -1208,15 +1018,10 @@ drawxhair(void)
 	hShader = cgs.media.crosshairShader[ca % NUM_CROSSHAIRS];
 
 	trap_R_DrawStretchPic(x + cg.refdef.x + 0.5 * (cg.refdef.width - w),
-			      y + cg.refdef.y + 0.5 * (cg.refdef.height - h),
-			      w, h, 0, 0, 1, 1, hShader);
+	   y + cg.refdef.y + 0.5 * (cg.refdef.height - h),
+	   w, h, 0, 0, 1, 1, hShader);
 }
 
-/*
-=================
-drawxhair3d
-=================
-*/
 static void
 drawxhair3d(void)
 {
@@ -1266,7 +1071,8 @@ drawxhair3d(void)
 
 	xmax = zProj * tan(cg.refdef.fov_x * M_PI / 360.0f);
 
-	// let the trace run through until a change in stereo separation of the crosshair becomes less than one pixel.
+	// let the trace run through until a change in stereo separation of the 
+	// crosshair becomes less than one pixel.
 	maxdist = cgs.glconfig.vidWidth * stereoSep * zProj / (2 * xmax);
 	vecsadd(cg.refdef.vieworg, maxdist, cg.refdef.viewaxis[0], endpos);
 	cgtrace(&trace, cg.refdef.vieworg, nil, nil, endpos, 0, MASK_SHOT);
@@ -1284,11 +1090,6 @@ drawxhair3d(void)
 	trap_R_AddRefEntityToScene(&ent);
 }
 
-/*
-=================
-xhairscan
-=================
-*/
 static void
 xhairscan(void)
 {
@@ -1318,11 +1119,6 @@ xhairscan(void)
 	cg.xhaircltime = cg.time;
 }
 
-/*
-=====================
-drawxhairnames
-=====================
-*/
 static void
 drawxhairnames(void)
 {
@@ -1353,11 +1149,6 @@ drawxhairnames(void)
 	trap_R_SetColor(nil);
 }
 
-/*
-=================
-drawspec
-=================
-*/
 static void
 drawspec(void)
 {
@@ -1368,11 +1159,6 @@ drawspec(void)
 		drawbigstr(320 - 39 * 8, 460, "press ESC and use the JOIN menu to play", 1.0F);
 }
 
-/*
-=================
-drawvote
-=================
-*/
 static void
 drawvote(void)
 {
@@ -1396,11 +1182,6 @@ drawvote(void)
 	drawsmallstr(0, 58, s, 1.0F);
 }
 
-/*
-=================
-drawteamvote
-=================
-*/
 static void
 drawteamvote(void)
 {
@@ -1431,21 +1212,9 @@ drawteamvote(void)
 	drawsmallstr(0, 90, s, 1.0F);
 }
 
-static qboolean
-drawscoreboard(void)
-{
-	return drawoldscoreboard();
-}
-
-/*
-=================
-drawintermission
-=================
-*/
 static void
 drawintermission(void)
 {
-//	int key;
 	if(cgs.gametype == GT_SINGLE_PLAYER){
 		drawcenterstr();
 		return;
@@ -1454,11 +1223,6 @@ drawintermission(void)
 	cg.scoreboardshown = drawscoreboard();
 }
 
-/*
-=================
-drawfollow
-=================
-*/
 static qboolean
 drawfollow(void)
 {
@@ -1484,11 +1248,6 @@ drawfollow(void)
 	return qtrue;
 }
 
-/*
-=================
-drawwarmup
-=================
-*/
 static void
 drawwarmup(void)
 {
@@ -1618,11 +1377,6 @@ drawgameover(void)
 	}
 }
 
-/*
-=================
-draw2d
-=================
-*/
 static void
 draw2d(stereoFrame_t stereoFrame)
 {
@@ -1691,11 +1445,7 @@ draw2d(stereoFrame_t stereoFrame)
 }
 
 /*
-=====================
-drawactive
-
 Perform all drawing needed to completely fill the screen
-=====================
 */
 void
 drawactive(stereoFrame_t stereoView)
