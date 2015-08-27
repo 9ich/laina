@@ -358,3 +358,51 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 	drawstr(x+bsz+w/2, y, opts[*i], UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_orange);
 	return updated;
 }
+
+/*
+This only displays the key; binding the key is the caller's responsibility.
+*/
+qboolean
+keybinder(const char *id, int x, int y, int just, int key)
+{
+	const int width = 7;	// chars
+	const float w = width*SMALLCHAR_WIDTH;
+	const float h = 16, pad = 4;
+	int i, bufsz;
+	char buf[32], *p;
+
+	justify(just, &x, w);
+
+	if(idcmp(uis.focus, ""))
+		idcpy(uis.focus, id);
+	if(mouseover(x-pad, y-pad, w+2*pad, h+2*pad)){
+		idcpy(uis.hot, id);
+		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
+			idcpy(uis.active, id);
+			idcpy(uis.focus, id);
+		}
+	}
+	
+	yieldfocus(id);
+
+	bufsz = MIN(width+1, sizeof buf);
+	if(key == -1)
+		*buf = '\0';
+	else
+		trap_Key_KeynumToStringBuf(key, buf, sizeof buf);
+
+	Q_strlwr(buf);
+
+	// strip "arrow" off e.g. "leftarrow"
+	p = strstr(buf, "arrow");
+	if(p != nil)
+		*p = '\0';
+
+	// truncate to field width
+	buf[width-1] = '\0';
+
+	fillrect(x-pad, y-pad, w+2*pad, h+2*pad, colour_active);
+	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, color_orange);
+
+	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);	
+}

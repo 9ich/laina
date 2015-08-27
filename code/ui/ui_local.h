@@ -51,6 +51,7 @@ qboolean	checkbox(const char *id, int x, int y, int just, qboolean *state);
 qboolean	slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt);
 qboolean	textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz);
 qboolean	textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts);
+qboolean	keybinder(const char *id, int x, int y, int just, int key);
 
 // ui_main.c
 extern void	cacheui(void);
@@ -151,7 +152,7 @@ void		ingamemenu(void);
 void		quitmenu(void);
 void		videomenu(void);
 void		soundmenu(void);
-void		ctlmenu(void);
+void		inputmenu(void);
 void		errormenu(void);
 void		placeholder(void);
 

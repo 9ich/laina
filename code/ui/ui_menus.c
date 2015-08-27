@@ -1,6 +1,9 @@
 #include "ui_local.h"
 
-enum {NRES = 128};
+enum
+{
+	NRES	= 128
+};
 
 static char *fallbackres[] = {
 	"320x240",
@@ -31,13 +34,35 @@ static struct
 	float	r;
 	char	*s;
 } knownratios[] = {
-	{4/3.0f, "4:3"},
-	{16/10.0f, "16:10"},
-	{16/9.0f, "16:9"},
-	{5/4.0f, "5:4"},
-	{3/2.0f, "3:2"},
-	{14/9.0f, "14:9"},
-	{5/3.0f, "5:3"}
+	{4/3.0f,	"4:3"},
+	{16/10.0f,	"16:10"},
+	{16/9.0f,	"16:9"},
+	{5/4.0f,	"5:4"},
+	{3/2.0f,	"3:2"},
+	{14/9.0f,	"14:9"},
+	{5/3.0f,	"5:3"}
+};
+
+static struct
+{
+	int	k, alt;
+	char	*name;
+	char	*cmd;
+} binds[] = {
+	// these are the defaults, overridden by initinputmenu
+	{'w',		K_UPARROW,	"Forward",	"+forward"},
+	{'s',		K_DOWNARROW,	"Back",		"+back"},
+	{'a',		-1,		"Left",		"+moveleft"},
+	{'d',		-1,		"Right",	"+moveright"},
+	{K_SPACE,	K_MOUSE2,	"Jump/up",	"+moveup"},
+	{K_SHIFT,	-1,		"Crouch/down",	"+movedown"},
+	{K_LEFTARROW,	-1,		"Turn left",	"+left"},
+	{K_RIGHTARROW,	-1,		"Turn right",	"+right"},
+	{K_MOUSE1,	-1,		"Attack",	"+attack"},
+	{K_TAB,		-1,		"Scoreboard",	"+scores"},
+	{K_MOUSE3,	-1,		"Zoom",		"+zoom"},
+	{'y',		-1,		"Chat",		"messagemode"},
+	{0}
 };
 
 static char *texqualities[] = {"N64", "PS1"};
@@ -81,6 +106,20 @@ static struct
 	qboolean	doppler;
 } so;
 
+// input options (see also binds)
+static struct
+{
+	qboolean	initialized, dirty, needrestart;
+	float		sens;
+} io;
+
+// waiting-for-user-to-press-key-to-bind menu
+static struct
+{
+	int	i;		// binds[index]
+	int	whichkey;	// 0 = binds[i].k, 1 = binds[i].alt
+} bw;
+
 static void
 getmodes(void)
 {
@@ -96,8 +135,7 @@ getmodes(void)
 
 		// @Hz
 		p = strchr(p, '@');
-		if(p != nil)
-			*p++ = '\0';
+		*p++ = '\0';
 		detectedhz[i] = p;
 
 		// next
@@ -182,8 +220,11 @@ optionsbuttons(void)
 		push(soundmenu);
 	}
 	y += spc;
-	if(button(".o.c", x, y, UI_RIGHT, "Input"))
-		push(placeholder);
+	if(button(".o.c", x, y, UI_RIGHT, "Input")){
+		pop();
+		io.initialized = qfalse;
+		push(inputmenu);
+	}
 	y += spc;
 	if(button(".o.d", x, y, UI_RIGHT, "Defaults"))
 		push(placeholder);
@@ -191,9 +232,12 @@ optionsbuttons(void)
 	if(button(".o.bk", 10, SCREEN_HEIGHT-30, UI_LEFT, "Back")){
 		vo.initialized = qfalse;
 		so.initialized = qfalse;
+		io.initialized = qfalse;
 		pop();
 	}
 }
+
+// video options
 
 /*
 Builds list of supported resolutions & refresh rates for the current aspect ratio.
@@ -409,6 +453,8 @@ videomenu(void)
 		}
 }
 
+// sound options
+
 static void
 initsoundmenu(void)
 {
@@ -496,6 +542,161 @@ soundmenu(void)
 	if(so.dirty || so.needrestart)
 		if(button(".s.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
 			savesoundchanges();
+			pop();
+		}
+}
+
+// input options
+
+static void
+bindwaitmenu(void)
+{
+	char s[MAX_STRING_CHARS];
+	const int style = UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW;
+	int i;
+
+	uis.fullscreen = qtrue;
+	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+
+	Com_sprintf(s, sizeof s,
+	   "Press a key to bind to %s",
+	   binds[bw.i].name);
+	drawstr(320, 200, s, style, color_white);
+	drawstr(320, 240, "Press ESC to cancel", style, color_white);
+
+	if(uis.keys[K_ESCAPE]){
+		bw.i = -1;
+		bw.whichkey = -1;
+		pop();
+		return;
+	}
+	for(i = 0; i < ARRAY_LEN(uis.keys); i++){
+		if(uis.keys[i]){
+			if(bw.whichkey == 0 && i != binds[bw.i].alt){
+				binds[bw.i].alt = binds[bw.i].k;
+				binds[bw.i].k = i;
+				io.dirty = qtrue;
+			}else if(i != binds[bw.i].k){
+				binds[bw.i].alt = i;
+				io.dirty = qtrue;
+			}
+			bw.i = -1;
+			bw.whichkey = -1;
+			pop();
+			return;
+		}
+	}
+}
+
+static void
+lookupbind(char *cmd, int *keys, int keyslen)
+{
+	int i, n;
+	char buf[MAX_STRING_CHARS];
+
+	for(i = 0; i < keyslen; i++)
+		keys[i] = -1;
+	n = 0;
+	for(i = 0; i < ARRAY_LEN(uis.keys) && n < keyslen; i++){
+		trap_Key_GetBindingBuf(i, buf, sizeof buf);
+		if(*buf == '\0')
+			continue;
+		if(Q_stricmp(buf, cmd) == 0)
+			keys[n++] = i;
+	}
+}
+
+static void
+initinputmenu(void)
+{
+	int i, k[2];
+
+	memset(&io, 0, sizeof so);
+
+	for(i = 0; binds[i].name != nil; i++){
+		lookupbind(binds[i].cmd, k, ARRAY_LEN(k));
+		binds[i].k = k[0];
+		binds[i].alt = k[1];
+		if(binds[i].alt >= K_MOUSE1 && binds[i].alt <= K_MWHEELUP){
+			int tmp;
+
+			// swap so that mouse buttons go in the first column
+			tmp = binds[i].k;
+			binds[i].k = binds[i].alt;
+			binds[i].alt = tmp;
+		}
+	}
+
+	io.sens = trap_Cvar_VariableValue("sensitivity");
+
+	io.initialized = qtrue;
+}
+
+static void
+saveinputchanges(void)
+{
+	int i;
+
+	for(i = 0; binds[i].name != nil; i++){
+		if(binds[i].k != -1)
+			trap_Key_SetBinding(binds[i].k, binds[i].cmd);
+		if(binds[i].alt != -1)
+			trap_Key_SetBinding(binds[i].alt, binds[i].cmd);
+	}
+
+	trap_Cvar_SetValue("sensitivity", io.sens);
+
+	io.initialized = qfalse;
+}
+
+void
+inputmenu(void)
+{
+	const float spc = 24;
+	float x, xx, xxx, y;
+	int i;
+
+	if(!io.initialized)
+		initinputmenu();
+
+	uis.fullscreen = qtrue;
+	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
+	optionsbuttons();
+	x = 420;
+	xx = 440;
+	xxx = 520;
+	y = 100;
+
+	drawstr(x, y, "Sensitivity", UI_RIGHT|UI_DROPSHADOW, color_white);
+	if(slider(".io.s", xx, y, UI_LEFT, 0.1f, 10.0f, &io.sens, "%.1f"))
+		io.dirty = qtrue;
+	y += spc;
+
+	for(i = 0; binds[i].name != nil; i++){
+		char id[MAXIDLEN];
+
+		Com_sprintf(id, sizeof id, ".io.%s.k", binds[i].name);
+		drawstr(x, y, binds[i].name, UI_RIGHT|UI_DROPSHADOW, color_white);
+		if(keybinder(id, xx, y, UI_LEFT, binds[i].k)){
+			bw.i = i;
+			bw.whichkey = 0;
+			memset(uis.keys, 0, sizeof uis.keys);
+			push(bindwaitmenu);
+		}
+		Com_sprintf(id, sizeof id, ".io.%s.alt", binds[i].name);
+		if(keybinder(id, xxx, y, UI_LEFT|UI_DROPSHADOW, binds[i].alt)){
+			bw.i = i;
+			bw.whichkey = 1;
+			memset(uis.keys, 0, sizeof uis.keys);
+			push(bindwaitmenu);
+		}
+		y += spc;
+	}
+		
+
+	if(io.dirty || io.needrestart)
+		if(button(".io.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
+			saveinputchanges();
 			pop();
 		}
 }
