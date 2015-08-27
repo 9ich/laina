@@ -108,7 +108,8 @@ item_t bg_itemlist[] = {
 	{
 		"item_life",
 		{
-			"sound/items/life"
+			"sound/items/life",
+			"sound/items/life2"
 		},
 		{
 			"models/items/life",
