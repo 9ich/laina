@@ -607,7 +607,7 @@ entevent(cent_t *cent, vec3_t position)
 				trap_S_StartSound(nil, es->number, CHAN_AUTO, cgs.media.n_healthSound);
 			else if(item->type == IT_PERSISTANT_POWERUP){
 			}else
-				trap_S_StartSound(nil, es->number, CHAN_AUTO, trap_S_RegisterSound(item->pickupsound, qfalse));
+				trap_S_StartSound(nil, es->number, CHAN_AUTO, trap_S_RegisterSound(item->pickupsound[0], qfalse));
 
 			// show icon and name on status bar
 			if(es->number == cg.snap->ps.clientNum)
@@ -627,8 +627,8 @@ entevent(cent_t *cent, vec3_t position)
 				break;
 			item = &bg_itemlist[index];
 			// powerup pickups are global
-			if(item->pickupsound)
-				trap_S_StartSound(nil, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound(item->pickupsound, qfalse));
+			if(item->pickupsound[0] != nil)
+				trap_S_StartSound(nil, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound(item->pickupsound[0], qfalse));
 
 			// show icon and name on status bar
 			if(es->number == cg.snap->ps.clientNum)

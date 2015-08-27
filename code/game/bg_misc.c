@@ -19,7 +19,7 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// bg_misc.c -- both games misc functions, all completely stateless
+// both games' misc functions, all completely stateless
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
@@ -44,12 +44,15 @@ An item fires all of its targets when it is picked up.  If the toucher can't car
 item_t bg_itemlist[] = {
 	{
 		nil,
-		nil,
+		{
+			nil,
+			nil
+		},	/* pickupsound */
 		{
 			nil,
 			nil,
 			nil, nil
-		},
+		},	/* model */
 		/* icon */ nil,
 		/* pickup */ nil,
 		0,
@@ -64,7 +67,10 @@ item_t bg_itemlist[] = {
 	// QUAKED item_token (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	{
 		"item_token",
-		"sound/items/token",
+		{
+			"sound/items/token",
+			"sound/items/tokenchomp"
+		},
 		{
 			"models/items/token",
 			nil, nil, nil
@@ -81,7 +87,10 @@ item_t bg_itemlist[] = {
 	// QUAKED item_token_large (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	{
 		"item_token_large",
-		"sound/items/token",
+		{
+			"sound/items/token",
+			"sound/items/tokenchomp"
+		},
 		{
 			"models/items/token",
 			nil, nil, nil
@@ -98,7 +107,9 @@ item_t bg_itemlist[] = {
 	// QUAKED item_life (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 	{
 		"item_life",
-		"sound/items/life",
+		{
+			"sound/items/life"
+		},
 		{
 			"models/items/life",
 			nil, nil, nil
@@ -115,7 +126,9 @@ item_t bg_itemlist[] = {
 	// QUAKED item_key_jade (1 1 1) (-6 -6 -6) (6 6 6) suspended
 	{
 		"item_key_jade",
-		"sound/items/key_jade",
+		{
+			"sound/items/key_jade"
+		},
 		{
 			"models/items/key_jade",
 			nil, nil, nil
@@ -132,7 +145,9 @@ item_t bg_itemlist[] = {
 	// QUAKED item_key_ruby (1 1 1) (-6 -6 -6) (6 6 6) suspended
 	{
 		"item_key_ruby",
-		"sound/items/key_ruby",
+		{
+			"sound/items/key_ruby"
+		},
 		{
 			"models/items/key_ruby",
 			nil, nil, nil
@@ -149,7 +164,9 @@ item_t bg_itemlist[] = {
 	// QUAKED item_key_sapphire (1 1 1) (-6 -6 -6) (6 6 6) suspended
 	{
 		"item_key_sapphire",
-		"sound/items/key_sapphire",
+		{
+			"sound/items/key_sapphire"
+		},
 		{
 			"models/items/key_sapphire",
 			nil, nil, nil
@@ -169,7 +186,9 @@ item_t bg_itemlist[] = {
 	*/
 	{
 		"weapon_gauntlet",
-		"sound/misc/w_pkup.wav",
+		{
+			"sound/misc/w_pkup.wav"
+		},
 		{
 			"models/weapons2/gauntlet/gauntlet.md3",
 			nil, nil, nil

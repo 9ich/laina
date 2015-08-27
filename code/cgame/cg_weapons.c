@@ -671,17 +671,14 @@ registerweap(int weaponNum)
 }
 
 /*
-=================
-registeritemgfx
-
 The server says this item is used on this level
-=================
 */
 void
 registeritemgfx(int itemNum)
 {
 	iteminfo_t *itemInfo;
 	item_t *item;
+	int i;
 
 	if(itemNum < 0 || itemNum >= bg_nitems)
 		cgerrorf("registeritemgfx: itemNum %d out of range [0-%d]", itemNum, bg_nitems-1);
@@ -695,9 +692,8 @@ registeritemgfx(int itemNum)
 	memset(itemInfo, 0, sizeof(*itemInfo));
 	itemInfo->registered = qtrue;
 
-	itemInfo->models[0] = trap_R_RegisterModel(item->model[0]);
-	if(item->model[1])
-		itemInfo->models[1] = trap_R_RegisterModel(item->model[1]);
+	for(i = 0; i < MAX_ITEM_MODELS && item->model[i] != nil; i++)
+		itemInfo->models[i] = trap_R_RegisterModel(item->model[i]);
 
 	itemInfo->icon = trap_R_RegisterShader(item->icon);
 

@@ -614,12 +614,16 @@ typedef enum
 	IT_KEY
 } itemType_t;
 
-#define MAX_ITEM_MODELS 4
+enum
+{
+	MAX_ITEM_MODELS		= 4,
+	MAX_PICKUP_SOUNDS	= 2
+};
 
 typedef struct item_s
 {
 	char		*classname;	// spawning name
-	char		*pickupsound;
+	char		*pickupsound[MAX_PICKUP_SOUNDS];	// [1] is for cg's pickupanims
 	char		*model[MAX_ITEM_MODELS];
 
 	char		*icon;

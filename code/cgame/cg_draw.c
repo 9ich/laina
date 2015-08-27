@@ -568,6 +568,7 @@ static void
 drawpickupanim(void)
 {
 	pickupanim_t *pa;
+	iteminfo_t *it;
 	qhandle_t model;
 	vec3_t pos, viewportpos, angles;
 	float t;
@@ -575,8 +576,16 @@ drawpickupanim(void)
 	if(cg.npickupanims == 0)
 		return;
 	if(cg.time > cg.pickupanimtime){
-		if(cg.pickupanimtime != 0)
+		if(cg.pickupanimtime != 0){
 			cg.npickupanims--;
+			pa = &cg.pickupanimstk[cg.npickupanims];
+			// play a sound as the pickupanim reaches the stat counter
+			if(bg_itemlist[pa->item].pickupsound[1] != nil){
+				trap_S_StartLocalSound(
+				   trap_S_RegisterSound(bg_itemlist[pa->item].pickupsound[1], qfalse),
+			   CHAN_ANNOUNCER);
+			}
+		}	
 		cg.pickupanimstarttime = cg.time;
 		cg.pickupanimtime = cg.time + PICKUPANIMTIME;
 		if(cg.npickupanims == 0){
@@ -586,7 +595,8 @@ drawpickupanim(void)
 	}
 
 	pa = &cg.pickupanimstk[cg.npickupanims-1];
-	// some items may not have had their graphics registered yet
+	it = &cg_items[pa->item];
+	// some items may not have had their data registered yet
 	if(cg_items[pa->item].models[0] == 0)
 		registeritemgfx(pa->item);
 	model = cg_items[pa->item].models[0];

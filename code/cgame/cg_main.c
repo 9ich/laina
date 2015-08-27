@@ -428,14 +428,14 @@ regitemsounds(int itemNum)
 	item_t *item;
 	char data[MAX_QPATH];
 	char *s, *start;
-	int len;
+	int i, len;
 
 	item = &bg_itemlist[itemNum];
 
-	if(item->pickupsound)
-		trap_S_RegisterSound(item->pickupsound, qfalse);
+	for(i = 0; i < MAX_PICKUP_SOUNDS && item->pickupsound[i] != nil; i++)
+		trap_S_RegisterSound(item->pickupsound[i], qfalse);
 
-	// parse the space seperated precache string for other media
+	// parse the space separated precache string for other media
 	s = item->sounds;
 	if(!s || !s[0])
 		return;
