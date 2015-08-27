@@ -627,52 +627,6 @@ drawlowerright(void)
 	drawpowerups(y);
 }
 
-/*
-===================
-drawpickup
-===================
-*/
-static int
-drawpickup(int y)
-{
-	int value;
-	float *fadeColor;
-
-	if(cg.snap->ps.stats[STAT_HEALTH] <= 0)
-		return y;
-
-	y -= ICON_SIZE;
-
-	value = cg.itemPickup;
-	if(value){
-		fadeColor = fadecolor(cg.itemPickupTime, 3000);
-		if(fadeColor){
-			registeritemgfx(value);
-			trap_R_SetColor(fadeColor);
-			drawpic(8, y, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
-			drawbigstr(ICON_SIZE + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[value].pickupname, fadeColor[0]);
-			trap_R_SetColor(nil);
-		}
-	}
-
-	return y;
-}
-
-/*
-=====================
-drawlowerleft
-
-=====================
-*/
-static void
-drawlowerleft(void)
-{
-	float y;
-
-	y = 480 - ICON_SIZE;
-	drawpickup(y);
-}
-
 void
 queuepickupanim(const char *classname)
 {
@@ -1722,7 +1676,6 @@ draw2d(stereoFrame_t stereoFrame)
 	drawupperright(stereoFrame);
 
 	drawlowerright();
-	drawlowerleft();
 
 	drawpickupanim();
 
