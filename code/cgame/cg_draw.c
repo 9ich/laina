@@ -361,21 +361,20 @@ drawstatusbar(void)
 
 	// draw 3D icons first, so the changes back to 2D are minimized
 	// token icon
-	origin[0] = 55;
+	origin[0] = 120;
 	origin[1] = 0;
 	origin[2] = 0;
 	angles[YAW] = (cg.time & 2047) * 360 / 2048.0f;
 	x = margin;
 	y = margin;
-	drawmodel(x, y, ICON_SIZE, ICON_SIZE, cgs.media.tokenModel, 0, origin, angles);
+	drawmodel(x-20, y-15, ICON_SIZE+50, ICON_SIZE+50, cgs.media.tokenModel, 0, origin, angles);
 
 	// lives icon
 	origin[0] = 40;
 	origin[1] = 0;
 	origin[2] = 0;
-	angles[YAW] = (cg.time & 2047) * 360 / 2048.0f;
 	x = SCREEN_WIDTH - ICON_SIZE - margin;
-	drawmodel(x, y, ICON_SIZE, ICON_SIZE, cgs.media.lifeModel, 0, origin, angles);
+	drawmodel(x-8, y-6, ICON_SIZE+8, ICON_SIZE+8, cgs.media.lifeModel, 0, origin, angles);
 
 	// tokens
 	trap_R_SetColor(colour);
@@ -384,7 +383,7 @@ drawstatusbar(void)
 
 	// lives
 	trap_R_SetColor(colour);
-	x = SCREEN_WIDTH - CHAR_WIDTH*3 - ICON_SIZE - TEXT_ICON_SPACE - margin;
+	x = SCREEN_WIDTH - CHAR_WIDTH*3 - ICON_SIZE - margin + 10;
 	drawfield(x, y, 3, ps->persistant[PERS_LIVES]);
 }
 
