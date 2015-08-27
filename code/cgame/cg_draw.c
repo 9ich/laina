@@ -691,16 +691,16 @@ queuepickupanim(const char *classname)
 
 	switch(it->type){
 	case IT_TOKEN:
-		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
-		vecset(cg.pickupanimstk[i].end, 0, 10, 10);
+		vecset(cg.pickupanimstk[i].beg, 0, 310, 260);
+		vecset(cg.pickupanimstk[i].end, 0, 60, 60);
 		break;
 	case IT_LIFE:
-		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
-		vecset(cg.pickupanimstk[i].end, 0, 200, 200);
+		vecset(cg.pickupanimstk[i].beg, 0, 330, 260);
+		vecset(cg.pickupanimstk[i].end, 0, 580, 60);
 		break;
 	case IT_KEY:
-		vecset(cg.pickupanimstk[i].beg, 0, 180, 180);
-		vecset(cg.pickupanimstk[i].end, 0, 10, 100);
+		vecset(cg.pickupanimstk[i].beg, 0, 310, 260);
+		vecset(cg.pickupanimstk[i].end, 0, 60, 180);
 		break;
 	default:
 		return;
@@ -731,6 +731,9 @@ drawpickupanim(void)
 	}
 
 	pa = &cg.pickupanimstk[cg.npickupanims-1];
+	// some items may not have had their graphics registered yet
+	if(cg_items[pa->item].models[0] == 0)
+		registeritemgfx(pa->item);
 	model = cg_items[pa->item].models[0];
 	t = 1 - (cg.pickupanimtime - cg.time) / (float)(cg.pickupanimtime - cg.pickupanimstarttime);
 	t = MIN(1.0f, t);
@@ -741,8 +744,8 @@ drawpickupanim(void)
 	vecclear(angles);
 	// quick rotation
 	angles[YAW] = (cg.pickupanimtime - cg.time & 255) * 360 / 256.0f;
-	drawmodel(pos[1], pos[2], pos[1]+ICON_SIZE, pos[2]+ICON_SIZE,
-	   model, 0, viewportpos, angles);
+	drawmodel(pos[1] - ICON_SIZE*1.5f, pos[2] - ICON_SIZE*1.5f,
+	   ICON_SIZE*3, ICON_SIZE*3, model, 0, viewportpos, angles);
 }
 
 /*
