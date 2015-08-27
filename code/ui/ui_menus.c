@@ -117,7 +117,7 @@ static struct
 // waiting-for-user-to-press-key-to-bind menu
 static struct
 {
-	int	i;		// binds[index]
+	int	i;		// binds[i]
 	int	whichkey;	// 0 = binds[i].k, 1 = binds[i].alt
 } bw;
 
