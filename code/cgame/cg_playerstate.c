@@ -185,6 +185,10 @@ respawn(void)
 
 	// select the weapon the server says we are using
 	cg.weapsel = cg.snap->ps.weapon;
+
+	// set the display stats
+	cg.disptokens = cg.snap->ps.stats[STAT_TOKENS];
+	cg.displives = cg.snap->ps.persistant[PERS_LIVES];
 }
 
 extern char *eventnames[];
@@ -313,7 +317,7 @@ checklocalsounds(playerState_t *ps, playerState_t *ops)
 	// the number of carrots that were required to reach that threshold.
 	if(ps->persistant[PERS_LIVES] > ops->persistant[PERS_LIVES] &&
 	   ps->stats[STAT_TOKENS] < ops->stats[STAT_TOKENS]){
-		for(i = 0; i < 100 - ops->stats[STAT_TOKENS]; i++)
+		for(i = 0; i <= 100 - ops->stats[STAT_TOKENS]; i++)
 			queuepickupanim("item_token");
 	}
 

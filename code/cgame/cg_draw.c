@@ -321,12 +321,12 @@ drawstatusbar(void)
 	// tokens
 	trap_R_SetColor(colour);
 	x = margin + ICON_SIZE + TEXT_ICON_SPACE;
-	draw0field(x, y, 2, ps->stats[STAT_TOKENS]);
+	draw0field(x, y, 2, cg.disptokens);
 
 	// lives
 	trap_R_SetColor(colour);
 	x = SCREEN_WIDTH - CHAR_WIDTH*3 - ICON_SIZE - margin + 10;
-	drawfield(x, y, 3, ps->persistant[PERS_LIVES]);
+	drawfield(x, y, 3, cg.displives);
 }
 
 /*
@@ -568,17 +568,33 @@ static void
 drawpickupanim(void)
 {
 	pickupanim_t *pa;
-	iteminfo_t *it;
 	qhandle_t model;
 	vec3_t pos, viewportpos, angles;
 	float t;
 
-	if(cg.npickupanims == 0)
+	if(cg.npickupanims == 0){
+		// set display stats just in case the stack was ever full,
+		// causing us to miss increments
+		cg.disptokens = cg.snap->ps.stats[STAT_TOKENS];
+		cg.displives = cg.snap->ps.persistant[PERS_LIVES];
 		return;
+	}
 	if(cg.time > cg.pickupanimtime){
 		if(cg.pickupanimtime != 0){
+			// end of anim
 			cg.npickupanims--;
 			pa = &cg.pickupanimstk[cg.npickupanims];
+
+			// increment the stat displays
+			switch(bg_itemlist[pa->item].type){
+			case IT_TOKEN:
+				cg.disptokens = (cg.disptokens + 1) % 100;
+				break;
+			case IT_LIFE:
+				cg.displives++;
+				break;
+			}
+
 			// play a sound as the pickupanim reaches the stat counter
 			if(bg_itemlist[pa->item].pickupsound[1] != nil){
 				trap_S_StartLocalSound(
@@ -595,10 +611,11 @@ drawpickupanim(void)
 	}
 
 	pa = &cg.pickupanimstk[cg.npickupanims-1];
-	it = &cg_items[pa->item];
+
 	// some items may not have had their data registered yet
 	if(cg_items[pa->item].models[0] == 0)
 		registeritemgfx(pa->item);
+
 	model = cg_items[pa->item].models[0];
 	t = 1 - (cg.pickupanimtime - cg.time) / (float)(cg.pickupanimtime - cg.pickupanimstarttime);
 	t = MIN(1.0f, t);

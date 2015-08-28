@@ -54,7 +54,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define PULSE_SCALE			1.5	// amount to scale up the icons when activating
 
-#define MAXPICKUPANIMS			64	// stack capacity for item pickups flying across hud
+#define MAXPICKUPANIMS			128	// stack capacity for item pickups flying across hud
 #define PICKUPANIMTIME			150
 
 #define MAX_STEP_CHANGE			32
@@ -607,6 +607,11 @@ typedef struct
 	int	pickupanimtime;
 	int	pickupanimstarttime;
 	int	npickupanims;
+
+	// stats that can lag behind the real stats slightly
+	// for pickupanims
+	int	disptokens;
+	int	displives;
 
 	int	weapseltime;
 	int	weapanim;
