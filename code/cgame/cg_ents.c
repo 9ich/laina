@@ -836,6 +836,8 @@ addcentity
 static void
 addcentity(cent_t *cent)
 {
+	vec3_t v;
+
 	// event-only entities will have been dealt with already
 	if(cent->currstate.eType >= ET_EVENTS)
 		return;
@@ -872,6 +874,15 @@ addcentity(cent_t *cent)
 	case ET_CRATE:
 	case ET_CRATE_BOUNCY:
 		docrate(cent);
+		break;
+	case ET_CHECKPOINTHALO:
+		///dochkpointhalo(cent);
+		dogeneral(cent);
+		veccopy(cent->lerporigin, v);
+		v[2] += 4.0f;
+		trap_R_AddLightToScene(v, 120, 0.3f, 0.58f, 0.91f);
+		v[2] += 80.0f;
+		trap_R_AddLightToScene(v, 120, 0.3f, 0.58f, 0.91f);
 		break;
 	case ET_BEAM:
 		drawbeam(cent);

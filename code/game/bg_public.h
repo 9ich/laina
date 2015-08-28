@@ -673,6 +673,7 @@ typedef enum
 	ET_MOVER,
 	ET_CRATE,	// breakable boxes
 	ET_CRATE_BOUNCY,
+	ET_CHECKPOINTHALO,
 	ET_BEAM,
 	ET_PORTAL,
 	ET_SPEAKER,

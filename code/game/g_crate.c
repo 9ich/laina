@@ -95,7 +95,7 @@ SP_checkpoint_halo(ent_t *ent)
 {
 	ent->model = "models/mapobjects/ckpoint/ckpoint";
 	ent->s.modelindex = modelindex(ent->model);
-	ent->s.eType = ET_GENERAL;
+	ent->s.eType = ET_CHECKPOINTHALO;
 	ent->use = nil;
 	ent->touch = nil;
 	ent->takedmg = qfalse;
