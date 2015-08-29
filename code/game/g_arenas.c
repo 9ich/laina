@@ -167,12 +167,6 @@ CelebrateStart(ent_t *player)
 	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | TORSO_GESTURE;
 	player->nextthink = level.time + TIMER_GESTURE;
 	player->think = CelebrateStop;
-
-	/*
-	player->client->ps.events[player->client->ps.eventSequence & (MAX_PS_EVENTS-1)] = EV_TAUNT;
-	player->client->ps.eventParms[player->client->ps.eventSequence & (MAX_PS_EVENTS-1)] = 0;
-	player->client->ps.eventSequence++;
-	*/
 	addevent(player, EV_TAUNT, 0);
 }
 

@@ -74,15 +74,12 @@ CLIENT INFO
 */
 
 /*
-======================
-parseanimationfile
-
-Read a configuration file containing animation counts and rates
+Read a player animation configuration file containing animation counts and rates
+and a few other properties.
 models/players/visor/animation.cfg, etc
-======================
 */
 static qboolean
-parseanimationfile(const char *filename, clientinfo_t *ci)
+parseplayeranimfile(const char *filename, clientinfo_t *ci)
 {
 	char *text_p, *prev;
 	int len;
@@ -111,7 +108,7 @@ parseanimationfile(const char *filename, clientinfo_t *ci)
 
 	// parse the text
 	text_p = text;
-	skip = 0;	// quite the compiler warning
+	skip = 0;
 
 	ci->footsteps = FOOTSTEP_NORMAL;
 	vecclear(ci->headoffset);
@@ -538,9 +535,9 @@ registerclientmodelname(clientinfo_t *ci, const char *modelname, const char *ski
 
 	// load the animations
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/animation.cfg", modelname);
-	if(!parseanimationfile(filename, ci)){
+	if(!parseplayeranimfile(filename, ci)){
 		Com_sprintf(filename, sizeof(filename), "models/players/characters/%s/animation.cfg", modelname);
-		if(!parseanimationfile(filename, ci)){
+		if(!parseplayeranimfile(filename, ci)){
 			Com_Printf("Failed to load animation file %s\n", filename);
 			return qfalse;
 		}
@@ -1008,135 +1005,6 @@ loaddeferred(void)
 }
 
 /*
-=============================================================================
-
-PLAYER ANIMATION
-
-=============================================================================
-*/
-
-/*
-===============
-setlerpframeanimation
-
-may include ANIM_TOGGLEBIT
-===============
-*/
-static void
-setlerpframeanimation(clientinfo_t *ci, lerpframe_t *lf, int newAnimation)
-{
-	animation_t *anim;
-
-	lf->animnum = newAnimation;
-	newAnimation &= ~ANIM_TOGGLEBIT;
-
-	if(newAnimation < 0 || newAnimation >= MAX_TOTALANIMATIONS)
-		cgerrorf("Bad animation number: %i", newAnimation);
-
-	anim = &ci->animations[newAnimation];
-
-	lf->animation = anim;
-	lf->animtime = lf->frametime + anim->initiallerp;
-
-	if(cg_debugAnim.integer)
-		cgprintf("Anim: %i\n", newAnimation);
-}
-
-/*
-===============
-runlerpframe
-
-Sets cg.snap, cg.oldframe, and cg.backlerp
-cg.time should be between oldFrameTime and frametime after exit
-===============
-*/
-static void
-runlerpframe(clientinfo_t *ci, lerpframe_t *lf, int newAnimation, float speedScale)
-{
-	int f, nframes;
-	animation_t *anim;
-
-	// debugging tool to get no animations
-	if(cg_animSpeed.integer == 0){
-		lf->oldframe = lf->frame = lf->backlerp = 0;
-		return;
-	}
-
-	// see if the animation sequence is switching
-	if(newAnimation != lf->animnum || !lf->animation)
-		setlerpframeanimation(ci, lf, newAnimation);
-
-	// if we have passed the current frame, move it to
-	// oldframe and calculate a new frame
-	if(cg.time >= lf->frametime){
-		lf->oldframe = lf->frame;
-		lf->oldFrameTime = lf->frametime;
-
-		// get the next frame based on the animation
-		anim = lf->animation;
-		if(!anim->framelerp)
-			return;					// shouldn't happen
-		if(cg.time < lf->animtime)
-			lf->frametime = lf->animtime;	// initial lerp
-		else
-			lf->frametime = lf->oldFrameTime + anim->framelerp;
-		f = (lf->frametime - lf->animtime) / anim->framelerp;
-		f *= speedScale;	// adjust for haste, etc
-
-		nframes = anim->nframes;
-		if(anim->flipflop)
-			nframes *= 2;
-		if(f >= nframes){
-			f -= nframes;
-			if(anim->loopframes){
-				f %= anim->loopframes;
-				f += anim->nframes - anim->loopframes;
-			}else{
-				f = nframes - 1;
-				// the animation is stuck at the end, so it
-				// can immediately transition to another sequence
-				lf->frametime = cg.time;
-			}
-		}
-		if(anim->reversed)
-			lf->frame = anim->firstframe + anim->nframes - 1 - f;
-		else if(anim->flipflop && f>=anim->nframes)
-			lf->frame = anim->firstframe + anim->nframes - 1 - (f%anim->nframes);
-		else
-			lf->frame = anim->firstframe + f;
-		if(cg.time > lf->frametime){
-			lf->frametime = cg.time;
-			if(cg_debugAnim.integer)
-				cgprintf("Clamp lf->frametime\n");
-		}
-	}
-
-	if(lf->frametime > cg.time + 200)
-		lf->frametime = cg.time;
-
-	if(lf->oldFrameTime > cg.time)
-		lf->oldFrameTime = cg.time;
-	// calculate current lerp value
-	if(lf->frametime == lf->oldFrameTime)
-		lf->backlerp = 0;
-	else
-		lf->backlerp = 1.0 - (float)(cg.time - lf->oldFrameTime) / (lf->frametime - lf->oldFrameTime);
-}
-
-/*
-===============
-clearlerpframe
-===============
-*/
-static void
-clearlerpframe(clientinfo_t *ci, lerpframe_t *lf, int animnum)
-{
-	lf->frametime = lf->oldFrameTime = cg.time;
-	setlerpframeanimation(ci, lf, animnum);
-	lf->oldframe = lf->frame = lf->animation->firstframe;
-}
-
-/*
 ===============
 playeranimation
 ===============
@@ -1165,15 +1033,15 @@ playeranimation(cent_t *cent, int *legsOld, int *legs, float *legsBackLerp,
 
 	// do the shuffle turn frames locally
 	if(cent->pe.legs.yawing && (cent->currstate.legsAnim & ~ANIM_TOGGLEBIT) == LEGS_IDLE)
-		runlerpframe(ci, &cent->pe.legs, LEGS_TURN, speedScale);
+		runlerpframe(ci->animations, &cent->pe.legs, LEGS_TURN, speedScale);
 	else
-		runlerpframe(ci, &cent->pe.legs, cent->currstate.legsAnim, speedScale);
+		runlerpframe(ci->animations, &cent->pe.legs, cent->currstate.legsAnim, speedScale);
 
 	*legsOld = cent->pe.legs.oldframe;
 	*legs = cent->pe.legs.frame;
 	*legsBackLerp = cent->pe.legs.backlerp;
 
-	runlerpframe(ci, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
+	runlerpframe(ci->animations, &cent->pe.torso, cent->currstate.torsoAnim, speedScale);
 
 	*torsoOld = cent->pe.torso.oldframe;
 	*torso = cent->pe.torso.frame;
@@ -1557,7 +1425,7 @@ playerflag(cent_t *cent, qhandle_t hSkin, refEntity_t *torso)
 	angles[YAW] = cent->pe.flag.yaw;
 	// lerp the flag animation frames
 	ci = &cgs.clientinfo[cent->currstate.clientNum];
-	runlerpframe(ci, &cent->pe.flag, flagAnim, 1);
+	runlerpframe(ci->animations, &cent->pe.flag, flagAnim, 1);
 	flag.oldframe = cent->pe.flag.oldframe;
 	flag.frame = cent->pe.flag.frame;
 	flag.backlerp = cent->pe.flag.backlerp;
@@ -2020,8 +1888,8 @@ resetplayerent(cent_t *cent)
 	cent->errtime = -99999;	// guarantee no error decay added
 	cent->extrapolated = qfalse;
 
-	clearlerpframe(&cgs.clientinfo[cent->currstate.clientNum], &cent->pe.legs, cent->currstate.legsAnim);
-	clearlerpframe(&cgs.clientinfo[cent->currstate.clientNum], &cent->pe.torso, cent->currstate.torsoAnim);
+	clearlerpframe(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.legs, cent->currstate.legsAnim);
+	clearlerpframe(cgs.clientinfo[cent->currstate.clientNum].animations, &cent->pe.torso, cent->currstate.torsoAnim);
 
 	evaltrajectory(&cent->currstate.pos, cg.time, cent->lerporigin);
 	evaltrajectory(&cent->currstate.apos, cg.time, cent->lerpangles);

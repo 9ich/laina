@@ -642,11 +642,20 @@ reggraphics(void)
 	// register all the server specified models
 	for(i = 1; i<MAX_MODELS; i++){
 		const char *modelname;
+		char buf[MAX_QPATH], buf2[MAX_QPATH], *p;
 
 		modelname = getconfigstr(CS_MODELS+i);
 		if(!modelname[0])
 			break;
 		cgs.gamemodels[i] = trap_R_RegisterModel(modelname);
+
+		// load the animation.cfg if it exists
+
+		Q_strncpyz(buf2, modelname, sizeof buf2);	// discard const
+		p = strrchr(buf2, '/');
+		*p = '\0';
+		Com_sprintf(buf, sizeof buf, "%s/animation.cfg", buf2);
+		parseanimfile(buf, cgs.anims[i]);
 	}
 }
 

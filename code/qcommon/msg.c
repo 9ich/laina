@@ -85,7 +85,10 @@ netField_t	entityStateFields[] =
 { NETF(time), 32 },
 { NETF(time2), 32 },
 { NETF(torsoAnim), 8 },
-{ NETF(weapon), 8 }
+{ NETF(weapon), 8 },
+{ NETF(anim), 8 },
+{ NETF(nextanim), 8 },
+{ NETF(nextanimtime), 32 }
 };
 
 netField_t	playerStateFields[] = 

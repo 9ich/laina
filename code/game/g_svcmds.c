@@ -334,8 +334,10 @@ Svcmd_EntityList_f(void)
 			break;
 		case ET_CRATE:
 			gprintf("ET_CRATE            ");
+			break;
 		case ET_CRATE_BOUNCY:
 			gprintf("ET_CRATE_BOUNCY            ");
+			break;
 		case ET_BEAM:
 			gprintf("ET_BEAM             ");
 			break;

@@ -468,7 +468,12 @@ typedef enum
 // animations
 typedef enum
 {
-	BOTH_DEATH1,
+	// crate animations
+	ANIM_CRATEIDLE	= 0,
+	ANIM_CRATESMASH,
+
+	// player animations
+	BOTH_DEATH1	= 0,
 	BOTH_DEAD1,
 	BOTH_DEATH2,
 	BOTH_DEAD2,
@@ -683,7 +688,8 @@ typedef enum
 	ET_GRAPPLE,	// grapple hooked on wall
 	ET_TEAM,
 
-	ET_EVENTS	// any of the EV_* events can be added freestanding
+	ET_MAX,
+	ET_EVENTS	= ET_MAX	// any of the EV_* events can be added freestanding
 	// by setting eType to ET_EVENTS + eventNum
 	// this avoids having to set eFlags and eventNum
 } enttype_t;

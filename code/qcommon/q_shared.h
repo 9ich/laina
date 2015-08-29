@@ -1318,6 +1318,11 @@ typedef struct entityState_s {
 	int		legsAnim;		// mask off ANIM_TOGGLEBIT
 	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
 
+	// for general, simple entities
+	int		anim;
+	int		nextanim;
+	int		nextanimtime;
+
 	int		generic1;
 } entityState_t;
 

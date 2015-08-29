@@ -121,7 +121,7 @@ SP_crate_bouncy(ent_t *ent)
 	setorigin(ent, ent->s.origin);
 	vecset(ent->r.mins, -16, -16, -16);
 	vecset(ent->r.maxs, 16, 16, 16);
-	ent->model = "models/crates/bouncy.md3";
+	ent->model = "models/crates/bouncy/bouncy.md3";
 	ent->s.modelindex = modelindex(ent->model);
 	ent->physbounce = 0.2;
 	ent->touch = crate_bouncy_touch;
@@ -186,4 +186,7 @@ crate_bouncy_touch(ent_t *self, ent_t *other, trace_t *trace)
 	if(other->s.groundEntityNum != self->s.number)
 		return;
 	trigger_push_touch(self, other, trace);
+	self->s.nextanim = ANIM_CRATEIDLE;
+	self->s.nextanimtime = level.time + 300;
+	self->s.anim = ANIM_CRATESMASH;
 }

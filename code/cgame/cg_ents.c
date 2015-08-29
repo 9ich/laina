@@ -24,16 +24,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 /*
-======================
-entontag
-
 Modifies the entities position and axis by the given
-tag location
-======================
+tag location.
 */
 void
 entontag(refEntity_t *entity, const refEntity_t *parent,
-		       qhandle_t parentModel, char *tagName)
+   qhandle_t parentModel, char *tagName)
 {
 	int i;
 	orientation_t lerped;
@@ -53,22 +49,18 @@ entontag(refEntity_t *entity, const refEntity_t *parent,
 }
 
 /*
-======================
-rotentontag
-
-Modifies the entities position and axis by the given
-tag location
-======================
+Modifies the entity's position and axis by the given
+tag location.
 */
 void
 rotentontag(refEntity_t *entity, const refEntity_t *parent,
-			      qhandle_t parentModel, char *tagName)
+   qhandle_t parentModel, char *tagName)
 {
 	int i;
 	orientation_t lerped;
 	vec3_t tempAxis[3];
 
-//AxisClear( entity->axis );
+	//AxisClear(entity->axis);
 	// lerp the tag
 	trap_R_LerpTag(&lerped, parentModel, parent->oldframe, parent->frame,
 		       1.0 - parent->backlerp, tagName);
@@ -206,6 +198,7 @@ dogeneral(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
+	int anim;
 
 	s1 = &cent->currstate;
 
@@ -217,9 +210,13 @@ dogeneral(cent_t *cent)
 
 	// set frame
 
-	ent.frame = s1->frame;
-	ent.oldframe = ent.frame;
-	ent.backlerp = 0;
+	anim = s1->anim;
+	if(s1->nextanimtime != 0 && cg.time > s1->nextanimtime)
+		anim = s1->nextanim;
+	runlerpframe(cgs.anims[s1->modelindex], &cent->lerpframe, anim, 1.0f);
+	ent.frame = cent->lerpframe.frame;
+	ent.oldframe = cent->lerpframe.oldframe;
+	ent.backlerp = cent->lerpframe.backlerp;
 
 	veccopy(cent->lerporigin, ent.origin);
 	veccopy(cent->lerporigin, ent.oldorigin);
@@ -590,6 +587,7 @@ docrate(cent_t *cent)
 	refEntity_t ent;
 	entityState_t *s1;
 	float shadowplane;
+	int anim;
 
 	s1 = &cent->currstate;
 
@@ -599,6 +597,16 @@ docrate(cent_t *cent)
 	veccopy(cent->lerporigin, ent.oldorigin);
 	AnglesToAxis(cent->lerpangles, ent.axis);
 	ent.nonNormalizedAxes = qfalse;
+
+	// set frame
+
+	anim = s1->anim;
+	if(s1->nextanimtime != 0 && cg.time > s1->nextanimtime)
+		anim = s1->nextanim;
+	runlerpframe(cgs.anims[s1->modelindex], &cent->lerpframe, anim, 1.0f);
+	ent.frame = cent->lerpframe.frame;
+	ent.oldframe = cent->lerpframe.oldframe;
+	ent.backlerp = cent->lerpframe.backlerp;
 
 	// get the model, either as a bmodel or a modelindex
 	if(s1->solid == SOLID_BMODEL)
@@ -872,11 +880,12 @@ addcentity(cent_t *cent)
 		domover(cent);
 		break;
 	case ET_CRATE:
+		docrate(cent);
+		break;
 	case ET_CRATE_BOUNCY:
 		docrate(cent);
 		break;
 	case ET_CHECKPOINTHALO:
-		///dochkpointhalo(cent);
 		dogeneral(cent);
 		veccopy(cent->lerporigin, v);
 		v[2] += 4.0f;

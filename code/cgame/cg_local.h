@@ -192,6 +192,9 @@ typedef struct cent_s
 	// exact interpolated position of entity on this frame
 	vec3_t		lerporigin;
 	vec3_t		lerpangles;
+
+	// used with cgs.anims
+	lerpframe_t	lerpframe;
 } cent_t;
 
 //======================================================================
@@ -953,6 +956,7 @@ typedef struct
 
 	// locally derived information from gamestate
 	qhandle_t	gamemodels[MAX_MODELS];
+	animation_t	anims[MAX_MODELS][MAX_TOTALANIMATIONS];
 	sfxHandle_t	gamesounds[MAX_SOUNDS];
 
 	int		ninlinemodels;
@@ -1104,6 +1108,12 @@ void		rankrunframe(void);
 void		setscoresel(void *menu);
 score_t		*getselscore(void);
 void		mkspecstr(void);
+
+// cg_anim.c
+void		setlerpframeanimation(animation_t *anims, lerpframe_t *lf, int newanim);
+void		runlerpframe(animation_t *anims, lerpframe_t *lf, int newanim, float speedscale);
+void		clearlerpframe(animation_t *anims, lerpframe_t *lf, int animnum);
+qboolean	parseanimfile(const char *filename, animation_t *anims);
 
 // cg_view.c
 void		testmodel_f(void);
