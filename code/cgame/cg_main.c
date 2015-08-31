@@ -482,7 +482,6 @@ regsounds(void)
 	cgs.media.hitSound = trap_S_RegisterSound("sound/feedback/hit.wav", qfalse);
 	cgs.media.jumpPadSound = trap_S_RegisterSound("sound/world/jumppad.wav", qfalse);
 	cgs.media.landSound = trap_S_RegisterSound("sound/player/land1.wav", qfalse);
-	cgs.media.noAmmoSound = trap_S_RegisterSound("sound/weapons/noammo.wav", qfalse);
 	cgs.media.respawnSound = trap_S_RegisterSound("sound/items/respawn1.wav", qfalse);
 	cgs.media.selectSound = trap_S_RegisterSound("sound/weapons/change.wav", qfalse);
 	cgs.media.splinterBounce = trap_S_RegisterSound("sound/crates/splinterbounce1", qfalse);

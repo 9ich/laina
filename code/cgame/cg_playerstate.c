@@ -28,56 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ==============
-checkammo
-
-If the ammo has gone low enough to generate the warning, play a sound
-==============
-*/
-void
-checkammo(void)
-{
-	int i;
-	int total;
-	int previous;
-	int weapons;
-
-	// see about how many seconds of ammo we have remaining
-	weapons = cg.snap->ps.stats[STAT_WEAPONS];
-	total = 0;
-	for(i = WP_MACHINEGUN; i < WP_NUM_WEAPONS; i++){
-		if(!(weapons & (1 << i)))
-			continue;
-		switch(i){
-		case WP_ROCKET_LAUNCHER:
-		case WP_GRENADE_LAUNCHER:
-		case WP_RAILGUN:
-		case WP_SHOTGUN:
-			total += cg.snap->ps.ammo[i] * 1000;
-			break;
-		default:
-			total += cg.snap->ps.ammo[i] * 200;
-			break;
-		}
-		if(total >= 5000){
-			cg.lowAmmoWarning = 0;
-			return;
-		}
-	}
-
-	previous = cg.lowAmmoWarning;
-
-	if(total == 0)
-		cg.lowAmmoWarning = 2;
-	else
-		cg.lowAmmoWarning = 1;
-
-	// play a sound on transitions
-	if(cg.lowAmmoWarning != previous)
-		trap_S_StartLocalSound(cgs.media.noAmmoSound, CHAN_LOCAL_SOUND);
-}
-
-/*
-==============
 damagefeedback
 ==============
 */
@@ -478,9 +428,6 @@ transitionplayerstate(playerState_t *ps, playerState_t *ops)
 	if(cg.snap->ps.pm_type != PM_INTERMISSION
 	   && ps->persistant[PERS_TEAM] != TEAM_SPECTATOR)
 		checklocalsounds(ps, ops);
-
-	// check for going low on ammo
-	checkammo();
 
 	// run events
 	checkplayerstateevents(ps, ops);
