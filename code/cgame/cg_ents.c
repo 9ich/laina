@@ -888,10 +888,14 @@ addcentity(cent_t *cent)
 	case ET_CHECKPOINTHALO:
 		dogeneral(cent);
 		veccopy(cent->lerporigin, v);
-		v[2] += 4.0f;
-		trap_R_AddLightToScene(v, 120, 0.3f, 0.58f, 0.91f);
-		v[2] += 80.0f;
-		trap_R_AddLightToScene(v, 120, 0.3f, 0.58f, 0.91f);
+		v[2] += 3.0f;
+		trap_R_AddAdditiveLightToScene(v,
+		   200 + 25 * sin(1000 + cg.time/600.0f),
+		   0.03f, 0.058f, 0.091f);
+		v[2] += 20.0f;
+		trap_R_AddAdditiveLightToScene(v,
+		   190 + 10 * sin(cg.time/970.82f),
+		   0.03f, 0.058f, 0.091f);
 		break;
 	case ET_BEAM:
 		drawbeam(cent);
