@@ -153,6 +153,7 @@ void	SP_target_kill(ent_t *ent);
 void	SP_target_position(ent_t *ent);
 void	SP_target_location(ent_t *ent);
 void	SP_target_push(ent_t *ent);
+void	SP_target_secret(ent_t *ent);
 
 void	SP_light(ent_t *self);
 void	SP_info_null(ent_t *self);
@@ -236,6 +237,7 @@ spawn_t spawns[] = {
 	{"target_position", SP_target_position},
 	{"target_location", SP_target_location},
 	{"target_push", SP_target_push},
+	{"target_secret", SP_target_secret},
 
 	{"light", SP_light},
 	{"path_corner", SP_path_corner},
@@ -605,7 +607,7 @@ Parses textual entity definitions out of an entstring and spawns entities.
 void
 spawnall(void)
 {
-	// allow calls to entspawn*()
+	// allow calls to spawn*()
 	level.spawning = qtrue;
 	level.nspawnvars = 0;
 

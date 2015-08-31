@@ -402,6 +402,9 @@ typedef struct
 	ent_t	*bodyqueue[BODY_QUEUE_SIZE];
 
 	int		gameovertime;
+
+	int		nsecrets;
+	int		secretsfound;
 } levelstatic_t;
 
 // g_spawn.c

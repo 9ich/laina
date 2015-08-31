@@ -477,3 +477,44 @@ SP_target_location(ent_t *self)
 
 	setorigin(self, self->s.origin);
 }
+
+/*
+target_secret
+*/
+
+void
+target_secret_use(ent_t *self, ent_t *other, ent_t *activator)
+{
+	int dflags;
+
+	if(activator->client == nil)
+		return;
+
+	level.secretsfound++;
+	mksound(other, CHAN_AUTO, self->noiseindex);
+	trap_SendServerCommand(activator->client - level.clients,
+	   va("cp \"%s\"", self->message));
+	usetargets(self, self->activator);
+	entfree(self);
+}
+
+/*
+QUAKED trigger_secret (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
+Marks out a secret area.
+When touched, increments level.secretsfound, triggers its target if any,
+then frees itself.
+*/
+void
+SP_target_secret(ent_t *self)
+{
+	char *s;
+
+	spawnstr("noise", "sound/feedback/secret.wav", &s);
+	self->noiseindex = soundindex(s);
+
+	self->use = target_secret_use;
+	self->message = "You discovered a secret area!";
+	self->r.svFlags = SVF_NOCLIENT;
+	level.nsecrets++;
+	trap_LinkEntity(self);
+}
