@@ -55,6 +55,25 @@ SP_info_notnull(ent_t *self)
 	setorigin(self, self->s.origin);
 }
 
+/*
+QUAKED info_player_intermission (0.7 0.1 0.6) (-8 -8 -8) (8 8 8)
+The level intermission point.
+
+target		target to look at
+noise		sound file to play (at target location, if any)
+message		text to send to clients
+*/
+void
+SP_info_player_intermission(ent_t *self)
+{
+	char *s;
+
+	spawnstr("noise", "", &s);
+	self->noiseindex = soundindex(s);
+	self->r.svFlags = SVF_NOCLIENT;
+	trap_LinkEntity(self);
+}
+
 /*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
 Non-displayed light.
 "light" overrides the default 300 intensity.

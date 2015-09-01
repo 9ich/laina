@@ -908,19 +908,26 @@ findintermissionpoint(void)
 
 	// find the intermission spot
 	ent = findent(nil, FOFS(classname), "info_player_intermission");
-	if(!ent)	// the map creator forgot to put in an intermission point...
+	if(ent == nil){	// the map creator forgot to put in an intermission point...
 		selectspawnpoint(vec3_origin, level.intermissionpos, level.intermissionangle, qfalse);
-	else{
-		veccopy(ent->s.origin, level.intermissionpos);
-		veccopy(ent->s.angles, level.intermissionangle);
-		// if it has a target, look towards it
-		if(ent->target){
-			target = picktarget(ent->target);
-			if(target){
-				vecsub(target->s.origin, level.intermissionpos, dir);
-				vectoangles(dir, level.intermissionangle);
-			}
+		return;
+	}
+	veccopy(ent->s.origin, level.intermissionpos);
+	veccopy(ent->s.angles, level.intermissionangle);
+	// if it has a target, look towards it
+	if(ent->target != nil){
+		target = picktarget(ent->target);
+		if(target != nil){
+			vecsub(target->s.origin, level.intermissionpos, dir);
+			vectoangles(dir, level.intermissionangle);
 		}
+		mksound(target, CHAN_AUTO, ent->noiseindex);
+	}else{
+		mksound(ent, CHAN_AUTO, ent->noiseindex);
+	}
+	if(ent->message != nil){
+		// FIXME: centerprint won't accommodate long end-of-level messages
+		trap_SendServerCommand(-1, va("cp \"%s\"", ent->message));
 	}
 }
 

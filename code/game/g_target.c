@@ -499,7 +499,7 @@ target_secret_use(ent_t *self, ent_t *other, ent_t *activator)
 }
 
 /*
-QUAKED trigger_secret (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
+QUAKED target_secret (0.3 0.1 0.6) (-8 -8 -8) (8 8 8)
 Marks out a secret area.
 When touched, increments level.secretsfound, triggers its target if any,
 then frees itself.
@@ -516,5 +516,48 @@ SP_target_secret(ent_t *self)
 	self->message = "You discovered a secret area!";
 	self->r.svFlags = SVF_NOCLIENT;
 	level.nsecrets++;
+	trap_LinkEntity(self);
+}
+
+/*
+target_changemap
+*/
+
+void
+target_changemap_use(ent_t *self, ent_t *other, ent_t *activator)
+{
+	char *cmd, str[MAX_STRING_CHARS];
+
+	// start intermission straight away
+	level.intermissionqueued = level.time - INTERMISSION_DELAY_TIME;
+
+	if(trap_Cvar_VariableValue("sv_cheats"))
+		cmd = "devmap";
+	else
+		cmd = "map";
+	if(self->message == nil || self->message[0] == '\0'){
+		gprintf("target_changemap: no map set\n");
+		Com_sprintf(str, sizeof str, "%s limbo", cmd, self->message);
+		trap_Cvar_Set("nextmap", str);
+		return;
+	}
+	Com_sprintf(str, sizeof str, "%s %s", cmd, self->message);
+	trap_Cvar_Set("nextmap", str);
+	trap_UnlinkEntity(self);
+}
+
+/*
+QUAKED target_changemap (0.2 0.9 0.4) (-8 -8 -8) (8 8 8) nointermission
+When activated, starts an intermission (unless nointermission is set),
+then changes the map.
+
+map		filename of map to change to
+*/
+void
+SP_target_changemap(ent_t *self)
+{
+	spawnstr("map", "", &self->message);
+	self->use = target_changemap_use;
+	self->r.svFlags = SVF_NOCLIENT;
 	trap_LinkEntity(self);
 }

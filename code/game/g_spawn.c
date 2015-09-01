@@ -154,10 +154,12 @@ void	SP_target_position(ent_t *ent);
 void	SP_target_location(ent_t *ent);
 void	SP_target_push(ent_t *ent);
 void	SP_target_secret(ent_t *ent);
+void	SP_target_changemap(ent_t *ent);
 
 void	SP_light(ent_t *self);
 void	SP_info_null(ent_t *self);
 void	SP_info_notnull(ent_t *self);
+void	SP_info_player_intermission(ent_t *self);
 void	SP_info_camp(ent_t *self);
 void	SP_path_corner(ent_t *self);
 
@@ -195,6 +197,7 @@ spawn_t spawns[] = {
 	// information for things controlled by other processes
 	{"info_null", SP_info_null},
 	{"info_notnull", SP_info_notnull},	// use target_position instead
+	{"info_player_intermission", SP_info_player_intermission},
 	{"info_camp", SP_info_camp},
 
 	{"func_plat", SP_func_plat},
@@ -238,6 +241,7 @@ spawn_t spawns[] = {
 	{"target_location", SP_target_location},
 	{"target_push", SP_target_push},
 	{"target_secret", SP_target_secret},
+	{"target_changemap", SP_target_changemap},
 
 	{"light", SP_light},
 	{"path_corner", SP_path_corner},
