@@ -246,14 +246,21 @@ enum {
  };
 
 void
-cratesmash(vec3_t pt)
+cratesmash(vec3_t pos)
 {
-	vec3_t vel;
+	static int seed = 0xc47;
+	vec3_t pt, vel = {0, 0, -10};
 	int i;
-	vec3_t up = {0, 0, 1};
 
-	smokepuff(pt, up, 64, 0.85f, 0.58f, 0.44f, 1.0f, 300, cg.time,
+	veccopy(pos, pt);
+	smokepuff(pt, vel, 64, 0.85f, 0.58f, 0.44f, 1.0f, 300, cg.time,
 	   0, LEF_PUFF_DONT_SCALE, cgs.media.smokePuffShader);
+	pt[0] += -4 + 8*Q_random(&seed);
+	pt[1] += -4 + 8*Q_random(&seed);
+	pt[3] += -4 + 8*Q_random(&seed);
+	vel[2] = -40;
+	smokepuff(pt, vel, 100, 0.85f, 0.58f, 0.44f, 0.7f, 700, cg.time,
+	   0, 0, cgs.media.smokePuffShader);
 	for(i = 0; i < NSPLINTERS; i++){
 		vel[0] = crandom() * 300;
 		vel[1] = crandom() * 300;
