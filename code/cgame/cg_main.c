@@ -604,6 +604,9 @@ reggraphics(void)
 	cgs.media.teleportEffectModel = trap_R_RegisterModel("models/misc/telep.md3");
 	cgs.media.teleportEffectShader = trap_R_RegisterShader("teleportEffect");
 
+	// weapon explosions/flashes/bolts
+	cgs.media.boltModel = trap_R_RegisterModel("models/weapons2/crossbow/bolt");
+
 	// precache checkpoint halo for crate smashes
 	trap_R_RegisterModel("models/mapobjects/ckpoint/ckpoint");
 

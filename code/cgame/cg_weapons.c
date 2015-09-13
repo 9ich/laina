@@ -1692,11 +1692,9 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 		radius = 4;
 		break;
 	case WP_CROSSBOW:
-		mod = 0;
-		shader = 0;
+		mod = cgs.media.boltModel;
 		sfx = cgs.media.sfx_boltexp;
-		mark = 0;
-		radius = 16;
+		duration = 3000;
 		break;
 
 
@@ -1722,9 +1720,11 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 
 	// create the explosion
 	if(mod){
-		le = explosion(origin, dir,
-				      mod, shader,
-				      duration, isSprite);
+		if(weapon == WP_CROSSBOW){
+			// flip the bolt so it sticks out of wall in correct dir
+			vecinv(dir);
+		}
+		le = explosion(origin, dir, mod, shader, duration, isSprite);
 		le->light = light;
 		veccopy(lightcolor, le->lightcolor);
 		if(weapon == WP_RAILGUN){
@@ -1744,9 +1744,17 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 
 		// colorize with client color
 		color = cgs.clientinfo[clientNum].color1;
-		impactmark(mark, origin, dir, random()*360, color[0], color[1], color[2], 1, alphafade, radius, qfalse);
-	}else
-		impactmark(mark, origin, dir, random()*360, 1, 1, 1, 1, alphafade, radius, qfalse);
+		if(mark != 0){
+			impactmark(mark, origin, dir, random()*360,
+			   color[0], color[1], color[2], 1, alphafade,
+			   radius, qfalse);
+		}
+	}else{
+		if(mark != 0){
+			impactmark(mark, origin, dir, random()*360,
+			   1, 1, 1, 1, alphafade, radius, qfalse);
+		}
+	}
 }
 
 /*
