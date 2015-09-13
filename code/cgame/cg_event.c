@@ -138,6 +138,9 @@ obituary(entityState_t *ent)
 	case MOD_TRIGGER_HURT:
 		message = "was in the wrong place";
 		break;
+	case MOD_BOLT:
+		message = "took a bolt";
+		break;
 	default:
 		message = nil;
 		break;

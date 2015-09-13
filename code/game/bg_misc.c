@@ -203,6 +203,25 @@ item_t bg_itemlist[] = {
 		/* sounds */ ""
 	},
 
+	/* only for shooter_bolt */
+	{
+		"weapon_crossbow",
+		{
+			""
+		},
+		{
+			"",
+			nil, nil, nil
+		},
+		/* icon */		"",
+		/* pickup */	"Crossbow",
+		50,
+		IT_WEAPON,
+		WP_CROSSBOW,
+		/* precache */ "",
+		/* sounds */ ""
+	},
+
 	// end of list marker
 	{nil}
 };

@@ -491,6 +491,7 @@ regsounds(void)
 	cgs.media.watrInSound = trap_S_RegisterSound("sound/player/watr_in.wav", qfalse);
 	cgs.media.watrOutSound = trap_S_RegisterSound("sound/player/watr_out.wav", qfalse);
 	cgs.media.watrUnSound = trap_S_RegisterSound("sound/player/watr_un.wav", qfalse);
+	cgs.media.sfx_boltexp = trap_S_RegisterSound("sound/weapons/crossbow/bolthitwall", qfalse);
 
 	for(i = 0; i<4; i++){
 		Com_sprintf(name, sizeof(name), "sound/player/footsteps/step%i.wav", i+1);

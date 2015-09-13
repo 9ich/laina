@@ -349,6 +349,62 @@ rockettrail(cent_t *ent, const weapinfo_t *wi)
 	}
 }
 
+static void
+bolttrail(cent_t *ent, const weapinfo_t *wi)
+{
+	int step;
+	vec3_t origin, lastPos;
+	int t;
+	int starttime, contents;
+	int lastContents;
+	entityState_t *es;
+	vec3_t up;
+	localent_t *smoke;
+
+	if(cg_noProjectileTrail.integer)
+		return;
+
+	up[0] = 0;
+	up[1] = 0;
+	up[2] = 0;
+
+	step = 10;
+
+	es = &ent->currstate;
+	starttime = ent->trailtime;
+	t = step * ((starttime + step) / step);
+
+	evaltrajectory(&es->pos, cg.time, origin);
+	contents = pointcontents(origin, -1);
+
+	// if object (e.g. grenade) is stationary, don't toss up smoke
+	if(es->pos.trType == TR_STATIONARY){
+		ent->trailtime = cg.time;
+		return;
+	}
+
+	evaltrajectory(&es->pos, ent->trailtime, lastPos);
+	lastContents = pointcontents(lastPos, -1);
+
+	ent->trailtime = cg.time;
+
+	if(contents & (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA)){
+		if(contents & lastContents & CONTENTS_WATER)
+			bubbletrail(lastPos, origin, 8);
+		return;
+	}
+
+	for(; t <= ent->trailtime; t += step){
+		evaltrajectory(&es->pos, t, lastPos);
+
+		smoke = smokepuff(lastPos, up,
+		   wi->trailRadius, 1, 1, 1, 0.11,
+		   wi->wiTrailTime, t, 0, 0,
+		   cgs.media.smokePuffShader);
+		// use the optimized local entity add
+		smoke->type = LE_SCALE_FADE;
+	}
+}
 
 /*
 ==========================
@@ -661,6 +717,17 @@ registerweap(int weaponNum)
 		cgs.media.bfgExplosionShader = trap_R_RegisterShader("bfgExplosion");
 		weaponInfo->missilemodel = trap_R_RegisterModel("models/weaphits/bfg.md3");
 		weaponInfo->missilesound = trap_S_RegisterSound("sound/weapons/rocket/rockfly.wav", qfalse);
+		break;
+
+	case WP_CROSSBOW:
+		weaponInfo->missilemodel = trap_R_RegisterModel("models/weapons2/crossbow/bolt");
+		weaponInfo->missilesound = trap_S_RegisterSound("sound/weapons/crossbow/boltfly", qfalse);
+
+		weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/crossbow/boltflash.wav", qfalse);
+		cgs.media.rocketExplosionShader = trap_R_RegisterShader("rocketExplosion");
+		weaponInfo->missileTrailFunc = bolttrail;
+		weaponInfo->wiTrailTime = 200;
+		weaponInfo->trailRadius = 8;
 		break;
 
 	default:
@@ -1624,6 +1691,13 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 		sfx = 0;
 		radius = 4;
 		break;
+	case WP_CROSSBOW:
+		mod = 0;
+		shader = 0;
+		sfx = cgs.media.sfx_boltexp;
+		mark = 0;
+		radius = 16;
+		break;
 
 
 	case WP_MACHINEGUN:
@@ -1692,6 +1766,7 @@ missilehitplayer(int weapon, vec3_t origin, vec3_t dir, int entityNum)
 	case WP_ROCKET_LAUNCHER:
 	case WP_PLASMAGUN:
 	case WP_BFG:
+	case WP_CROSSBOW:
 		missilehitwall(weapon, 0, origin, dir, IMPACTSOUND_FLESH);
 		break;
 	default:

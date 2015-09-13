@@ -168,6 +168,7 @@ void	SP_misc_model(ent_t *ent);
 void	SP_misc_portal_camera(ent_t *ent);
 void	SP_misc_portal_surface(ent_t *ent);
 
+void	SP_shooter_bolt(ent_t *ent);
 void	SP_shooter_rocket(ent_t *ent);
 void	SP_shooter_plasma(ent_t *ent);
 void	SP_shooter_grenade(ent_t *ent);
@@ -251,6 +252,7 @@ spawn_t spawns[] = {
 	{"misc_portal_surface", SP_misc_portal_surface},
 	{"misc_portal_camera", SP_misc_portal_camera},
 
+	{"shooter_bolt", SP_shooter_bolt},
 	{"shooter_rocket", SP_shooter_rocket},
 	{"shooter_grenade", SP_shooter_grenade},
 	{"shooter_plasma", SP_shooter_plasma},

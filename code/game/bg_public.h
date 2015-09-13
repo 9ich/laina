@@ -320,6 +320,7 @@ typedef enum
 	WP_PLASMAGUN,
 	WP_BFG,
 	WP_GRAPPLING_HOOK,
+	WP_CROSSBOW,
 
 	WP_NUM_WEAPONS
 } weap_t;
@@ -591,12 +592,14 @@ typedef enum
 	MOD_SLIME,
 	MOD_LAVA,
 	MOD_CRUSH,
+	MOD_BOLT,
 	MOD_TELEFRAG,
 	MOD_FALLING,
 	MOD_SUICIDE,
 	MOD_TARGET_LASER,
 	MOD_TRIGGER_HURT,
-	MOD_GRAPPLE
+	MOD_GRAPPLE,
+	MOD_CROSSBOW
 } meansofdeath_t;
 
 //---------------------------------------------------------

@@ -355,6 +355,18 @@ Weapon_RocketLauncher_Fire(ent_t *ent)
 //	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
 
+void
+Weapon_Crossbow_Fire(ent_t *ent)
+{
+	ent_t   *m;
+
+	m = fire_bolt(ent, muzzle, forward);
+	m->damage *= s_quadFactor;
+	m->splashdmg *= s_quadFactor;
+
+//	vecadd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+}
+
 /*
 ======================================================================
 
@@ -678,6 +690,9 @@ fireweapon(ent_t *ent)
 		break;
 	case WP_GRENADE_LAUNCHER:
 		weapon_grenadelauncher_fire(ent);
+		break;
+	case WP_CROSSBOW:
+		Weapon_Crossbow_Fire(ent);
 		break;
 	case WP_ROCKET_LAUNCHER:
 		Weapon_RocketLauncher_Fire(ent);

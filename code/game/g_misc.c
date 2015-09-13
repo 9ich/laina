@@ -272,7 +272,6 @@ Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 {
 	vec3_t dir;
 	float deg;
-	vec3_t up, right;
 
 	// see if we have a target
 	if(ent->enemy){
@@ -280,18 +279,6 @@ Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 		vecnorm(dir);
 	}else
 		veccopy(ent->movedir, dir);
-
-	// randomize a bit
-	vecperp(up, dir);
-	veccross(up, dir, right);
-
-	deg = crandom() * ent->random;
-	vecsadd(dir, deg, up, dir);
-
-	deg = crandom() * ent->random;
-	vecsadd(dir, deg, right, dir);
-
-	vecnorm(dir);
 
 	switch(ent->s.weapon){
 	case WP_GRENADE_LAUNCHER:
@@ -302,6 +289,9 @@ Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 		break;
 	case WP_PLASMAGUN:
 		fire_plasma(ent, ent->s.origin, dir);
+		break;
+	case WP_CROSSBOW:
+		fire_bolt(ent, ent->s.origin, dir);
 		break;
 	}
 
@@ -337,9 +327,19 @@ InitShooter(ent_t *ent, int weapon)
 	trap_LinkEntity(ent);
 }
 
+/*QUAKED shooter_bolt (1 0 0) (-16 -16 -16) (16 16 16)
+Fires at either the target or the current direction.
+"random" the number of degrees of deviance from the target. (1.0 default)
+*/
+void
+SP_shooter_bolt(ent_t *ent)
+{
+	InitShooter(ent, WP_CROSSBOW);
+}
+
 /*QUAKED shooter_rocket (1 0 0) (-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
-"random" the number of degrees of deviance from the taget. (1.0 default)
+"random" the number of degrees of deviance from the target. (1.0 default)
 */
 void
 SP_shooter_rocket(ent_t *ent)
@@ -349,7 +349,7 @@ SP_shooter_rocket(ent_t *ent)
 
 /*QUAKED shooter_plasma (1 0 0) (-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
+"random" is the number of degrees of deviance from the target. (1.0 default)
 */
 void
 SP_shooter_plasma(ent_t *ent)
@@ -359,7 +359,7 @@ SP_shooter_plasma(ent_t *ent)
 
 /*QUAKED shooter_grenade (1 0 0) (-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
+"random" is the number of degrees of deviance from the target. (1.0 default)
 */
 void
 SP_shooter_grenade(ent_t *ent)

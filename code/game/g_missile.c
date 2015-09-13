@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "g_local.h"
 
-#define MISSILE_PRESTEP_TIME 50
+#define MISSILE_PRESTEP_TIME 5
 
 /*
 ================
@@ -255,6 +255,42 @@ runmissile(ent_t *ent)
 	}
 	// check think function after bouncing
 	runthink(ent);
+}
+
+ent_t*
+fire_bolt(ent_t *self, vec3_t start, vec3_t dir)
+{
+	ent_t *bolt;
+
+	vecnorm(dir);
+
+	bolt = entspawn();
+	bolt->classname = "bolt";
+	bolt->nextthink = level.time + 10000;
+	bolt->think = explodemissile;
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_CROSSBOW;
+	bolt->r.ownerNum = self->s.number;
+	bolt->parent = self;
+	bolt->damage = 20;
+	bolt->splashdmg = 15;
+	bolt->splashradius = 20;
+	bolt->meansofdeath = MOD_BOLT;
+	bolt->clipmask = MASK_SHOT;
+	bolt->target_ent = nil;
+
+	bolt->s.pos.trType = TR_LINEAR;
+	// move a bit on the very first frame
+	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;
+	veccopy(start, bolt->s.pos.trBase);
+	vecscale(dir, 1000, bolt->s.pos.trDelta);
+	// save net bandwidth
+	SnapVector(bolt->s.pos.trDelta);
+
+	veccopy(start, bolt->r.currentOrigin);
+
+	return bolt;
 }
 
 /*

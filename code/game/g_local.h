@@ -489,6 +489,7 @@ void		tossclientitems(ent_t *self);
 // g_missile.c
 void		runmissile(ent_t *ent);
 
+ent_t	*fire_bolt(ent_t *self, vec3_t start, vec3_t aimdir);
 ent_t	*fire_plasma(ent_t *self, vec3_t start, vec3_t aimdir);
 ent_t	*fire_grenade(ent_t *self, vec3_t start, vec3_t aimdir);
 ent_t	*fire_rocket(ent_t *self, vec3_t start, vec3_t dir);
