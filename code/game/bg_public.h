@@ -242,7 +242,15 @@ typedef enum
 	PERS_DEFEND_COUNT,		// defend awards
 	PERS_ASSIST_COUNT,		// assist awards
 	PERS_GAUNTLET_FRAG_COUNT,	// kills with the guantlet
-	PERS_CAPTURES			// captures
+	PERS_CAPTURES,			// captures
+	// These are level-wide stats. Packing them in PERS_ is a convenient way to
+	// transmit them to clients for end-of-level summaries.
+	PERS_TOTALCRATES,		// total crates spawned in the level
+	PERS_CRATESBROKEN,		// crates broken by players
+	PERS_TOTALCARROTS,		// total carrots spawned in the level
+	PERS_CARROTSPICKEDUP,		// carrots picked up by players
+	PERS_TOTALSECRETS,		// total secrets in the level
+	PERS_SECRETSFOUND		// secrets found by players
 } persistindex_t;
 
 // entityState_t->eFlags

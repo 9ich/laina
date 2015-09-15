@@ -730,6 +730,13 @@ clientthink(int clientNum)
 
 	if(!(ent->r.svFlags & SVF_BOT) && !g_synchronousClients.integer)
 		ClientThink_real(ent);
+
+	ent->client->ps.persistant[PERS_TOTALSECRETS] = level.nsecrets;
+	ent->client->ps.persistant[PERS_SECRETSFOUND] = level.secretsfound;
+	ent->client->ps.persistant[PERS_TOTALCRATES] = level.ncrates;
+	ent->client->ps.persistant[PERS_CRATESBROKEN] = level.ncratesbroken;
+	ent->client->ps.persistant[PERS_TOTALCARROTS] = level.ncarrots;
+	ent->client->ps.persistant[PERS_CARROTSPICKEDUP] = level.ncarrotspickedup;
 }
 
 void
@@ -739,6 +746,12 @@ runclient(ent_t *ent)
 		return;
 	ent->client->pers.cmd.serverTime = level.time;
 	ClientThink_real(ent);
+	ent->client->ps.persistant[PERS_TOTALSECRETS] = level.nsecrets;
+	ent->client->ps.persistant[PERS_SECRETSFOUND] = level.secretsfound;
+	ent->client->ps.persistant[PERS_TOTALCRATES] = level.ncrates;
+	ent->client->ps.persistant[PERS_CRATESBROKEN] = level.ncratesbroken;
+	ent->client->ps.persistant[PERS_TOTALCARROTS] = level.ncarrots;
+	ent->client->ps.persistant[PERS_CARROTSPICKEDUP] = level.ncarrotspickedup;
 }
 
 /*

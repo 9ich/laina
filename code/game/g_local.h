@@ -512,6 +512,10 @@ typedef struct
 
 	int		nsecrets;
 	int		secretsfound;
+	int		ncrates;
+	int		ncratesbroken;
+	int		ncarrots;
+	int		ncarrotspickedup;
 
 	int		numnpcs;
 	ent_t		*sightclient;

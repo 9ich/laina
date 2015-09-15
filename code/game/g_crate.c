@@ -57,6 +57,7 @@ SP_crate(ent_t *ent)
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 	vecset(ent->r.mins, -16, -16, -16);
 	vecset(ent->r.maxs, 16, 16, 16);
+	level.ncrates++;
 	trap_LinkEntity(ent);
 }
 
@@ -141,19 +142,20 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 	vec3_t vel;
 	int i, it;
 
-	if(self->boxcontents < 1)
-		return;
-	it = self->boxcontents;
-	for(i = 0; i < self->count; i++){
-		vel[0] = crandom()*BOX_CONTENTS_SPEED;
-		vel[1] = crandom()*BOX_CONTENTS_SPEED;
-		vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
-		itemlaunch(&bg_itemlist[it], self->s.pos.trBase, vel);
+	if(self->boxcontents != 0){
+		it = self->boxcontents;
+		for(i = 0; i < self->count; i++){
+			vel[0] = crandom()*BOX_CONTENTS_SPEED;
+			vel[1] = crandom()*BOX_CONTENTS_SPEED;
+			vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
+			itemlaunch(&bg_itemlist[it], self->s.pos.trBase, vel);
+		}
 	}
 	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
 	usetargets(self, activator);
 	entfree(self);
+	level.ncratesbroken++;
 }
 
 static void

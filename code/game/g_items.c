@@ -197,6 +197,7 @@ Pickup_Token(ent_t *ent, ent_t *other)
 		other->client->ps.persistant[PERS_LIVES]++;
 		other->client->ps.stats[STAT_TOKENS] -= 100;
 	}
+	level.ncarrotspickedup++;
 	return RESPAWN_TOKEN;
 }
 
@@ -469,6 +470,9 @@ itemlaunch(item_t *item, vec3_t origin, vec3_t velocity)
 
 	dropped->flags = FL_DROPPED_ITEM;
 
+	if(dropped->item->type == IT_TOKEN)
+		level.ncarrots++;
+
 	trap_LinkEntity(dropped);
 
 	return dropped;
@@ -710,6 +714,8 @@ itemspawn(ent_t *ent, item_t *item)
 		soundindex("sound/items/poweruprespawn.wav");
 		spawnfloat("noglobalsound", "0", &ent->speed);
 	}
+	if(item->type == IT_TOKEN)
+		level.ncarrots++;
 
 }
 
