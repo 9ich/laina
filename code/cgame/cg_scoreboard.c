@@ -49,6 +49,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SB_TIME_X		(SB_SCORELINE_X + 17 * BIGCHAR_WIDTH + 8)	// width 5
 #define SB_NAME_X		(SB_SCORELINE_X + 22 * BIGCHAR_WIDTH)		// width 15
 
+// intermission board
+#define I_STATS_X		30
+#define I_STATS_Y		40
+#define I_SPACING_X		350
+#define I_SPACING_Y		80
+#define I_PERCENTAGE_X		540
+#define I_PERCENTAGE_Y		380
+
 static qboolean localclient;	// true if local client has been displayed
 
 static void
@@ -356,3 +364,43 @@ drawscoreboard(void)
 	return qtrue;
 }
 
+void
+drawintermissionscores(void)
+{
+	char s[MAX_STRING_CHARS];
+	float total, percent, x, y;
+
+	total = cg.pps.persistant[PERS_TOTALSECRETS] + cg.pps.persistant[PERS_TOTALCRATES] +
+	   cg.pps.persistant[PERS_TOTALCARROTS];
+	if(total != 0){
+		percent = 100.0f * ((cg.pps.persistant[PERS_SECRETSFOUND] + cg.pps.persistant[PERS_CRATESBROKEN] +
+		cg.pps.persistant[PERS_CARROTSPICKEDUP]) / total);
+	}else{
+		percent = 0;
+	}
+
+	x = I_STATS_X;
+	y = I_STATS_Y;
+	Com_sprintf(s, sizeof s, "%d/%d", cg.pps.persistant[PERS_CARROTSPICKEDUP],
+	   cg.pps.persistant[PERS_TOTALCARROTS]);
+	drawbigstr(x, y, "Carrots eaten:", 1.0f);
+	drawbigstr(x+I_SPACING_X, y, s, 1.0f);
+
+	y += I_SPACING_Y;
+	Com_sprintf(s, sizeof s, "%d/%d", cg.pps.persistant[PERS_CRATESBROKEN],
+	   cg.pps.persistant[PERS_TOTALCRATES]);
+	drawbigstr(x, y, "Crates smashed:", 1.0f);
+	drawbigstr(x+I_SPACING_X, y, s, 1.0f);
+
+	y += I_SPACING_Y;
+	Com_sprintf(s, sizeof s, "%d/%d", cg.pps.persistant[PERS_SECRETSFOUND],
+	   cg.pps.persistant[PERS_TOTALSECRETS]);
+	drawbigstr(x, y, "Secrets discovered:", 1.0f);
+	drawbigstr(x+I_SPACING_X, y, s, 1.0f);
+
+	Com_sprintf(s, sizeof s, "%d%%", (int)percent);
+	drawbigstr(I_PERCENTAGE_X, I_PERCENTAGE_Y, s, 1.0f);
+}
+
+
+	

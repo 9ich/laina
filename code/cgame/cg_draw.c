@@ -1246,8 +1246,7 @@ drawintermission(void)
 		drawcenterstr();
 		return;
 	}
-	cg.scorefadetime = cg.time;
-	cg.scoreboardshown = drawscoreboard();
+	drawintermissionscores();
 }
 
 static qboolean
