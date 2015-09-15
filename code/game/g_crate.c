@@ -53,7 +53,7 @@ SP_crate(ent_t *ent)
 	ent->s.eType = ET_CRATE;
 	ent->s.modelindex = modelindex(ent->model);
 	setorigin(ent, ent->s.origin);
-	veccopy(ent->s.angles, ent->s.apos.trBase);
+	veccpy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 	vecset(ent->r.mins, -16, -16, -16);
 	vecset(ent->r.maxs, 16, 16, 16);
@@ -80,7 +80,7 @@ SP_crate_checkpoint(ent_t *ent)
 	ent->s.eType = ET_CRATE;
 	ent->s.modelindex = modelindex(ent->model);
 	setorigin(ent, ent->s.origin);
-	veccopy(ent->s.angles, ent->s.apos.trBase);
+	veccpy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 	vecset(ent->r.mins, -16, -16, -16);
 	vecset(ent->r.maxs, 16, 16, 16);
@@ -129,7 +129,7 @@ SP_crate_bouncy(ent_t *ent)
 	ent->nextthink = level.time + FRAMETIME;
 	ent->takedmg = qfalse;
 	ent->s.eType = ET_CRATE_BOUNCY;
-	veccopy(ent->s.angles, ent->s.apos.trBase);
+	veccpy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 	trap_LinkEntity(ent);
 }

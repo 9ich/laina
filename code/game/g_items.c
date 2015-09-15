@@ -455,7 +455,7 @@ itemlaunch(item_t *item, vec3_t origin, vec3_t velocity)
 	setorigin(dropped, origin);
 	dropped->s.pos.trType = TR_GRAVITY;
 	dropped->s.pos.trTime = level.time;
-	veccopy(velocity, dropped->s.pos.trDelta);
+	veccpy(velocity, dropped->s.pos.trDelta);
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
 	if(g_gametype.integer == GT_CTF && item->type == IT_TEAM){								// Special case for CTF flags
@@ -487,12 +487,12 @@ itemdrop(ent_t *ent, item_t *item, float angle)
 	vec3_t velocity;
 	vec3_t angles;
 
-	veccopy(ent->s.apos.trBase, angles);
+	veccpy(ent->s.apos.trBase, angles);
 	angles[YAW] += angle;
 	angles[PITCH] = 0;	// always forward
 
 	anglevecs(angles, velocity, nil, nil);
-	vecscale(velocity, 150, velocity);
+	vecmul(velocity, 150, velocity);
 	velocity[2] += 200 + crandom() * 50;
 
 	return itemlaunch(item, ent->s.pos.trBase, velocity);
@@ -730,10 +730,10 @@ bounceitem(ent_t *ent, trace_t *trace)
 	hitTime = level.prevtime + (level.time - level.prevtime) * trace->fraction;
 	evaltrajectorydelta(&ent->s.pos, hitTime, velocity);
 	dot = vecdot(velocity, trace->plane.normal);
-	vecsadd(velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta);
+	vecmad(velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta);
 
 	// cut the velocity to keep from bouncing forever
-	vecscale(ent->s.pos.trDelta, ent->physbounce, ent->s.pos.trDelta);
+	vecmul(ent->s.pos.trDelta, ent->physbounce, ent->s.pos.trDelta);
 
 	// check for stop
 	if(trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40){
@@ -745,7 +745,7 @@ bounceitem(ent_t *ent, trace_t *trace)
 	}
 
 	vecadd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
-	veccopy(ent->r.currentOrigin, ent->s.pos.trBase);
+	veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
 	ent->s.pos.trTime = level.time;
 }
 
@@ -787,7 +787,7 @@ runitem(ent_t *ent)
 	trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
 		   ent->r.ownerNum, mask);
 
-	veccopy(tr.endpos, ent->r.currentOrigin);
+	veccpy(tr.endpos, ent->r.currentOrigin);
 
 	if(tr.startsolid)
 		tr.fraction = 0;

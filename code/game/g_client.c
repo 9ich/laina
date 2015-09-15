@@ -217,18 +217,18 @@ SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, 
 		if(!spot)
 			errorf("Couldn't find a spawn point");
 
-		veccopy(spot->s.origin, origin);
+		veccpy(spot->s.origin, origin);
 		origin[2] += 9;
-		veccopy(spot->s.angles, angles);
+		veccpy(spot->s.angles, angles);
 		return spot;
 	}
 
 	// select a random spot from the spawn points furthest away
 	rnd = random() * (numSpots / 2);
 
-	veccopy(list_spot[rnd]->s.origin, origin);
+	veccpy(list_spot[rnd]->s.origin, origin);
 	origin[2] += 9;
-	veccopy(list_spot[rnd]->s.angles, angles);
+	veccpy(list_spot[rnd]->s.angles, angles);
 
 	return list_spot[rnd];
 }
@@ -247,9 +247,9 @@ selectspawnpoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot
 
 	if(level.checkpoint != ENTITYNUM_NONE){
 		spot = &g_entities[level.checkpoint];
-		veccopy(spot->s.origin, origin);
+		veccpy(spot->s.origin, origin);
 		origin[2] += 9;
-		veccopy(spot->s.angles, angles);
+		veccpy(spot->s.angles, angles);
 		return spot;
 	}
 	return SelectRandomFurthestSpawnPoint(avoidPoint, origin, angles, isbot);
@@ -275,9 +275,9 @@ selectspawnpoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot
 	    errorf( "Couldn't find a spawn point" );
 	}
 
-	veccopy (spot->s.origin, origin);
+	veccpy (spot->s.origin, origin);
 	origin[2] += 9;
-	veccopy (spot->s.angles, angles);
+	veccpy (spot->s.angles, angles);
 
 	return spot;
 	*/
@@ -300,9 +300,9 @@ SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 
 	if(level.checkpoint != ENTITYNUM_NONE){
 		spot = &g_entities[level.checkpoint];
-		veccopy(spot->s.origin, origin);
+		veccpy(spot->s.origin, origin);
 		origin[2] += 9;
-		veccopy(spot->s.angles, angles);
+		veccpy(spot->s.angles, angles);
 		return spot;
 	}
 
@@ -318,9 +318,9 @@ SelectInitialSpawnPoint(vec3_t origin, vec3_t angles, qboolean isbot)
 	if(!spot || possibletelefrag(spot))
 		return selectspawnpoint(vec3_origin, origin, angles, isbot);
 
-	veccopy(spot->s.origin, origin);
+	veccpy(spot->s.origin, origin);
 	origin[2] += 9;
-	veccopy(spot->s.angles, angles);
+	veccpy(spot->s.angles, angles);
 
 	return spot;
 }
@@ -336,8 +336,8 @@ SelectSpectatorSpawnPoint(vec3_t origin, vec3_t angles)
 {
 	findintermissionpoint();
 
-	veccopy(level.intermissionpos, origin);
-	veccopy(level.intermissionangle, angles);
+	veccpy(level.intermissionpos, origin);
+	veccpy(level.intermissionangle, angles);
 
 	return nil;
 }
@@ -426,7 +426,7 @@ copytobodyqueue(ent_t *ent)
 	if(body->s.groundEntityNum == ENTITYNUM_NONE){
 		body->s.pos.trType = TR_GRAVITY;
 		body->s.pos.trTime = level.time;
-		veccopy(ent->client->ps.velocity, body->s.pos.trDelta);
+		veccpy(ent->client->ps.velocity, body->s.pos.trDelta);
 	}else
 		body->s.pos.trType = TR_STATIONARY;
 	body->s.event = 0;
@@ -450,10 +450,10 @@ copytobodyqueue(ent_t *ent)
 	}
 
 	body->r.svFlags = ent->r.svFlags;
-	veccopy(ent->r.mins, body->r.mins);
-	veccopy(ent->r.maxs, body->r.maxs);
-	veccopy(ent->r.absmin, body->r.absmin);
-	veccopy(ent->r.absmax, body->r.absmax);
+	veccpy(ent->r.mins, body->r.mins);
+	veccpy(ent->r.maxs, body->r.maxs);
+	veccpy(ent->r.absmin, body->r.absmin);
+	veccpy(ent->r.absmax, body->r.absmax);
 
 	body->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	body->r.contents = CONTENTS_CORPSE;
@@ -471,7 +471,7 @@ copytobodyqueue(ent_t *ent)
 		body->takedmg = qtrue;
 
 
-	veccopy(body->s.pos.trBase, body->r.currentOrigin);
+	veccpy(body->s.pos.trBase, body->r.currentOrigin);
 	trap_LinkEntity(body);
 }
 
@@ -495,8 +495,8 @@ setviewangles(ent_t *ent, vec3_t angle)
 		cmdAngle = ANGLE2SHORT(angle[i]);
 		ent->client->ps.delta_angles[i] = cmdAngle - ent->client->pers.cmd.angles[i];
 	}
-	veccopy(angle, ent->s.angles);
-	veccopy(ent->s.angles, ent->client->ps.viewangles);
+	veccpy(angle, ent->s.angles);
+	veccpy(ent->s.angles, ent->client->ps.viewangles);
 }
 
 /*
@@ -1079,8 +1079,8 @@ clientspawn(ent_t *ent)
 	ent->watertype = 0;
 	ent->flags = 0;
 
-	veccopy(playerMins, ent->r.mins);
-	veccopy(playerMaxs, ent->r.maxs);
+	veccpy(playerMins, ent->r.mins);
+	veccpy(playerMaxs, ent->r.maxs);
 
 	client->ps.clientNum = index;
 
@@ -1098,7 +1098,7 @@ clientspawn(ent_t *ent)
 	client->ps.persistant[PERS_SPAWNS]++;
 
 	setorigin(ent, spawn_origin);
-	veccopy(spawn_origin, client->ps.origin);
+	veccpy(spawn_origin, client->ps.origin);
 
 	// the respawned flag will be cleared after the attack and jump keys come up
 	client->ps.pm_flags |= PMF_RESPAWNED;
@@ -1134,7 +1134,7 @@ clientspawn(ent_t *ent)
 					break;
 				}
 			// positively link the client, even if the command times are weird
-			veccopy(ent->client->ps.origin, ent->r.currentOrigin);
+			veccpy(ent->client->ps.origin, ent->r.currentOrigin);
 
 			tent = enttemp(ent->client->ps.origin, EV_PLAYER_TELEPORT_IN);
 			tent->s.clientNum = ent->s.clientNum;

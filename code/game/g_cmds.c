@@ -301,7 +301,7 @@ Cmd_Give_f(ent_t *ent)
 			return;
 
 		it_ent = entspawn();
-		veccopy(ent->r.currentOrigin, it_ent->s.origin);
+		veccpy(ent->r.currentOrigin, it_ent->s.origin);
 		it_ent->classname = it->classname;
 		itemspawn(it_ent, it);
 		itemspawnfinish(it_ent);

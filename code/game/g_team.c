@@ -800,7 +800,7 @@ teamgetlocation(ent_t *ent)
 	best = nil;
 	bestlen = 3*8192.0*8192.0;
 
-	veccopy(ent->r.currentOrigin, origin);
+	veccpy(ent->r.currentOrigin, origin);
 
 	for(eloc = level.lochead; eloc; eloc = eloc->nexttrain){
 		len = (origin[0] - eloc->r.currentOrigin[0]) * (origin[0] - eloc->r.currentOrigin[0])
@@ -918,9 +918,9 @@ selctfspawnpoint(teamnum_t team, int teamstate, vec3_t origin, vec3_t angles, qb
 	if(!spot)
 		return selectspawnpoint(vec3_origin, origin, angles, isbot);
 
-	veccopy(spot->s.origin, origin);
+	veccpy(spot->s.origin, origin);
 	origin[2] += 9;
-	veccopy(spot->s.angles, angles);
+	veccpy(spot->s.angles, angles);
 
 	return spot;
 }

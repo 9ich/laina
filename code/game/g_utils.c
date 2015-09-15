@@ -337,9 +337,9 @@ setmovedir(vec3_t angles, vec3_t movedir)
 	static vec3_t MOVEDIR_DOWN = {0, 0, -1};
 
 	if(veccmp(angles, VEC_UP))
-		veccopy(MOVEDIR_UP, movedir);
+		veccpy(MOVEDIR_UP, movedir);
 	else if(veccmp(angles, VEC_DOWN))
-		veccopy(MOVEDIR_DOWN, movedir);
+		veccpy(MOVEDIR_DOWN, movedir);
 	else
 		anglevecs(angles, movedir, nil, nil);
 	vecclear(angles);
@@ -511,7 +511,7 @@ enttemp(vec3_t origin, int event)
 	e->eventtime = level.time;
 	e->freeafterevent = qtrue;
 
-	veccopy(origin, snapped);
+	veccpy(origin, snapped);
 	SnapVector(snapped);	// save network bandwidth
 	setorigin(e, snapped);
 
@@ -634,13 +634,13 @@ Sets the pos trajectory for a fixed position
 void
 setorigin(ent_t *ent, vec3_t origin)
 {
-	veccopy(origin, ent->s.pos.trBase);
+	veccpy(origin, ent->s.pos.trBase);
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
 	ent->s.pos.trDuration = 0;
 	vecclear(ent->s.pos.trDelta);
 
-	veccopy(origin, ent->r.currentOrigin);
+	veccpy(origin, ent->r.currentOrigin);
 }
 
 /*
@@ -657,12 +657,12 @@ DebugLine(vec3_t start, vec3_t end, int color)
 	vec3_t points[4], dir, cross, up = {0, 0, 1};
 	float dot;
 
-	veccopy(start, points[0]);
-	veccopy(start, points[1]);
+	veccpy(start, points[0]);
+	veccpy(start, points[1]);
 	//points[1][2] -= 2;
-	veccopy(end, points[2]);
+	veccpy(end, points[2]);
 	//points[2][2] -= 2;
-	veccopy(end, points[3]);
+	veccpy(end, points[3]);
 
 	vecsub(end, start, dir);
 	vecnorm(dir);
@@ -673,10 +673,10 @@ DebugLine(vec3_t start, vec3_t end, int color)
 
 	vecnorm(cross);
 
-	vecsadd(points[0], 2, cross, points[0]);
-	vecsadd(points[1], -2, cross, points[1]);
-	vecsadd(points[2], -2, cross, points[2]);
-	vecsadd(points[3], 2, cross, points[3]);
+	vecmad(points[0], 2, cross, points[0]);
+	vecmad(points[1], -2, cross, points[1]);
+	vecmad(points[2], -2, cross, points[2]);
+	vecmad(points[3], 2, cross, points[3]);
 
 	return trap_DebugPolygonCreate(color, 4, points);
 }

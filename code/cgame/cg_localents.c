@@ -224,11 +224,11 @@ reflectvelocity(localent_t *le, trace_t *trace)
 	hitTime = cg.time - cg.frametime + cg.frametime * trace->fraction;
 	evaltrajectorydelta(&le->pos, hitTime, velocity);
 	dot = vecdot(velocity, trace->plane.normal);
-	vecsadd(velocity, -2*dot, trace->plane.normal, le->pos.trDelta);
+	vecmad(velocity, -2*dot, trace->plane.normal, le->pos.trDelta);
 
-	vecscale(le->pos.trDelta, le->bouncefactor, le->pos.trDelta);
+	vecmul(le->pos.trDelta, le->bouncefactor, le->pos.trDelta);
 
-	veccopy(trace->endpos, le->pos.trBase);
+	veccpy(trace->endpos, le->pos.trBase);
 	le->pos.trTime = cg.time;
 
 	// check for stop, making sure that even on low FPS systems it doesn't bobble
@@ -261,7 +261,7 @@ addfragment(localent_t *le)
 			// we must use an explicit lighting origin, otherwise the
 			// lighting would be lost as soon as the origin went
 			// into the ground
-			veccopy(le->refEntity.origin, le->refEntity.lightingOrigin);
+			veccpy(le->refEntity.origin, le->refEntity.lightingOrigin);
 			le->refEntity.renderfx |= RF_LIGHTING_ORIGIN;
 			oldZ = le->refEntity.origin[2];
 			le->refEntity.origin[2] -= 16 * (1.0 - (float)t / SINK_TIME);
@@ -280,7 +280,7 @@ addfragment(localent_t *le)
 	cgtrace(&trace, le->refEntity.origin, nil, nil, newOrigin, -1, CONTENTS_SOLID);
 	if(trace.fraction == 1.0){
 		// still in free fall
-		veccopy(newOrigin, le->refEntity.origin);
+		veccpy(newOrigin, le->refEntity.origin);
 
 		if(le->flags & LEF_TUMBLE){
 			vec3_t angles;
@@ -585,14 +585,14 @@ addscoreplum(localent_t *le)
 
 	re->radius = NUMBER_SIZE / 2;
 
-	veccopy(le->pos.trBase, origin);
+	veccpy(le->pos.trBase, origin);
 	origin[2] += 110 - c * 100;
 
 	vecsub(cg.refdef.vieworg, origin, dir);
 	veccross(dir, up, vec);
 	vecnorm(vec);
 
-	vecsadd(origin, -10 + 20 * sin(c * 2 * M_PI), vec, origin);
+	vecmad(origin, -10 + 20 * sin(c * 2 * M_PI), vec, origin);
 
 	// if the view would be "inside" the sprite, kill the sprite
 	// so it doesn't add too much overdraw
@@ -620,7 +620,7 @@ addscoreplum(localent_t *le)
 	}
 
 	for(i = 0; i < numdigits; i++){
-		vecsadd(origin, (float)(((float)numdigits / 2) - i) * NUMBER_SIZE, vec, re->origin);
+		vecmad(origin, (float)(((float)numdigits / 2) - i) * NUMBER_SIZE, vec, re->origin);
 		re->customShader = cgs.media.numberShaders[digits[numdigits-1-i]];
 		trap_R_AddRefEntityToScene(re);
 	}

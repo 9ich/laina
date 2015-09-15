@@ -184,7 +184,7 @@ friction(void)
 
 	vel = pm->ps->velocity;
 
-	veccopy(vel, vec);
+	veccpy(vel, vec);
 	if(pml.walking)
 		vec[2] = 0;	// ignore slope movement
 
@@ -263,7 +263,7 @@ accelerate(vec3_t wishdir, float wishspeed, float accel)
 	float pushLen;
 	float canPush;
 
-	vecscale(wishdir, wishspeed, wishVelocity);
+	vecmul(wishdir, wishspeed, wishVelocity);
 	vecsub(wishVelocity, pm->ps->velocity, pushDir);
 	pushLen = vecnorm(pushDir);
 
@@ -271,7 +271,7 @@ accelerate(vec3_t wishdir, float wishspeed, float accel)
 	if(canPush > pushLen)
 		canPush = pushLen;
 
-	vecsadd(pm->ps->velocity, canPush, pushDir, pm->ps->velocity);
+	vecmad(pm->ps->velocity, canPush, pushDir, pm->ps->velocity);
 #endif
 }
 
@@ -444,7 +444,7 @@ checkwaterjump(void)
 	flatforward[2] = 0;
 	vecnorm(flatforward);
 
-	vecsadd(pm->ps->origin, 30, flatforward, spot);
+	vecmad(pm->ps->origin, 30, flatforward, spot);
 	spot[2] += 4;
 	cont = pm->pointcontents(spot, pm->ps->clientNum);
 	if(!(cont & CONTENTS_SOLID))
@@ -456,7 +456,7 @@ checkwaterjump(void)
 		return qfalse;
 
 	// jump out of water
-	vecscale(pml.forward, 200, pm->ps->velocity);
+	vecmul(pml.forward, 200, pm->ps->velocity);
 	pm->ps->velocity[2] = 350;
 
 	pm->ps->pm_flags |= PMF_TIME_WATERJUMP;
@@ -535,7 +535,7 @@ watermove(void)
 		wishvel[2] += scale * pm->cmd.upmove;
 	}
 
-	veccopy(wishvel, wishdir);
+	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
 
 	if(wishspeed > pm->ps->speed * pm_swimScale)
@@ -551,7 +551,7 @@ watermove(void)
 				pm->ps->velocity, OVERCLIP);
 
 		vecnorm(pm->ps->velocity);
-		vecscale(pm->ps->velocity, vel, pm->ps->velocity);
+		vecmul(pm->ps->velocity, vel, pm->ps->velocity);
 	}
 
 	pmslidemode(qfalse);
@@ -590,7 +590,7 @@ flymove(void)
 		wishvel[2] += scale * pm->cmd.upmove;
 	}
 
-	veccopy(wishvel, wishdir);
+	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
 
 	accelerate(wishdir, wishspeed, pm_flyaccelerate);
@@ -677,7 +677,7 @@ airmove(void)
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	wishvel[2] = 0;
 
-	veccopy(wishvel, wishdir);
+	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
 	wishspeed *= scale;
 
@@ -729,18 +729,18 @@ grapplemove(void)
 	vec3_t vel, v;
 	float vlen;
 
-	vecscale(pml.forward, -16, v);
+	vecmul(pml.forward, -16, v);
 	vecadd(pm->ps->grapplePoint, v, v);
 	vecsub(v, pm->ps->origin, vel);
 	vlen = veclen(vel);
 	vecnorm(vel);
 
 	if(vlen <= 100)
-		vecscale(vel, 10 * vlen, vel);
+		vecmul(vel, 10 * vlen, vel);
 	else
-		vecscale(vel, 800, vel);
+		vecmul(vel, 800, vel);
 
-	veccopy(vel, pm->ps->velocity);
+	veccpy(vel, pm->ps->velocity);
 
 	pml.groundplane = qfalse;
 }
@@ -805,7 +805,7 @@ walkmove(void)
 	// when going up or down slopes the wish velocity should Not be zero
 //	wishvel[2] = 0;
 
-	veccopy(wishvel, wishdir);
+	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
 	wishspeed *= scale;
 
@@ -851,7 +851,7 @@ walkmove(void)
 
 	// don't decrease velocity when going up or down a slope
 	vecnorm(pm->ps->velocity);
-	vecscale(pm->ps->velocity, vel, pm->ps->velocity);
+	vecmul(pm->ps->velocity, vel, pm->ps->velocity);
 
 	// don't do anything if standing still
 	if(!pm->ps->velocity[0] && !pm->ps->velocity[1])
@@ -883,7 +883,7 @@ deadmove(void)
 		vecclear(pm->ps->velocity);
 	else{
 		vecnorm(pm->ps->velocity);
-		vecscale(pm->ps->velocity, forward, pm->ps->velocity);
+		vecmul(pm->ps->velocity, forward, pm->ps->velocity);
 	}
 }
 
@@ -909,7 +909,7 @@ noclipmove(void)
 
 	speed = veclen(pm->ps->velocity);
 	if(speed < 1)
-		veccopy(vec3_origin, pm->ps->velocity);
+		veccpy(vec3_origin, pm->ps->velocity);
 	else{
 		drop = 0;
 
@@ -923,7 +923,7 @@ noclipmove(void)
 			newspeed = 0;
 		newspeed /= speed;
 
-		vecscale(pm->ps->velocity, newspeed, pm->ps->velocity);
+		vecmul(pm->ps->velocity, newspeed, pm->ps->velocity);
 	}
 
 	// accelerate
@@ -936,14 +936,14 @@ noclipmove(void)
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	wishvel[2] += pm->cmd.upmove;
 
-	veccopy(wishvel, wishdir);
+	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
 	wishspeed *= scale;
 
 	accelerate(wishdir, wishspeed, pm_accelerate);
 
 	// move
-	vecsadd(pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin);
+	vecmad(pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin);
 }
 
 /*
@@ -1079,7 +1079,7 @@ correctallsolid(trace_t *trace)
 	for(i = -1; i <= 1; i++){
 		for(j = -1; j <= 1; j++)
 			for(k = -1; k <= 1; k++){
-				veccopy(pm->ps->origin, point);
+				veccpy(pm->ps->origin, point);
 				point[0] += (float)i;
 				point[1] += (float)j;
 				point[2] += (float)k;
@@ -1115,7 +1115,7 @@ correctheadallsolid(trace_t *trace)
 	for(i = 1; i >= -1; i--){
 		for(j = 1; j >= -1; j--)
 			for(k = 1; k >= -1; k--){
-				veccopy(pm->ps->origin, point);
+				veccpy(pm->ps->origin, point);
 				point[0] -= (float)i;
 				point[1] -= (float)j;
 				point[2] -= (float)k;
@@ -1153,7 +1153,7 @@ groundtracemissed(void)
 
 		// if they aren't in a jumping animation and the ground is a ways away, force into it
 		// if we didn't do the trace, the player would be backflipping down staircases
-		veccopy(pm->ps->origin, point);
+		veccpy(pm->ps->origin, point);
 		point[2] -= 64;
 
 		pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
@@ -1902,10 +1902,10 @@ PmoveSingle(pmove_t *pmove)
 	pm->ps->commandTime = pmove->cmd.serverTime;
 
 	// save old org in case we get stuck
-	veccopy(pm->ps->origin, pml.prevorigin);
+	veccpy(pm->ps->origin, pml.prevorigin);
 
 	// save old velocity for crashlanding
-	veccopy(pm->ps->velocity, pml.prevvelocity);
+	veccpy(pm->ps->velocity, pml.prevvelocity);
 
 	pml.frametime = pml.msec * 0.001;
 

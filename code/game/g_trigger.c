@@ -177,7 +177,7 @@ AimAtTarget(ent_t *self)
 	float dist;
 
 	vecadd(self->r.absmin, self->r.absmax, origin);
-	vecscale(origin, 0.5, origin);
+	vecmul(origin, 0.5, origin);
 
 	ent = picktarget(self->target);
 	if(!ent){
@@ -199,7 +199,7 @@ AimAtTarget(ent_t *self)
 	dist = vecnorm(self->s.origin2);
 
 	forward = dist / time;
-	vecscale(self->s.origin2, forward, self->s.origin2);
+	vecmul(self->s.origin2, forward, self->s.origin2);
 
 	self->s.origin2[2] = time * gravity;
 }
@@ -237,7 +237,7 @@ Use_target_push(ent_t *self, ent_t *other, ent_t *activator)
 	if(activator->client->ps.powerups[PW_FLIGHT])
 		return;
 
-	veccopy(self->s.origin2, activator->client->ps.velocity);
+	veccpy(self->s.origin2, activator->client->ps.velocity);
 
 	// play fly sound every 1.5 seconds
 	if(activator->flysounddebouncetime < level.time){
@@ -257,15 +257,15 @@ SP_target_push(ent_t *self)
 	if(!self->speed)
 		self->speed = 1000;
 	setmovedir(self->s.angles, self->s.origin2);
-	vecscale(self->s.origin2, self->speed, self->s.origin2);
+	vecmul(self->s.origin2, self->speed, self->s.origin2);
 
 	if(self->spawnflags & 1)
 		self->noiseindex = soundindex("sound/world/jumppad.wav");
 	else
 		self->noiseindex = soundindex("sound/misc/windfly.wav");
 	if(self->target){
-		veccopy(self->s.origin, self->r.absmin);
-		veccopy(self->s.origin, self->r.absmax);
+		veccpy(self->s.origin, self->r.absmin);
+		veccpy(self->s.origin, self->r.absmax);
 		self->think = AimAtTarget;
 		self->nextthink = level.time + FRAMETIME;
 	}

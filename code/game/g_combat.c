@@ -434,7 +434,7 @@ player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int means
 	self->s.angles[2] = 0;
 	LookAtKiller(self, inflictor, attacker);
 
-	veccopy(self->s.angles, self->client->ps.viewangles);
+	veccpy(self->s.angles, self->client->ps.viewangles);
 
 	self->s.loopSound = 0;
 
@@ -561,13 +561,13 @@ RaySphereIntersections(vec3_t origin, float radius, vec3_t point, vec3_t dir, ve
 	d = b * b - 4 * c;
 	if(d > 0){
 		t = (-b + sqrt(d)) / 2;
-		vecsadd(point, t, dir, intersections[0]);
+		vecmad(point, t, dir, intersections[0]);
 		t = (-b - sqrt(d)) / 2;
-		vecsadd(point, t, dir, intersections[1]);
+		vecmad(point, t, dir, intersections[1]);
 		return 2;
 	}else if(d == 0){
 		t = (-b) / 2;
-		vecsadd(point, t, dir, intersections[0]);
+		vecmad(point, t, dir, intersections[0]);
 		return 1;
 	}
 	return 0;
@@ -663,7 +663,7 @@ entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 
 		mass = 200;
 
-		vecscale(dir, g_knockback.value * (float)knockback / mass, kvel);
+		vecmul(dir, g_knockback.value * (float)knockback / mass, kvel);
 		vecadd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 
 		// set the timer so that the other client can't cancel
@@ -745,10 +745,10 @@ entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 		client->dmgblood += take;
 		client->dmgknockback += knockback;
 		if(dir){
-			veccopy(dir, client->dmgfrom);
+			veccpy(dir, client->dmgfrom);
 			client->dmgfromworld = qfalse;
 		}else{
-			veccopy(targ->r.currentOrigin, client->dmgfrom);
+			veccpy(targ->r.currentOrigin, client->dmgfrom);
 			client->dmgfromworld = qtrue;
 		}
 	}
@@ -805,9 +805,9 @@ candamage(ent_t *targ, vec3_t origin)
 	// use the midpoint of the bounds instead of the origin, because
 	// bmodels may have their origin is 0,0,0
 	vecadd(targ->r.absmin, targ->r.absmax, midpoint);
-	vecscale(midpoint, 0.5, midpoint);
+	vecmul(midpoint, 0.5, midpoint);
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	trap_Trace(&tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
 
 	if(tr.fraction == 1.0 || tr.entityNum == targ->s.number)
@@ -815,7 +815,7 @@ candamage(ent_t *targ, vec3_t origin)
 
 	// this should probably check in the plane of projection,
 	// rather than in world coordinate
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmaxs[0];
 	dest[1] += offsetmaxs[1];
 	dest[2] += offsetmaxs[2];
@@ -824,7 +824,7 @@ candamage(ent_t *targ, vec3_t origin)
 	if(tr.fraction == 1.0)
 		return qtrue;
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmaxs[0];
 	dest[1] += offsetmins[1];
 	dest[2] += offsetmaxs[2];
@@ -833,7 +833,7 @@ candamage(ent_t *targ, vec3_t origin)
 	if(tr.fraction == 1.0)
 		return qtrue;
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmins[0];
 	dest[1] += offsetmaxs[1];
 	dest[2] += offsetmaxs[2];
@@ -842,7 +842,7 @@ candamage(ent_t *targ, vec3_t origin)
 	if(tr.fraction == 1.0)
 		return qtrue;
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmins[0];
 	dest[1] += offsetmins[1];
 	dest[2] += offsetmaxs[2];
@@ -851,7 +851,7 @@ candamage(ent_t *targ, vec3_t origin)
 	if(tr.fraction == 1.0)
 		return qtrue;
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmaxs[0];
 	dest[1] += offsetmaxs[1];
 	dest[2] += offsetmins[2];
@@ -860,7 +860,7 @@ candamage(ent_t *targ, vec3_t origin)
 	if(tr.fraction == 1.0)
 		return qtrue;
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmaxs[0];
 	dest[1] += offsetmins[1];
 	dest[2] += offsetmins[2];
@@ -869,7 +869,7 @@ candamage(ent_t *targ, vec3_t origin)
 	if(tr.fraction == 1.0)
 		return qtrue;
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmins[0];
 	dest[1] += offsetmaxs[1];
 	dest[2] += offsetmins[2];
@@ -878,7 +878,7 @@ candamage(ent_t *targ, vec3_t origin)
 	if(tr.fraction == 1.0)
 		return qtrue;
 
-	veccopy(midpoint, dest);
+	veccpy(midpoint, dest);
 	dest[0] += offsetmins[0];
 	dest[1] += offsetmins[2];
 	dest[2] += offsetmins[2];

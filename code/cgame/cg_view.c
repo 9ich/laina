@@ -88,7 +88,7 @@ testmodel_f(void)
 		return;
 	}
 
-	vecsadd(cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testmodelent.origin);
+	vecmad(cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testmodelent.origin);
 
 	angles[PITCH] = 0;
 	angles[YAW] = 180 + cg.refdefviewangles[1];
@@ -159,10 +159,10 @@ addtestmodel(void)
 
 	// if testing a gun, set the origin relative to the view origin
 	if(cg.testgun){
-		veccopy(cg.refdef.vieworg, cg.testmodelent.origin);
-		veccopy(cg.refdef.viewaxis[0], cg.testmodelent.axis[0]);
-		veccopy(cg.refdef.viewaxis[1], cg.testmodelent.axis[1]);
-		veccopy(cg.refdef.viewaxis[2], cg.testmodelent.axis[2]);
+		veccpy(cg.refdef.vieworg, cg.testmodelent.origin);
+		veccpy(cg.refdef.viewaxis[0], cg.testmodelent.axis[0]);
+		veccpy(cg.refdef.viewaxis[1], cg.testmodelent.axis[1]);
+		veccpy(cg.refdef.viewaxis[2], cg.testmodelent.axis[2]);
 
 		// allow the position to be adjusted
 		for(i = 0; i<3; i++){
@@ -232,7 +232,7 @@ offsetthirdpersonview(void)
 	pps = &cg.pps;
 	cg.refdef.vieworg[2] += pps->viewheight;
 
-	veccopy(cg.refdefviewangles, focusAngles);
+	veccpy(cg.refdefviewangles, focusAngles);
 
 	// if dead, look at killer
 	if(pps->stats[STAT_HEALTH] <= 0){
@@ -243,8 +243,8 @@ offsetthirdpersonview(void)
 	focusAngles[PITCH] = MIN(89.999f, focusAngles[PITCH]);
 	anglevecs(focusAngles, forward, nil, nil);
 
-	vecsadd(cg.refdef.vieworg, FOCUS_DISTANCE, forward, focusPoint);
-	veccopy(cg.refdef.vieworg, view);
+	vecmad(cg.refdef.vieworg, FOCUS_DISTANCE, forward, focusPoint);
+	veccpy(cg.refdef.vieworg, view);
 	view[2] += 8;
 	anglevecs(cg.refdefviewangles, forward, right, up);
 
@@ -255,8 +255,8 @@ offsetthirdpersonview(void)
 		forwardScale = 1.0f;
 		sideScale = 0.0f;
 	}
-	vecsadd(view, -cg_thirdPersonRange.value * forwardScale, forward, view);
-	vecsadd(view, -cg_thirdPersonRange.value * sideScale, right, view);
+	vecmad(view, -cg_thirdPersonRange.value * forwardScale, forward, view);
+	vecmad(view, -cg_thirdPersonRange.value * sideScale, right, view);
 
 	// trace a ray from the origin to the viewpoint to make sure
 	// the view isn't in a solid block.  Use an 8 by 8 block to
@@ -265,18 +265,18 @@ offsetthirdpersonview(void)
 		cgtrace(&trace, cg.refdef.vieworg, mins, maxs, view,
 		   pps->clientNum, MASK_SOLID);
 		if(trace.fraction != 1.0f){
-			veccopy(trace.endpos, view);
+			veccpy(trace.endpos, view);
 			view[2] += (1.0f - trace.fraction) * 32;
 			// try another trace to this position, because
 			// a tunnel may have the ceiling close enough
 			// that this is poking out
 			cgtrace(&trace, cg.refdef.vieworg, mins, maxs, view,
 			   pps->clientNum, MASK_SOLID);
-			veccopy(trace.endpos, view);
+			veccpy(trace.endpos, view);
 		}
 	}
 
-	veccopy(view, cg.refdef.vieworg);
+	veccpy(view, cg.refdef.vieworg);
 
 	// select pitch to look at focus point from vieword
 	vecsub(focusPoint, cg.refdef.vieworg, focusPoint);
@@ -362,7 +362,7 @@ offsetfirstpersonview(void)
 #endif
 
 	// add angles based on velocity
-	veccopy(cg.pps.velocity, predictedVelocity);
+	veccpy(cg.pps.velocity, predictedVelocity);
 
 	delta = vecdot(predictedVelocity, cg.refdef.viewaxis[0]);
 	angles[PITCH] += delta * cg_runpitch.value;
@@ -426,8 +426,8 @@ offsetfirstpersonview(void)
 
 		cg.refdef.vieworg[2] -= NECK_LENGTH;
 		anglevecs(cg.refdefviewangles, forward, nil, up);
-		vecsadd(cg.refdef.vieworg, 3, forward, cg.refdef.vieworg);
-		vecsadd(cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg);
+		vecmad(cg.refdef.vieworg, 3, forward, cg.refdef.vieworg);
+		vecmad(cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg);
 	}
 #endif
 }
@@ -560,9 +560,9 @@ damageblendblob(void)
 	ent.reType = RT_SPRITE;
 	ent.renderfx = RF_FIRST_PERSON;
 
-	vecsadd(cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin);
-	vecsadd(ent.origin, cg.dmgx * -8, cg.refdef.viewaxis[1], ent.origin);
-	vecsadd(ent.origin, cg.dmgy * 8, cg.refdef.viewaxis[2], ent.origin);
+	vecmad(cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin);
+	vecmad(ent.origin, cg.dmgx * -8, cg.refdef.viewaxis[1], ent.origin);
+	vecmad(ent.origin, cg.dmgy * 8, cg.refdef.viewaxis[2], ent.origin);
 
 	ent.radius = cg.dmgval * 3;
 	ent.customShader = cgs.media.viewBloodShader;
@@ -595,9 +595,9 @@ calcviewvalues(void)
 	    if(cg.cameramode){
 	            vec3_t origin, angles;
 	            if(trap_getCameraInfo(cg.time, &origin, &angles)){
-	                    veccopy(origin, cg.refdef.vieworg);
+	                    veccpy(origin, cg.refdef.vieworg);
 	                    angles[ROLL] = 0;
-	                    veccopy(angles, cg.refdefviewangles);
+	                    veccpy(angles, cg.refdefviewangles);
 	                    AnglesToAxis( cg.refdefviewangles, cg.refdef.viewaxis );
 	                    return calcfov();
 	            }else{
@@ -607,8 +607,8 @@ calcviewvalues(void)
 	*/
 	// intermission view
 	if(ps->pm_type == PM_INTERMISSION){
-		veccopy(ps->origin, cg.refdef.vieworg);
-		veccopy(ps->viewangles, cg.refdefviewangles);
+		veccpy(ps->origin, cg.refdef.vieworg);
+		veccpy(ps->viewangles, cg.refdefviewangles);
 		AnglesToAxis(cg.refdefviewangles, cg.refdef.viewaxis);
 		return calcfov();
 	}
@@ -618,9 +618,9 @@ calcviewvalues(void)
 	cg.xyspeed = sqrt(ps->velocity[0] * ps->velocity[0] +
 			  ps->velocity[1] * ps->velocity[1]);
 
-	veccopy(ps->origin, cg.refdef.vieworg);
+	veccpy(ps->origin, cg.refdef.vieworg);
 	if(cg_thirdPerson.integer != 3)
-		veccopy(ps->viewangles, cg.refdefviewangles);
+		veccpy(ps->viewangles, cg.refdefviewangles);
 	if(cg_thirdPerson.integer == 2)
 		vecset(ps->viewangles, 0, 0, 0);
 
@@ -637,7 +637,7 @@ calcviewvalues(void)
 		t = cg.time - cg.predictederrtime;
 		f = (cg_errorDecay.value - t) / cg_errorDecay.value;
 		if(f > 0 && f < 1)
-			vecsadd(cg.refdef.vieworg, f, cg.predictederr, cg.refdef.vieworg);
+			vecmad(cg.refdef.vieworg, f, cg.predictederr, cg.refdef.vieworg);
 		else
 			cg.predictederrtime = 0;
 	}

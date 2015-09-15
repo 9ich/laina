@@ -39,9 +39,9 @@ entontag(refEntity_t *entity, const refEntity_t *parent,
 		       1.0 - parent->backlerp, tagName);
 
 	// FIXME: allow origin offsets along tag?
-	veccopy(parent->origin, entity->origin);
+	veccpy(parent->origin, entity->origin);
 	for(i = 0; i < 3; i++)
-		vecsadd(entity->origin, lerped.origin[i], parent->axis[i], entity->origin);
+		vecmad(entity->origin, lerped.origin[i], parent->axis[i], entity->origin);
 
 	// had to cast away the const to avoid compiler problems...
 	MatrixMultiply(lerped.axis, ((refEntity_t*)parent)->axis, entity->axis);
@@ -66,9 +66,9 @@ rotentontag(refEntity_t *entity, const refEntity_t *parent,
 		       1.0 - parent->backlerp, tagName);
 
 	// FIXME: allow origin offsets along tag?
-	veccopy(parent->origin, entity->origin);
+	veccpy(parent->origin, entity->origin);
 	for(i = 0; i < 3; i++)
-		vecsadd(entity->origin, lerped.origin[i], parent->axis[i], entity->origin);
+		vecmad(entity->origin, lerped.origin[i], parent->axis[i], entity->origin);
 
 	// had to cast away the const to avoid compiler problems...
 	MatrixMultiply(entity->axis, lerped.axis, tempAxis);
@@ -99,7 +99,7 @@ drawentshadow(cent_t *cent, float *shadowPlane)
 		return qfalse;
 
 	// send a trace down from the entity to the ground
-	veccopy(cent->lerporigin, end);
+	veccpy(cent->lerporigin, end);
 	end[2] -= SHADOW_DISTANCE;
 	trap_CM_BoxTrace(&trace, cent->lerporigin, end, mins, maxs, 0, MASK_PLAYERSOLID);
 	// no shadow if too high
@@ -218,8 +218,8 @@ dogeneral(cent_t *cent)
 	ent.oldframe = cent->lerpframe.oldframe;
 	ent.backlerp = cent->lerpframe.backlerp;
 
-	veccopy(cent->lerporigin, ent.origin);
-	veccopy(cent->lerporigin, ent.oldorigin);
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
 
 	ent.hModel = cgs.gamemodels[s1->modelindex];
 
@@ -285,7 +285,7 @@ doitem(cent_t *cent)
 	if(cg_simpleItems.integer && item->type != IT_TEAM){
 		memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_SPRITE;
-		veccopy(cent->lerporigin, ent.origin);
+		veccpy(cent->lerporigin, ent.origin);
 		ent.radius = 14;
 		ent.customShader = cg_items[es->modelindex].icon;
 		ent.shaderRGBA[0] = 255;
@@ -304,10 +304,10 @@ doitem(cent_t *cent)
 
 	// autorotate at one of two speeds
 	if(item->type == IT_LIFE){
-		veccopy(cg.autoanglesfast, cent->lerpangles);
+		veccpy(cg.autoanglesfast, cent->lerpangles);
 		AxisCopy(cg.autoaxisfast, ent.axis);
 	}else{
-		veccopy(cg.autoangles, cent->lerpangles);
+		veccpy(cg.autoangles, cent->lerpangles);
 		AxisCopy(cg.autoAxis, ent.axis);
 	}
 
@@ -340,8 +340,8 @@ doitem(cent_t *cent)
 
 	ent.hModel = cg_items[es->modelindex].models[0];
 
-	veccopy(cent->lerporigin, ent.origin);
-	veccopy(cent->lerporigin, ent.oldorigin);
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
 
 	ent.nonNormalizedAxes = qfalse;
 
@@ -349,9 +349,9 @@ doitem(cent_t *cent)
 	msec = cg.time - cent->misctime;
 	if(msec >= 0 && msec < ITEM_SCALEUP_TIME){
 		frac = (float)msec / ITEM_SCALEUP_TIME;
-		vecscale(ent.axis[0], frac, ent.axis[0]);
-		vecscale(ent.axis[1], frac, ent.axis[1]);
-		vecscale(ent.axis[2], frac, ent.axis[2]);
+		vecmul(ent.axis[0], frac, ent.axis[0]);
+		vecmul(ent.axis[1], frac, ent.axis[1]);
+		vecmul(ent.axis[2], frac, ent.axis[2]);
 		ent.nonNormalizedAxes = qtrue;
 	}else
 		frac = 1.0;
@@ -362,9 +362,9 @@ doitem(cent_t *cent)
 
 	// increase the size of the weapons when they are presented as items
 	if(item->type == IT_WEAPON){
-		vecscale(ent.axis[0], 1.5, ent.axis[0]);
-		vecscale(ent.axis[1], 1.5, ent.axis[1]);
-		vecscale(ent.axis[2], 1.5, ent.axis[2]);
+		vecmul(ent.axis[0], 1.5, ent.axis[0]);
+		vecmul(ent.axis[1], 1.5, ent.axis[1]);
+		vecmul(ent.axis[2], 1.5, ent.axis[2]);
 		ent.nonNormalizedAxes = qtrue;
 	}
 
@@ -389,9 +389,9 @@ doitem(cent_t *cent)
 
 				// scale up if respawning
 				if(frac != 1.0){
-					vecscale(ent.axis[0], frac, ent.axis[0]);
-					vecscale(ent.axis[1], frac, ent.axis[1]);
-					vecscale(ent.axis[2], frac, ent.axis[2]);
+					vecmul(ent.axis[0], frac, ent.axis[0]);
+					vecmul(ent.axis[1], frac, ent.axis[1]);
+					vecmul(ent.axis[2], frac, ent.axis[2]);
 					ent.nonNormalizedAxes = qtrue;
 				}
 				trap_R_AddRefEntityToScene(&ent);
@@ -418,7 +418,7 @@ domissile(cent_t *cent)
 	weapon = &cg_weapons[s1->weapon];
 
 	// calculate the axis
-	veccopy(s1->angles, cent->lerpangles);
+	veccpy(s1->angles, cent->lerpangles);
 
 	// add trails
 	if(weapon->missileTrailFunc)
@@ -456,8 +456,8 @@ domissile(cent_t *cent)
 
 	// create the render entity
 	memset(&ent, 0, sizeof(ent));
-	veccopy(cent->lerporigin, ent.origin);
-	veccopy(cent->lerporigin, ent.oldorigin);
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
 
 	if(cent->currstate.weapon == WP_PLASMAGUN){
 		ent.reType = RT_SPRITE;
@@ -511,7 +511,7 @@ dograpple(cent_t *cent)
 	weapon = &cg_weapons[s1->weapon];
 
 	// calculate the axis
-	veccopy(s1->angles, cent->lerpangles);
+	veccpy(s1->angles, cent->lerpangles);
 
 #if 0	// FIXME add grapple pull sound here..?
 	// add missile sound
@@ -525,8 +525,8 @@ dograpple(cent_t *cent)
 
 	// create the render entity
 	memset(&ent, 0, sizeof(ent));
-	veccopy(cent->lerporigin, ent.origin);
-	veccopy(cent->lerporigin, ent.oldorigin);
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
 
 	// flicker between two skins
 	ent.skinNum = cg.clframe & 1;
@@ -555,8 +555,8 @@ domover(cent_t *cent)
 
 	// create the render entity
 	memset(&ent, 0, sizeof(ent));
-	veccopy(cent->lerporigin, ent.origin);
-	veccopy(cent->lerporigin, ent.oldorigin);
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
 	AnglesToAxis(cent->lerpangles, ent.axis);
 
 	ent.renderfx = RF_NOSHADOW;
@@ -593,8 +593,8 @@ docrate(cent_t *cent)
 
 	// create the render entity
 	memset(&ent, 0, sizeof(ent));
-	veccopy(cent->lerporigin, ent.origin);
-	veccopy(cent->lerporigin, ent.oldorigin);
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
 	AnglesToAxis(cent->lerpangles, ent.axis);
 	ent.nonNormalizedAxes = qfalse;
 
@@ -647,8 +647,8 @@ drawbeam(cent_t *cent)
 
 	// create the render entity
 	memset(&ent, 0, sizeof(ent));
-	veccopy(s1->pos.trBase, ent.origin);
-	veccopy(s1->origin2, ent.oldorigin);
+	veccpy(s1->pos.trBase, ent.origin);
+	veccpy(s1->origin2, ent.oldorigin);
 	AxisClear(ent.axis);
 	ent.reType = RT_BEAM;
 
@@ -673,8 +673,8 @@ doportal(cent_t *cent)
 
 	// create the render entity
 	memset(&ent, 0, sizeof(ent));
-	veccopy(cent->lerporigin, ent.origin);
-	veccopy(s1->origin2, ent.oldorigin);
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(s1->origin2, ent.oldorigin);
 	ByteToDir(s1->eventParm, ent.axis[0]);
 	vecperp(ent.axis[1], ent.axis[0]);
 
@@ -707,15 +707,15 @@ adjustposformover(const vec3_t in, int moverNum, int fromTime, int toTime, vec3_
 	vec3_t oldAngles, angles, deltaAngles;
 
 	if(moverNum <= 0 || moverNum >= ENTITYNUM_MAX_NORMAL){
-		veccopy(in, out);
-		veccopy(angles_in, angles_out);
+		veccpy(in, out);
+		veccpy(angles_in, angles_out);
 		return;
 	}
 
 	cent = &cg_entities[moverNum];
 	if(cent->currstate.eType != ET_MOVER){
-		veccopy(in, out);
-		veccopy(angles_in, angles_out);
+		veccpy(in, out);
+		veccpy(angles_in, angles_out);
 		return;
 	}
 
@@ -822,8 +822,8 @@ doteambase(cent_t *cent)
 		// show the flag base
 		memset(&model, 0, sizeof(model));
 		model.reType = RT_MODEL;
-		veccopy(cent->lerporigin, model.lightingOrigin);
-		veccopy(cent->lerporigin, model.origin);
+		veccpy(cent->lerporigin, model.lightingOrigin);
+		veccpy(cent->lerporigin, model.origin);
 		AnglesToAxis(cent->currstate.angles, model.axis);
 		if(cent->currstate.modelindex == TEAM_RED)
 			model.hModel = cgs.media.redFlagBaseModel;
@@ -887,7 +887,7 @@ addcentity(cent_t *cent)
 		break;
 	case ET_CHECKPOINTHALO:
 		dogeneral(cent);
-		veccopy(cent->lerporigin, v);
+		veccpy(cent->lerporigin, v);
 		v[2] += 3.0f;
 		trap_R_AddAdditiveLightToScene(v,
 		   200 + 25 * sin(1000 + cg.time/600.0f),

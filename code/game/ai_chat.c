@@ -419,18 +419,18 @@ BotValidChatPosition(bot_state_t *bs)
 	//if(bs->cur_ps.groundEntityNum != ENTITYNUM_NONE)
 	return qfalse;
 	//do not chat if in lava or slime
-	veccopy(bs->origin, point);
+	veccpy(bs->origin, point);
 	point[2] -= 24;
 	if(trap_PointContents(point, bs->entitynum) & (CONTENTS_LAVA|CONTENTS_SLIME))
 		return qfalse;
 	//do not chat if under water
-	veccopy(bs->origin, point);
+	veccpy(bs->origin, point);
 	point[2] += 32;
 	if(trap_PointContents(point, bs->entitynum) & MASK_WATER)
 		return qfalse;
 	//must be standing on the world entity
-	veccopy(bs->origin, start);
-	veccopy(bs->origin, end);
+	veccpy(bs->origin, start);
+	veccpy(bs->origin, end);
 	start[2] += 1;
 	end[2] -= 10;
 	trap_AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, mins, maxs);

@@ -40,10 +40,10 @@ bouncemissile(ent_t *ent, trace_t *trace)
 	hitTime = level.prevtime + (level.time - level.prevtime) * trace->fraction;
 	evaltrajectorydelta(&ent->s.pos, hitTime, velocity);
 	dot = vecdot(velocity, trace->plane.normal);
-	vecsadd(velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta);
+	vecmad(velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta);
 
 	if(ent->s.eFlags & EF_BOUNCE_HALF){
-		vecscale(ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta);
+		vecmul(ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta);
 		// check for stop
 		if(trace->plane.normal[2] > 0.2 && veclen(ent->s.pos.trDelta) < 40){
 			setorigin(ent, trace->endpos);
@@ -53,7 +53,7 @@ bouncemissile(ent_t *ent, trace_t *trace)
 	}
 
 	vecadd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
-	veccopy(ent->r.currentOrigin, ent->s.pos.trBase);
+	veccpy(ent->r.currentOrigin, ent->s.pos.trBase);
 	ent->s.pos.trTime = level.time;
 }
 
@@ -149,7 +149,7 @@ missileimpact(ent_t *ent, trace_t *trace)
 
 			snapvectortowards(v, ent->s.pos.trBase);	// save net bandwidth
 		}else{
-			veccopy(trace->endpos, v);
+			veccpy(trace->endpos, v);
 			addevent(nent, EV_MISSILE_MISS, DirToByte(trace->plane.normal));
 			ent->enemy = nil;
 		}
@@ -168,7 +168,7 @@ missileimpact(ent_t *ent, trace_t *trace)
 		ent->nextthink = level.time + FRAMETIME;
 
 		ent->parent->client->ps.pm_flags |= PMF_GRAPPLE_PULL;
-		veccopy(ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
+		veccpy(ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
 
 		trap_LinkEntity(ent);
 		trap_LinkEntity(nent);
@@ -236,7 +236,7 @@ runmissile(ent_t *ent)
 		trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, ent->clipmask);
 		tr.fraction = 0;
 	}else
-		veccopy(tr.endpos, ent->r.currentOrigin);
+		veccpy(tr.endpos, ent->r.currentOrigin);
 
 	trap_LinkEntity(ent);
 
@@ -283,12 +283,12 @@ fire_bolt(ent_t *self, vec3_t start, vec3_t dir)
 	bolt->s.pos.trType = TR_LINEAR;
 	// move a bit on the very first frame
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;
-	veccopy(start, bolt->s.pos.trBase);
-	vecscale(dir, 1000, bolt->s.pos.trDelta);
+	veccpy(start, bolt->s.pos.trBase);
+	vecmul(dir, 1000, bolt->s.pos.trDelta);
 	// save net bandwidth
 	SnapVector(bolt->s.pos.trDelta);
 
-	veccopy(start, bolt->r.currentOrigin);
+	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
 }
@@ -325,11 +325,11 @@ fire_plasma(ent_t *self, vec3_t start, vec3_t dir)
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
-	veccopy(start, bolt->s.pos.trBase);
-	vecscale(dir, 2000, bolt->s.pos.trDelta);
+	veccpy(start, bolt->s.pos.trBase);
+	vecmul(dir, 2000, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 
-	veccopy(start, bolt->r.currentOrigin);
+	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
 }
@@ -366,11 +366,11 @@ fire_grenade(ent_t *self, vec3_t start, vec3_t dir)
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
-	veccopy(start, bolt->s.pos.trBase);
-	vecscale(dir, 700, bolt->s.pos.trDelta);
+	veccpy(start, bolt->s.pos.trBase);
+	vecmul(dir, 700, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
 
-	veccopy(start, bolt->r.currentOrigin);
+	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
 }
@@ -406,10 +406,10 @@ fire_bfg(ent_t *self, vec3_t start, vec3_t dir)
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
-	veccopy(start, bolt->s.pos.trBase);
-	vecscale(dir, 2000, bolt->s.pos.trDelta);
+	veccpy(start, bolt->s.pos.trBase);
+	vecmul(dir, 2000, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
-	veccopy(start, bolt->r.currentOrigin);
+	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
 }
@@ -445,10 +445,10 @@ fire_rocket(ent_t *self, vec3_t start, vec3_t dir)
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
-	veccopy(start, bolt->s.pos.trBase);
-	vecscale(dir, 900, bolt->s.pos.trDelta);
+	veccpy(start, bolt->s.pos.trBase);
+	vecmul(dir, 900, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta);	// save net bandwidth
-	veccopy(start, bolt->r.currentOrigin);
+	veccpy(start, bolt->r.currentOrigin);
 
 	return bolt;
 }
@@ -481,10 +481,10 @@ fire_grapple(ent_t *self, vec3_t start, vec3_t dir)
 	hook->s.pos.trType = TR_LINEAR;
 	hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;	// move a bit on the very first frame
 	hook->s.otherEntityNum = self->s.number;// use to match beam in client
-	veccopy(start, hook->s.pos.trBase);
-	vecscale(dir, 800, hook->s.pos.trDelta);
+	veccpy(start, hook->s.pos.trBase);
+	vecmul(dir, 800, hook->s.pos.trDelta);
 	SnapVector(hook->s.pos.trDelta);	// save net bandwidth
-	veccopy(start, hook->r.currentOrigin);
+	veccpy(start, hook->r.currentOrigin);
 
 	self->client->hook = hook;
 

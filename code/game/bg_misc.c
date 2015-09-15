@@ -430,16 +430,16 @@ evaltrajectory(const trajectory_t *tr, int atTime, vec3_t result)
 	switch(tr->trType){
 	case TR_STATIONARY:
 	case TR_INTERPOLATE:
-		veccopy(tr->trBase, result);
+		veccpy(tr->trBase, result);
 		break;
 	case TR_LINEAR:
 		deltaTime = (atTime - tr->trTime) * 0.001;	// milliseconds to seconds
-		vecsadd(tr->trBase, deltaTime, tr->trDelta, result);
+		vecmad(tr->trBase, deltaTime, tr->trDelta, result);
 		break;
 	case TR_SINE:
 		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
 		phase = sin(deltaTime * M_PI * 2);
-		vecsadd(tr->trBase, phase, tr->trDelta, result);
+		vecmad(tr->trBase, phase, tr->trDelta, result);
 		break;
 	case TR_LINEAR_STOP:
 		if(atTime > tr->trTime + tr->trDuration)
@@ -447,11 +447,11 @@ evaltrajectory(const trajectory_t *tr, int atTime, vec3_t result)
 		deltaTime = (atTime - tr->trTime) * 0.001;	// milliseconds to seconds
 		if(deltaTime < 0)
 			deltaTime = 0;
-		vecsadd(tr->trBase, deltaTime, tr->trDelta, result);
+		vecmad(tr->trBase, deltaTime, tr->trDelta, result);
 		break;
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001;			// milliseconds to seconds
-		vecsadd(tr->trBase, deltaTime, tr->trDelta, result);
+		vecmad(tr->trBase, deltaTime, tr->trDelta, result);
 		result[2] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime;	// FIXME: local gravity...
 		break;
 	default:
@@ -479,24 +479,24 @@ evaltrajectorydelta(const trajectory_t *tr, int atTime, vec3_t result)
 		vecclear(result);
 		break;
 	case TR_LINEAR:
-		veccopy(tr->trDelta, result);
+		veccpy(tr->trDelta, result);
 		break;
 	case TR_SINE:
 		deltaTime = (atTime - tr->trTime) / (float)tr->trDuration;
 		phase = cos(deltaTime * M_PI * 2);	// derivative of sin = cos
 		phase *= 0.5;
-		vecscale(tr->trDelta, phase, result);
+		vecmul(tr->trDelta, phase, result);
 		break;
 	case TR_LINEAR_STOP:
 		if(atTime > tr->trTime + tr->trDuration){
 			vecclear(result);
 			return;
 		}
-		veccopy(tr->trDelta, result);
+		veccpy(tr->trDelta, result);
 		break;
 	case TR_GRAVITY:
 		deltaTime = (atTime - tr->trTime) * 0.001;	// milliseconds to seconds
-		veccopy(tr->trDelta, result);
+		veccpy(tr->trDelta, result);
 		result[2] -= DEFAULT_GRAVITY * deltaTime;	// FIXME: local gravity...
 		break;
 	default:
@@ -671,7 +671,7 @@ touchjumppad(playerState_t *ps, entityState_t *jumppad)
 	ps->jumppad_ent = jumppad->number;
 	ps->jumppad_frame = ps->pmove_framecount;
 	// give the player the velocity from the jumppad
-	veccopy(jumppad->origin2, ps->velocity);
+	veccpy(jumppad->origin2, ps->velocity);
 }
 
 qboolean
@@ -717,14 +717,14 @@ playerstate2entstate(playerState_t *ps, entityState_t *s, qboolean snap)
 	s->number = ps->clientNum;
 
 	s->pos.trType = TR_INTERPOLATE;
-	veccopy(ps->origin, s->pos.trBase);
+	veccpy(ps->origin, s->pos.trBase);
 	if(snap)
 		SnapVector(s->pos.trBase);
 	// set the trDelta for flag direction
-	veccopy(ps->velocity, s->pos.trDelta);
+	veccpy(ps->velocity, s->pos.trDelta);
 
 	s->apos.trType = TR_INTERPOLATE;
-	veccopy(ps->viewangles, s->apos.trBase);
+	veccpy(ps->viewangles, s->apos.trBase);
 	if(snap)
 		SnapVector(s->apos.trBase);
 
@@ -789,18 +789,18 @@ playerstate2entstatexerp(playerState_t *ps, entityState_t *s, int time, qboolean
 	s->number = ps->clientNum;
 
 	s->pos.trType = TR_LINEAR_STOP;
-	veccopy(ps->origin, s->pos.trBase);
+	veccpy(ps->origin, s->pos.trBase);
 	if(snap)
 		SnapVector(s->pos.trBase);
 	// set the trDelta for flag direction and linear prediction
-	veccopy(ps->velocity, s->pos.trDelta);
+	veccpy(ps->velocity, s->pos.trDelta);
 	// set the time for linear prediction
 	s->pos.trTime = time;
 	// set maximum extra polation time
 	s->pos.trDuration = 50;	// 1000 / sv_fps (default = 20)
 
 	s->apos.trType = TR_INTERPOLATE;
-	veccopy(ps->viewangles, s->apos.trBase);
+	veccpy(ps->viewangles, s->apos.trBase);
 	if(snap)
 		SnapVector(s->apos.trBase);
 

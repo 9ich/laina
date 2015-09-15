@@ -138,9 +138,9 @@ BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_
 	bsptrace->allsolid = trace.allsolid;
 	bsptrace->startsolid = trace.startsolid;
 	bsptrace->fraction = trace.fraction;
-	veccopy(trace.endpos, bsptrace->endpos);
+	veccpy(trace.endpos, bsptrace->endpos);
 	bsptrace->plane.dist = trace.plane.dist;
-	veccopy(trace.plane.normal, bsptrace->plane.normal);
+	veccpy(trace.plane.normal, bsptrace->plane.normal);
 	bsptrace->plane.signbits = trace.plane.signbits;
 	bsptrace->plane.type = trace.plane.type;
 	bsptrace->surface.value = trace.surfaceFlags;
@@ -1029,9 +1029,9 @@ BotAI(int client, float thinktime)
 	bs->ltime += thinktime;
 	bs->thinktime = thinktime;
 	//origin of the bot
-	veccopy(bs->cur_ps.origin, bs->origin);
+	veccpy(bs->cur_ps.origin, bs->origin);
 	//eye coordinates of the bot
-	veccopy(bs->cur_ps.origin, bs->eye);
+	veccpy(bs->cur_ps.origin, bs->eye);
 	bs->eye[2] += bs->cur_ps.viewheight;
 	//get the area the bot is in
 	bs->areanum = BotPointAreaNum(bs->origin);
@@ -1498,14 +1498,14 @@ BotAIStartFrame(int time)
 				continue;
 			}
 			memset(&state, 0, sizeof(bot_entitystate_t));
-			veccopy(ent->r.currentOrigin, state.origin);
+			veccpy(ent->r.currentOrigin, state.origin);
 			if(i < MAX_CLIENTS)
-				veccopy(ent->s.apos.trBase, state.angles);
+				veccpy(ent->s.apos.trBase, state.angles);
 			else
-				veccopy(ent->r.currentAngles, state.angles);
-			veccopy(ent->s.origin2, state.old_origin);
-			veccopy(ent->r.mins, state.mins);
-			veccopy(ent->r.maxs, state.maxs);
+				veccpy(ent->r.currentAngles, state.angles);
+			veccpy(ent->s.origin2, state.old_origin);
+			veccpy(ent->r.mins, state.mins);
+			veccpy(ent->r.maxs, state.maxs);
 			state.type = ent->s.eType;
 			state.flags = ent->s.eFlags;
 			if(ent->r.bmodel)

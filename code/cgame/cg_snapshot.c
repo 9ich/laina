@@ -39,8 +39,8 @@ resetentity(cent_t *cent)
 
 	cent->trailtime = cg.snap->serverTime;
 
-	veccopy(cent->currstate.origin, cent->lerporigin);
-	veccopy(cent->currstate.angles, cent->lerpangles);
+	veccpy(cent->currstate.origin, cent->lerporigin);
+	veccpy(cent->currstate.angles, cent->lerpangles);
 	if(cent->currstate.eType == ET_PLAYER)
 		resetplayerent(cent);
 }

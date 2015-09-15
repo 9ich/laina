@@ -102,7 +102,7 @@ rotatepoint(vec3_t point, vec3_t matrix[3])
 {
 	vec3_t tvec;
 
-	veccopy(point, tvec);
+	veccpy(point, tvec);
 	point[0] = vecdot(matrix[0], tvec);
 	point[1] = vecdot(matrix[1], tvec);
 	point[2] = vecdot(matrix[2], tvec);
@@ -132,11 +132,11 @@ trypushingentity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 	if(pushed_p > &pushed[MAX_GENTITIES])
 		errorf("pushed_p > &pushed[MAX_GENTITIES]");
 	pushed_p->ent = check;
-	veccopy(check->s.pos.trBase, pushed_p->origin);
-	veccopy(check->s.apos.trBase, pushed_p->angles);
+	veccpy(check->s.pos.trBase, pushed_p->origin);
+	veccpy(check->s.apos.trBase, pushed_p->angles);
 	if(check->client){
 		pushed_p->deltayaw = check->client->ps.delta_angles[YAW];
-		veccopy(check->client->ps.origin, pushed_p->origin);
+		veccpy(check->client->ps.origin, pushed_p->origin);
 	}
 	pushed_p++;
 
@@ -148,7 +148,7 @@ trypushingentity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 		vecsub(check->client->ps.origin, pusher->r.currentOrigin, org);
 	else
 		vecsub(check->s.pos.trBase, pusher->r.currentOrigin, org);
-	veccopy(org, org2);
+	veccpy(org, org2);
 	rotatepoint(org2, matrix);
 	vecsub(org2, org, move2);
 	// add movement
@@ -169,9 +169,9 @@ trypushingentity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 	if(!block){
 		// pushed ok
 		if(check->client)
-			veccopy(check->client->ps.origin, check->r.currentOrigin);
+			veccpy(check->client->ps.origin, check->r.currentOrigin);
 		else
-			veccopy(check->s.pos.trBase, check->r.currentOrigin);
+			veccpy(check->s.pos.trBase, check->r.currentOrigin);
 		trap_LinkEntity(check);
 		return qtrue;
 	}
@@ -179,10 +179,10 @@ trypushingentity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 	// if it is ok to leave in the old position, do it
 	// this is only relevent for riding entities, not pushed
 	// Sliding trapdoors can cause this.
-	veccopy((pushed_p-1)->origin, check->s.pos.trBase);
+	veccpy((pushed_p-1)->origin, check->s.pos.trBase);
 	if(check->client)
-		veccopy((pushed_p-1)->origin, check->client->ps.origin);
-	veccopy((pushed_p-1)->angles, check->s.apos.trBase);
+		veccpy((pushed_p-1)->origin, check->client->ps.origin);
+	veccpy((pushed_p-1)->angles, check->s.apos.trBase);
 	block = testentityposition(check);
 	if(!block){
 		check->s.groundEntityNum = ENTITYNUM_NONE;
@@ -205,8 +205,8 @@ checkproxmineposition(ent_t *check)
 	vec3_t start, end;
 	trace_t tr;
 
-	vecsadd(check->s.pos.trBase, 0.125, check->movedir, start);
-	vecsadd(check->s.pos.trBase, 2, check->movedir, end);
+	vecmad(check->s.pos.trBase, 0.125, check->movedir, start);
+	vecmad(check->s.pos.trBase, 2, check->movedir, end);
 	trap_Trace(&tr, start, nil, nil, end, check->s.number, MASK_SOLID);
 
 	if(tr.startsolid || tr.fraction < 1)
@@ -244,7 +244,7 @@ trypushingproxmine(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 
 	ret = checkproxmineposition(check);
 	if(ret){
-		veccopy(check->s.pos.trBase, check->r.currentOrigin);
+		veccpy(check->s.pos.trBase, check->r.currentOrigin);
 		trap_LinkEntity(check);
 	}
 	return ret;
@@ -293,8 +293,8 @@ moverpush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 			maxs[i] = pusher->r.absmax[i] + move[i];
 		}
 
-		veccopy(pusher->r.absmin, totalMins);
-		veccopy(pusher->r.absmax, totalMaxs);
+		veccpy(pusher->r.absmin, totalMins);
+		veccpy(pusher->r.absmax, totalMaxs);
 		for(i = 0; i<3; i++){
 			if(move[i] > 0)
 				totalMaxs[i] += move[i];
@@ -356,11 +356,11 @@ moverpush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 		// go backwards, so if the same entity was pushed
 		// twice, it goes back to the original position
 		for(p = pushed_p-1; p>=pushed; p--){
-			veccopy(p->origin, p->ent->s.pos.trBase);
-			veccopy(p->angles, p->ent->s.apos.trBase);
+			veccpy(p->origin, p->ent->s.pos.trBase);
+			veccpy(p->angles, p->ent->s.apos.trBase);
 			if(p->ent->client){
 				p->ent->client->ps.delta_angles[YAW] = p->deltayaw;
-				veccopy(p->origin, p->ent->client->ps.origin);
+				veccpy(p->origin, p->ent->client->ps.origin);
 			}
 			trap_LinkEntity(p->ent);
 		}
@@ -471,25 +471,25 @@ SetMoverState(ent_t *ent, moverstate_t moverstate, int time)
 	ent->s.pos.trTime = time;
 	switch(moverstate){
 	case MOVER_POS1:
-		veccopy(ent->pos1, ent->s.pos.trBase);
+		veccpy(ent->pos1, ent->s.pos.trBase);
 		ent->s.pos.trType = TR_STATIONARY;
 		break;
 	case MOVER_POS2:
-		veccopy(ent->pos2, ent->s.pos.trBase);
+		veccpy(ent->pos2, ent->s.pos.trBase);
 		ent->s.pos.trType = TR_STATIONARY;
 		break;
 	case MOVER_1TO2:
-		veccopy(ent->pos1, ent->s.pos.trBase);
+		veccpy(ent->pos1, ent->s.pos.trBase);
 		vecsub(ent->pos2, ent->pos1, delta);
 		f = 1000.0 / ent->s.pos.trDuration;
-		vecscale(delta, f, ent->s.pos.trDelta);
+		vecmul(delta, f, ent->s.pos.trDelta);
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;
 	case MOVER_2TO1:
-		veccopy(ent->pos2, ent->s.pos.trBase);
+		veccpy(ent->pos2, ent->s.pos.trBase);
 		vecsub(ent->pos1, ent->pos2, delta);
 		f = 1000.0 / ent->s.pos.trDuration;
-		vecscale(delta, f, ent->s.pos.trDelta);
+		vecmul(delta, f, ent->s.pos.trDelta);
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;
 	}
@@ -700,18 +700,18 @@ InitMover(ent_t *ent)
 	ent->moverstate = MOVER_POS1;
 	ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	ent->s.eType = ET_MOVER;
-	veccopy(ent->pos1, ent->r.currentOrigin);
+	veccpy(ent->pos1, ent->r.currentOrigin);
 	trap_LinkEntity(ent);
 
 	ent->s.pos.trType = TR_STATIONARY;
-	veccopy(ent->pos1, ent->s.pos.trBase);
+	veccpy(ent->pos1, ent->s.pos.trBase);
 
 	// calculate time to reach second position from speed
 	vecsub(ent->pos2, ent->pos1, move);
 	distance = veclen(move);
 	if(!ent->speed)
 		ent->speed = 100;
-	vecscale(move, ent->speed, ent->s.pos.trDelta);
+	vecmul(move, ent->speed, ent->s.pos.trDelta);
 	ent->s.pos.trDuration = distance * 1000 / ent->speed;
 	if(ent->s.pos.trDuration <= 0)
 		ent->s.pos.trDuration = 1;
@@ -774,7 +774,7 @@ Touch_DoorTriggerSpectator(ent_t *ent, ent_t *other, trace_t *trace)
 	doorMin = ent->r.absmin[axis] + 100;
 	doorMax = ent->r.absmax[axis] - 100;
 
-	veccopy(other->client->ps.origin, origin);
+	veccpy(other->client->ps.origin, origin);
 
 	if(origin[axis] < doorMin || origin[axis] > doorMax)
 		return;
@@ -842,8 +842,8 @@ Think_SpawnNewDoorTrigger(ent_t *ent)
 		return;
 
 	// find the bounds of everything on the team
-	veccopy(ent->r.absmin, mins);
-	veccopy(ent->r.absmax, maxs);
+	veccpy(ent->r.absmin, mins);
+	veccpy(ent->r.absmax, maxs);
 
 	for(other = ent->teamchain; other; other = other->teamchain){
 		AddPointToBounds(other->r.absmin, mins, maxs);
@@ -862,8 +862,8 @@ Think_SpawnNewDoorTrigger(ent_t *ent)
 	other = entspawn();
 	other->classname = "door_trigger";
 	other->doorkey = ent->doorkey;
-	veccopy(mins, other->r.mins);
-	veccopy(maxs, other->r.maxs);
+	veccpy(mins, other->r.mins);
+	veccpy(maxs, other->r.maxs);
 	other->parent = ent;
 	other->r.contents = CONTENTS_TRIGGER;
 	other->touch = doortrigger_touch;
@@ -939,7 +939,7 @@ SP_func_door(ent_t *ent)
 		gprintf("%s: bad item classname for door key\n", keyclass);
 
 	// first position at start
-	veccopy(ent->s.origin, ent->pos1);
+	veccpy(ent->s.origin, ent->pos1);
 
 	// calculate second position
 	trap_SetBrushModel(ent, ent->model);
@@ -949,15 +949,15 @@ SP_func_door(ent_t *ent)
 	abs_movedir[2] = fabs(ent->movedir[2]);
 	vecsub(ent->r.maxs, ent->r.mins, size);
 	distance = vecdot(abs_movedir, size) - lip;
-	vecsadd(ent->pos1, distance, ent->movedir, ent->pos2);
+	vecmad(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	// if "start_open", reverse position 1 and 2
 	if(ent->spawnflags & 1){
 		vec3_t temp;
 
-		veccopy(ent->pos2, temp);
-		veccopy(ent->s.origin, ent->pos2);
-		veccopy(temp, ent->pos1);
+		veccpy(ent->pos2, temp);
+		veccpy(ent->s.origin, ent->pos2);
+		veccpy(temp, ent->pos1);
 	}
 
 	InitMover(ent);
@@ -1043,7 +1043,7 @@ SP_func_piston(ent_t *ent)
 	spawnfloat("lip", "8", &lip);
 
 	// first position at start
-	veccopy(ent->s.origin, ent->pos1);
+	veccpy(ent->s.origin, ent->pos1);
 
 	// calculate second position
 	trap_SetBrushModel(ent, ent->model);
@@ -1053,15 +1053,15 @@ SP_func_piston(ent_t *ent)
 	abs_movedir[2] = fabs(ent->movedir[2]);
 	vecsub(ent->r.maxs, ent->r.mins, size);
 	distance = vecdot(abs_movedir, size) - lip;
-	vecsadd(ent->pos1, distance, ent->movedir, ent->pos2);
+	vecmad(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	// if "start_open", reverse position 1 and 2
 	if(ent->spawnflags & 1){
 		vec3_t temp;
 
-		veccopy(ent->pos2, temp);
-		veccopy(ent->s.origin, ent->pos2);
-		veccopy(temp, ent->pos1);
+		veccpy(ent->pos2, temp);
+		veccpy(ent->s.origin, ent->pos2);
+		veccpy(temp, ent->pos1);
 	}
 
 	InitMover(ent);
@@ -1158,8 +1158,8 @@ SpawnPlatTrigger(ent_t *ent)
 		tmax[1] = tmin[1] + 1;
 	}
 
-	veccopy(tmin, trigger->r.mins);
-	veccopy(tmax, trigger->r.maxs);
+	veccpy(tmin, trigger->r.mins);
+	veccpy(tmax, trigger->r.maxs);
 
 	trap_LinkEntity(trigger);
 }
@@ -1199,8 +1199,8 @@ SP_func_plat(ent_t *ent)
 		height = (ent->r.maxs[2] - ent->r.mins[2]) - lip;
 
 	// pos1 is the rest (bottom) position, pos2 is the top
-	veccopy(ent->s.origin, ent->pos2);
-	veccopy(ent->pos2, ent->pos1);
+	veccpy(ent->s.origin, ent->pos2);
+	veccpy(ent->pos2, ent->pos1);
 	ent->pos1[2] -= height;
 
 	InitMover(ent);
@@ -1273,7 +1273,7 @@ SP_func_button(ent_t *ent)
 	ent->wait *= 1000;
 
 	// first position
-	veccopy(ent->s.origin, ent->pos1);
+	veccpy(ent->s.origin, ent->pos1);
 
 	// calculate second position
 	trap_SetBrushModel(ent, ent->model);
@@ -1286,7 +1286,7 @@ SP_func_button(ent_t *ent)
 	abs_movedir[2] = fabs(ent->movedir[2]);
 	vecsub(ent->r.maxs, ent->r.mins, size);
 	distance = abs_movedir[0] * size[0] + abs_movedir[1] * size[1] + abs_movedir[2] * size[2] - lip;
-	vecsadd(ent->pos1, distance, ent->movedir, ent->pos2);
+	vecmad(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	if(ent->health)
 		// shootable button
@@ -1347,8 +1347,8 @@ Reached_Train(ent_t *ent)
 
 	// set the new trajectory
 	ent->nexttrain = next->nexttrain;
-	veccopy(next->s.origin, ent->pos1);
-	veccopy(next->nexttrain->s.origin, ent->pos2);
+	veccpy(next->s.origin, ent->pos1);
+	veccpy(next->nexttrain->s.origin, ent->pos2);
 
 	// if the path_corner has a speed, use that
 	if(next->speed)
@@ -1528,8 +1528,8 @@ SP_func_static(ent_t *ent)
 {
 	trap_SetBrushModel(ent, ent->model);
 	InitMover(ent);
-	veccopy(ent->s.origin, ent->s.pos.trBase);
-	veccopy(ent->s.origin, ent->r.currentOrigin);
+	veccpy(ent->s.origin, ent->s.pos.trBase);
+	veccpy(ent->s.origin, ent->r.currentOrigin);
 }
 
 /*
@@ -1572,9 +1572,9 @@ SP_func_rotating(ent_t *ent)
 	trap_SetBrushModel(ent, ent->model);
 	InitMover(ent);
 
-	veccopy(ent->s.origin, ent->s.pos.trBase);
-	veccopy(ent->s.pos.trBase, ent->r.currentOrigin);
-	veccopy(ent->s.apos.trBase, ent->r.currentAngles);
+	veccpy(ent->s.origin, ent->s.pos.trBase);
+	veccpy(ent->s.pos.trBase, ent->r.currentOrigin);
+	veccpy(ent->s.apos.trBase, ent->r.currentAngles);
 
 	trap_LinkEntity(ent);
 }
@@ -1611,8 +1611,8 @@ SP_func_bobbing(ent_t *ent)
 	trap_SetBrushModel(ent, ent->model);
 	InitMover(ent);
 
-	veccopy(ent->s.origin, ent->s.pos.trBase);
-	veccopy(ent->s.origin, ent->r.currentOrigin);
+	veccpy(ent->s.origin, ent->s.pos.trBase);
+	veccpy(ent->s.origin, ent->r.currentOrigin);
 
 	ent->s.pos.trDuration = ent->speed * 1000;
 	ent->s.pos.trTime = ent->s.pos.trDuration * phase;
@@ -1671,10 +1671,10 @@ SP_func_pendulum(ent_t *ent)
 
 	InitMover(ent);
 
-	veccopy(ent->s.origin, ent->s.pos.trBase);
-	veccopy(ent->s.origin, ent->r.currentOrigin);
+	veccpy(ent->s.origin, ent->s.pos.trBase);
+	veccpy(ent->s.origin, ent->r.currentOrigin);
 
-	veccopy(ent->s.angles, ent->s.apos.trBase);
+	veccpy(ent->s.angles, ent->s.apos.trBase);
 
 	ent->s.apos.trDuration = 1000 / freq;
 	ent->s.apos.trTime = ent->s.apos.trDuration * phase;

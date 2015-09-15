@@ -330,7 +330,7 @@ waterlevel(cent_t *cent)
 
 	// get waterlevel, accounting for ducking
 	waterlevel = 0;
-	veccopy(cent->lerporigin, point);
+	veccpy(cent->lerporigin, point);
 	point[2] += MINS_Z + 1;
 	anim = cent->currstate.legsAnim & ~ANIM_TOGGLEBIT;
 
@@ -562,7 +562,7 @@ entevent(cent_t *cent, vec3_t position)
 			vec3_t up = {0, 0, 1};
 			vec3_t feet;
 
-			veccopy(cent->lerporigin, feet);
+			veccpy(cent->lerporigin, feet);
 			feet[2] -= 10.0f;
 
 			smokepuff(feet, up, 24, 1.0f, 1.0f, 1.0f, 0.5f, 800,
@@ -792,9 +792,9 @@ entevent(cent_t *cent, vec3_t position)
 
 		if(es->clientNum == cg.snap->ps.clientNum && !cg.thirdperson){
 			if(cg_drawGun.integer == 2)
-				vecsadd(es->origin2, 8, cg.refdef.viewaxis[1], es->origin2);
+				vecmad(es->origin2, 8, cg.refdef.viewaxis[1], es->origin2);
 			else if(cg_drawGun.integer == 3)
-				vecsadd(es->origin2, 4, cg.refdef.viewaxis[1], es->origin2);
+				vecmad(es->origin2, 4, cg.refdef.viewaxis[1], es->origin2);
 		}
 
 		dorailtrail(ci, es->origin2, es->pos.trBase);

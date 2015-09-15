@@ -527,7 +527,7 @@ BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match)
 		if(areanum){	// && trap_AAS_AreaReachability(areanum)){
 			bs->teamgoal.entitynum = client;
 			bs->teamgoal.areanum = areanum;
-			veccopy(entinfo.origin, bs->teamgoal.origin);
+			veccpy(entinfo.origin, bs->teamgoal.origin);
 			vecset(bs->teamgoal.mins, -8, -8, -8);
 			vecset(bs->teamgoal.maxs, 8, 8, 8);
 		}
@@ -707,7 +707,7 @@ BotMatch_Camp(bot_state_t *bs, bot_match_t *match)
 		//camp at the spot the bot is currently standing
 		bs->teamgoal.entitynum = bs->entitynum;
 		bs->teamgoal.areanum = bs->areanum;
-		veccopy(bs->origin, bs->teamgoal.origin);
+		veccpy(bs->origin, bs->teamgoal.origin);
 		vecset(bs->teamgoal.mins, -8, -8, -8);
 		vecset(bs->teamgoal.maxs, 8, 8, 8);
 	}else if(match->subtype & ST_HERE){
@@ -724,7 +724,7 @@ BotMatch_Camp(bot_state_t *bs, bot_match_t *match)
 				//if(BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, client)){
 				bs->teamgoal.entitynum = client;
 				bs->teamgoal.areanum = areanum;
-				veccopy(entinfo.origin, bs->teamgoal.origin);
+				veccpy(entinfo.origin, bs->teamgoal.origin);
 				vecset(bs->teamgoal.mins, -8, -8, -8);
 				vecset(bs->teamgoal.maxs, 8, 8, 8);
 				//}
@@ -1541,7 +1541,7 @@ BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match)
 		if(areanum){	// && trap_AAS_AreaReachability(areanum)){
 			bs->lead_teamgoal.entitynum = client;
 			bs->lead_teamgoal.areanum = areanum;
-			veccopy(entinfo.origin, bs->lead_teamgoal.origin);
+			veccpy(entinfo.origin, bs->lead_teamgoal.origin);
 			vecset(bs->lead_teamgoal.mins, -8, -8, -8);
 			vecset(bs->lead_teamgoal.maxs, 8, 8, 8);
 		}

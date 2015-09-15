@@ -185,7 +185,7 @@ drawmodel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, v
 
 	memset(&ent, 0, sizeof(ent));
 	AnglesToAxis(angles, ent.axis);
-	veccopy(origin, ent.origin);
+	veccpy(origin, ent.origin);
 	ent.hModel = model;
 	ent.customSkin = skin;
 	ent.renderfx = RF_NOSHADOW;	// no stencil shadows
@@ -1101,14 +1101,14 @@ drawxhair3d(void)
 	// let the trace run through until a change in stereo separation of the 
 	// crosshair becomes less than one pixel.
 	maxdist = cgs.glconfig.vidWidth * stereoSep * zProj / (2 * xmax);
-	vecsadd(cg.refdef.vieworg, maxdist, cg.refdef.viewaxis[0], endpos);
+	vecmad(cg.refdef.vieworg, maxdist, cg.refdef.viewaxis[0], endpos);
 	cgtrace(&trace, cg.refdef.vieworg, nil, nil, endpos, 0, MASK_SHOT);
 
 	memset(&ent, 0, sizeof(ent));
 	ent.reType = RT_SPRITE;
 	ent.renderfx = RF_DEPTHHACK | RF_CROSSHAIR;
 
-	veccopy(trace.endpos, ent.origin);
+	veccpy(trace.endpos, ent.origin);
 
 	// scale the crosshair so it appears the same size for all distances
 	ent.radius = w / 640 * xmax * trace.fraction * maxdist / zProj;
@@ -1124,8 +1124,8 @@ xhairscan(void)
 	vec3_t start, end;
 	int content;
 
-	veccopy(cg.refdef.vieworg, start);
-	vecsadd(start, 131072, cg.refdef.viewaxis[0], end);
+	veccpy(cg.refdef.vieworg, start);
+	vecmad(start, 131072, cg.refdef.viewaxis[0], end);
 
 	cgtrace(&trace, start, vec3_origin, vec3_origin, end,
 		 cg.snap->ps.clientNum, CONTENTS_SOLID|CONTENTS_BODY);

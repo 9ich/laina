@@ -467,8 +467,8 @@ spawngentityfromspawnvars(void)
 		}
 
 	// move editor origin to pos
-	veccopy(ent->s.origin, ent->s.pos.trBase);
-	veccopy(ent->s.origin, ent->r.currentOrigin);
+	veccpy(ent->s.origin, ent->s.pos.trBase);
+	veccpy(ent->s.origin, ent->r.currentOrigin);
 
 	// if we didn't get a classname, don't bother spawning anything
 	if(!callspawn(ent))

@@ -115,12 +115,12 @@ teleportentity(ent_t *player, vec3_t origin, vec3_t angles)
 	// unlink to make sure it can't possibly interfere with killbox
 	trap_UnlinkEntity(player);
 
-	veccopy(origin, player->client->ps.origin);
+	veccpy(origin, player->client->ps.origin);
 	player->client->ps.origin[2] += 1;
 	if(!noAngles){
 		// spit the player out
 		anglevecs(angles, player->client->ps.velocity, nil, nil);
-		vecscale(player->client->ps.velocity, 400, player->client->ps.velocity);
+		vecmul(player->client->ps.velocity, 400, player->client->ps.velocity);
 		player->client->ps.pm_time = 160;	// hold time
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		// set angles
@@ -136,7 +136,7 @@ teleportentity(ent_t *player, vec3_t origin, vec3_t angles)
 	playerstate2entstate(&player->client->ps, &player->s, qtrue);
 
 	// use the precise origin for linking
-	veccopy(player->client->ps.origin, player->r.currentOrigin);
+	veccpy(player->client->ps.origin, player->r.currentOrigin);
 
 	if(player->client->sess.team != TEAM_SPECTATOR)
 		trap_LinkEntity(player);
@@ -167,7 +167,7 @@ SP_misc_model(ent_t *ent)
 	trap_LinkEntity(ent);
 
 	setorigin(ent, ent->s.origin);
-	veccopy(ent->s.angles, ent->s.apos.trBase);
+	veccpy(ent->s.angles, ent->s.apos.trBase);
 #else
 	entfree(ent);
 #endif
@@ -206,7 +206,7 @@ locateCamera(ent_t *ent)
 	// clientNum holds the rotate offset
 	ent->s.clientNum = owner->s.clientNum;
 
-	veccopy(owner->s.origin, ent->s.origin2);
+	veccpy(owner->s.origin, ent->s.origin2);
 
 	// see if the portal_camera has a target
 	target = picktarget(owner->target);
@@ -234,7 +234,7 @@ SP_misc_portal_surface(ent_t *ent)
 	ent->s.eType = ET_PORTAL;
 
 	if(!ent->target)
-		veccopy(ent->s.origin, ent->s.origin2);
+		veccpy(ent->s.origin, ent->s.origin2);
 	else{
 		ent->think = locateCamera;
 		ent->nextthink = level.time + 100;
@@ -278,7 +278,7 @@ Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 		vecsub(ent->enemy->r.currentOrigin, ent->s.origin, dir);
 		vecnorm(dir);
 	}else
-		veccopy(ent->movedir, dir);
+		veccpy(ent->movedir, dir);
 
 	switch(ent->s.weapon){
 	case WP_GRENADE_LAUNCHER:

@@ -32,8 +32,8 @@ beginmove(ent_t *e)
 {
 	evaltrajectory(&e->s.pos, level.time, e->npc.pos);
 	evaltrajectory(&e->s.apos, level.time, e->npc.angles);
-	veccopy(e->npc.pos, e->s.origin);
-	veccopy(e->npc.pos, e->r.currentOrigin);
+	veccpy(e->npc.pos, e->s.origin);
+	veccpy(e->npc.pos, e->r.currentOrigin);
 	vecclear(e->npc.vel);
 	vecclear(e->npc.anglesvel);
 }
@@ -41,18 +41,18 @@ beginmove(ent_t *e)
 static void
 finishmove(ent_t *e)
 {
-	veccopy(e->npc.pos, e->s.pos.trBase);
-	veccopy(e->npc.vel, e->s.pos.trDelta);
+	veccpy(e->npc.pos, e->s.pos.trBase);
+	veccpy(e->npc.vel, e->s.pos.trDelta);
 	e->s.pos.trTime = level.time;
 	if(e->npc.vel[0] == 0 && e->npc.vel[1] == 0 && e->npc.vel[2] == 0)
 		e->s.pos.trTime = 0;
 	evaltrajectory(&e->s.pos, level.time, e->npc.pos);
 	evaltrajectory(&e->s.apos, level.time, e->npc.angles);
-	veccopy(e->npc.pos, e->s.origin);
-	veccopy(e->npc.pos, e->r.currentOrigin);
+	veccpy(e->npc.pos, e->s.origin);
+	veccpy(e->npc.pos, e->r.currentOrigin);
 
-	veccopy(e->npc.angles, e->s.apos.trBase);
-	veccopy(e->npc.anglesvel, e->s.apos.trDelta);
+	veccpy(e->npc.angles, e->s.apos.trBase);
+	veccpy(e->npc.anglesvel, e->s.apos.trDelta);
 	e->s.apos.trTime = level.time;
 	if(e->npc.anglesvel[0] == 0 && e->npc.anglesvel[1] == 0 && e->npc.anglesvel[2] == 0)
 		e->s.apos.trTime = 0;
@@ -85,7 +85,7 @@ npccheckground(ent_t *e)
 	}
 
 	if(!tr.startsolid && !tr.allsolid){
-		veccopy(tr.endpos, e->s.pos.trBase);
+		veccpy(tr.endpos, e->s.pos.trBase);
 		e->s.groundEntityNum = tr.entityNum;
 		e->s.pos.trDelta[2] = 0.0f;
 	}
@@ -137,13 +137,13 @@ npcdroptofloor(ent_t *e)
 	trace_t tr;
 
 	e->s.pos.trBase[2] += 1.0f;
-	veccopy(e->s.pos.trBase, end);
+	veccpy(e->s.pos.trBase, end);
 	end[2] -= 99999;
 	trap_Trace(&tr, e->s.pos.trBase, e->r.mins, e->r.maxs, end, e->s.number,
 	   MASK_NPCSOLID);
 	if(tr.fraction == 1.0f || tr.allsolid)
 		return;
-	veccopy(tr.endpos, e->s.pos.trBase);
+	veccpy(tr.endpos, e->s.pos.trBase);
 	trap_LinkEntity(e);
 	npccheckground(e);
 	//npccategorizepos(e);
@@ -302,7 +302,7 @@ npcstart(ent_t *e)
 	//e->s.skinnum = 0;
 	//e->deadflag = DEAD_NO;	// FIXME
 	//e->r.svFlags &= ~SVF_DEADBODY;
-	//veccopy(e->s.pos.trBase, e->s.oldorigin);
+	//veccpy(e->s.pos.trBase, e->s.oldorigin);
 
 	if(e->npc.checkattack == nil)
 		e->npc.checkattack = npccheckattack;

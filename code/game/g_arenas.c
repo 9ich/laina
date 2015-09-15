@@ -120,10 +120,10 @@ SpawnModelOnVictoryPad(ent_t *pad, vec3_t offset, ent_t *ent, int place)
 		body->s.torsoAnim = TORSO_STAND2;
 	body->s.event = 0;
 	body->r.svFlags = ent->r.svFlags;
-	veccopy(ent->r.mins, body->r.mins);
-	veccopy(ent->r.maxs, body->r.maxs);
-	veccopy(ent->r.absmin, body->r.absmin);
-	veccopy(ent->r.absmax, body->r.absmax);
+	veccpy(ent->r.mins, body->r.mins);
+	veccpy(ent->r.maxs, body->r.maxs);
+	veccpy(ent->r.absmin, body->r.absmin);
+	veccpy(ent->r.absmax, body->r.absmax);
 	body->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	body->r.contents = CONTENTS_BODY;
 	body->r.ownerNum = ent->r.ownerNum;
@@ -135,9 +135,9 @@ SpawnModelOnVictoryPad(ent_t *pad, vec3_t offset, ent_t *ent, int place)
 	body->s.apos.trBase[ROLL] = 0;
 
 	anglevecs(body->s.apos.trBase, f, r, u);
-	vecsadd(pad->r.currentOrigin, offset[0], f, vec);
-	vecsadd(vec, offset[1], r, vec);
-	vecsadd(vec, offset[2], u, vec);
+	vecmad(pad->r.currentOrigin, offset[0], f, vec);
+	vecmad(vec, offset[1], r, vec);
+	vecmad(vec, offset[2], u, vec);
 
 	setorigin(body, vec);
 
@@ -184,7 +184,7 @@ PodiumPlacementThink(ent_t *podium)
 	podium->nextthink = level.time + 100;
 
 	anglevecs(level.intermissionangle, vec, nil, nil);
-	vecsadd(level.intermissionpos, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
+	vecmad(level.intermissionpos, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
 	origin[2] -= trap_Cvar_VariableIntegerValue("g_podiumDrop");
 	setorigin(podium, origin);
 
@@ -195,9 +195,9 @@ PodiumPlacementThink(ent_t *podium)
 		podium1->s.apos.trBase[ROLL] = 0;
 
 		anglevecs(podium1->s.apos.trBase, f, r, u);
-		vecsadd(podium->r.currentOrigin, offsetFirst[0], f, vec);
-		vecsadd(vec, offsetFirst[1], r, vec);
-		vecsadd(vec, offsetFirst[2], u, vec);
+		vecmad(podium->r.currentOrigin, offsetFirst[0], f, vec);
+		vecmad(vec, offsetFirst[1], r, vec);
+		vecmad(vec, offsetFirst[2], u, vec);
 
 		setorigin(podium1, vec);
 	}
@@ -209,9 +209,9 @@ PodiumPlacementThink(ent_t *podium)
 		podium2->s.apos.trBase[ROLL] = 0;
 
 		anglevecs(podium2->s.apos.trBase, f, r, u);
-		vecsadd(podium->r.currentOrigin, offsetSecond[0], f, vec);
-		vecsadd(vec, offsetSecond[1], r, vec);
-		vecsadd(vec, offsetSecond[2], u, vec);
+		vecmad(podium->r.currentOrigin, offsetSecond[0], f, vec);
+		vecmad(vec, offsetSecond[1], r, vec);
+		vecmad(vec, offsetSecond[2], u, vec);
 
 		setorigin(podium2, vec);
 	}
@@ -223,9 +223,9 @@ PodiumPlacementThink(ent_t *podium)
 		podium3->s.apos.trBase[ROLL] = 0;
 
 		anglevecs(podium3->s.apos.trBase, f, r, u);
-		vecsadd(podium->r.currentOrigin, offsetThird[0], f, vec);
-		vecsadd(vec, offsetThird[1], r, vec);
-		vecsadd(vec, offsetThird[2], u, vec);
+		vecmad(podium->r.currentOrigin, offsetThird[0], f, vec);
+		vecmad(vec, offsetThird[1], r, vec);
+		vecmad(vec, offsetThird[2], u, vec);
 
 		setorigin(podium3, vec);
 	}
@@ -250,7 +250,7 @@ SpawnPodium(void)
 	podium->s.modelindex = modelindex(SP_PODIUM_MODEL);
 
 	anglevecs(level.intermissionangle, vec, nil, nil);
-	vecsadd(level.intermissionpos, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
+	vecmad(level.intermissionpos, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
 	origin[2] -= trap_Cvar_VariableIntegerValue("g_podiumDrop");
 	setorigin(podium, origin);
 

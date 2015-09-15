@@ -660,7 +660,7 @@ copyclientinfomodel
 static void
 copyclientinfomodel(clientinfo_t *from, clientinfo_t *to)
 {
-	veccopy(from->headoffset, to->headoffset);
+	veccpy(from->headoffset, to->headoffset);
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
@@ -1163,7 +1163,7 @@ playerangles(cent_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3])
 	int dir, clientNum;
 	clientinfo_t *ci;
 
-	veccopy(cent->lerpangles, headAngles);
+	veccpy(cent->lerpangles, headAngles);
 	headAngles[YAW] = AngleMod(headAngles[YAW]);
 	vecclear(legsAngles);
 	vecclear(torsoAngles);
@@ -1219,7 +1219,7 @@ playerangles(cent_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3])
 	// --------- roll -------------
 
 	// lean towards the direction of travel
-	veccopy(cent->currstate.pos.trDelta, velocity);
+	veccpy(cent->currstate.pos.trDelta, velocity);
 	speed = vecnorm(velocity);
 	if(speed){
 		vec3_t axis[3];
@@ -1280,7 +1280,7 @@ hastetrail(cent_t *cent)
 	if(cent->trailtime < cg.time)
 		cent->trailtime = cg.time;
 
-	veccopy(cent->lerporigin, origin);
+	veccpy(cent->lerporigin, origin);
 	origin[2] -= 16;
 
 	smoke = smokepuff(origin, vec3_origin,
@@ -1309,13 +1309,13 @@ trailitem(cent_t *cent, qhandle_t hModel)
 	vec3_t angles;
 	vec3_t axis[3];
 
-	veccopy(cent->lerpangles, angles);
+	veccpy(cent->lerpangles, angles);
 	angles[PITCH] = 0;
 	angles[ROLL] = 0;
 	AnglesToAxis(angles, axis);
 
 	memset(&ent, 0, sizeof(ent));
-	vecsadd(cent->lerporigin, -16, axis[0], ent.origin);
+	vecmad(cent->lerporigin, -16, axis[0], ent.origin);
 	ent.origin[2] += 16;
 	angles[YAW] += 90;
 	AnglesToAxis(angles, ent.axis);
@@ -1342,7 +1342,7 @@ playerflag(cent_t *cent, qhandle_t hSkin, refEntity_t *torso)
 	// show the flag pole model
 	memset(&pole, 0, sizeof(pole));
 	pole.hModel = cgs.media.flagPoleModel;
-	veccopy(torso->lightingOrigin, pole.lightingOrigin);
+	veccpy(torso->lightingOrigin, pole.lightingOrigin);
 	pole.shadowPlane = torso->shadowPlane;
 	pole.renderfx = torso->renderfx;
 	entontag(&pole, torso, torso->hModel, "tag_flag");
@@ -1352,7 +1352,7 @@ playerflag(cent_t *cent, qhandle_t hSkin, refEntity_t *torso)
 	memset(&flag, 0, sizeof(flag));
 	flag.hModel = cgs.media.flagFlapModel;
 	flag.customSkin = hSkin;
-	veccopy(torso->lightingOrigin, flag.lightingOrigin);
+	veccpy(torso->lightingOrigin, flag.lightingOrigin);
 	flag.shadowPlane = torso->shadowPlane;
 	flag.renderfx = torso->renderfx;
 
@@ -1371,7 +1371,7 @@ playerflag(cent_t *cent, qhandle_t hSkin, refEntity_t *torso)
 	}
 
 	if(updateangles){
-		veccopy(cent->currstate.pos.trDelta, dir);
+		veccpy(cent->currstate.pos.trDelta, dir);
 		// add gravity
 		dir[2] += 100;
 		vecnorm(dir);
@@ -1512,7 +1512,7 @@ playerfloatsprite(cent_t *cent, qhandle_t shader)
 		rf = 0;
 
 	memset(&ent, 0, sizeof(ent));
-	veccopy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.origin);
 	ent.origin[2] += 48;
 	ent.reType = RT_SPRITE;
 	ent.customShader = shader;
@@ -1605,7 +1605,7 @@ playersplash(cent_t *cent)
 	if(!cg_shadows.integer)
 		return;
 
-	veccopy(cent->lerporigin, end);
+	veccpy(cent->lerporigin, end);
 	end[2] -= 24;
 
 	// if the feet aren't in liquid, don't make a mark
@@ -1614,7 +1614,7 @@ playersplash(cent_t *cent)
 	if(!(contents & (CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA)))
 		return;
 
-	veccopy(cent->lerporigin, start);
+	veccpy(cent->lerporigin, start);
 	start[2] += 32;
 
 	// if the head isn't out of liquid, don't make a mark
@@ -1629,7 +1629,7 @@ playersplash(cent_t *cent)
 		return;
 
 	// create a mark polygon
-	veccopy(trace.endpos, verts[0].xyz);
+	veccpy(trace.endpos, verts[0].xyz);
 	verts[0].xyz[0] -= 32;
 	verts[0].xyz[1] -= 32;
 	verts[0].st[0] = 0;
@@ -1639,7 +1639,7 @@ playersplash(cent_t *cent)
 	verts[0].modulate[2] = 255;
 	verts[0].modulate[3] = 255;
 
-	veccopy(trace.endpos, verts[1].xyz);
+	veccpy(trace.endpos, verts[1].xyz);
 	verts[1].xyz[0] -= 32;
 	verts[1].xyz[1] += 32;
 	verts[1].st[0] = 0;
@@ -1649,7 +1649,7 @@ playersplash(cent_t *cent)
 	verts[1].modulate[2] = 255;
 	verts[1].modulate[3] = 255;
 
-	veccopy(trace.endpos, verts[2].xyz);
+	veccpy(trace.endpos, verts[2].xyz);
 	verts[2].xyz[0] += 32;
 	verts[2].xyz[1] += 32;
 	verts[2].st[0] = 1;
@@ -1659,7 +1659,7 @@ playersplash(cent_t *cent)
 	verts[2].modulate[2] = 255;
 	verts[2].modulate[3] = 255;
 
-	veccopy(trace.endpos, verts[3].xyz);
+	veccpy(trace.endpos, verts[3].xyz);
 	verts[3].xyz[0] += 32;
 	verts[3].xyz[1] -= 32;
 	verts[3].st[0] = 1;
@@ -1820,12 +1820,12 @@ doplayer(cent_t *cent)
 	legs.hModel = ci->legsmodel;
 	legs.customSkin = ci->legsskin;
 
-	veccopy(cent->lerporigin, legs.origin);
+	veccpy(cent->lerporigin, legs.origin);
 
-	veccopy(cent->lerporigin, legs.lightingOrigin);
+	veccpy(cent->lerporigin, legs.lightingOrigin);
 	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
-	veccopy(legs.origin, legs.oldorigin);	// don't positionally lerp at all
+	veccpy(legs.origin, legs.oldorigin);	// don't positionally lerp at all
 
 	addrefentitywithpowerups(&legs, &cent->currstate, ci->team);
 
@@ -1840,7 +1840,7 @@ doplayer(cent_t *cent)
 
 	torso.customSkin = ci->torsoskin;
 
-	veccopy(cent->lerporigin, torso.lightingOrigin);
+	veccpy(cent->lerporigin, torso.lightingOrigin);
 
 	rotentontag(&torso, &legs, ci->legsmodel, "tag_torso");
 
@@ -1856,7 +1856,7 @@ doplayer(cent_t *cent)
 		return;
 	head.customSkin = ci->headskin;
 
-	veccopy(cent->lerporigin, head.lightingOrigin);
+	veccpy(cent->lerporigin, head.lightingOrigin);
 
 	rotentontag(&head, &torso, ci->torsomodel, "tag_head");
 
@@ -1894,8 +1894,8 @@ resetplayerent(cent_t *cent)
 	evaltrajectory(&cent->currstate.pos, cg.time, cent->lerporigin);
 	evaltrajectory(&cent->currstate.apos, cg.time, cent->lerpangles);
 
-	veccopy(cent->lerporigin, cent->raworigin);
-	veccopy(cent->lerpangles, cent->rawangles);
+	veccpy(cent->lerporigin, cent->raworigin);
+	veccpy(cent->lerpangles, cent->rawangles);
 
 	memset(&cent->pe.legs, 0, sizeof(cent->pe.legs));
 	cent->pe.legs.yaw = cent->rawangles[YAW];

@@ -300,7 +300,7 @@ SpectatorThink(ent_t *ent, usercmd_t *ucmd)
 		// perform a pmove
 		Pmove(&pm);
 		// save results of pmove
-		veccopy(client->ps.origin, ent->s.origin);
+		veccpy(client->ps.origin, ent->s.origin);
 
 		touchtriggers(ent);
 		trap_UnlinkEntity(ent);
@@ -636,7 +636,7 @@ ClientThink_real(ent_t *ent)
 	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmovefixed;
 	pm.pmove_msec = pmove_msec.integer;
 
-	veccopy(client->ps.origin, client->oldorigin);
+	veccpy(client->ps.origin, client->oldorigin);
 
 	Pmove(&pm);
 
@@ -653,10 +653,10 @@ ClientThink_real(ent_t *ent)
 		client->fireheld = qfalse;	// for grapple
 
 	// use the snapped origin for linking so it matches client predicted versions
-	veccopy(ent->s.pos.trBase, ent->r.currentOrigin);
+	veccpy(ent->s.pos.trBase, ent->r.currentOrigin);
 
-	veccopy(pm.mins, ent->r.mins);
-	veccopy(pm.maxs, ent->r.maxs);
+	veccpy(pm.mins, ent->r.mins);
+	veccpy(pm.maxs, ent->r.maxs);
 
 	ent->waterlevel = pm.waterlevel;
 	ent->watertype = pm.watertype;
@@ -670,7 +670,7 @@ ClientThink_real(ent_t *ent)
 		touchtriggers(ent);
 
 	// NOTE: now copy the exact origin over otherwise clients can be snapped into solid
-	veccopy(ent->client->ps.origin, ent->r.currentOrigin);
+	veccpy(ent->client->ps.origin, ent->r.currentOrigin);
 
 	//test for solid areas in the AAS file
 	BotTestAAS(ent->r.currentOrigin);

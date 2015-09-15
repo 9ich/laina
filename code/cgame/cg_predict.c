@@ -105,7 +105,7 @@ clipmovetoentities(const vec3_t start, const vec3_t mins, const vec3_t maxs, con
 		if(ent->solid == SOLID_BMODEL){
 			// special value for bmodel
 			cmodel = trap_CM_InlineModel(ent->modelindex);
-			veccopy(cent->lerpangles, angles);
+			veccpy(cent->lerpangles, angles);
 			evaltrajectory(&cent->currstate.pos, cg.phystime, origin);
 		}else{
 			// encoded bbox
@@ -119,8 +119,8 @@ clipmovetoentities(const vec3_t start, const vec3_t mins, const vec3_t maxs, con
 			bmaxs[2] = zu;
 
 			cmodel = trap_CM_TempBoxModel(bmins, bmaxs);
-			veccopy(vec3_origin, angles);
-			veccopy(cent->lerporigin, origin);
+			veccpy(vec3_origin, angles);
+			veccpy(cent->lerporigin, origin);
 		}
 
 		trap_CM_TransformedBoxTrace(&trace, start, end,
@@ -505,7 +505,7 @@ predictplayerstate(void)
 							f = 0;
 						if(f > 0 && cg_showmiss.integer)
 							cgprintf("Double prediction decay: %f\n", f);
-						vecscale(cg.predictederr, f, cg.predictederr);
+						vecmul(cg.predictederr, f, cg.predictederr);
 					}else
 						vecclear(cg.predictederr);
 					vecadd(delta, cg.predictederr, cg.predictederr);

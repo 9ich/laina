@@ -167,7 +167,7 @@ impactmark(qhandle_t shader, const vec3_t origin, const vec3_t dir,
 	}
 
 	// get the fragments
-	vecscale(dir, -20, projection);
+	vecmul(dir, -20, projection);
 	numFragments = trap_CM_MarkFragments(4, (void*)originalPoints,
 					     projection, MAX_MARK_POINTS, markPoints[0],
 					     MAX_MARK_FRAGMENTS, markFragments);
@@ -189,7 +189,7 @@ impactmark(qhandle_t shader, const vec3_t origin, const vec3_t dir,
 		for(j = 0, v = verts; j < mf->numPoints; j++, v++){
 			vec3_t delta;
 
-			veccopy(markPoints[mf->firstPoint + j], v->xyz);
+			veccpy(markPoints[mf->firstPoint + j], v->xyz);
 
 			vecsub(v->xyz, origin, delta);
 			v->st[0] = 0.5 + vecdot(delta, axis[1]) * texCoordScale;

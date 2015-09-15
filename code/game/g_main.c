@@ -878,9 +878,9 @@ clientintermission(ent_t *ent)
 
 	findintermissionpoint();
 	// move to the spot
-	veccopy(level.intermissionpos, ent->s.origin);
-	veccopy(level.intermissionpos, ent->client->ps.origin);
-	veccopy(level.intermissionangle, ent->client->ps.viewangles);
+	veccpy(level.intermissionpos, ent->s.origin);
+	veccpy(level.intermissionpos, ent->client->ps.origin);
+	veccpy(level.intermissionangle, ent->client->ps.viewangles);
 	ent->client->ps.pm_type = PM_INTERMISSION;
 
 	// clean up powerup info
@@ -914,8 +914,8 @@ findintermissionpoint(void)
 		selectspawnpoint(vec3_origin, level.intermissionpos, level.intermissionangle, qfalse);
 		return;
 	}
-	veccopy(ent->s.origin, level.intermissionpos);
-	veccopy(ent->s.angles, level.intermissionangle);
+	veccpy(ent->s.origin, level.intermissionpos);
+	veccpy(ent->s.angles, level.intermissionangle);
 	// if it has a target, look towards it
 	if(ent->target != nil){
 		target = picktarget(ent->target);

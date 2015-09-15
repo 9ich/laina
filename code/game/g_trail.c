@@ -30,7 +30,7 @@ trailadd(vec3_t spot)
 {
 	vec3_t tmp;
 
-	veccopy(spot, trail[head]->s.pos.trBase);
+	veccpy(spot, trail[head]->s.pos.trBase);
 	trail[head]->timestamp = level.time;
 
 	vecsub(spot, trail[prev(head)]->s.pos.trBase, tmp);

@@ -192,9 +192,9 @@ visible(ent_t *e, ent_t *other)
 	vec3_t a, b;
 	trace_t tr;
 
-	veccopy(e->s.pos.trBase, a);
+	veccpy(e->s.pos.trBase, a);
 	a[2] += e->npc.viewheight;
-	veccopy(other->s.pos.trBase, b);
+	veccpy(other->s.pos.trBase, b);
 	b[2] += CROUCH_VIEWHEIGHT;
 	trap_Trace(&tr, a, vec3_origin, vec3_origin, b, e->s.number, MASK_SOLID);
 	return tr.fraction == 1.0f;
@@ -250,7 +250,7 @@ foundtarget(ent_t *e)
 
 	e->npc.showhostile = level.time + 10;
 
-	veccopy(e->npc.enemy->s.pos.trBase, e->npc.lastsighting);
+	veccpy(e->npc.enemy->s.pos.trBase, e->npc.lastsighting);
 	e->npc.trailtime = level.time;
 
 	if(e->npc.combattarg == nil){
@@ -415,9 +415,9 @@ npccheckattack(ent_t *e)
 	if(e->npc.enemy != nil && e->npc.enemy->health > 0){
 		const int mask = CONTENTS_SOLID|CONTENTS_NPCCLIP|CONTENTS_SLIME|
 		   CONTENTS_LAVA;
-		veccopy(e->s.pos.trBase, a);
+		veccpy(e->s.pos.trBase, a);
 		a[2] += e->npc.viewheight;
-		veccopy(e->npc.enemy->s.pos.trBase, b);
+		veccpy(e->npc.enemy->s.pos.trBase, b);
 		b[2] += CROUCH_VIEWHEIGHT;
 	
 		
@@ -564,7 +564,7 @@ aicheckattack(ent_t *e, float dist)
 	e->npc.enemyvis = visible(e, e->npc.enemy);
 	if(e->npc.enemyvis){
 		e->npc.searchtime = level.time + 5000;
-		veccopy(e->npc.enemy->s.pos.trBase, e->npc.lastsighting);
+		veccpy(e->npc.enemy->s.pos.trBase, e->npc.lastsighting);
 	}
 
 	e->npc.enemyinfront = infront(e, e->npc.enemy);
@@ -632,7 +632,7 @@ airun(ent_t *e, float dist)
 	if(e->npc.enemyvis){
 		npcmovetogoal(e, dist);
 		e->npc.aiflags &= AI_LOSTSIGHT;
-		veccopy(e->npc.enemy->s.pos.trBase, e->npc.lastsighting);
+		veccpy(e->npc.enemy->s.pos.trBase, e->npc.lastsighting);
 		e->npc.trailtime = level.time;
 		return;
 	}
@@ -667,7 +667,7 @@ airun(ent_t *e, float dist)
 			gprintf("was temp goal; retrying original\n");
 			e->npc.aiflags &= ~AI_PURSUETEMP;
 			marker = nil;
-			veccopy(e->npc.savedgoal, e->npc.lastsighting);
+			veccpy(e->npc.savedgoal, e->npc.lastsighting);
 			new = qtrue;
 		}else if(e->npc.aiflags & AI_PURSUITLASTSEEN){
 			e->npc.aiflags &= ~AI_PURSUITLASTSEEN;
@@ -678,7 +678,7 @@ airun(ent_t *e, float dist)
 	}
 
 	if(marker != nil){
-		veccopy(marker->s.pos.trBase, e->npc.lastsighting);
+		veccpy(marker->s.pos.trBase, e->npc.lastsighting);
 		e->npc.trailtime = marker->timestamp;
 		e->npc.idealyaw = marker->s.apos.trBase[YAW];
 		gprintf("heading is %f\n", e->npc.idealyaw);
@@ -692,7 +692,7 @@ airun(ent_t *e, float dist)
 		dist = d1;
 	}
 
-	veccopy(e->npc.lastsighting, e->npc.goalent->s.pos.trBase);
+	veccpy(e->npc.lastsighting, e->npc.goalent->s.pos.trBase);
 
 	if(new)
 		checkcourse(e, v);
@@ -743,10 +743,10 @@ checkcourse(ent_t *e, vec3_t v)
 			   vright, lefttarg);
 			gprintf("incomplete path (L), go part way\n");
 		}
-		veccopy(e->npc.lastsighting, e->npc.savedgoal);
+		veccpy(e->npc.lastsighting, e->npc.savedgoal);
 		e->npc.aiflags |= AI_PURSUETEMP;
-		veccopy(lefttarg, e->npc.goalent->s.pos.trBase);
-		veccopy(lefttarg, e->npc.lastsighting);
+		veccpy(lefttarg, e->npc.goalent->s.pos.trBase);
+		veccpy(lefttarg, e->npc.lastsighting);
 		vecsub(e->npc.goalent->s.pos.trBase, e->s.pos.trBase, v);
 		dprint("%s ---> %s = %s\n", vtos(e->npc.goalent->s.pos.trBase),
 		   vtos(e->s.pos.trBase), vtos(v));
@@ -759,10 +759,10 @@ checkcourse(ent_t *e, vec3_t v)
 			   vright, righttarg);
 			gprintf("incomplete path (R), go part way\n");
 		}
-		veccopy(e->npc.lastsighting, e->npc.savedgoal);
+		veccpy(e->npc.lastsighting, e->npc.savedgoal);
 		e->npc.aiflags |= AI_PURSUETEMP;
-		veccopy(righttarg, e->npc.goalent->s.pos.trBase);
-		veccopy(righttarg, e->npc.lastsighting);
+		veccpy(righttarg, e->npc.goalent->s.pos.trBase);
+		veccpy(righttarg, e->npc.lastsighting);
 		vecsub(e->npc.goalent->s.pos.trBase, e->s.pos.trBase, v);
 		dprint("%s ---> %s = %s\n", vtos(e->npc.goalent->s.pos.trBase),
 		   vtos(e->s.pos.trBase), vtos(v));

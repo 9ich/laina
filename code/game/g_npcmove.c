@@ -129,7 +129,7 @@ npccorrectallsolid(ent_t *e)
 	for(i = -1; i <= 1; i++){
 		for(j = -1; j <= 1; j++)
 			for(k = -1; k <= 1; k++){
-				veccopy(e->npc.pos, point);
+				veccpy(e->npc.pos, point);
 				point[0] += (float)i;
 				point[1] += (float)j;
 				point[2] += (float)k;
@@ -305,7 +305,7 @@ movestep(ent_t *e, vec3_t mv, qboolean relink)
 	gprintf("movestep mv=%s\n", vtos(mv));
 
 	// try the move
-	veccopy(e->npc.pos, oldorg);
+	veccpy(e->npc.pos, oldorg);
 	vecadd(e->npc.pos, mv, neworg);
 
 	// (this is where q2 handles fly and swim)
@@ -315,7 +315,7 @@ movestep(ent_t *e, vec3_t mv, qboolean relink)
 	if(!(e->npc.aiflags & AI_NOSTEP))
 		stepsz = STEPSIZE;
 	neworg[2] += stepsz;
-	veccopy(neworg, end);
+	veccpy(neworg, end);
 	end[2] -= stepsz*2.0f;
 	trap_Trace(&tr, neworg, e->r.mins, e->r.maxs, end, e->s.number,
 	   MASK_NPCSOLID);
@@ -338,7 +338,7 @@ movestep(ent_t *e, vec3_t mv, qboolean relink)
 	// (q2 swim here)
 
 	// don't go in water
-	veccopy(tr.endpos, test);
+	veccpy(tr.endpos, test);
 	test[2] = tr.endpos[2] + e->r.mins[2]+1;
 	contents = trap_PointContents(test, e->s.number);
 	if(contents & MASK_WATER)
@@ -351,7 +351,7 @@ movestep(ent_t *e, vec3_t mv, qboolean relink)
 			vecclear(e->npc.vel);
 			return qfalse;
 		}
-		veccopy(mv, e->npc.vel);
+		veccpy(mv, e->npc.vel);
 		dprint("trBase=%s trDelta=%s\n", vtos(e->s.pos.trBase),
 		   vtos(e->s.pos.trDelta));
 		if(relink){
@@ -363,7 +363,7 @@ movestep(ent_t *e, vec3_t mv, qboolean relink)
 
 	// check point traces down for dangling corners
 	vecsub(tr.endpos, e->npc.pos, e->npc.vel);
-	vecscale(e->npc.vel, 10.0f, e->npc.vel);
+	vecmul(e->npc.vel, 10.0f, e->npc.vel);
 	if(!checkbottom(e)){
 		if(e->npc.aiflags & AI_PARTIALGROUND){
 			// entity had floor mostly pulled out from under it

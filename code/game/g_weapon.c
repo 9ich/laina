@@ -43,10 +43,10 @@ bounceprojectile(vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout)
 
 	vecsub(impact, start, v);
 	dot = vecdot(v, dir);
-	vecsadd(v, -2*dot, dir, newv);
+	vecmad(v, -2*dot, dir, newv);
 
 	vecnorm(newv);
-	vecsadd(impact, 8192, newv, endout);
+	vecmad(impact, 8192, newv, endout);
 }
 
 /*
@@ -81,7 +81,7 @@ chkgauntletattack(ent_t *ent)
 
 	calcmuzzlepoint(ent, forward, right, up, muzzle);
 
-	vecsadd(muzzle, 32, forward, end);
+	vecmad(muzzle, 32, forward, end);
 
 	trap_Trace(&tr, muzzle, nil, nil, end, ent->s.number, MASK_SHOT);
 	if(tr.surfaceFlags & SURF_NOIMPACT)
@@ -168,9 +168,9 @@ Bullet_Fire(ent_t *ent, float spread, int damage, int mod)
 	r = random() * M_PI * 2.0f;
 	u = sin(r) * crandom() * spread * 16;
 	r = cos(r) * crandom() * spread * 16;
-	vecsadd(muzzle, 8192*16, forward, end);
-	vecsadd(end, r, right, end);
-	vecsadd(end, u, up, end);
+	vecmad(muzzle, 8192*16, forward, end);
+	vecmad(end, r, right, end);
+	vecmad(end, u, up, end);
 
 	passent = ent->s.number;
 	for(i = 0; i < 10; i++){
@@ -244,8 +244,8 @@ ShotgunPellet(vec3_t start, vec3_t end, ent_t *ent)
 	vec3_t tr_start, tr_end;
 
 	passent = ent->s.number;
-	veccopy(start, tr_start);
-	veccopy(end, tr_end);
+	veccpy(start, tr_start);
+	veccpy(end, tr_end);
 	for(i = 0; i < 10; i++){
 		trap_Trace(&tr, tr_start, nil, nil, tr_end, passent, MASK_SHOT);
 		traceEnt = &g_entities[tr.entityNum];
@@ -286,9 +286,9 @@ ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, ent_t *ent)
 	for(i = 0; i < DEFAULT_SHOTGUN_COUNT; i++){
 		r = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
 		u = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
-		vecsadd(origin, 8192 * 16, forward, end);
-		vecsadd(end, r, right, end);
-		vecsadd(end, u, up, end);
+		vecmad(origin, 8192 * 16, forward, end);
+		vecmad(end, r, right, end);
+		vecmad(end, u, up, end);
 		if(ShotgunPellet(origin, end, ent) && !hitClient){
 			hitClient = qtrue;
 			ent->client->accuracyhits++;
@@ -303,7 +303,7 @@ weapon_supershotgun_fire(ent_t *ent)
 
 	// send shotgun blast
 	tent = enttemp(muzzle, EV_SHOTGUN);
-	vecscale(forward, 4096, tent->s.origin2);
+	vecmul(forward, 4096, tent->s.origin2);
 	SnapVector(tent->s.origin2);
 	tent->s.eventParm = rand() & 255;	// seed for spread pattern
 	tent->s.otherEntityNum = ent->s.number;
@@ -417,7 +417,7 @@ weapon_railgun_fire(ent_t *ent)
 
 	damage = 100 * s_quadFactor;
 
-	vecsadd(muzzle, 8192, forward, end);
+	vecmad(muzzle, 8192, forward, end);
 
 	// trace only against the solids, so the railgun will go through people
 	unlinked = 0;
@@ -457,10 +457,10 @@ weapon_railgun_fire(ent_t *ent)
 	// set player number for custom colors on the railtrail
 	tent->s.clientNum = ent->s.clientNum;
 
-	veccopy(muzzle, tent->s.origin2);
+	veccpy(muzzle, tent->s.origin2);
 	// move origin a bit to come closer to the drawn gun muzzle
-	vecsadd(tent->s.origin2, 4, right, tent->s.origin2);
-	vecsadd(tent->s.origin2, -1, up, tent->s.origin2);
+	vecmad(tent->s.origin2, 4, right, tent->s.origin2);
+	vecmad(tent->s.origin2, -1, up, tent->s.origin2);
 
 	// no explosion at end if SURF_NOIMPACT, but still make the trail
 	if(trace.surfaceFlags & SURF_NOIMPACT)
@@ -519,7 +519,7 @@ weapon_hook_think(ent_t *ent)
 	if(ent->enemy){
 		vec3_t v, oldorigin;
 
-		veccopy(ent->r.currentOrigin, oldorigin);
+		veccpy(ent->r.currentOrigin, oldorigin);
 		v[0] = ent->enemy->r.currentOrigin[0] + (ent->enemy->r.mins[0] + ent->enemy->r.maxs[0]) * 0.5;
 		v[1] = ent->enemy->r.currentOrigin[1] + (ent->enemy->r.mins[1] + ent->enemy->r.maxs[1]) * 0.5;
 		v[2] = ent->enemy->r.currentOrigin[2] + (ent->enemy->r.mins[2] + ent->enemy->r.maxs[2]) * 0.5;
@@ -528,7 +528,7 @@ weapon_hook_think(ent_t *ent)
 		setorigin(ent, v);
 	}
 
-	veccopy(ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
+	veccpy(ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
 }
 
 /*
@@ -551,7 +551,7 @@ Weapon_LightningFire(ent_t *ent)
 
 	passent = ent->s.number;
 	for(i = 0; i < 10; i++){
-		vecsadd(muzzle, LIGHTNING_RANGE, forward, end);
+		vecmad(muzzle, LIGHTNING_RANGE, forward, end);
 
 		trap_Trace(&tr, muzzle, nil, nil, end, passent, MASK_SHOT);
 
@@ -623,9 +623,9 @@ set muzzle location relative to pivoting eye
 void
 calcmuzzlepoint(ent_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
 {
-	veccopy(ent->s.pos.trBase, muzzlePoint);
+	veccpy(ent->s.pos.trBase, muzzlePoint);
 	muzzlePoint[2] += ent->client->ps.viewheight;
-	vecsadd(muzzlePoint, 14, forward, muzzlePoint);
+	vecmad(muzzlePoint, 14, forward, muzzlePoint);
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector(muzzlePoint);
 }
@@ -640,9 +640,9 @@ set muzzle location relative to pivoting eye
 void
 calcmuzzlepointorigin(ent_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint)
 {
-	veccopy(ent->s.pos.trBase, muzzlePoint);
+	veccpy(ent->s.pos.trBase, muzzlePoint);
 	muzzlePoint[2] += ent->client->ps.viewheight;
-	vecsadd(muzzlePoint, 14, forward, muzzlePoint);
+	vecmad(muzzlePoint, 14, forward, muzzlePoint);
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector(muzzlePoint);
 }
