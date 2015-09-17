@@ -136,44 +136,6 @@ static int ResampleSfx( sfx_t *sfx, int channels, int inrate, int inwidth, int s
 	return outcount;
 }
 
-/*
-================
-ResampleSfx
-
-resample / decimate to the current source rate
-================
-*/
-static int ResampleSfxRaw( short *sfx, int channels, int inrate, int inwidth, int samples, byte *data ) {
-	int			outcount;
-	int			srcsample;
-	float		stepscale;
-	int			i, j;
-	int			sample, samplefrac, fracstep;
-	
-	stepscale = (float)inrate / dma.speed;	// this is usually 0.5, 1, or 2
-
-	outcount = samples / stepscale;
-
-	samplefrac = 0;
-	fracstep = stepscale * 256 * channels;
-
-	for (i=0 ; i<outcount ; i++)
-	{
-		srcsample = samplefrac >> 8;
-		samplefrac += fracstep;
-		for (j=0 ; j<channels ; j++)
-		{
-			if( inwidth == 2 ) {
-				sample = LittleShort ( ((short *)data)[srcsample+j] );
-			} else {
-				sample = (int)( (unsigned char)(data[srcsample+j]) - 128) << 8;
-			}
-			sfx[i*channels+j] = sample;
-		}
-	}
-	return outcount;
-}
-
 //=============================================================================
 
 /*
