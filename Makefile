@@ -123,6 +123,10 @@ ifndef BASEGAME_CFLAGS
 BASEGAME_CFLAGS=
 endif
 
+ifndef LCCFLAGS
+LCCFLAGS=-A
+endif
+
 ifndef COPYDIR
 COPYDIR="/usr/local/games/quake3"
 endif
@@ -1397,22 +1401,22 @@ $(Q3LCC): $(Q3LCCOBJ) $(Q3RCC) $(Q3CPP)
 
 define DO_Q3LCC
 $(echo_cmd) "Q3LCC $<"
-$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) -o $@ $<
+$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) $(Q3LCCFLAGS) -o $@ $<
 endef
 
 define DO_CGAME_Q3LCC
 $(echo_cmd) "CGAME_Q3LCC $<"
-$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) -DCGAME -o $@ $<
+$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) $(Q3LCCFLAGS) -DCGAME -o $@ $<
 endef
 
 define DO_GAME_Q3LCC
 $(echo_cmd) "GAME_Q3LCC $<"
-$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) -DQAGAME -o $@ $<
+$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) $(Q3LCCFLAGS) -DQAGAME -o $@ $<
 endef
 
 define DO_UI_Q3LCC
 $(echo_cmd) "UI_Q3LCC $<"
-$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) -DUI -o $@ $<
+$(Q)$(Q3LCC) $(BASEGAME_CFLAGS) $(Q3LCCFLAGS) -DUI -o $@ $<
 endef
 
 
