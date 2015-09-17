@@ -1615,8 +1615,14 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 	vec3_t sprVel;
 
 	mod = 0;
+	mark = 0;
 	shader = 0;
+	sfx = 0;
+	radius = 0;
 	light = 0;
+	alphafade = qfalse;
+	isSprite = qfalse;
+	duration = 0;
 	lightcolor[0] = 1;
 	lightcolor[1] = 1;
 	lightcolor[2] = 0;

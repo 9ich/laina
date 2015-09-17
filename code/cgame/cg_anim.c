@@ -196,4 +196,5 @@ parseanimfile(const char *filename, animation_t *anims)
 		anims[i].framelerp = 1000 / fps;
 		anims[i].initiallerp = 1000 / fps;
 	}
+	return qtrue;
 }
