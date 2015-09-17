@@ -10,7 +10,6 @@ extern void	AimAtTarget(ent_t *self);
 static void	crate_use(ent_t*, ent_t*, ent_t*);
 static void	crate_touch(ent_t*, ent_t*, trace_t*);
 static void	crate_checkpoint_use(ent_t*, ent_t*, ent_t*);
-static void	crate_checkpoint_touch(ent_t*, ent_t*, trace_t*);
 static void	crate_bouncy_touch(ent_t*, ent_t*, trace_t*);
 static void	SP_checkpoint_halo(ent_t *ent);
 

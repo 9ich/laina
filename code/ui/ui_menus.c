@@ -367,7 +367,7 @@ videomenu(void)
 {
 	const float spc = 24;
 	float x, xx, y;
-	int i, j;
+	int i;
 
 	if(!vo.initialized)
 		initvideomenu();

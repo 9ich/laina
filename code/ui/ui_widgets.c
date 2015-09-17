@@ -57,7 +57,6 @@ qboolean
 button(const char *id, int x, int y, int just, const char *label)
 {
 	float w = 48, h = 28;
-	vec4_t colour = {0.996, 0.984, 0.623, 1.0};
 	vec4_t labelcolour = {0.827, 0.498, 1.0, 1.0};
 	float propw;
 	qboolean hot;
@@ -149,7 +148,6 @@ qboolean
 checkbox(const char *id, int x, int y, int just, qboolean *state)
 {
 	const float w = 16, h = 16;
-	vec4_t offcolour = {0.0, 1.0, 0.0, 1.0};
 	vec4_t oncolour = {1.0, 1.0, 1.0, 1.0};
 	qboolean hot;
 
@@ -298,7 +296,6 @@ static qboolean
 spinnerbutton(const char *id, int x, int y, const char *shader)
 {
 	const float sz = 18;
-	vec4_t colour = {0.0, 1.0, 0.8, 1.0};
 	qboolean hot;
 
 	hot = qfalse;
@@ -321,10 +318,9 @@ qboolean
 textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts)
 {
 	const float w = 14*SMALLCHAR_WIDTH, h = 18, bsz = 18;
-	qboolean hot, updated;
+	qboolean updated;
 	char bid[MAXIDLEN];
 
-	hot = qfalse;
 	updated = qfalse;
 	justify(just, &x, w);
 
@@ -345,7 +341,6 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 		idcpy(uis.focus, id);
 	if(mouseover(x, y, w, h)){
 		idcpy(uis.hot, id);
-		hot = qtrue;
 		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
 			idcpy(uis.active, id);
 			idcpy(uis.focus, id);
@@ -368,7 +363,6 @@ keybinder(const char *id, int x, int y, int just, int key)
 	const int width = 7;	// chars
 	const float w = width*SMALLCHAR_WIDTH;
 	const float h = 16, pad = 4;
-	int i, bufsz;
 	char buf[32], *p;
 
 	justify(just, &x, w);
@@ -385,7 +379,6 @@ keybinder(const char *id, int x, int y, int just, int key)
 	
 	yieldfocus(id);
 
-	bufsz = MIN(width+1, sizeof buf);
 	if(key == -1)
 		*buf = '\0';
 	else

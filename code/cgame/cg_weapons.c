@@ -1611,8 +1611,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 	qboolean alphafade;
 	qboolean isSprite;
 	int duration;
-	vec3_t sprOrg;
-	vec3_t sprVel;
 
 	mod = 0;
 	mark = 0;

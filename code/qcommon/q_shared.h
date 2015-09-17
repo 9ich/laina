@@ -154,12 +154,11 @@ typedef int intptr_t;
 
 //=============================================================
 
-typedef unsigned char 		byte;
+typedef unsigned char 	byte;
 typedef unsigned char	uchar;
 typedef unsigned short	ushort;
 typedef unsigned int	uint;
 typedef unsigned long	ulong;
-typedef long long	vlong;
 #define 		nil ((void*)0)
 
 typedef enum {qfalse, qtrue}	qboolean;

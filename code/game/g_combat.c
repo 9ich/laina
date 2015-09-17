@@ -152,9 +152,6 @@ GibEntity
 void
 GibEntity(ent_t *self, int killer)
 {
-	ent_t *ent;
-	int i;
-
 	addevent(self, EV_GIB_PLAYER, killer);
 	self->takedmg = qfalse;
 	self->s.eType = ET_INVISIBLE;
@@ -605,7 +602,6 @@ entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 	int take;
 	int asave;
 	int knockback;
-	int max;
 
 	if(!targ->takedmg)
 		return;

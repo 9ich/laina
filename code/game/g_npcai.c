@@ -598,6 +598,10 @@ airun(ent_t *e, float dist)
 	float d1, d2;
 	qboolean new;
 
+	tmpgoal = nil;
+	save = nil;
+	marker = nil;
+
 	if(e == nil){
 		gprintf("airun(e=nil)\n");
 		return;

@@ -670,7 +670,7 @@ void
 clientuserinfochanged(int clientNum)
 {
 	ent_t *ent;
-	int teamtask, teamleader, team, health;
+	int teamtask, teamleader, team;
 	char *s;
 	char model[MAX_QPATH];
 	char headmodel[MAX_QPATH];

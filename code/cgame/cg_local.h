@@ -1278,7 +1278,7 @@ void		drawinfo(void);
 
 // cg_scoreboard.c
 qboolean	drawscoreboard(void);
-void		drawintermissionboard(void);
+void		drawintermissionscores(void);
 
 // cg_consolecmds.c
 qboolean	consolecmd(void);

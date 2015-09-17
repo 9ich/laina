@@ -157,9 +157,6 @@ The ground trace didn't hit a surface, so we are in freefall
 static void
 npcgroundtracemissed(ent_t *e)
 {
-	trace_t trace;
-	vec3_t point;
-
 	if(e->s.groundEntityNum != ENTITYNUM_NONE){
 		// we just transitioned into freefall
 		Com_Printf("npc lift\n");
@@ -296,10 +293,9 @@ Realcheck:
 static qboolean
 movestep(ent_t *e, vec3_t mv, qboolean relink)
 {
-	float dz;
 	vec3_t oldorg, neworg, end, test;
 	trace_t tr;
-	int i, contents;
+	int contents;
 	float stepsz;
 
 	gprintf("movestep mv=%s\n", vtos(mv));
@@ -345,8 +341,6 @@ movestep(ent_t *e, vec3_t mv, qboolean relink)
 		return qfalse;
 
 	if(tr.fraction == 1.0f){
-		vec3_t pos;
-
 		if(!(e->npc.aiflags & AI_PARTIALGROUND)){
 			vecclear(e->npc.vel);
 			return qfalse;
@@ -392,7 +386,7 @@ movestep(ent_t *e, vec3_t mv, qboolean relink)
 static qboolean
 stepdir(ent_t *e, float yaw, float dist)
 {
-	vec3_t mv, pos, angles;
+	vec3_t mv;
 	float d;
 
 	gprintf("stepdir\n");

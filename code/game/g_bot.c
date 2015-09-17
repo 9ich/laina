@@ -414,7 +414,6 @@ void
 chkbotspawn(void)
 {
 	int n;
-	char userinfo[MAX_INFO_VALUE];
 
 	checkminimumplayers();
 

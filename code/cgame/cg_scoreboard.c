@@ -49,7 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SB_TIME_X		(SB_SCORELINE_X + 17 * BIGCHAR_WIDTH + 8)	// width 5
 #define SB_NAME_X		(SB_SCORELINE_X + 22 * BIGCHAR_WIDTH)		// width 15
 
-// intermission board
+// intermission scores
 #define I_STATS_X		30
 #define I_STATS_Y		40
 #define I_SPACING_X		350
@@ -63,9 +63,8 @@ static void
 drawclientscore(int y, score_t *score, float *color, float fade, qboolean largeFormat)
 {
 	char string[1024];
-	vec3_t headAngles;
 	clientinfo_t *ci;
-	int iconx, headx;
+	int iconx;
 
 	if(score->client < 0 || score->client >= cgs.maxclients){
 		Com_Printf("Bad score->client: %i\n", score->client);
@@ -75,7 +74,6 @@ drawclientscore(int y, score_t *score, float *color, float fade, qboolean largeF
 	ci = &cgs.clientinfo[score->client];
 
 	iconx = SB_BOTICON_X + (SB_RATING_WIDTH / 2);
-	headx = SB_HEAD_X + (SB_RATING_WIDTH / 2);
 
 	// draw the handicap or bot skill marker (unless player has flag)
 	if(ci->powerups & (1 << PW_NEUTRALFLAG)){

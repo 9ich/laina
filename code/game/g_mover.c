@@ -1022,8 +1022,6 @@ SP_func_piston(ent_t *ent)
 	float distance;
 	vec3_t size;
 	float lip;
-	char *keyclass;
-	int i;
 
 	ent->sound1to2 = ent->sound2to1 = soundindex("sound/movers/piston/start");
 	ent->soundpos1 = ent->soundpos2 = soundindex("sound/movers/piston/end");

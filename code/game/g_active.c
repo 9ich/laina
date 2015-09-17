@@ -403,7 +403,6 @@ ClientEvents(ent_t *ent, int oldEventSequence)
 	int i, j;
 	int event;
 	gclient_t *client;
-	int damage;
 	vec3_t origin, angles;
 //	qboolean	fired;
 	item_t *item;

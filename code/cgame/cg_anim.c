@@ -123,7 +123,6 @@ parseanimfile(const char *filename, animation_t *anims)
 	int i;
 	char *token;
 	float fps;
-	int skip;
 	char text[20000];
 	fileHandle_t f;
 
@@ -142,7 +141,6 @@ parseanimfile(const char *filename, animation_t *anims)
 
 	// parse the text
 	p = text;
-	skip = 0;
 
 	while(1){
 		prev = p;	// so we can unget

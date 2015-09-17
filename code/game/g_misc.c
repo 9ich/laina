@@ -271,7 +271,6 @@ void
 Use_Shooter(ent_t *ent, ent_t *other, ent_t *activator)
 {
 	vec3_t dir;
-	float deg;
 
 	// see if we have a target
 	if(ent->enemy){

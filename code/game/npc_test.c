@@ -3,12 +3,12 @@
 static int stest;
 
 static npcframe_t standframes[] = {
-	aistand, 0, nil
+	{aistand, 0, nil}
 };
 
 static npcframe_t walkframes[] = {
-	aiwalk, 14, nil,
-	aiwalk, 13, nil
+	{aiwalk, 14, nil},
+	{aiwalk, 13, nil}
 };
 
 static npcmove_t movestand = {0, 1, standframes, nil};

@@ -290,15 +290,13 @@ drawstatusbar(void)
 {
 	const int margin = 20;
 	const vec4_t colour = {1.0f, 0.4f, 0.0f, 1.0f};	// orange
-	playerState_t *ps;
-	int x, y, value;
+	int x, y;
 	vec3_t angles;
 	vec3_t origin;
 
 	if(cg_drawStatus.integer == 0)
 		return;
 
-	ps = &cg.snap->ps;
 	vecclear(angles);
 
 	// draw 3D icons first, so the changes back to 2D are minimized
@@ -593,6 +591,8 @@ drawpickupanim(void)
 			case IT_LIFE:
 				cg.displives++;
 				break;
+			default:
+				break;
 			}
 
 			// play a sound as the pickupanim reaches the stat counter
@@ -625,7 +625,7 @@ drawpickupanim(void)
 	vecset(viewportpos, 200, 0, 0);
 	vecclear(angles);
 	// quick rotation
-	angles[YAW] = (cg.pickupanimtime - cg.time & 255) * 360 / 256.0f;
+	angles[YAW] = (cg.pickupanimtime - (cg.time & 255)) * 360 / 256.0f;
 	drawmodel(pos[1] - ICON_SIZE*1.5f, pos[2] - ICON_SIZE*1.5f,
 	   ICON_SIZE*3, ICON_SIZE*3, model, 0, viewportpos, angles);
 }

@@ -257,7 +257,7 @@ cratesmash(vec3_t pos)
 	   0, LEF_PUFF_DONT_SCALE, cgs.media.smokePuffShader);
 	pt[0] += -4 + 8*Q_random(&seed);
 	pt[1] += -4 + 8*Q_random(&seed);
-	pt[3] += -4 + 8*Q_random(&seed);
+	pt[2] += -4 + 8*Q_random(&seed);
 	vel[2] = -40;
 	smokepuff(pt, vel, 100, 0.85f, 0.58f, 0.44f, 0.7f, 700, cg.time,
 	   0, 0, cgs.media.smokePuffShader);

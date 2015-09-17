@@ -485,8 +485,6 @@ target_secret
 void
 target_secret_use(ent_t *self, ent_t *other, ent_t *activator)
 {
-	int dflags;
-
 	if(activator->client == nil)
 		return;
 
@@ -537,7 +535,7 @@ target_changemap_use(ent_t *self, ent_t *other, ent_t *activator)
 		cmd = "map";
 	if(self->message == nil || self->message[0] == '\0'){
 		gprintf("target_changemap: no map set\n");
-		Com_sprintf(str, sizeof str, "%s limbo", cmd, self->message);
+		Com_sprintf(str, sizeof str, "%s limbo", cmd);
 		trap_Cvar_Set("nextmap", str);
 		return;
 	}
