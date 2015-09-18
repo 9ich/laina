@@ -988,6 +988,12 @@ crashland(void)
 	pm->ps->legsTimer = TIMER_LAND;
 
 	// calculate the exact velocity on landing
+
+	if(pm->ps->origin[2] >= pml.prevorigin[2]){
+		// can't be crashlanding
+		return;
+	}
+
 	dist = pm->ps->origin[2] - pml.prevorigin[2];
 	vel = pml.prevvelocity[2];
 	acc = -pm->ps->gravity;
@@ -1002,7 +1008,7 @@ crashland(void)
 	t = (-b - sqrt(den)) / (2 * a);
 
 	delta = vel + t * acc;
-	delta = delta*delta * 0.0001;
+	delta = delta*delta * 0.0001f;
 
 	// ducking while falling doubles damage
 	if(pm->ps->pm_flags & PMF_DUCKED)
@@ -1907,7 +1913,7 @@ PmoveSingle(pmove_t *pmove)
 	// save old velocity for crashlanding
 	veccpy(pm->ps->velocity, pml.prevvelocity);
 
-	pml.frametime = pml.msec * 0.001;
+	pml.frametime = pml.msec * 0.001f;
 
 	// update the viewangles
 	updateviewangles(pm->ps, &pm->cmd);
