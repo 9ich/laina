@@ -554,7 +554,7 @@ watermove(void)
 		vecmul(pm->ps->velocity, vel, pm->ps->velocity);
 	}
 
-	pmslidemode(qfalse);
+	pmslidemove(qfalse);
 }
 
 
@@ -711,7 +711,7 @@ airmove(void)
 	if(pm->ps->pm_flags & PMF_GRAPPLE_PULL)
 		pmstepslidemove(qtrue);
 	else
-		pmslidemode(qtrue);
+		pmslidemove(qtrue);
 #endif
 
 	pmstepslidemove(qtrue);
