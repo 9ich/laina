@@ -50,9 +50,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "syn.h"	//synonyms
 #include "match.h"	//string matching types and vars
 
-// for the voice chats
-#include "../../ui/menudef.h"	// sos001205 - for q3_ui also
-
 // from aasfile.h
 #define AREACONTENTS_MOVER		1024
 #define AREACONTENTS_MODELNUMSHIFT	24
@@ -370,7 +367,6 @@ BotRefuseOrder(bot_state_t *bs)
 	// if the bot was ordered to do something
 	if(bs->order_time && bs->order_time > FloatTime() - 10){
 		trap_EA_Action(bs->client, ACTION_NEGATIVE);
-		BotVoiceChat(bs, bs->decisionmaker, VOICECHAT_NO);
 		bs->order_time = 0;
 	}
 }
@@ -417,7 +413,6 @@ BotCTFSeekGoals(bot_state_t *bs)
 				// don't use any alt route goal, just get the hell out of the base
 				bs->altroutegoal.areanum = 0;
 			BotSetUserInfo(bs, "teamtask", va("%d", TEAMTASK_OFFENSE));
-			BotVoiceChat(bs, -1, VOICECHAT_IHAVEFLAG);
 		}else if(bs->rushbaseaway_time > FloatTime()){
 			if(BotTeam(bs) == TEAM_RED)
 				flagstatus = bs->redflagstatus;
@@ -462,7 +457,6 @@ BotCTFSeekGoals(bot_state_t *bs)
 					bs->teammessage_time = 0;
 					//no arrive message
 					bs->arrive_time = 1;
-					BotVoiceChat(bs, bs->teammate, VOICECHAT_ONFOLLOW);
 					//get the team goal time
 					bs->teamgoal_time = FloatTime() + TEAM_ACCOMPANY_TIME;
 					bs->ltgtype = LTG_TEAMACCOMPANY;
@@ -529,7 +523,6 @@ BotCTFSeekGoals(bot_state_t *bs)
 					bs->teammessage_time = 0;
 					//no arrive message
 					bs->arrive_time = 1;
-					BotVoiceChat(bs, bs->teammate, VOICECHAT_ONFOLLOW);
 					//get the team goal time
 					bs->teamgoal_time = FloatTime() + TEAM_ACCOMPANY_TIME;
 					bs->ltgtype = LTG_TEAMACCOMPANY;
