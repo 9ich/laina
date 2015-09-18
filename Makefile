@@ -1058,7 +1058,10 @@ BASE_CFLAGS += -Wfatal-errors -Wformat=2 -Wno-format-zero-length -Wformat-securi
 BASE_CFLAGS += -Wstrict-aliasing=2 -Wmissing-format-attribute
 BASE_CFLAGS += -Wdisabled-optimization
 BASE_CFLAGS += -Werror-implicit-function-declaration
-BASE_CFLAGS += -fno-diagnostics-show-option -fno-diagnostics-show-caret
+BASE_CFLAGS += -fno-diagnostics-show-option
+ifeq ($(CC),gcc)
+  BASE_CFLAGS += -fno-diagnostics-show-caret
+endif
 
 ifndef OPTVMFLAGS
   OPTVMFLAGS = $(OPTIMIZEVM)
