@@ -191,7 +191,7 @@ item_t bg_itemlist[] = {
 			"sound/misc/w_pkup.wav"
 		},
 		{
-			"models/weapons2/gauntlet/gauntlet.md3",
+			"",
 			nil, nil, nil
 		},
 		/* icon */ "icons/iconw_gauntlet",

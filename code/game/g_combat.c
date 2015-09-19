@@ -886,14 +886,9 @@ candamage(ent_t *targ, vec3_t origin)
 	return qfalse;
 }
 
-/*
-============
-radiusdamage
-============
-*/
 qboolean
 radiusdamage(vec3_t origin, ent_t *attacker, float damage, float radius,
-	       ent_t *ignore, int mod)
+   ent_t *ignore, int mod)
 {
 	float points, dist;
 	ent_t *ent;
@@ -951,4 +946,34 @@ radiusdamage(vec3_t origin, ent_t *attacker, float damage, float radius,
 	}
 
 	return hitClient;
+}
+
+qboolean
+boxdamage(vec3_t pos, vec3_t mins, vec3_t maxs, ent_t *attacker,
+   int ignore, float dmg, int mod)
+{
+	ent_t *e;
+	int i, ents[MAX_GENTITIES], nents;
+	vec3_t boxmins, boxmaxs;
+	qboolean hitclient;
+	vec3_t dir;
+	
+	hitclient = qfalse;
+
+	vecadd(pos, mins, boxmins);
+	vecadd(pos, maxs, boxmaxs);
+	nents = trap_EntitiesInBox(boxmins, boxmaxs, ents, ARRAY_LEN(ents));
+	for(i = 0; i < nents; i++){
+		e = &g_entities[ents[i]];
+		if(ents[i] == ignore || !e->takedmg)
+			continue;
+		if(candamage(e, pos)){
+			if(logaccuracyhit(e, attacker))
+				hitclient = qtrue;
+			vecsub(e->r.currentOrigin, pos, dir);
+			dir[2] += 20;
+			entdamage(e, nil, attacker, dir, nil, dmg, DAMAGE_RADIUS, mod);
+		}
+	}
+	return hitclient;
 }

@@ -618,7 +618,6 @@ registerweap(int weaponNum)
 	switch(weaponNum){
 	case WP_GAUNTLET:
 		MAKERGB(weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f);
-		weaponInfo->firingsound = trap_S_RegisterSound("sound/weapons/melee/fstrun.wav", qfalse);
 		weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/melee/fstatck.wav", qfalse);
 		break;
 
@@ -1187,7 +1186,7 @@ addplayerweap(refEntity_t *parent, playerState_t *ps, cent_t *cent, int team)
 		nonPredictedCent = cent;
 
 	// add the flash
-	if((weaponNum == WP_LIGHTNING || weaponNum == WP_GAUNTLET || weaponNum == WP_GRAPPLING_HOOK)
+	if((weaponNum == WP_LIGHTNING || weaponNum == WP_GRAPPLING_HOOK)
 	   && (nonPredictedCent->currstate.eFlags & EF_FIRING)){
 		// continuous flash
 	}else
@@ -1437,8 +1436,6 @@ nextweapon_f(void)
 		cg.weapsel++;
 		if(cg.weapsel == MAX_WEAPONS)
 			cg.weapsel = 0;
-		if(cg.weapsel == WP_GAUNTLET)
-			continue;	// never cycle to gauntlet
 		if(weapselectable(cg.weapsel))
 			break;
 	}
@@ -1469,8 +1466,6 @@ prevweapon_f(void)
 		cg.weapsel--;
 		if(cg.weapsel == -1)
 			cg.weapsel = MAX_WEAPONS - 1;
-		if(cg.weapsel == WP_GAUNTLET)
-			continue;	// never cycle to gauntlet
 		if(weapselectable(cg.weapsel))
 			break;
 	}

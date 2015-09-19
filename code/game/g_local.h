@@ -597,6 +597,7 @@ const char	*mkshaderstateconfigstr(void);
 qboolean	candamage(ent_t *targ, vec3_t origin);
 void		entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 qboolean	radiusdamage(vec3_t origin, ent_t *attacker, float damage, float radius, ent_t *ignore, int mod);
+qboolean	boxdamage(vec3_t pos, vec3_t mins, vec3_t maxs, ent_t *attacker,  int ignore, float dmg, int mod);
 void		body_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int meansOfDeath);
 void		tossclientitems(ent_t *self);
 
@@ -661,6 +662,7 @@ qboolean	logaccuracyhit(ent_t *target, ent_t *attacker);
 void		calcmuzzlepoint(ent_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint);
 void		snapvectortowards(vec3_t v, vec3_t to);
 qboolean	chkgauntletattack(ent_t *ent);
+qboolean	chkmelee2attack(ent_t *ent);
 void		weapon_hook_free(ent_t *ent);
 void		weapon_hook_think(ent_t *ent);
 

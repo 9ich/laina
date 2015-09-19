@@ -37,6 +37,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_SHOTGUN_SPREAD	700
 #define DEFAULT_SHOTGUN_COUNT	11
 
+#define MELEE_RANGE		64	// trace from hand
+#define MELEE2_RANGE		32	// 1st trace, radius of thin box outwards from player
+#define MELEE2_DOWNRANGE	-33	// 2nd trace, downward extension of player bounds
+#define MELEE_TIME		400	// time including cooldown
+#define MELEE2_TIME		700	// time including cooldown
+#define MELEE2_HITENDTIME	250	// time until MELEE2 stops tracing
+
 #define ITEM_RADIUS		16	// item sizes are needed for client side pickup detection
 
 #define LIGHTNING_RANGE		768
@@ -492,8 +499,9 @@ typedef enum
 
 	TORSO_GESTURE,
 
-	TORSO_ATTACK,
-	TORSO_ATTACK2,
+	TORSO_ATTACK,	// shoot (unused)
+	TORSO_ATTACK2,	// MELEE
+	TORSO_ATTACK3,	// MELEE2
 
 	TORSO_DROP,
 	TORSO_RAISE,
@@ -517,6 +525,8 @@ typedef enum
 	LEGS_IDLECR,
 
 	LEGS_TURN,
+
+	LEGS_ATTACK3,	// in sync with TORSO_ATTACK3
 
 	TORSO_GETFLAG,
 	TORSO_GUARDBASE,

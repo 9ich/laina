@@ -948,6 +948,8 @@ void CL_InitInput( void ) {
 	Cmd_AddCommand ("-speed", IN_SpeedUp);
 	Cmd_AddCommand ("+attack", IN_Button0Down);
 	Cmd_AddCommand ("-attack", IN_Button0Up);
+	Cmd_AddCommand ("+attack2", IN_Button1Down);
+	Cmd_AddCommand ("-attack2", IN_Button1Up);
 	Cmd_AddCommand ("+button0", IN_Button0Down);
 	Cmd_AddCommand ("-button0", IN_Button0Up);
 	Cmd_AddCommand ("+button1", IN_Button1Down);
@@ -1025,6 +1027,8 @@ void CL_ShutdownInput(void)
 	Cmd_RemoveCommand("-speed");
 	Cmd_RemoveCommand("+attack");
 	Cmd_RemoveCommand("-attack");
+	Cmd_RemoveCommand("+attack2");
+	Cmd_RemoveCommand("-attack2");
 	Cmd_RemoveCommand("+button0");
 	Cmd_RemoveCommand("-button0");
 	Cmd_RemoveCommand("+button1");

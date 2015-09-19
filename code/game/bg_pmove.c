@@ -103,6 +103,26 @@ starttorsoanim(int anim)
 }
 
 static void
+continuetorsoanim(int anim)
+{
+	if((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == anim)
+		return;
+	if(pm->ps->torsoTimer > 0)
+		return;	// a high priority animation is running
+	starttorsoanim(anim);
+}
+
+static void
+forcetorsoanim(int anim)
+{
+	if(pm->ps->torsoTimer > 0 &&
+	   (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == TORSO_ATTACK3)
+		return;	// nothing interrupts TORSO_ATTACK3
+	pm->ps->torsoTimer = 0;
+	starttorsoanim(anim);
+}
+
+static void
 startlegsanim(int anim)
 {
 	if(pm->ps->pm_type >= PM_DEAD)
@@ -124,18 +144,11 @@ continuelegsanim(int anim)
 }
 
 static void
-continuetorsoanim(int anim)
-{
-	if((pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == anim)
-		return;
-	if(pm->ps->torsoTimer > 0)
-		return;	// a high priority animation is running
-	starttorsoanim(anim);
-}
-
-static void
 forcelegsanim(int anim)
 {
+	if(pm->ps->legsTimer > 0 &&
+	   (pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == LEGS_ATTACK3)
+		return;	// nothing interrupts LEGS_ATTACK3
 	pm->ps->legsTimer = 0;
 	startlegsanim(anim);
 }
@@ -1650,6 +1663,12 @@ weapon(void)
 	if(pm->ps->weaponTime > 0)
 		pm->ps->weaponTime -= pml.msec;
 
+	// MELEE2 gives downward velocity
+	if(pm->ps->weapon == WP_GAUNTLET && pm->cmd.buttons & BUTTON_ATTACK2 &&
+	   pm->ps->weaponTime > MELEE2_HITENDTIME){
+		pm->ps->velocity[2] -= 2000.0f * pml.frametime;
+	}
+
 	// check for weapon change
 	// can't change if weapon is firing, but can change
 	// again if lowering or raising
@@ -1676,28 +1695,30 @@ weapon(void)
 	}
 
 	// check for fire
-	if(!(pm->cmd.buttons & BUTTON_ATTACK)){
+	if(!(pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_ATTACK2))){
 		pm->ps->weaponTime = 0;
 		pm->ps->weaponstate = WEAPON_READY;
 		return;
 	}
 
-	// start the animation even if out of ammo
+	// start the animation
 	if(pm->ps->weapon == WP_GAUNTLET){
-		// the guantlet only "fires" when it actually hits something
-		if(!pm->gauntlethit){
-			pm->ps->weaponTime = 0;
-			pm->ps->weaponstate = WEAPON_READY;
-			return;
+		if(pm->cmd.buttons & BUTTON_ATTACK2){
+			forcetorsoanim(TORSO_ATTACK3);
+			forcelegsanim(LEGS_ATTACK3);
+			pm->ps->torsoTimer = TIMER_MELEE2;
+			pm->ps->legsTimer = TIMER_MELEE2;
+		}else{
+			starttorsoanim(TORSO_ATTACK2);
 		}
-		starttorsoanim(TORSO_ATTACK2);
-	}else
+	}else{
 		starttorsoanim(TORSO_ATTACK);
+	}
 
 	pm->ps->weaponstate = WEAPON_FIRING;
 
 	// check for out of ammo
-	if(!pm->ps->ammo[pm->ps->weapon]){
+	if(pm->ps->ammo[pm->ps->weapon] == 0){
 		pmaddevent(EV_NOAMMO);
 		pm->ps->weaponTime += 500;
 		return;
@@ -1713,7 +1734,10 @@ weapon(void)
 	switch(pm->ps->weapon){
 	default:
 	case WP_GAUNTLET:
-		addTime = 400;
+		if(pm->cmd.buttons & BUTTON_ATTACK)
+			addTime = MELEE_TIME;
+		else
+			addTime = MELEE2_TIME;
 		break;
 	case WP_LIGHTNING:
 		addTime = 50;
@@ -1874,14 +1898,14 @@ PmoveSingle(pmove_t *pmove)
 
 	// set the firing flag for continuous beam weapons
 	if(!(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION && pm->ps->pm_type != PM_NOCLIP
-	   && (pm->cmd.buttons & BUTTON_ATTACK) && pm->ps->ammo[pm->ps->weapon])
+	   && (pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_ATTACK2)) && pm->ps->ammo[pm->ps->weapon] != 0)
 		pm->ps->eFlags |= EF_FIRING;
 	else
 		pm->ps->eFlags &= ~EF_FIRING;
 
 	// clear the respawned flag if attack and use are cleared
 	if(pm->ps->stats[STAT_HEALTH] > 0 &&
-	   !(pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE)))
+	   !(pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_ATTACK2 | BUTTON_USE_HOLDABLE)))
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 
 	// if talk button is down, dissallow all other input

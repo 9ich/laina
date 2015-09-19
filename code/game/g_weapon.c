@@ -71,23 +71,25 @@ qboolean
 chkgauntletattack(ent_t *ent)
 {
 	trace_t tr;
-	vec3_t end;
-	ent_t *tent;
-	ent_t *traceEnt;
+	vec3_t mins, maxs, end, muzzle;
+	ent_t *tent, *traceEnt;
 	int damage;
+
+	if(ent->client->noclip)
+		return qfalse;
 
 	// set aiming directions
 	anglevecs(ent->client->ps.viewangles, forward, right, up);
 
-	calcmuzzlepoint(ent, forward, right, up, muzzle);
+	veccpy(ent->client->ps.origin, muzzle);
+	muzzle[2] += ent->client->ps.viewheight;
+	vecmad(muzzle, MELEE_RANGE, forward, end);
+	vecset(mins, -6, -6, -6);
+	vecset(maxs, 6, 6, 6);
 
-	vecmad(muzzle, 32, forward, end);
+	trap_Trace(&tr, muzzle, mins, maxs, end, ent->s.number, MASK_SHOT);
 
-	trap_Trace(&tr, muzzle, nil, nil, end, ent->s.number, MASK_SHOT);
 	if(tr.surfaceFlags & SURF_NOIMPACT)
-		return qfalse;
-
-	if(ent->client->noclip)
 		return qfalse;
 
 	traceEnt = &g_entities[tr.entityNum];
@@ -108,11 +110,42 @@ chkgauntletattack(ent_t *ent)
 		s_quadFactor = g_quadfactor.value;
 	}else
 		s_quadFactor = 1;
-
-
 	damage = 50 * s_quadFactor;
+
 	entdamage(traceEnt, ent, ent, forward, tr.endpos,
-		 damage, 0, MOD_GAUNTLET);
+	   damage, 0, MOD_GAUNTLET);
+
+	return qtrue;
+}
+
+qboolean
+chkmelee2attack(ent_t *ent)
+{
+	vec3_t mins, maxs, pos;
+	int damage;
+
+	if(ent->client->noclip)
+		return qfalse;
+	
+	if(ent->client->ps.powerups[PW_QUAD]){
+		addevent(ent, EV_POWERUP_QUAD, 0);
+		s_quadFactor = g_quadfactor.value;
+	}else
+		s_quadFactor = 1;
+	damage = 50 * s_quadFactor;
+
+	veccpy(ent->client->ps.origin, pos);
+	pos[2] += ent->client->ps.viewheight;
+	vecset(mins, -MELEE2_RANGE, -MELEE2_RANGE, -21);
+	vecset(maxs, MELEE2_RANGE, MELEE2_RANGE, -20);
+	boxdamage(pos, mins, maxs, ent, ent->s.number,
+	   damage, MOD_GAUNTLET);
+
+	// crates directly beneath the player get smashed too
+	vecset(mins, MINS_X, MINS_Y, MELEE2_DOWNRANGE);
+	vecset(maxs, MAXS_X, MAXS_Y, 1);
+	boxdamage(ent->client->ps.origin, mins, maxs, ent, ent->s.number,
+	   damage, MOD_GAUNTLET);
 
 	return qtrue;
 }

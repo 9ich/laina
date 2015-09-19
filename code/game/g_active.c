@@ -607,11 +607,20 @@ ClientThink_real(ent_t *ent)
 
 	memset(&pm, 0, sizeof(pm));
 
-	// check for the hit-scan gauntlet, don't let the action
-	// go through as an attack unless it actually hits something
+	// melee hitscan
 	if(client->ps.weapon == WP_GAUNTLET && !(ucmd->buttons & BUTTON_TALK) &&
-	   (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponTime <= 0)
+	   (ucmd->buttons & BUTTON_ATTACK) && client->ps.weaponstate == WEAPON_FIRING){
 		pm.gauntlethit = chkgauntletattack(ent);
+		// melee will only be able to fire again after weaponTime
+		// has dropped to zero and weaponstate has been set to
+		// WEAPON_FIRING
+		client->ps.weaponstate = WEAPON_RAISING;
+	// melee2
+	}else if(client->ps.weapon == WP_GAUNTLET && !(ucmd->buttons & BUTTON_TALK) &&
+	   (ucmd->buttons & BUTTON_ATTACK2) && client->ps.weaponstate == WEAPON_FIRING &&
+	   client->ps.weaponTime > MELEE2_HITENDTIME){
+		pm.gauntlethit = chkmelee2attack(ent);
+	}
 
 	if(ent->flags & FL_FORCE_GESTURE){
 		ent->flags &= ~FL_FORCE_GESTURE;
