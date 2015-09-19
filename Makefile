@@ -1062,6 +1062,9 @@ BASE_CFLAGS += -fno-diagnostics-show-option
 ifeq ($(CC),gcc)
   BASE_CFLAGS += -fno-diagnostics-show-caret
 endif
+ifeq ($(CC),clang)
+  BASE_CFLAGS += -fno-caret-diagnostics
+endif
 
 ifndef OPTVMFLAGS
   OPTVMFLAGS = $(OPTIMIZEVM)
