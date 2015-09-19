@@ -619,7 +619,7 @@ initinputmenu(void)
 {
 	int i, k[2];
 
-	memset(&io, 0, sizeof so);
+	memset(&io, 0, sizeof io);
 
 	for(i = 0; binds[i].name != nil; i++){
 		lookupbind(binds[i].cmd, k, ARRAY_LEN(k));
