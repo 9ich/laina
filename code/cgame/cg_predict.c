@@ -494,7 +494,7 @@ predictplayerstate(void)
 				len = veclen(delta);
 				if(len > 0.1){
 					if(cg_showmiss.integer)
-						cgprintf("Prediction miss: %f\n", len);
+						cgprintf("prediction miss: %f\n", len);
 					if(cg_errorDecay.integer){
 						int t;
 						float f;
@@ -504,7 +504,7 @@ predictplayerstate(void)
 						if(f < 0)
 							f = 0;
 						if(f > 0 && cg_showmiss.integer)
-							cgprintf("Double prediction decay: %f\n", f);
+							cgprintf("double prediction decay: %f\n", f);
 						vecmul(cg.predictederr, f, cg.predictederr);
 					}else
 						vecclear(cg.predictederr);
@@ -543,12 +543,19 @@ predictplayerstate(void)
 
 	// adjust for the movement of the groundentity
 	adjustposformover(cg.pps.origin,
-				  cg.pps.groundEntityNum,
-				  cg.phystime, cg.time, cg.pps.origin, cg.pps.viewangles, cg.pps.viewangles);
+	   cg.pps.groundEntityNum, cg.phystime, cg.time, cg.pps.origin,
+	   cg.pps.viewangles, cg.pps.viewangles);
 
-	if(cg_showmiss.integer)
-		if(cg.pps.eventSequence > oldPlayerState.eventSequence + MAX_PS_EVENTS)
-			cgprintf("WARNING: dropped event\n");
+	if(cg_showmiss.integer){
+		int curr, prev, max;
+
+		curr = cg.pps.eventSequence;
+		prev = oldPlayerState.eventSequence;
+		max = prev + MAX_PS_EVENTS;
+
+		if(curr > max)
+			cgprintf("WARNING: dropped %d events\n", curr - max);
+	}
 
 	// fire events and other transition triggered things
 	transitionplayerstate(&cg.pps, &oldPlayerState);
