@@ -41,7 +41,7 @@ SP_crate(ent_t *ent)
 		gprintf(S_COLOR_YELLOW "WARNING: bad item %s in crate\n", contents);
 	else
 		registeritem(&bg_itemlist[ent->boxcontents]);
-	spawnint("count", "5", &ent->count);
+	spawnint("count", "1", &ent->count);
 
 	ent->model = "models/crates/crate.md3";
 	ent->physbounce = 0.2;
