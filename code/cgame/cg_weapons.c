@@ -788,14 +788,14 @@ maptorsotoweaponframe(clientinfo_t *ci, int frame)
 		return frame - ci->animations[TORSO_DROP].firstframe + 6;
 
 	// stand attack
-	if(frame >= ci->animations[TORSO_ATTACK].firstframe
-	   && frame < ci->animations[TORSO_ATTACK].firstframe + 6)
-		return 1 + frame - ci->animations[TORSO_ATTACK].firstframe;
+	if(frame >= ci->animations[TORSO_SHOOT].firstframe
+	   && frame < ci->animations[TORSO_SHOOT].firstframe + 6)
+		return 1 + frame - ci->animations[TORSO_SHOOT].firstframe;
 
 	// stand attack 2
-	if(frame >= ci->animations[TORSO_ATTACK2].firstframe
-	   && frame < ci->animations[TORSO_ATTACK2].firstframe + 6)
-		return 1 + frame - ci->animations[TORSO_ATTACK2].firstframe;
+	if(frame >= ci->animations[TORSO_MELEE].firstframe
+	   && frame < ci->animations[TORSO_MELEE].firstframe + 6)
+		return 1 + frame - ci->animations[TORSO_MELEE].firstframe;
 
 	return 0;
 }

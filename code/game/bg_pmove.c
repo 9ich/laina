@@ -116,8 +116,8 @@ static void
 forcetorsoanim(int anim)
 {
 	if(pm->ps->torsoTimer > 0 &&
-	   (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == TORSO_ATTACK3)
-		return;	// nothing interrupts TORSO_ATTACK3
+	   (pm->ps->torsoAnim & ~ANIM_TOGGLEBIT) == TORSO_MELEE2)
+		return;	// nothing interrupts TORSO_MELEE2
 	pm->ps->torsoTimer = 0;
 	starttorsoanim(anim);
 }
@@ -147,8 +147,8 @@ static void
 forcelegsanim(int anim)
 {
 	if(pm->ps->legsTimer > 0 &&
-	   (pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == LEGS_ATTACK3)
-		return;	// nothing interrupts LEGS_ATTACK3
+	   (pm->ps->legsAnim & ~ANIM_TOGGLEBIT) == LEGS_MELEE2)
+		return;	// nothing interrupts LEGS_MELEE2
 	pm->ps->legsTimer = 0;
 	startlegsanim(anim);
 }
@@ -1704,15 +1704,15 @@ weapon(void)
 	// start the animation
 	if(pm->ps->weapon == WP_GAUNTLET){
 		if(pm->cmd.buttons & BUTTON_ATTACK2){
-			forcetorsoanim(TORSO_ATTACK3);
-			forcelegsanim(LEGS_ATTACK3);
+			forcetorsoanim(TORSO_MELEE2);
+			forcelegsanim(LEGS_MELEE2);
 			pm->ps->torsoTimer = TIMER_MELEE2;
 			pm->ps->legsTimer = TIMER_MELEE2;
 		}else{
-			starttorsoanim(TORSO_ATTACK2);
+			starttorsoanim(TORSO_MELEE);
 		}
 	}else{
-		starttorsoanim(TORSO_ATTACK);
+		starttorsoanim(TORSO_SHOOT);
 	}
 
 	pm->ps->weaponstate = WEAPON_FIRING;
