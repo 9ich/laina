@@ -645,7 +645,6 @@ entevent(cent_t *cent, vec3_t position)
 	case EV_SMASH_CHECKPOINT_CRATE:
 		DEBUGNAME("EV_SMASH_CRATE");
 		cratesmash(cent->lerporigin);
-		trap_S_StartSound(cent->lerporigin, ENTITYNUM_WORLD, CHAN_VOICE, cgs.media.crateSmash);
 		break;
 
 	// weapon events

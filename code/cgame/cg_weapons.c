@@ -617,8 +617,6 @@ registerweap(int weaponNum)
 
 	switch(weaponNum){
 	case WP_GAUNTLET:
-		MAKERGB(weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f);
-		weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/melee/fstatck.wav", qfalse);
 		break;
 
 	case WP_LIGHTNING:
@@ -1576,7 +1574,7 @@ fireweap(cent_t *cent)
 	if(c > 0){
 		c = rand() % c;
 		if(weap->flashSound[c])
-			trap_S_StartSound(nil, ent->number, CHAN_WEAPON, weap->flashSound[c]);
+			trap_S_StartSound(nil, ent->number, CHAN_AUTO, weap->flashSound[c]);
 	}
 
 	// do brass ejection

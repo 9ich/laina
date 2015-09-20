@@ -267,6 +267,7 @@ cratesmash(vec3_t pos)
 		vel[2] = crandom() * 600;
 		launchsplinter(pt, vel, cgs.media.splinter);
 	}
+	trap_S_StartSound(pos, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.crateSmash);
 }
 
 /*
