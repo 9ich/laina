@@ -104,11 +104,7 @@ netField_t	playerStateFields[] =
 { PSF(delta_angles[1]), 16 },
 { PSF(delta_angles[2]), 16 },
 { PSF(eFlags), 16 },
-{ PSF(eventParms[0]), 8 },
-{ PSF(eventParms[1]), 8 },
 { PSF(eventSequence), 16 },
-{ PSF(events[0]), 8 },
-{ PSF(events[1]), 8 },
 { PSF(externalEvent), 10 },
 { PSF(externalEventParm), 8 },
 { PSF(generic1), 8 },
@@ -1155,6 +1151,7 @@ MSG_WriteDeltaPlayerstate
 void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to ) {
 	int				i;
 	playerState_t	dummy;
+	int				eventsbits, eventparmsbits;
 	int				statsbits;
 	int				persistantbits;
 	int				ammobits;
@@ -1223,6 +1220,16 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	//
 	// send the arrays
 	//
+	eventsbits = 0;
+	eventparmsbits = 0;
+	for (i=0 ; i<MAX_PS_EVENTS ; i++) {
+		if (to->events[i] != from->events[i]) {
+			eventsbits |= 1<<i;
+		}
+		if (to->eventParms[i] != from->eventParms[i]) {
+			eventparmsbits |= 1<<i;
+		}
+	}
 	statsbits = 0;
 	for (i=0 ; i<MAX_STATS ; i++) {
 		if (to->stats[i] != from->stats[i]) {
@@ -1254,12 +1261,33 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 	}
 
-	if (!statsbits && !persistantbits && !ammobits && !powerupbits && !doorKeybits) {
+	if (!eventsbits && !eventparmsbits && !statsbits && !persistantbits &&
+	   !ammobits && !powerupbits && !doorKeybits) {
 		MSG_WriteBits( msg, 0, 1 );	// no change
-		oldsize += 5;
+		oldsize += 7;
 		return;
 	}
 	MSG_WriteBits( msg, 1, 1 );	// changed
+
+	if ( eventsbits ) {
+		MSG_WriteBits( msg, 1, 1 );	// changed
+		MSG_WriteBits( msg, eventsbits, MAX_PS_EVENTS );
+		for (i=0 ; i<MAX_PS_EVENTS ; i++)
+			if (eventsbits & (1<<i))
+				MSG_WriteShort (msg, to->events[i]);
+	} else {
+		MSG_WriteBits( msg, 0, 1 );	// no change
+	}
+
+	if ( eventparmsbits ) {
+		MSG_WriteBits( msg, 1, 1 );	// changed
+		MSG_WriteBits( msg, eventparmsbits, MAX_PS_EVENTS );
+		for (i=0 ; i<MAX_PS_EVENTS ; i++)
+			if (eventparmsbits & (1<<i))
+				MSG_WriteShort (msg, to->eventParms[i]);
+	} else {
+		MSG_WriteBits( msg, 0, 1 );	// no change
+	}
 
 	if ( statsbits ) {
 		MSG_WriteBits( msg, 1, 1 );	// changed
@@ -1296,7 +1324,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		MSG_WriteBits( msg, powerupbits, MAX_POWERUPS );
 		for (i=0 ; i<MAX_POWERUPS ; i++)
 			if (powerupbits & (1<<i) )
-				MSG_WriteLong( msg, to->powerups[i] );
+				MSG_WriteShort( msg, to->powerups[i] );
 	} else {
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
@@ -1306,7 +1334,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		MSG_WriteBits( msg, doorKeybits, MAX_DOORKEYS );
 		for (i=0 ; i<MAX_DOORKEYS ; i++)
 			if (doorKeybits & (1<<i) )
-				MSG_WriteLong( msg, to->doorKeys[i] );
+				MSG_WriteShort( msg, to->doorKeys[i] );
 	} else {
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
@@ -1402,6 +1430,28 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 
 	// read the arrays
 	if (MSG_ReadBits( msg, 1 ) ) {
+		// parse events
+		if ( MSG_ReadBits( msg, 1 ) ) {
+			LOG("PS_EVENTS");
+			bits = MSG_ReadBits (msg, MAX_PS_EVENTS);
+			for (i=0 ; i<MAX_PS_EVENTS ; i++) {
+				if (bits & (1<<i) ) {
+					to->events[i] = MSG_ReadShort(msg);
+				}
+			}
+		}
+
+		// parse eventParms
+		if ( MSG_ReadBits( msg, 1 ) ) {
+			LOG("PS_EVENTPARMS");
+			bits = MSG_ReadBits (msg, MAX_PS_EVENTS);
+			for (i=0 ; i<MAX_PS_EVENTS ; i++) {
+				if (bits & (1<<i) ) {
+					to->eventParms[i] = MSG_ReadShort(msg);
+				}
+			}
+		}
+
 		// parse stats
 		if ( MSG_ReadBits( msg, 1 ) ) {
 			LOG("PS_STATS");
@@ -1441,7 +1491,7 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 			bits = MSG_ReadBits (msg, MAX_POWERUPS);
 			for (i=0 ; i<MAX_POWERUPS ; i++) {
 				if (bits & (1<<i) ) {
-					to->powerups[i] = MSG_ReadLong(msg);
+					to->powerups[i] = MSG_ReadShort(msg);
 				}
 			}
 		}
@@ -1452,7 +1502,7 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 			bits = MSG_ReadBits (msg, MAX_DOORKEYS);
 			for (i=0 ; i<MAX_DOORKEYS ; i++) {
 				if (bits & (1<<i) ) {
-					to->doorKeys[i] = MSG_ReadLong(msg);
+					to->doorKeys[i] = MSG_ReadShort(msg);
 				}
 			}
 		}
