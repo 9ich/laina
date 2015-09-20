@@ -1,6 +1,6 @@
 #include "g_local.h"
 
-#define BOX_CONTENTS_SPEED	200.0f
+#define BOX_CONTENTS_SPEED	150.0f
 #define BOX_CONTENTS_JUMP	100.f
 
 // g_trigger.c jump pad recycling
