@@ -154,11 +154,7 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 	tent->s.otherEntityNum = activator->s.number;
 
 	usetargets(self, activator);
-
-	// disable collision, free in a moment
-	self->r.contents = 0;
-	self->think = entfree;
-	self->nextthink = 50;
+	entfree(self);
 
 	level.ncratesbroken++;
 }
@@ -189,11 +185,7 @@ crate_touch(ent_t *self, ent_t *other, trace_t *trace)
 	}
 
 	usetargets(self, other);
-
-	// disable collision, free in a moment
-	self->r.contents = 0;
-	self->think = entfree;
-	self->nextthink = 50;
+	entfree(self);
 
 	level.ncratesbroken++;
 }
