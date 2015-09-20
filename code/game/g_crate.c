@@ -152,18 +152,50 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 	}
 	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
+
 	usetargets(self, activator);
-	entfree(self);
+
+	// disable collision, free in a moment
+	self->r.contents = 0;
+	self->think = entfree;
+	self->nextthink = 50;
+
 	level.ncratesbroken++;
 }
 
+/*
+Unlike crate_use, this function doesn't make an EV_SMASH_CRATE event
+because the call to touchcrate already predicts one.
+*/
 static void
 crate_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
+	vec3_t vel;
+	int i, it;
+
 	if(other->client == nil)
 		return;
-	if(touchcrate(&other->client->ps, &self->s))
-		self->use(self, nil, other);
+	if(!touchcrate(&other->client->ps, &self->s))
+		return;
+
+	if(self->boxcontents != 0){
+		it = self->boxcontents;
+		for(i = 0; i < self->count; i++){
+			vel[0] = crandom()*BOX_CONTENTS_SPEED;
+			vel[1] = crandom()*BOX_CONTENTS_SPEED;
+			vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
+			itemlaunch(&bg_itemlist[it], self->s.pos.trBase, vel);
+		}
+	}
+
+	usetargets(self, other);
+
+	// disable collision, free in a moment
+	self->r.contents = 0;
+	self->think = entfree;
+	self->nextthink = 50;
+
+	level.ncratesbroken++;
 }
 
 static void
