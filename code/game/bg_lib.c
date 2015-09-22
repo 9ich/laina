@@ -396,6 +396,34 @@ memcpy(void *dst0, const void *src0, size_t length)
 	return dst0;
 }
 
+int
+memcmp(const void *s1, const void *s2, size_t n)
+{
+	if (n != 0) {
+		const unsigned char *p1 = s1, *p2 = s2;
+
+		do {
+			if (*p1++ != *p2++)
+				return (*--p1 - *--p2);
+		} while (--n != 0);
+	}
+	return (0);
+}
+
+void *
+memchr(const void *s, int c, size_t n)
+{
+	if (n != 0) {
+		const unsigned char *p = s;
+
+		do {
+			if (*p++ == (unsigned char)c)
+				return ((void *)(p - 1));
+		} while (--n != 0);
+	}
+	return (NULL);
+}
+
 /*
  * Copy src to dst, truncating or null-padding to always copy n bytes.
  * Return dst.
