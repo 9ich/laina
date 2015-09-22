@@ -518,12 +518,7 @@ drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 	char ch;
 	int forceColor = qfalse;//APSFIXME;
 	vec4_t tempcolor;
-	float ax;
-	float ay;
-	float aw;
-	float ah;
-	float frow;
-	float fcol;
+	float ax, ay, aw, ah, frow, fcol;
 
 	if(y < -charh)
 		// offscreen
@@ -541,7 +536,8 @@ drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 	while(*s){
 		if(Q_IsColorString(s)){
 			if(!forceColor){
-				memcpy(tempcolor, g_color_table[ColorIndex(s[1])], sizeof(tempcolor));
+				memcpy(tempcolor, g_color_table[ColorIndex(s[1])],
+				   sizeof(tempcolor));
 				tempcolor[3] = color[3];
 				trap_R_SetColor(tempcolor);
 			}
@@ -550,9 +546,10 @@ drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 		}
 		ch = *s & 255;
 		if(ch != ' '){
-			frow = (ch>>4)*0.0625;
-			fcol = (ch&15)*0.0625;
-			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, uis.charset);
+			frow = (ch>>4)*0.0625f;
+			fcol = (ch&15)*0.0625f;
+			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.0625f,
+			   frow + 0.0625f, uis.charset);
 		}
 		ax += aw;
 		s++;
@@ -616,6 +613,101 @@ drawstr(int x, int y, const char *str, int style, vec4_t color)
 		drawstr2(x+2, y+2, str, dropcolor, charw, charh);
 	}
 	drawstr2(x, y, str, drawcolor, charw, charh);
+}
+
+void
+drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, vec4_t color)
+{
+	int len, width, charw, charh;
+	vec4_t newcolor;
+	vec4_t lowlight;
+	float *drawcolor;
+	vec4_t dropcolor;
+	char *s1, *s2, *s3;
+	char buf[1024];
+	int c;
+
+	if(str == nil)
+		return;
+
+	Q_strncpyz(buf, str, sizeof buf);
+	s1 = s2 = s3 = buf;
+
+	if(style & UI_SMALLFONT){
+		charw = SMALLCHAR_WIDTH;
+		charh = SMALLCHAR_HEIGHT;
+	}else if(style & UI_GIANTFONT){
+		charw = GIANTCHAR_WIDTH;
+		charh = GIANTCHAR_HEIGHT;
+	}else{
+		charw = BIGCHAR_WIDTH;
+		charh = BIGCHAR_HEIGHT;
+	}
+
+	if(style & UI_PULSE){
+		lowlight[0] = 0.8f*color[0];
+		lowlight[1] = 0.8f*color[1];
+		lowlight[2] = 0.8f*color[2];
+		lowlight[3] = 0.8f*color[3];
+		lerpcolour(color, lowlight, newcolor, 0.5+0.5*sin(uis.realtime/PULSE_DIVISOR));
+		drawcolor = newcolor;
+	}else
+		drawcolor = color;
+
+	switch(style & UI_FORMATMASK){
+	case UI_CENTER:
+		len = strlen(str);
+		x = x - len*charw/2;
+		break;
+	case UI_RIGHT:
+		len = strlen(str);
+		x = x - len*charw;
+		break;
+	default:
+		break;
+	}
+
+	dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
+	dropcolor[3] = color[3];
+
+	for(;;){
+		do{
+			s3++;
+		}while(*s3 != ' ' && *s3 != '\0');
+		c = *s3;
+		*s3 = '\0';
+		width = charw*strlen(s1);
+		*s3 = c;
+		if(width > xmax){
+			if(s1 == s2)	// overflow
+				s2 = s3;
+			*s2 = '\0';
+			if(style & UI_DROPSHADOW)
+				drawstr2(x+2, y+2, s1, dropcolor, charw, charh);
+			drawstr2(x, y, s1, drawcolor, charw, charh);
+			y += ystep;
+			if(c == '\0'){
+				s2++;
+				if(*s2 != '\0'){
+					if(style & UI_DROPSHADOW)
+						drawstr2(x+2, y+2, s2, dropcolor, charw, charh);
+					drawstr2(x, y, s2, drawcolor, charw, charh);
+				}
+				break;
+			}
+			s2++;
+			s1 = s2;
+			s3 = s2;
+		}else{
+			s2 = s3;
+			if(c == '\0'){
+				if(style & UI_DROPSHADOW)
+					drawstr2(x+2, y+2, s1, dropcolor, charw, charh);
+				drawstr2(x, y, s1, drawcolor, charw, charh);
+				break;
+			}
+		}
+	}
 }
 
 void

@@ -735,7 +735,7 @@ void
 errormenu(void)
 {
 	int i;
-	char buf[MAX_STRING_CHARS], msg[MAX_STRING_CHARS];
+	char buf[MAX_STRING_CHARS];
 
 	for(i = 0; i < ARRAY_LEN(uis.keys); i++)
 		if(uis.keys[i]){
@@ -747,8 +747,8 @@ errormenu(void)
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
-	Com_sprintf(msg, sizeof msg, "error: %s", buf);
-	drawstr(320, 220, msg, UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_red);
+	drawstr(20, 180, "error:", UI_DROPSHADOW, color_red);
+	drawstrwrapped(20, 220, SCREEN_WIDTH-40, 16, buf, UI_SMALLFONT|UI_DROPSHADOW, color_red);
 }
 
 void
@@ -758,6 +758,7 @@ mainmenu(void)
 	float y;
 
 	uis.fullscreen = qtrue;
+
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	y = 190;
 	if(button(".mm.sp", SCREEN_WIDTH/2, y, UI_CENTER, "Single Player"))

@@ -129,6 +129,7 @@ extern void	drawpropstrwrapped(int x, int ystart, int xmax, int ystep, const cha
 extern int	propstrwidth(const char *str, int slicebegin, int sliceend);
 extern float	propstrsizescale(int style);
 extern void	drawstr(int x, int y, const char *str, int style, vec4_t color);
+extern void	drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, vec4_t color);
 extern void	drawchar(int x, int y, int ch, int style, vec4_t color);
 extern qboolean mouseover(int x, int y, int width, int height);
 extern void	adjustcoords(float *x, float *y, float *w, float *h);
