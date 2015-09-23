@@ -66,11 +66,11 @@ button(const char *id, int x, int y, int just, const char *label)
 	yieldfocus(id);
 
 	clr = CLtBlue;
-	if(hot)
+	if(hot){
+		clr = CWHot;
 		if(idcmp(uis.active, id))
-			clr = CLtOrange;
-		else
-			clr = CLtGreen;
+			clr = CWActive;
+	}
 	drawpropstr(x+w/2, y, label, UI_CENTER|UI_DROPSHADOW, clr);
 	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);
 }
@@ -78,7 +78,8 @@ button(const char *id, int x, int y, int just, const char *label)
 qboolean
 slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt)
 {
-	float w = 120, pad = 2, h = 12, knobw = 6, knobh = 18, ix, iy, iw;
+	float w = 120, pad = 2, h = 12, knobw = 6, knobh = 18;
+	float knobx, knoby, ix, iy, iw;
 	qboolean hot, updated;
 	float knobpos, mousepos;
 	char s[32];
@@ -115,19 +116,24 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 
 	yieldfocus(id);
 
-	fillrect(x, y, w, h, CLtBlue);
-	drawrect(x, y, w, h, CBlack);
+	fillrect(x, y, w, h, CWBody);
+	drawrect(x, y, w, h, CWBorder);
+
 	knobpos = (iw * *val) / max;
 	*val = Com_Scale(*val, 0, max, min, max);
+	knobx = ix + knobpos - knobw/2;
+	knoby = y + h/2 - knobh/2;
+
 	if(hot || idcmp(uis.active, id))
-		clr = CLtOrange;
+		clr = CWHot;
 	else
-		clr = CPurple;
-	fillrect(ix + knobpos - knobw/2, y + h/2 - knobh/2, knobw, knobh, clr);
-	drawrect(ix + knobpos - knobw/2, y + h/2 - knobh/2, knobw, knobh, CBlack);
+		clr = CWText;
+	fillrect(knobx+1, knoby+1, knobw, knobh, CWShadow);
+	fillrect(knobx, knoby, knobw, knobh, clr);
+	drawrect(knobx, knoby, knobw, knobh, CWBorder);
 	if(*displayfmt != '\0'){
 		Com_sprintf(s, sizeof s, displayfmt, *val);
-		drawstr(x+w+6, iy, s, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, CLtGreen);
+		drawstr(x+w+6, iy, s, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, CWText);
 		*val = atof(s);
 	}
 	return updated;
@@ -155,15 +161,15 @@ checkbox(const char *id, int x, int y, int just, qboolean *state)
 
 	yieldfocus(id);
 
-	fillrect(x, y, w, h, CLtBlue);
-	drawrect(x, y, w, h, CBlack);
+	fillrect(x, y, w, h, CWBody);
+	drawrect(x, y, w, h, CWBorder);
 	if(*state){
-		setcolour(CBlack);
+		setcolour(CWShadow);
 		drawnamedpic(x+2, y+2, w, h, "menu/art/tick");
 		if(hot)
-			setcolour(COrange);
+			setcolour(CWHot);
 		else
-			setcolour(CPink);
+			setcolour(CWText);
 		drawnamedpic(x, y, w, h, "menu/art/tick");
 		setcolour(nil);
 	}
@@ -268,9 +274,9 @@ textfield(const char *id, int x, int y, int just, int width, char *buf, int *car
 		updated = updatefield(buf, caret, sz);
 
 	if(idcmp(uis.active, id) || hot)
-		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CActive);
+		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWActive);
 	else
-		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CHot);
+		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWHot);
 	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, COrange);
 	for(i = 0, caretpos = 0; i < *caret && buf[i] != '\0'; i++){
 		if(Q_IsColorString(&buf[i]))
@@ -299,12 +305,12 @@ spinnerbutton(const char *id, int x, int y, const char *shader)
 			idcpy(uis.active, id);
 	}
 
-	setcolour(CBlack);
+	setcolour(CWShadow);
 	drawnamedpic(x+2, y+2, sz, sz, shader);
 	if(hot)
-		setcolour(COrange);
+		setcolour(CWHot);
 	else
-		setcolour(CAmethyst);
+		setcolour(CWText);
 	drawnamedpic(x, y, sz, sz, shader);
 	setcolour(nil);
 	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);
@@ -345,10 +351,10 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 
 	yieldfocus(id);
 
-	fillrect(x+bsz, y, w, h, CLtBlue);
-	drawrect(x+bsz, y, w, h, CBlack);
+	fillrect(x+bsz, y, w, h, CWBody);
+	drawrect(x+bsz, y, w, h, CWBorder);
 	drawstr(x+bsz+w/2, y+2, opts[*i], UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW,
-	   CRed);
+	   CWText);
 	return updated;
 }
 
@@ -362,6 +368,7 @@ keybinder(const char *id, int x, int y, int just, int key)
 	const float w = width*SMALLCHAR_WIDTH;
 	const float h = 16, pad = 4;
 	char buf[32], *p;
+	float *clr;
 
 	justify(just, &x, w);
 
@@ -392,8 +399,12 @@ keybinder(const char *id, int x, int y, int just, int key)
 	// truncate to field width
 	buf[width-1] = '\0';
 
-	fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CActive);
-	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, COrange);
+	fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWBody);
+	drawrect(x-pad, y-pad, w+2*pad, h+2*pad, CWBorder);
+	clr = CWText;
+	if(mouseover(x, y, w, h))
+		clr = CWHot;
+	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, clr);
 
 	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);	
 }

@@ -63,8 +63,12 @@ extern vec4_t CViolet;
 extern vec4_t CYellow;
 
 extern float *CText;
-extern float *CHot;
-extern float *CActive;
+extern float *CWBorder;
+extern float *CWBody;
+extern float *CWText;
+extern float *CWHot;
+extern float *CWActive;
+extern float *CWShadow;
 
 // drop shadows
 #define Shadowalpha	0.7f

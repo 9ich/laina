@@ -56,9 +56,15 @@ vec4_t CTeal		= {0.000f, 0.502f, 0.502f, 1.000f};
 vec4_t CViolet		= {0.624f, 0.000f, 1.000f, 1.000f};
 vec4_t CYellow		= {1.000f, 0.749f, 0.000f, 1.000f};
 
-float *CText		= CWhite;
-float *CHot		= CLtGreen;
-float *CActive		= CLtBlue;
+static vec4_t vshadow	= {0.000f, 0.000f, 0.100f, Shadowalpha};
+
+float *CText		= CCream;	// normal text
+float *CWBorder		= CBlack;	// widget border
+float *CWBody		= CIndigo;	// widget body
+float *CWText		= CCream;	// widget text
+float *CWHot		= CGreen;	// widget text when hot
+float *CWActive		= CLtBlue;	// widget text when active
+float *CWShadow		= vshadow;
 
 uiStatic_t uis;
 
