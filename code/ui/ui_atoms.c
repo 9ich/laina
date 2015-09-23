@@ -27,6 +27,39 @@ Coordinates are 640*480 virtual values
 
 #include "ui_local.h"
 
+vec4_t CBlack		= {0.000f, 0.000f, 0.000f, 1.000f};
+vec4_t CWhite		= {1.000f, 1.000f, 1.000f, 1.000f};
+vec4_t CAmethyst	= {0.600f, 0.400f, 0.800f, 1.000f};
+vec4_t CApple		= {0.553f, 0.714f, 0.000f, 1.000f};
+vec4_t CAquamarine	= {0.498f, 1.000f, 0.831f, 1.000f};
+vec4_t CBlue		= {0.153f, 0.231f, 0.886f, 1.000f};
+vec4_t CBrown		= {0.596f, 0.463f, 0.329f, 1.000f};
+vec4_t CCream		= {1.000f, 0.992f, 0.816f, 1.000f};
+vec4_t CCyan		= {0.000f, 1.000f, 1.000f, 1.000f};
+vec4_t CDkBlue		= {0.063f, 0.204f, 0.651f, 1.000f};
+vec4_t CDkGreen		= {0.000f, 0.420f, 0.235f, 1.000f};
+vec4_t CDkGrey		= {0.600f, 0.600f, 0.600f, 1.000f};
+vec4_t CDkLavender	= {0.451f, 0.310f, 0.588f, 1.000f};
+vec4_t CGreen		= {0.000f, 1.000f, 0.498f, 1.000f};
+vec4_t CIndigo		= {0.294f, 0.000f, 0.510f, 1.000f};
+vec4_t CLtBlue		= {0.000f, 0.749f, 1.000f, 1.000f};
+vec4_t CLtGreen		= {0.247f, 1.000f, 0.000f, 1.000f};
+vec4_t CLtGrey		= {0.827f, 0.827f, 0.827f, 1.000f};
+vec4_t CLtMagenta	= {0.957f, 0.604f, 0.761f, 1.000f};
+vec4_t CLtOrange	= {1.000f, 0.624f, 0.000f, 1.000f};
+vec4_t CMagenta		= {1.000f, 0.000f, 1.000f, 1.000f};
+vec4_t COrange		= {1.000f, 0.400f, 0.000f, 1.000f};
+vec4_t CPink		= {0.925f, 0.231f, 0.514f, 1.000f};
+vec4_t CPurple		= {0.400f, 0.000f, 0.600f, 1.000f};
+vec4_t CRed		= {0.890f, 0.149f, 0.212f, 1.000f};
+vec4_t CTeal		= {0.000f, 0.502f, 0.502f, 1.000f};
+vec4_t CViolet		= {0.624f, 0.000f, 1.000f, 1.000f};
+vec4_t CYellow		= {1.000f, 0.749f, 0.000f, 1.000f};
+
+float *CText		= CWhite;
+float *CHot		= CLtGreen;
+float *CActive		= CLtBlue;
+
 uiStatic_t uis;
 
 char *
@@ -332,7 +365,7 @@ drawbannerstring(int x, int y, const char *str, int style, vec4_t color)
 
 	if(style & UI_DROPSHADOW){
 		drawcolor[0] = drawcolor[1] = drawcolor[2] = 0;
-		drawcolor[3] = color[3];
+		drawcolor[3] = color[3] * Shadowalpha;
 		drawbannerstring2(x+2, y+2, str, drawcolor);
 	}
 
@@ -427,7 +460,7 @@ drawpropstr(int x, int y, const char *str, int style, vec4_t color)
 	}
 	if(style & UI_DROPSHADOW){
 		drawcolor[0] = drawcolor[1] = drawcolor[2] = 0;
-		drawcolor[3] = color[3];
+		drawcolor[3] = color[3] * Shadowalpha;
 		drawpropstr2(x+2, y+2, str, drawcolor, sizeScale, uis.charsetProp);
 	}
 	if(style & UI_INVERSE){
@@ -609,7 +642,7 @@ drawstr(int x, int y, const char *str, int style, vec4_t color)
 	}
 	if(style & UI_DROPSHADOW){
 		dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
-		dropcolor[3] = drawcolor[3];
+		dropcolor[3] = drawcolor[3] * Shadowalpha;
 		drawstr2(x+2, y+2, str, dropcolor, charw, charh);
 	}
 	drawstr2(x, y, str, drawcolor, charw, charh);
@@ -668,7 +701,7 @@ drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, ve
 	}
 
 	dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
-	dropcolor[3] = color[3];
+	dropcolor[3] = color[3] * Shadowalpha;
 
 	for(;;){
 		do{
@@ -958,7 +991,7 @@ drawfps(void)
 			total = 1;
 		fps = 1000 * FRAMES / total;
 		Com_sprintf(s, sizeof s, "%ifps", fps);
-		drawstr(638, 2, s, UI_RIGHT|UI_SMALLFONT, color_white);
+		drawstr(638, 2, s, UI_RIGHT|UI_SMALLFONT, CWhite);
 	}
 }
 
@@ -1036,13 +1069,6 @@ refresh(int realtime)
 	memset(uis.keys+'0', 0, '0'+'9');
 	memset(uis.keys+'A', 0, 'A'+'Z');
 	uis.texti = 0;
-}
-
-void
-drawtextbox(int x, int y, int width, int lines)
-{
-	fillrect(x + BIGCHAR_WIDTH/2, y + BIGCHAR_HEIGHT/2, (width + 1) * BIGCHAR_WIDTH, (lines + 1) * BIGCHAR_HEIGHT, colorBlack);
-	drawrect(x + BIGCHAR_WIDTH/2, y + BIGCHAR_HEIGHT/2, (width + 1) * BIGCHAR_WIDTH, (lines + 1) * BIGCHAR_HEIGHT, colorWhite);
 }
 
 qboolean

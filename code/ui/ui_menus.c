@@ -368,7 +368,8 @@ videomenu(void)
 {
 	const float spc = 24;
 	float x, xx, y;
-	int i;
+	float *textclr;
+	int i, style;
 
 	if(!vo.initialized)
 		initvideomenu();
@@ -376,16 +377,19 @@ videomenu(void)
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	optionsbuttons();
+
+	textclr = CText;
+	style = UI_RIGHT|UI_DROPSHADOW;
 	x = 420;
 	xx = 440;
 	y = 100;
 
-	drawstr(x, y, "Resolution", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Resolution", style, textclr);
 	if(textspinner(".v.res", xx, y, 0, vo.reslist, &vo.resi, vo.nres))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Aspect ratio", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Aspect ratio", style, textclr);
 	if(textspinner(".v.rat", xx, y, 0, vo.ratlist, &vo.rati, vo.nrat)){
 		int w, h, hz;
 		char resstr[16], hzstr[16];
@@ -411,47 +415,47 @@ videomenu(void)
 	}
 	y += spc;
 
-	drawstr(x, y, "Refresh rate", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Refresh rate", style, textclr);
 	if(textspinner(".v.hz", xx, y, 0, vo.hzlist, &vo.hzi, vo.nhz))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Fullscreen", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Fullscreen", style, textclr);
 	if(checkbox(".v.fs", xx, y, 0, &vo.fullscr))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Brightness", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Brightness", style, textclr);
 	if(slider("v.brightness", xx, y, 0, 0, 4, &vo.gamma, "%.2f"))
 		vo.dirty = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Field of view", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Field of view", style, textclr);
 	if(slider("v.fov", xx, y, 0, 85, 130, &vo.fov, "%.0f"))
 		vo.dirty = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Vertical sync", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Vertical sync", style, textclr);
 	if(checkbox(".v.vs", xx, y, 0, &vo.vsync))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Show framerate", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Show framerate", style, textclr);
 	if(checkbox(".v.fps", xx, y, 0, &vo.drawfps))
 		vo.dirty = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Texture quality", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Texture quality", style, textclr);
 	if(textspinner(".v.tq", xx, y, 0, texqualities, &vo.texquality, ARRAY_LEN(texqualities)))
 		vo.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Geometry quality", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Geometry quality", style, textclr);
 	if(textspinner(".v.gq", xx, y, 0, geomqualities, &vo.gquality, ARRAY_LEN(geomqualities)))
 		vo.dirty = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Third person", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Third person", style, textclr);
 	if(checkbox(".v.3rd", xx, y, 0, &vo.thirdperson))
 		vo.dirty = qtrue;
 
@@ -528,22 +532,22 @@ soundmenu(void)
 	xx = 440;
 	y = 100;
 
-	drawstr(x, y, "Quality", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Quality", UI_RIGHT|UI_DROPSHADOW, CText);
 	if(textspinner(".s.qual", xx, y, 0, sndqualities, &so.qual, ARRAY_LEN(sndqualities)))
 		so.needrestart = qtrue;
 	y += spc;
 
-	drawstr(x, y, "Master volume", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Master volume", UI_RIGHT|UI_DROPSHADOW, CText);
 	if(slider(".s.vol", xx, y, 0, 0.0f, 1.0f, &so.vol, "%.2f"))
 		trap_Cvar_SetValue("s_volume", so.vol);
 	y += spc;
 
-	drawstr(x, y, "Music volume", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Music volume", UI_RIGHT|UI_DROPSHADOW, CText);
 	if(slider(".s.muvol", xx, y, 0, 0.0f, 1.0f, &so.muvol, "%.2f"))
 		trap_Cvar_SetValue("s_musicvolume", so.muvol);
 	y += spc;
 
-	drawstr(x, y, "Doppler effect", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Doppler effect", UI_RIGHT|UI_DROPSHADOW, CText);
 	if(checkbox(".s.dop", xx, y, 0, &so.doppler))
 		so.dirty = qtrue;
 	y += spc;
@@ -570,8 +574,8 @@ bindwaitmenu(void)
 	Com_sprintf(s, sizeof s,
 	   "Press a key to bind to %s",
 	   binds[bw.i].name);
-	drawstr(320, 200, s, style, color_white);
-	drawstr(320, 240, "Press ESC to cancel", style, color_white);
+	drawstr(320, 200, s, style, CText);
+	drawstr(320, 240, "Press ESC to cancel", style, CText);
 
 	if(uis.keys[K_ESCAPE]){
 		bw.i = -1;
@@ -676,7 +680,7 @@ inputmenu(void)
 	xxx = 520;
 	y = 100;
 
-	drawstr(x, y, "Sensitivity", UI_RIGHT|UI_DROPSHADOW, color_white);
+	drawstr(x, y, "Sensitivity", UI_RIGHT|UI_DROPSHADOW, CText);
 	if(slider(".io.s", xx, y, UI_LEFT, 0.1f, 10.0f, &io.sens, "%.1f"))
 		io.dirty = qtrue;
 	y += spc;
@@ -685,7 +689,7 @@ inputmenu(void)
 		char id[MAXIDLEN];
 
 		Com_sprintf(id, sizeof id, ".io.%s.k", binds[i].name);
-		drawstr(x, y, binds[i].name, UI_RIGHT|UI_DROPSHADOW, color_white);
+		drawstr(x, y, binds[i].name, UI_RIGHT|UI_DROPSHADOW, CText);
 		if(keybinder(id, xx, y, UI_LEFT, binds[i].k)){
 			bw.i = i;
 			bw.whichkey = 0;
@@ -718,10 +722,10 @@ defaultsmenu(void)
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 
-	drawstr(320, 180, "CAREFUL NOW",
-	   UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_red);
+	drawstr(320, 140, "CAREFUL NOW",
+	   UI_GIANTFONT|UI_CENTER|UI_DROPSHADOW, CRed);
 	drawstr(320, 200, "This will completely wipe your game config",
-	   UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, color_white);
+	   UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW, CText);
 
 	if(button(".dm.yes", SCREEN_WIDTH/2 - 20, 320, UI_RIGHT, "Reset")){
 		trap_Cmd_ExecuteText(EXEC_APPEND, "cvar_restart\n");
@@ -747,8 +751,8 @@ errormenu(void)
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
-	drawstr(20, 180, "error:", UI_DROPSHADOW, color_red);
-	drawstrwrapped(20, 220, SCREEN_WIDTH-40, 16, buf, UI_SMALLFONT|UI_DROPSHADOW, color_red);
+	drawstr(20, 180, "error:", UI_DROPSHADOW, CRed);
+	drawstrwrapped(20, 220, SCREEN_WIDTH-40, 16, buf, UI_SMALLFONT|UI_DROPSHADOW, CRed);
 }
 
 void

@@ -34,15 +34,41 @@ extern vmCvar_t ui_marks;
 extern vmCvar_t ui_drawfps;
 
 // ui_widgets.c
-extern vec4_t menu_text_color;
-extern vec4_t color_black;
-extern vec4_t color_white;
-extern vec4_t color_yellow;
-extern vec4_t color_blue;
-extern vec4_t color_orange;
-extern vec4_t color_red;
-extern vec4_t color_dim;
-extern vec4_t name_color;
+extern vec4_t CBlack;
+extern vec4_t CWhite;
+extern vec4_t CAmethyst;
+extern vec4_t CApple;
+extern vec4_t CAquamarine;
+extern vec4_t CBlue;
+extern vec4_t CBrown;
+extern vec4_t CCream;
+extern vec4_t CCyan;
+extern vec4_t CDkBlue;
+extern vec4_t CDkGreen;
+extern vec4_t CDkGrey;
+extern vec4_t CDkLavender;
+extern vec4_t CGreen;
+extern vec4_t CIndigo;
+extern vec4_t CLtBlue;
+extern vec4_t CLtGreen;
+extern vec4_t CLtGrey;
+extern vec4_t CLtMagenta;
+extern vec4_t CLtOrange;
+extern vec4_t CMagenta;
+extern vec4_t COrange;
+extern vec4_t CPink;
+extern vec4_t CPurple;
+extern vec4_t CRed;
+extern vec4_t CTeal;
+extern vec4_t CViolet;
+extern vec4_t CYellow;
+
+extern float *CText;
+extern float *CHot;
+extern float *CActive;
+
+// drop shadows
+#define Shadowalpha	0.7f
 
 qboolean	idcmp(const char *a, const char *b);
 void		idcpy(char *dst, const char *src);
@@ -133,7 +159,6 @@ extern void	drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, i
 extern void	drawchar(int x, int y, int ch, int style, vec4_t color);
 extern qboolean mouseover(int x, int y, int width, int height);
 extern void	adjustcoords(float *x, float *y, float *w, float *h);
-extern void	drawtextbox(int x, int y, int width, int lines);
 extern void	setactivemenu(uiMenuCommand_t menu);
 extern void	push(void (*drawfunc)(void));
 extern void	pop(void);
