@@ -77,17 +77,12 @@ typedef struct
 } cvarTable_t;
 
 vmCvar_t ui_drawCrosshair;
-vmCvar_t ui_drawCrosshairNames;
-vmCvar_t ui_marks;
 vmCvar_t ui_drawfps;
 
 static cvarTable_t cvarTable[] = {
 	{&ui_drawCrosshair, "cg_drawCrosshair", "4", CVAR_ARCHIVE},
-	{&ui_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE},
-	{&ui_marks, "cg_marks", "1", CVAR_ARCHIVE},
 	{&ui_drawfps, "cg_drawfps", "1", CVAR_ARCHIVE},
 };
-static int cvarTableSize = ARRAY_LEN(cvarTable);
 
 void
 registercvars(void)
@@ -95,8 +90,9 @@ registercvars(void)
 	int i;
 	cvarTable_t *cv;
 
-	for(i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++)
-		trap_Cvar_Register(cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags);
+	for(i = 0, cv = cvarTable; i < ARRAY_LEN(cvarTable); i++, cv++)
+		trap_Cvar_Register(cv->vmCvar, cv->cvarName, cv->defaultString,
+		   cv->cvarFlags);
 }
 
 void
@@ -105,6 +101,6 @@ updatecvars(void)
 	int i;
 	cvarTable_t *cv;
 
-	for(i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++)
+	for(i = 0, cv = cvarTable; i < ARRAY_LEN(cvarTable); i++, cv++)
 		trap_Cvar_Update(cv->vmCvar);
 }

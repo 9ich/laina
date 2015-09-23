@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern vmCvar_t ui_drawCrosshair;
 extern vmCvar_t ui_drawCrosshairNames;
-extern vmCvar_t ui_marks;
 extern vmCvar_t ui_drawfps;
 
 // ui_widgets.c
