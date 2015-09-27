@@ -274,11 +274,11 @@ checklocalsounds(playerState_t *ps, playerState_t *ops)
 	for(i = 0; i < ps->persistant[PERS_LIVES] - ops->persistant[PERS_LIVES]; i++)
 		queuepickupanim("item_life");
 
-	for(i = 0; i < ps->doorKeys[KEY_JADE] - ops->doorKeys[KEY_JADE]; i++)
+	for(i = 0; i < ps->inv[INV_KEY_JADE] - ops->inv[INV_KEY_JADE]; i++)
 		queuepickupanim("item_key_jade");
-	for(i = 0; i < ps->doorKeys[KEY_RUBY] - ops->doorKeys[KEY_RUBY]; i++)
+	for(i = 0; i < ps->inv[INV_KEY_RUBY] - ops->inv[INV_KEY_RUBY]; i++)
 		queuepickupanim("item_key_ruby");
-	for(i = 0; i < ps->doorKeys[KEY_SAPPHIRE] - ops->doorKeys[KEY_SAPPHIRE]; i++)
+	for(i = 0; i < ps->inv[INV_KEY_SAPPHIRE] - ops->inv[INV_KEY_SAPPHIRE]; i++)
 		queuepickupanim("item_key_sapphire");
 
 	//

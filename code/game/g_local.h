@@ -571,6 +571,7 @@ ent_t	*findent(ent_t *from, int fieldofs, const char *match);
 ent_t	*picktarget(char *targetname);
 void		usetargets(ent_t *ent, ent_t *activator);
 void		setmovedir(vec3_t angles, vec3_t movedir);
+int		inventory(playerState_t *ps, int item);
 
 void		entinit(ent_t *e);
 ent_t	*entspawn(void);

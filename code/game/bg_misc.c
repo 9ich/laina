@@ -138,7 +138,7 @@ item_t bg_itemlist[] = {
 		"Jade Key",		// pickup
 		1,
 		IT_KEY,
-		KEY_JADE,
+		INV_KEY_JADE,
 		"",	// precache
 		""	// sounds
 	},
@@ -157,7 +157,7 @@ item_t bg_itemlist[] = {
 		"Ruby Key",		// pickup
 		1,
 		IT_KEY,
-		KEY_RUBY,
+		INV_KEY_RUBY,
 		"",	// precache
 		""	// sounds
 	},
@@ -176,7 +176,7 @@ item_t bg_itemlist[] = {
 		"Sapphire Key",		// pickup
 		1,
 		IT_KEY,
-		KEY_SAPPHIRE,
+		INV_KEY_SAPPHIRE,
 		"",	// precache
 		""	// sounds
 	},

@@ -1117,15 +1117,16 @@ typedef struct {
 //=========================================================
 
 // bit field limits
-#define	MAX_STATS				16
+#define	MAX_STATS			16
 #define	MAX_PERSISTANT			32
 #define	MAX_POWERUPS			16
-#define	MAX_WEAPONS				16
-#define	MAX_DOORKEYS				16
+#define	MAX_WEAPONS			16
+#define	MAX_INV				16
+#define	MAX_INVPERM			16
 
 #define	MAX_PS_EVENTS			16
 
-#define PS_PMOVEFRAMECOUNTBITS	6
+#define PS_PMOVEFRAMECOUNTBITS		6
 
 // playerState_t is the information needed by both the client and server
 // to predict player motion and actions
@@ -1196,13 +1197,15 @@ typedef struct playerState_s {
 
 	int			stats[MAX_STATS];
 	int			persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
-	int			powerups[MAX_POWERUPS];	// level.time that the powerup runs out
+	int			powerups[MAX_POWERUPS];		// level.time that the powerup runs out
 	int			ammo[MAX_WEAPONS];
-	int			doorKeys[MAX_DOORKEYS];
+	// inv and invperm share index constants
+	int			inv[MAX_INV];			// misc inventory, cleared on death
+	int			invperm[MAX_INVPERM];		// misc inventory, savegame
 
 	int			generic1;
 	int			loopSound;
-	int			jumppad_ent;	// jumppad entity hit this frame
+	int			jumppad_ent;		// jumppad entity hit this frame
 
 	// not communicated over the net at all
 	int			ping;			// server to game info for scoreboard

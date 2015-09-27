@@ -1153,10 +1153,11 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	playerState_t	dummy;
 	int				eventsbits, eventparmsbits;
 	int				statsbits;
-	int				persistantbits;
+	long				persistantbits;
 	int				ammobits;
 	int				powerupbits;
-	int				doorKeybits;
+	int				invbits;
+	int				invpermbits;
 	int				numFields;
 	netField_t		*field;
 	int				*fromF, *toF;
@@ -1254,17 +1255,23 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 			powerupbits |= 1<<i;
 		}
 	}
-	doorKeybits = 0;
-	for (i=0; i<MAX_DOORKEYS; i++) {
-		if (to->doorKeys[i] != from->doorKeys[i]) {
-			doorKeybits |= 1<<i;
+	invbits = 0;
+	for (i=0; i<MAX_INV; i++) {
+		if (to->inv[i] != from->inv[i]) {
+			invbits |= 1<<i;
+		}
+	}
+	invpermbits = 0;
+	for (i=0; i<MAX_INVPERM; i++) {
+		if (to->invperm[i] != from->invperm[i]) {
+			invpermbits |= 1<<i;
 		}
 	}
 
 	if (!eventsbits && !eventparmsbits && !statsbits && !persistantbits &&
-	   !ammobits && !powerupbits && !doorKeybits) {
+	   !ammobits && !powerupbits && !invbits && !invpermbits) {
 		MSG_WriteBits( msg, 0, 1 );	// no change
-		oldsize += 7;
+		oldsize += 8;
 		return;
 	}
 	MSG_WriteBits( msg, 1, 1 );	// changed
@@ -1329,12 +1336,22 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
 	
-	if ( doorKeybits ) {
+	if ( invbits ) {
 		MSG_WriteBits( msg, 1, 1 );	// changed
-		MSG_WriteBits( msg, doorKeybits, MAX_DOORKEYS );
-		for (i=0 ; i<MAX_DOORKEYS ; i++)
-			if (doorKeybits & (1<<i) )
-				MSG_WriteShort( msg, to->doorKeys[i] );
+		MSG_WriteBits( msg, invbits, MAX_INV );
+		for (i=0 ; i<MAX_INV ; i++)
+			if (invbits & (1<<i) )
+				MSG_WriteShort( msg, to->inv[i] );
+	} else {
+		MSG_WriteBits( msg, 0, 1 );	// no change
+	}
+	
+	if ( invpermbits ) {
+		MSG_WriteBits( msg, 1, 1 );	// changed
+		MSG_WriteBits( msg, invpermbits, MAX_INVPERM );
+		for (i=0 ; i<MAX_INVPERM ; i++)
+			if (invpermbits & (1<<i) )
+				MSG_WriteShort( msg, to->invperm[i] );
 	} else {
 		MSG_WriteBits( msg, 0, 1 );	// no change
 	}
@@ -1496,13 +1513,24 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 			}
 		}
 
-		// parse keys
+		// parse inventory
 		if ( MSG_ReadBits( msg, 1 ) ) {
-			LOG("PS_DOORKEYS");
-			bits = MSG_ReadBits (msg, MAX_DOORKEYS);
-			for (i=0 ; i<MAX_DOORKEYS ; i++) {
+			LOG("PS_INV");
+			bits = MSG_ReadBits (msg, MAX_INV);
+			for (i=0 ; i<MAX_INV ; i++) {
 				if (bits & (1<<i) ) {
-					to->doorKeys[i] = MSG_ReadShort(msg);
+					to->inv[i] = MSG_ReadShort(msg);
+				}
+			}
+		}
+
+		// parse permanent inventory
+		if ( MSG_ReadBits( msg, 1 ) ) {
+			LOG("PS_INVPERM");
+			bits = MSG_ReadBits (msg, MAX_INVPERM);
+			for (i=0 ; i<MAX_INVPERM ; i++) {
+				if (bits & (1<<i) ) {
+					to->invperm[i] = MSG_ReadShort(msg);
 				}
 			}
 		}

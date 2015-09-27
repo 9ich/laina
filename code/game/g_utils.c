@@ -372,6 +372,16 @@ anglemod(float a)
 	return (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
 }
 
+/*
+ * For the given shared index, returns the number of items held in both
+ * the per-life inventory and the savegame inventory
+ */
+int
+inventory(playerState_t *ps, int item)
+{
+	return ps->inv[item] + ps->invperm[item];
+}
+
 void
 entinit(ent_t *e)
 {

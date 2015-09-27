@@ -306,14 +306,17 @@ typedef enum
 	PW_NUM_POWERUPS
 } powerup_t;
 
+// Shared slot indices into playerState_t->inv and playerState_t->invperm.
+// As a rule, only one of the two will ever have a nonzero count at
+// each slot.
 typedef enum
 {
-	KEY_JADE,
-	KEY_RUBY,
-	KEY_SAPPHIRE,
+	INV_KEY_JADE,
+	INV_KEY_RUBY,
+	INV_KEY_SAPPHIRE,
 
-	KEY_NUMKEYS
-} doorkey_t;
+	INV_MAX
+} inventoryindex_t;
 
 typedef enum
 {

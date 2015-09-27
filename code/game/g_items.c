@@ -216,7 +216,7 @@ Pickup_Life(ent_t *ent, ent_t *other)
 int
 Pickup_Key(ent_t *ent, ent_t *other)
 {
-	other->client->ps.doorKeys[ent->item->tag]++;
+	other->client->ps.inv[ent->item->tag]++;
 	return RESPAWN_KEY;
 }
 

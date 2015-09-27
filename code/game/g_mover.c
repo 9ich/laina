@@ -801,9 +801,9 @@ doortrigger_touch(ent_t *ent, ent_t *other, trace_t *trace)
 	if(other->client != nil && ent->doorkey > 0 && ent->doorkey < bg_nitems){
 		key = &bg_itemlist[ent->doorkey];
 		keytype = key->tag;
-		if(other->client->ps.doorKeys[keytype] <= 0){
+		if(inventory(&other->client->ps, keytype) <= 0){
 			if(level.time > other->keymsgdebouncetime){
-				char s[128];
+				char s[MAX_STRING_CHARS];
 
 				Com_sprintf(s, sizeof s, "You need the %s", key->pickupname);
 				trap_SendServerCommand(other-g_entities, va("cp \"%s\"", s));
@@ -811,7 +811,7 @@ doortrigger_touch(ent_t *ent, ent_t *other, trace_t *trace)
 			}
 			return;
 		}
-		other->client->ps.doorKeys[ent->doorkey]--;
+		other->client->ps.inv[ent->doorkey]--;
 		ent->doorkey = -1;	// permanently unlock door
 	}
 	if(other->client != nil && other->client->sess.team == TEAM_SPECTATOR){
