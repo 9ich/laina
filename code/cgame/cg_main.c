@@ -253,8 +253,8 @@ static cvarTable_t cvarTable[] = {
 	{&cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", 0},
 	{&cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0},
 	{&cg_timescale, "timescale", "1", 0},
-	{&cg_scorePlum, "cg_scorePlums", "1", CVAR_USERINFO | CVAR_ARCHIVE},
-	{&cg_smoothClients, "cg_smoothClients", "0", CVAR_USERINFO | CVAR_ARCHIVE},
+	{&cg_scorePlum, "cg_scorePlums", "1", CVAR_ARCHIVE},
+	{&cg_smoothClients, "cg_smoothClients", "0", CVAR_ARCHIVE},
 	{&cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
 
 	{&pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO},
@@ -291,8 +291,8 @@ registercvars(void)
 
 	trap_Cvar_Register(nil, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
 	trap_Cvar_Register(nil, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(nil, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE);
-	trap_Cvar_Register(nil, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE);
+	trap_Cvar_Register(nil, "team_model", DEFAULT_TEAM_MODEL, CVAR_ARCHIVE);
+	trap_Cvar_Register(nil, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_ARCHIVE);
 }
 
 static void
