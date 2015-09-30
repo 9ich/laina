@@ -68,14 +68,12 @@ parseplayersaves(char *buf)
 static char*
 parsesave(char *buf)
 {
-	char *prev, *tok;
+	char *tok;
 	char key[MAX_TOKEN_CHARS], info[MAX_INFO_STRING];
 
-	prev = nil;	// unget
 	tok = nil;
 	for(;;){
 		// key
-		prev = tok;
 		tok = COM_Parse(&buf);
 		if(*tok == '\0')
 			break;
@@ -94,7 +92,7 @@ parsesave(char *buf)
 		Info_SetValueForKey(info, key, tok);
 	}
 	Q_strncpyz(saveinfo, info, sizeof saveinfo);
-	return prev;
+	return tok;
 }
 
 /*
