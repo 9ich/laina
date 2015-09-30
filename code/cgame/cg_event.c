@@ -406,7 +406,7 @@ An entity has an event value
 also called by checkplayerstateevents
 ==============
 */
-#define DEBUGNAME(x) if(cg_debugEvents.integer){cgprintf(x "\n"); }
+#define DEBUGNAME(x) if(cg_debugEvents.integer){cgprintf("%22s", x); }
 void
 entevent(cent_t *cent, vec3_t position)
 {
@@ -419,9 +419,6 @@ entevent(cent_t *cent, vec3_t position)
 
 	es = &cent->currstate;
 	event = es->event & ~EV_EVENT_BITS;
-
-	if(cg_debugEvents.integer)
-		cgprintf("ent:%3i  event:%3i ", es->number, event);
 
 	if(!event){
 		DEBUGNAME("ZEROEVENT");
@@ -995,6 +992,9 @@ entevent(cent_t *cent, vec3_t position)
 		cgerrorf("Unknown event: %i", event);
 		break;
 	}
+
+	if(cg_debugEvents.integer)
+		cgprintf(" (%02i) ent=%03i parm=%i\n", event, es->number, es->eventParm);
 }
 
 /*
