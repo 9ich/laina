@@ -70,6 +70,7 @@ launchgib(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 static void
 launchsplinter(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 {
+	static int seed = 17;
 	localent_t *le;
 	refEntity_t *re;
 
@@ -78,7 +79,7 @@ launchsplinter(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 
 	le->type = LE_FRAGMENT;
 	le->starttime = cg.time;
-	le->endtime = le->starttime + 2000 + random() * 3000;
+	le->endtime = le->starttime + 2000 + Q_random(&seed) * 3000;
 
 	veccpy(origin, re->origin);
 	AxisCopy(axisDefault, re->axis);
@@ -91,12 +92,12 @@ launchsplinter(vec3_t origin, vec3_t velocity, qhandle_t hModel)
 
 	le->angles.trType = TR_LINEAR;
 	le->angles.trTime = cg.time;
-	le->angles.trBase[0] = rand();
-	le->angles.trBase[1] = rand();
-	le->angles.trBase[2] = rand();
-	le->angles.trDelta[0] = -1000 + random()*2000;
-	le->angles.trDelta[1] = -1000 + random()*2000;
-	le->angles.trDelta[2] = -1000 + random()*2000;
+	le->angles.trBase[0] = Q_random(&seed);
+	le->angles.trBase[1] = Q_random(&seed);
+	le->angles.trBase[2] = Q_random(&seed);
+	le->angles.trDelta[0] = -1000 + Q_random(&seed)*2000;
+	le->angles.trDelta[1] = -1000 + Q_random(&seed)*2000;
+	le->angles.trDelta[2] = -1000 + Q_random(&seed)*2000;
 
 	le->bouncefactor = 0.4f;
 
@@ -262,9 +263,9 @@ cratesmash(vec3_t pos)
 	smokepuff(pt, vel, 100, 0.85f, 0.58f, 0.44f, 0.7f, 700, cg.time,
 	   0, 0, cgs.media.smokePuffShader);
 	for(i = 0; i < NSPLINTERS; i++){
-		vel[0] = crandom() * 300;
-		vel[1] = crandom() * 300;
-		vel[2] = crandom() * 600;
+		vel[0] = Q_crandom(&seed) * 300;
+		vel[1] = Q_crandom(&seed) * 300;
+		vel[2] = Q_crandom(&seed) * 600;
 		launchsplinter(pt, vel, cgs.media.splinter);
 	}
 	trap_S_StartSound(pos, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.crateSmash);
