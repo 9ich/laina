@@ -60,6 +60,7 @@ vmCvar_t g_debugMove;
 vmCvar_t g_debugDamage;
 vmCvar_t g_debugAlloc;
 vmCvar_t g_debugNPC;
+vmCvar_t g_debugsave;
 vmCvar_t g_weaponRespawn;
 vmCvar_t g_weaponTeamRespawn;
 vmCvar_t g_motd;
@@ -137,6 +138,7 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_debugDamage, "g_debugDamage", "0", 0, 0, qfalse},
 	{&g_debugAlloc, "g_debugAlloc", "0", 0, 0, qfalse},
 	{&g_debugNPC, "g_debugNPC", "1", 0, 0, qfalse},
+	{&g_debugsave, "g_debugsave", "0", 0, 0, qfalse},
 	{&g_motd, "g_motd", "", 0, 0, qfalse},
 	{&g_blood, "com_blood", "1", 0, 0, qfalse},
 

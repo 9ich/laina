@@ -817,6 +817,7 @@ extern vmCvar_t g_debugMove;
 extern vmCvar_t g_debugAlloc;
 extern vmCvar_t g_debugDamage;
 extern vmCvar_t	g_debugNPC;
+extern vmCvar_t	g_debugsave;
 extern vmCvar_t g_weaponRespawn;
 extern vmCvar_t g_weaponTeamRespawn;
 extern vmCvar_t g_synchronousClients;

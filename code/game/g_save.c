@@ -30,7 +30,7 @@ parseplayersaves(char *buf)
 
 	for(;;){
 		if(nplayerinfos >= MAX_CLIENTS){
-			gprintf("too many players in savegame\n");
+			gprintf("error: too many players in savegame\n");
 			break;
 		}
 		tok = COM_Parse(&buf);
@@ -123,7 +123,7 @@ infoconv(void)
 		// if it doesn't exist, make a new infostring for it
 		if(p == nil){
 			if(nplayerinfos >= ARRAY_LEN(playerinfos)-1){
-				gprintf("error: trying to save too many players\n");
+				gprintf("error: tried to save too many players\n");
 				continue;
 			}
 			p = playerinfos[nplayerinfos];
@@ -135,6 +135,16 @@ infoconv(void)
 		s = Info_ValueForKey(uinfo, "name");
 		Info_SetValueForKey(p, "(name)", s);
 	}
+
+	if(g_debugsave.integer){
+		gprintf("infoconv: saveinfo=\"%s\"\n", saveinfo);
+		for(i = 0; i < MAX_CLIENTS; i++){
+			if(*playerinfos[i] == '\0')
+				continue;
+			gprintf("infoconv: playerinfos[%i]=\"%s\"\n", i, playerinfos[i]);
+		}
+		gprintf("infoconv: nplayerinfos=%i\n", nplayerinfos);
+	}
 }
 
 void
@@ -143,6 +153,7 @@ loadgame(const char *fname)
 	int len;
 	fileHandle_t f;
 	char buf[8192], *p;
+	int i;
 
 	len = trap_FS_FOpenFile(fname, &f, FS_READ);
 	if(f == 0){
@@ -159,6 +170,16 @@ loadgame(const char *fname)
 
 	p = parsesave(buf);
 	parseplayersaves(p);
+
+	if(g_debugsave.integer){
+		gprintf("loadgame: saveinfo=\"%s\"\n", saveinfo);
+		for(i = 0; i < MAX_CLIENTS; i++){
+			if(*playerinfos[i] == '\0')
+				continue;
+			gprintf("loadgame: playerinfos[%i]=\"%s\"\n", i, playerinfos[i]);
+		}
+		gprintf("loadgame: nplayerinfos=%i\n", nplayerinfos);
+	}
 }
 
 void
@@ -207,6 +228,9 @@ savegame(const char *fname)
 	}
 	trap_FS_Write(fbuf, strlen(fbuf), f);
 	trap_FS_FCloseFile(f);
+
+	if(g_debugsave.integer)
+		gprintf("savegame: fbuf=\"%s\"\n", fbuf);
 }
 
 void
