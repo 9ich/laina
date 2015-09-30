@@ -733,6 +733,11 @@ void		Svcmd_GameMem_f(void);
 // g_npcai.c
 void		foundtarget(ent_t *e);
 
+// g_save.c
+void		savegame(const char *fname);
+void		loadgame(const char *fname);
+void		clientfromsave(gclient_t *client, const char *guid);
+
 // g_session.c
 void		sessread(gclient_t *client);
 void		sesswrite(void);

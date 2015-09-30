@@ -412,6 +412,8 @@ initgame(int levelTime, int randomSeed, int restart)
 
 	worldsessinit();
 
+	loadgame("save/0.txt");
+
 	// initialize all entities for this game
 	memset(g_entities, 0, MAX_GENTITIES * sizeof(g_entities[0]));
 	level.entities = g_entities;
@@ -486,6 +488,9 @@ shutdowngame(int restart)
 
 	// write all the client session data so we can get it back
 	sesswrite();
+
+	// permanent save
+	savegame("save/0.txt");
 
 	if(trap_Cvar_VariableIntegerValue("bot_enable"))
 		BotAIShutdown(restart);
@@ -1024,6 +1029,9 @@ ExitLevel(void)
 
 	// we need to do this here before changing to CON_CONNECTING
 	sesswrite();
+
+	// permanent save
+	savegame("save/0.txt");
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting

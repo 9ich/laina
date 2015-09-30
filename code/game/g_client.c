@@ -839,6 +839,7 @@ clientconnect(int clientNum, qboolean firstTime, qboolean isBot)
 //	char		*areabits;
 	gclient_t *client;
 	char userinfo[MAX_INFO_STRING];
+	char *guid;
 	ent_t *ent;
 
 	ent = &g_entities[clientNum];
@@ -902,6 +903,9 @@ clientconnect(int clientNum, qboolean firstTime, qboolean isBot)
 	if(g_gametype.integer >= GT_TEAM &&
 	   client->sess.team != TEAM_SPECTATOR)
 		broadcastteamchange(client, -1);
+
+	guid = Info_ValueForKey(userinfo, "cl_guid");
+	clientfromsave(client, guid);
 
 	// count current clients and rank for scoreboard
 	calcranks();
