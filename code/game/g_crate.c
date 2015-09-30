@@ -141,6 +141,9 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 	vec3_t vel;
 	int i, it;
 
+	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
+	tent->s.otherEntityNum = activator->s.number;
+
 	if(self->boxcontents != 0){
 		it = self->boxcontents;
 		for(i = 0; i < self->count; i++){
@@ -150,12 +153,8 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 			itemlaunch(&bg_itemlist[it], self->s.pos.trBase, vel);
 		}
 	}
-	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
-	tent->s.otherEntityNum = activator->s.number;
-
 	usetargets(self, activator);
 	entfree(self);
-
 	level.ncratesbroken++;
 }
 
@@ -173,21 +172,7 @@ crate_touch(ent_t *self, ent_t *other, trace_t *trace)
 		return;
 	if(!touchcrate(&other->client->ps, &self->s))
 		return;
-
-	if(self->boxcontents != 0){
-		it = self->boxcontents;
-		for(i = 0; i < self->count; i++){
-			vel[0] = crandom()*BOX_CONTENTS_SPEED;
-			vel[1] = crandom()*BOX_CONTENTS_SPEED;
-			vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
-			itemlaunch(&bg_itemlist[it], self->s.pos.trBase, vel);
-		}
-	}
-
-	usetargets(self, other);
-	entfree(self);
-
-	level.ncratesbroken++;
+	self->use(self, nil, other);
 }
 
 static void
@@ -195,9 +180,10 @@ crate_checkpoint_use(ent_t *self, ent_t *other, ent_t *activator)
 {
 	ent_t *tent;
 
-	level.checkpoint = self->s.number;
 	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
+
+	level.checkpoint = self->s.number;
 	usetargets(self, activator);
 	trap_UnlinkEntity(self);
 	SP_checkpoint_halo(self);
