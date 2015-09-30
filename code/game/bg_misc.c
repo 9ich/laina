@@ -684,8 +684,6 @@ touchcrate(playerState_t *pps, entityState_t *crate)
 	if(!pps->crashland)
 		return qfalse;		// didn't land hard enough
 
-	if(pps->jumppad_ent != crate->number)
-		bgaddpredictableevent(EV_SMASH_CRATE, 0, pps);
 	// remember hitting this crate this frame (recycle jumppad fields)
 	pps->jumppad_ent = crate->number;
 	pps->jumppad_frame = pps->pmove_framecount;
