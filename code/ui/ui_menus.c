@@ -184,6 +184,9 @@ calcratios(void)
 void
 placeholder(void)
 {
+	focusorder(".p.b");
+	defaultfocus(".p.b");
+
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	if(button(".p.b", SCREEN_WIDTH/2, 210, UI_CENTER, "Go away"))
@@ -193,8 +196,10 @@ placeholder(void)
 void
 quitmenu(void)
 {
-	uis.fullscreen = qtrue;
+	focusorder(".qm.yes .qm.no");
+	defaultfocus(".qm.yes");
 
+	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	if(button(".qm.yes", SCREEN_WIDTH/2 - 20, 210, UI_RIGHT, "Quit"))
 		trap_Cmd_ExecuteText(EXEC_APPEND, "quit\n");
@@ -207,6 +212,8 @@ optionsbuttons(void)
 {
 	const float spc = 35;
 	float x, y;
+
+	focusorder(".o.v .o.s .o.i .o.d .o.bk");
 
 	x = 160;
 	y = 160;
@@ -222,7 +229,7 @@ optionsbuttons(void)
 		push(soundmenu);
 	}
 	y += spc;
-	if(button(".o.c", x, y, UI_RIGHT, "Input")){
+	if(button(".o.i", x, y, UI_RIGHT, "Input")){
 		pop();
 		io.initialized = qfalse;
 		push(inputmenu);
@@ -374,6 +381,10 @@ videomenu(void)
 	if(!vo.initialized)
 		initvideomenu();
 
+	focusorder(".v.res .v.rat .v.hz .v.fs .v.brightness .v.fov .v.vs"
+	   " .v.fps .v.tq .v.gq .v.3rd");
+	defaultfocus(".v.res");
+
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	optionsbuttons();
@@ -426,12 +437,12 @@ videomenu(void)
 	y += spc;
 
 	drawstr(x, y, "Brightness", style, textclr);
-	if(slider("v.brightness", xx, y, 0, 0, 4, &vo.gamma, "%.2f"))
+	if(slider(".v.brightness", xx, y, 0, 0, 4, &vo.gamma, "%.2f"))
 		vo.dirty = qtrue;
 	y += spc;
 
 	drawstr(x, y, "Field of view", style, textclr);
-	if(slider("v.fov", xx, y, 0, 85, 130, &vo.fov, "%.0f"))
+	if(slider(".v.fov", xx, y, 0, 85, 130, &vo.fov, "%.0f"))
 		vo.dirty = qtrue;
 	y += spc;
 
@@ -459,11 +470,13 @@ videomenu(void)
 	if(checkbox(".v.3rd", xx, y, 0, &vo.thirdperson))
 		vo.dirty = qtrue;
 
-	if(vo.dirty || vo.needrestart)
+	if(vo.dirty || vo.needrestart){
+		focusorder(".v.accept");
 		if(button(".v.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
 			savevideochanges();
 			pop();
 		}
+	}
 }
 
 // sound options
@@ -525,6 +538,9 @@ soundmenu(void)
 	if(!so.initialized)
 		initsoundmenu();
 
+	focusorder(".s.qual .s.vol .s.muvol .s.dop");
+	defaultfocus(".s.qual");
+
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	optionsbuttons();
@@ -552,11 +568,13 @@ soundmenu(void)
 		so.dirty = qtrue;
 	y += spc;
 
-	if(so.dirty || so.needrestart)
+	if(so.dirty || so.needrestart){
+		focusorder(".s.accept");
 		if(button(".s.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
 			savesoundchanges();
 			pop();
 		}
+	}
 }
 
 // input options
@@ -571,9 +589,7 @@ bindwaitmenu(void)
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 
-	Com_sprintf(s, sizeof s,
-	   "Press a key to bind to %s",
-	   binds[bw.i].name);
+	Com_sprintf(s, sizeof s, "Press a key to bind to %s", binds[bw.i].name);
 	drawstr(320, 200, s, style, CText);
 	drawstr(320, 240, "Press ESC to cancel", style, CText);
 
@@ -672,9 +688,11 @@ inputmenu(void)
 	if(!io.initialized)
 		initinputmenu();
 
+	focusorder(".io.s");
+	defaultfocus(".io.s");
+
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
-	optionsbuttons();
 	x = 420;
 	xx = 440;
 	xxx = 520;
@@ -686,9 +704,13 @@ inputmenu(void)
 	y += spc;
 
 	for(i = 0; binds[i].name != nil; i++){
-		char id[MAXIDLEN];
+		char id[MAXIDLEN], *p;
 
 		Com_sprintf(id, sizeof id, ".io.%s.k", binds[i].name);
+		p = id;
+		while((p = strchr(p, ' ')) != nil)
+			*p = '-';
+		focusorder(id);
 		drawstr(x, y, binds[i].name, UI_RIGHT|UI_DROPSHADOW, CText);
 		if(keybinder(id, xx, y, UI_LEFT, binds[i].k)){
 			bw.i = i;
@@ -696,7 +718,12 @@ inputmenu(void)
 			memset(uis.keys, 0, sizeof uis.keys);
 			push(bindwaitmenu);
 		}
+
 		Com_sprintf(id, sizeof id, ".io.%s.alt", binds[i].name);
+		p = id;
+		while((p = strchr(p, ' ')) != nil)
+			*p = '-';
+		focusorder(id);
 		if(keybinder(id, xxx, y, UI_LEFT|UI_DROPSHADOW, binds[i].alt)){
 			bw.i = i;
 			bw.whichkey = 1;
@@ -705,13 +732,16 @@ inputmenu(void)
 		}
 		y += spc;
 	}
-		
 
-	if(io.dirty || io.needrestart)
+	optionsbuttons();
+
+	if(io.dirty || io.needrestart){
+		focusorder(".io.accept");
 		if(button(".io.accept", 640-20, 480-30, UI_RIGHT, "Accept")){
 			saveinputchanges();
 			pop();
 		}
+	}
 }
 
 // misc menus
@@ -719,6 +749,9 @@ inputmenu(void)
 void
 defaultsmenu(void)
 {
+	focusorder(".dm.yes .dm.no");
+	defaultfocus(".dm.no");
+
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 
@@ -762,6 +795,8 @@ mainmenu(void)
 	float y;
 
 	uis.fullscreen = qtrue;
+	focusorder(".mm.sp .mm.co .mm.opt .mm.q");
+	defaultfocus(".mm.sp");
 
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	y = 190;
@@ -771,7 +806,7 @@ mainmenu(void)
 	if(button(".mm.co", SCREEN_WIDTH/2, y, UI_CENTER, "Co-op"))
 		push(placeholder);
 	y += spc;
-	if(button(".mm.o", SCREEN_WIDTH/2, y, UI_CENTER, "Options"))
+	if(button(".mm.opt", SCREEN_WIDTH/2, y, UI_CENTER, "Options"))
 		push(videomenu);
 	y += spc;
 	if(button(".mm.q", SCREEN_WIDTH/2, y, UI_CENTER, "Quit"))
@@ -784,13 +819,16 @@ ingamemenu(void)
 	const float spc = 35;
 	float y;
 
+	focusorder(".im.r .im.opt .im.qm .im.q");
+	defaultfocus(".im.r");
+
 	y = 180;
 	if(uis.keys[K_ESCAPE] || button(".im.r", SCREEN_WIDTH/2, y, UI_CENTER, "Resume")){
 		pop();
 		trap_Cvar_Set("cl_paused", "0");
 	}
 	y += spc;
-	if(button(".im.o", SCREEN_WIDTH/2, y, UI_CENTER, "Options"))
+	if(button(".im.opt", SCREEN_WIDTH/2, y, UI_CENTER, "Options"))
 		push(videomenu);
 	y += spc;
 	if(button(".im.qm", SCREEN_WIDTH/2, y, UI_CENTER, "Quit to menu"))

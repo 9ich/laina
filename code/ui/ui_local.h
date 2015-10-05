@@ -93,9 +93,10 @@ extern void	drawconnectscreen(qboolean overlay);
 // ui_atoms.c
 enum
 {
-	MAXIDLEN    = 128,
-	TEXTLEN             = 64,
-	NSTACK              = 64
+	MAXIDLEN	= 128,
+	TEXTLEN		= 64,
+	NSTACK		= 64,
+	NFOCLIST	= 128
 };
 
 typedef struct
@@ -111,8 +112,12 @@ typedef struct
 	char		text[TEXTLEN];		// text entered this refresh
 	int		texti;			// text index
 	char		hot[MAXIDLEN];		// id hovered over
-	char		active[MAXIDLEN];	// active id
+	char		active[MAXIDLEN];	// id mouse1 is down on
 	char		focus[MAXIDLEN];	// id with keyboard focus
+	char		defaultfocus[MAXIDLEN];
+	char		foclist[NFOCLIST][MAXIDLEN];	// per-frame list of explicit focus order
+	int		foci;			// foclist index
+	int		nfoc;			// foclist len
 	char		lastfocus[MAXIDLEN];	// last focused id
 	void(*stk[NSTACK])(void);		// menu drawing stack
 	int		sp;			// stack pointer
@@ -133,8 +138,6 @@ typedef struct
 	qboolean	demoversion;
 	qboolean	firstdraw;
 } uiStatic_t;
-
-typedef void (*menuFn_t)(void);
 
 extern void	init(void);
 extern void	shutdown(void);
@@ -165,8 +168,13 @@ extern void	adjustcoords(float *x, float *y, float *w, float *h);
 extern void	setactivemenu(uiMenuCommand_t menu);
 extern void	push(void (*drawfunc)(void));
 extern void	pop(void);
-extern menuFn_t peek(void);
 extern void	dismissui(void);
+extern void	focusorder(const char *s);
+extern void	setfocus(const char *id);
+extern void	defaultfocus(const char *id);
+extern void	cyclefocus(void);
+extern void	clearfocuslist(void);
+extern void	clearfocus(void);
 extern char	*Argv(int arg);
 extern char	*UI_Cvar_VariableString(const char *var_name);
 extern void	refresh(int time);

@@ -1002,14 +1002,15 @@ drawfps(void)
 }
 
 void
-push(menuFn_t f)
+push(void (*drawfunc)(void))
 {
 	if(uis.sp >= NSTACK)
 		Com_Error(ERR_FATAL, "ui stack overflow");
 	uis.sp++;
-	uis.stk[uis.sp] = f;
+	uis.stk[uis.sp] = drawfunc;
 	idcpy(uis.focus, "");
 	trap_Key_SetCatcher(KEYCATCH_UI);
+	clearfocus();
 }
 
 void
@@ -1020,6 +1021,7 @@ pop(void)
 	uis.sp--;
 	if(uis.sp < 0)
 		dismissui();
+	clearfocus();
 }
 
 void
@@ -1048,6 +1050,7 @@ refresh(int realtime)
 	uis.fullscreen = qfalse;
 
 	updatecvars();
+	clearfocuslist();
 
 	if(uis.sp >= 0)
 		uis.stk[uis.sp]();
@@ -1075,6 +1078,7 @@ refresh(int realtime)
 	memset(uis.keys+'0', 0, '0'+'9');
 	memset(uis.keys+'A', 0, 'A'+'Z');
 	uis.texti = 0;
+	cyclefocus();
 }
 
 qboolean
@@ -1084,4 +1088,84 @@ mouseover(int x, int y, int w, int h)
 	   uis.cursorx > x+w || uis.cursory > y+h)
 		return qfalse;
 	return qtrue;
+}
+
+/*
+Appends whitespace-separated widget ids to focus order list.
+Cleared every frame.
+*/
+void
+focusorder(const char *s)
+{
+	char *p, buf[1024], *tok;
+
+	Q_strncpyz(buf, s, sizeof buf);
+	p = buf;
+	for(; uis.nfoc < ARRAY_LEN(uis.foclist); uis.nfoc++){
+		tok = COM_Parse(&p);
+		if(*tok == '\0')
+			break;
+		Q_strncpyz(uis.foclist[uis.nfoc], tok, sizeof uis.foclist[uis.nfoc]);
+	}
+}
+
+void
+setfocus(const char *id)
+{
+	int i;
+
+	Q_strncpyz(uis.focus, id, sizeof uis.focus);
+	for(i = 0; i < uis.nfoc; i++)
+		if(strcmp(uis.foclist[i], uis.focus) == 0){
+			uis.foci = i;
+			break;
+		}
+}
+
+/*
+Sets the default focus.  Persists over frames.
+*/
+void
+defaultfocus(const char *id)
+{
+	int i;
+
+	if(*uis.defaultfocus != '\0')
+		return;
+	Q_strncpyz(uis.defaultfocus, id, sizeof uis.defaultfocus);
+	setfocus(id);
+}
+
+void
+cyclefocus(void)
+{
+	if(uis.keys[K_UPARROW]){
+		uis.foci = (uis.foci-1 >= 0)? uis.foci-1 : uis.nfoc-1;
+		Q_strncpyz(uis.focus, uis.foclist[uis.foci], sizeof uis.focus);
+		uis.keys[K_UPARROW] = qfalse;
+	}else if(uis.keys[K_DOWNARROW]){
+		uis.foci = (uis.foci+1) % uis.nfoc;
+		Q_strncpyz(uis.focus, uis.foclist[uis.foci], sizeof uis.focus);
+		uis.keys[K_DOWNARROW] = qfalse;
+	}
+}
+
+/*
+Clears focus list for beginning of frame.
+*/
+void
+clearfocuslist(void)
+{
+	uis.nfoc = 0;
+}
+
+/*
+Clears focus for transition between menus.
+*/
+void
+clearfocus(void)
+{
+	uis.foci = 0;
+	*uis.focus = '\0';
+	*uis.defaultfocus = '\0';
 }
