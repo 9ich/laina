@@ -68,13 +68,12 @@ extern float *CWBody;
 extern float *CWText;
 extern float *CWHot;
 extern float *CWActive;
+extern float *CWFocus;
 extern float *CWShadow;
 
 // drop shadows
 #define Shadowalpha	0.7f
 
-qboolean	idcmp(const char *a, const char *b);
-void		idcpy(char *dst, const char *src);
 qboolean	button(const char *id, int x, int y, int just, const char *label);
 qboolean	checkbox(const char *id, int x, int y, int just, qboolean *state);
 qboolean	slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt);
@@ -93,9 +92,9 @@ extern void	drawconnectscreen(qboolean overlay);
 // ui_atoms.c
 enum
 {
-	MAXIDLEN	= 128,
+	IDLEN		= 64,
 	TEXTLEN		= 64,
-	NSTACK		= 64,
+	NSTACK		= 32,
 	NFOCLIST	= 128
 };
 
@@ -111,14 +110,13 @@ typedef struct
 	qboolean	keys[MAX_KEYS];		// keys down this refresh
 	char		text[TEXTLEN];		// text entered this refresh
 	int		texti;			// text index
-	char		hot[MAXIDLEN];		// id hovered over
-	char		active[MAXIDLEN];	// id mouse1 is down on
-	char		focus[MAXIDLEN];	// id with keyboard focus
-	char		defaultfocus[MAXIDLEN];
-	char		foclist[NFOCLIST][MAXIDLEN];	// per-frame list of explicit focus order
+	char		hot[IDLEN];		// id hovered over
+	char		active[IDLEN];		// id mouse1 is down on
+	char		focus[IDLEN];		// id with keyboard focus
+	char		defaultfocus[IDLEN];
+	char		foclist[NFOCLIST][IDLEN];	// per-frame list of explicit focus order
 	int		foci;			// foclist index
 	int		nfoc;			// foclist len
-	char		lastfocus[MAXIDLEN];	// last focused id
 	void(*stk[NSTACK])(void);		// menu drawing stack
 	int		sp;			// stack pointer
 

@@ -64,6 +64,7 @@ float *CWBody		= CIndigo;	// widget body
 float *CWText		= CCream;	// widget text
 float *CWHot		= CGreen;	// widget text when hot
 float *CWActive		= CLtBlue;	// widget text when active
+float *CWFocus		= CAquamarine;	// widget outline when active
 float *CWShadow		= vshadow;
 
 uiStatic_t uis;
@@ -777,7 +778,7 @@ setactivemenu(uiMenuCommand_t menu)
 		uis.sp = -1;
 		memset(uis.keys, 0, sizeof uis.keys);
 		trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
-		if(strlen(buf) > 0)
+		if(*buf != '\0')
 			push(errormenu);
 		else
 			push(mainmenu);
@@ -1008,7 +1009,6 @@ push(void (*drawfunc)(void))
 		Com_Error(ERR_FATAL, "ui stack overflow");
 	uis.sp++;
 	uis.stk[uis.sp] = drawfunc;
-	idcpy(uis.focus, "");
 	trap_Key_SetCatcher(KEYCATCH_UI);
 	clearfocus();
 }
@@ -1071,9 +1071,9 @@ refresh(int realtime)
 
 	// finish the frame
 	if(!uis.keys[K_MOUSE1])
-		idcpy(uis.active, "");
-	else if(idcmp(uis.active, ""))
-		idcpy(uis.active, "minusone");
+		Q_strncpyz(uis.active, "", sizeof uis.active);
+	else if(strcmp(uis.active, "") == 0)
+		Q_strncpyz(uis.active, "minusone", sizeof uis.active);
 	memset(uis.text, 0, TEXTLEN);
 	memset(uis.keys+'0', 0, '0'+'9');
 	memset(uis.keys+'A', 0, 'A'+'Z');
@@ -1128,8 +1128,6 @@ Sets the default focus.  Persists over frames.
 void
 defaultfocus(const char *id)
 {
-	int i;
-
 	if(*uis.defaultfocus != '\0')
 		return;
 	Q_strncpyz(uis.defaultfocus, id, sizeof uis.defaultfocus);

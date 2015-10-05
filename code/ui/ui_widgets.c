@@ -1,17 +1,5 @@
 #include "ui_local.h"
 
-qboolean
-idcmp(const char *a, const char *b)
-{
-	return strcmp(a, b) == 0;
-}
-
-void
-idcpy(char *dst, const char *src)
-{
-	Q_strncpyz(dst, src, MAXIDLEN);
-}
-
 static void
 justify(int just, int *x, int w)
 {
@@ -40,10 +28,10 @@ button(const char *id, int x, int y, int just, const char *label)
 	justify(just, &x, w);
 
 	if(mouseover(x, y, w, h)){
-		idcpy(uis.hot, id);
+		Q_strncpyz(uis.hot, id, sizeof uis.hot);
 		hot = qtrue;
-		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
-			idcpy(uis.active, id);
+		if(*uis.active == '\0' && uis.keys[K_MOUSE1]){
+			Q_strncpyz(uis.active, id, sizeof uis.active);
 			setfocus(id);
 		}
 	}
@@ -51,14 +39,14 @@ button(const char *id, int x, int y, int just, const char *label)
 	clr = CLtBlue;
 	if(hot){
 		clr = CWHot;
-		if(idcmp(uis.active, id))
+		if(strcmp(uis.active, id) == 0)
 			clr = CWActive;
 	}
 	drawpropstr(x+w/2, y, label, UI_CENTER|UI_DROPSHADOW, clr);
 
-	if(idcmp(id, uis.focus))
-		drawrect(x-2, y-2, w+4, h+4, CGreen);
-	return !uis.keys[K_MOUSE1] && hot && idcmp(uis.active, id);
+	if(strcmp(id, uis.focus) == 0)
+		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+	return !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
 }
 
 qboolean
@@ -79,15 +67,15 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 	iw = w - 2*pad;
 
 	if(mouseover(ix, y + h/2 - knobh/2, iw, knobh)){
-		idcpy(uis.hot, id);
+		Q_strncpyz(uis.hot, id, sizeof uis.hot);
 		hot = qtrue;
-		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
-			idcpy(uis.active, id);
+		if(*uis.active == '\0' && uis.keys[K_MOUSE1]){
+			Q_strncpyz(uis.active, id, sizeof uis.active);
 			setfocus(id);
 		}
 	}
 	*val = Com_Scale(*val, min, max, 0, max);
-	if(idcmp(uis.active, id)){
+	if(strcmp(uis.active, id) == 0){
 		float v;
 
 		mousepos = uis.cursorx - ix;
@@ -108,7 +96,7 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 	knobx = ix + knobpos - knobw/2;
 	knoby = y + h/2 - knobh/2;
 
-	if(hot || idcmp(uis.active, id))
+	if(hot || strcmp(uis.active, id) == 0)
 		clr = CWHot;
 	else
 		clr = CWText;
@@ -121,8 +109,8 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 		*val = atof(s);
 	}
 
-	if(idcmp(id, uis.focus))
-		drawrect(x-2, y-2, w+4, h+4, CGreen);
+	if(strcmp(id, uis.focus) == 0)
+		drawrect(x-2, y-2, w+4, h+4, CWFocus);
 	return updated;
 }
 
@@ -136,11 +124,11 @@ checkbox(const char *id, int x, int y, int just, qboolean *state)
 	justify(just, &x, w);
 
 	if(mouseover(x, y, w, h)){
-		idcpy(uis.hot, id);
+		Q_strncpyz(uis.hot, id, sizeof uis.hot);
 		hot = qtrue;
-		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
+		if(*uis.active == '\0' && uis.keys[K_MOUSE1]){
 			*state = !*state;
-			idcpy(uis.active, id);
+			Q_strncpyz(uis.active, id, sizeof uis.active);
 			setfocus(id);
 		}
 	}
@@ -158,9 +146,9 @@ checkbox(const char *id, int x, int y, int just, qboolean *state)
 		setcolour(nil);
 	}
 
-	if(idcmp(id, uis.focus))
-		drawrect(x-2, y-2, w+4, h+4, CGreen);
-	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);
+	if(strcmp(id, uis.focus) == 0)
+		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+	return !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
 }
 
 static qboolean
@@ -247,18 +235,18 @@ textfield(const char *id, int x, int y, int just, int width, char *buf, int *car
 	justify(just, &x, w);
 
 	if(mouseover(x-pad, y-pad, w+2*pad, h+2*pad)){
-		idcpy(uis.hot, id);
+		Q_strncpyz(uis.hot, id, sizeof uis.hot);
 		hot = qtrue;
-		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
-			idcpy(uis.active, id);
+		if(*uis.active == '\0' && uis.keys[K_MOUSE1]){
+			Q_strncpyz(uis.active, id, sizeof uis.active);
 			setfocus(id);
 		}
 	}
 
-	if(idcmp(uis.focus, id))
+	if(strcmp(uis.focus, id) == 0)
 		updated = updatefield(buf, caret, sz);
 
-	if(idcmp(uis.active, id) || hot)
+	if(strcmp(uis.active, id) == 0 || hot)
 		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWActive);
 	else
 		fillrect(x-pad, y-pad, w+2*pad, h+2*pad, CWHot);
@@ -273,8 +261,8 @@ textfield(const char *id, int x, int y, int just, int width, char *buf, int *car
 	if(updated)
 		trap_S_StartLocalSound(uis.fieldUpdateSound, CHAN_LOCAL_SOUND);
 
-	if(idcmp(uis.focus, id))
-		drawrect(x-2, y-2, w+4, h+4, CGreen);
+	if(strcmp(uis.focus, id) == 0)
+		drawrect(x-2, y-2, w+4, h+4, CWFocus);
 	return updated;
 }
 
@@ -287,10 +275,10 @@ spinnerbutton(const char *id, int x, int y, const char *shader)
 	hot = qfalse;
 
 	if(mouseover(x, y, sz, sz)){
-		idcpy(uis.hot, id);
+		Q_strncpyz(uis.hot, id, sizeof uis.hot);
 		hot = qtrue;
-		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1])
-			idcpy(uis.active, id);
+		if(*uis.active == '\0' && uis.keys[K_MOUSE1])
+			Q_strncpyz(uis.active, id, sizeof uis.active);
 	}
 
 	setcolour(CWShadow);
@@ -301,7 +289,7 @@ spinnerbutton(const char *id, int x, int y, const char *shader)
 		setcolour(CWText);
 	drawnamedpic(x, y, sz, sz, shader);
 	setcolour(nil);
-	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);
+	return !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
 }
 
 qboolean
@@ -309,7 +297,7 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 {
 	const float w = 13*SMALLCHAR_WIDTH, h = 18, bsz = 18;
 	qboolean updated;
-	char bid[MAXIDLEN];
+	char bid[IDLEN];
 
 	updated = qfalse;
 	justify(just, &x, w);
@@ -328,9 +316,9 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 	}
 
 	if(mouseover(x, y, w, h)){
-		idcpy(uis.hot, id);
-		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
-			idcpy(uis.active, id);
+		Q_strncpyz(uis.hot, id, sizeof uis.hot);
+		if(*uis.active == '\0' && uis.keys[K_MOUSE1]){
+			Q_strncpyz(uis.active, id, sizeof uis.active);
 			setfocus(id);
 		}
 	}
@@ -340,8 +328,8 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 	drawstr(x+bsz+w/2, y+2, opts[*i], UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW,
 	   CWText);
 
-	if(idcmp(uis.focus, id))
-		drawrect(x-2, y-2, w+4, h+4, CGreen);
+	if(strcmp(uis.focus, id) == 0)
+		drawrect(x+bsz-2, y-2, w+4, h+4, CWFocus);
 	return updated;
 }
 
@@ -360,9 +348,9 @@ keybinder(const char *id, int x, int y, int just, int key)
 	justify(just, &x, w);
 
 	if(mouseover(x-pad, y-pad, w+2*pad, h+2*pad)){
-		idcpy(uis.hot, id);
-		if(idcmp(uis.active, "") && uis.keys[K_MOUSE1]){
-			idcpy(uis.active, id);
+		Q_strncpyz(uis.hot, id, sizeof uis.hot);
+		if(strcmp(uis.active, "") == 0 && uis.keys[K_MOUSE1]){
+			Q_strncpyz(uis.active, id, sizeof uis.active);
 			setfocus(id);
 		}
 	}
@@ -389,7 +377,7 @@ keybinder(const char *id, int x, int y, int just, int key)
 		clr = CWHot;
 	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, clr);
 	
-	if(idcmp(uis.focus, id))
-		drawrect(x-2, y-2, w+4, h+4, CGreen);
-	return !uis.keys[K_MOUSE1] && idcmp(uis.hot, id) && idcmp(uis.active, id);	
+	if(strcmp(uis.focus, id) == 0)
+		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+	return !uis.keys[K_MOUSE1] && strcmp(uis.hot, id) == 0 && strcmp(uis.active, id) == 0;	
 }

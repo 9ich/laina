@@ -585,6 +585,7 @@ bindwaitmenu(void)
 	char s[MAX_STRING_CHARS];
 	const int style = UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW;
 	int i;
+	qboolean *p;
 
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
@@ -599,21 +600,19 @@ bindwaitmenu(void)
 		pop();
 		return;
 	}
-	for(i = 0; i < ARRAY_LEN(uis.keys); i++){
-		if(uis.keys[i]){
-			if(bw.whichkey == 0 && i != binds[bw.i].alt){
-				binds[bw.i].alt = binds[bw.i].k;
-				binds[bw.i].k = i;
-				io.dirty = qtrue;
-			}else if(i != binds[bw.i].k){
-				binds[bw.i].alt = i;
-				io.dirty = qtrue;
-			}
-			bw.i = -1;
-			bw.whichkey = -1;
-			pop();
-			return;
+	if((p = memchr(uis.keys, qtrue, sizeof uis.keys)) != nil){
+		i = p - uis.keys;
+		if(bw.whichkey == 0 && i != binds[bw.i].alt){
+			binds[bw.i].alt = binds[bw.i].k;
+			binds[bw.i].k = i;
+			io.dirty = qtrue;
+		}else if(i != binds[bw.i].k){
+			binds[bw.i].alt = i;
+			io.dirty = qtrue;
 		}
+		bw.i = -1;
+		bw.whichkey = -1;
+		pop();
 	}
 }
 
@@ -704,7 +703,7 @@ inputmenu(void)
 	y += spc;
 
 	for(i = 0; binds[i].name != nil; i++){
-		char id[MAXIDLEN], *p;
+		char id[IDLEN], *p;
 
 		Com_sprintf(id, sizeof id, ".io.%s.k", binds[i].name);
 		p = id;
@@ -771,16 +770,15 @@ defaultsmenu(void)
 void
 errormenu(void)
 {
-	int i;
 	char buf[MAX_STRING_CHARS];
+	qboolean *p;
 
-	for(i = 0; i < ARRAY_LEN(uis.keys); i++)
-		if(uis.keys[i]){
-			trap_Cvar_Set("com_errormessage", "");
-			pop();
-			push(mainmenu);
-			return;
-		}
+	if((p = memchr(uis.keys, qtrue, sizeof uis.keys)) != nil){
+		trap_Cvar_Set("com_errormessage", "");
+		pop();
+		push(mainmenu);
+		return;
+	}
 	uis.fullscreen = qtrue;
 	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
 	trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
