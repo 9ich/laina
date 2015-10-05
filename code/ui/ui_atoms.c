@@ -294,16 +294,9 @@ static int propMapB[26][3] = {
 static void
 drawbannerstring2(int x, int y, const char *str, vec4_t color)
 {
+	float ax, ay, aw, ah, frow, fcol, fwidth, fheight;
 	const char *s;
 	uchar ch;
-	float ax;
-	float ay;
-	float aw;
-	float ah;
-	float frow;
-	float fcol;
-	float fwidth;
-	float fheight;
 
 	// draw the colored text
 	trap_R_SetColor(color);
@@ -324,7 +317,8 @@ drawbannerstring2(int x, int y, const char *str, vec4_t color)
 			fheight = (float)PROPB_HEIGHT / 256.0f;
 			aw = (float)propMapB[ch][2] * uis.xscale;
 			ah = (float)PROPB_HEIGHT * uis.yscale;
-			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, uis.charsetPropB);
+			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth,
+			   frow+fheight, uis.charsetPropB);
 			ax += (aw + (float)PROPB_GAP_WIDTH * uis.xscale);
 		}
 		s++;
@@ -401,7 +395,7 @@ propstrwidth(const char *str, int slicebegin, int sliceend)
 }
 
 static void
-drawpropstr2(int x, int y, const char *str, vec4_t color, float sizeScale, qhandle_t charset)
+drawpropstr2(int x, int y, const char *str, vec4_t color, float scale, qhandle_t charset)
 {
 	const char *s;
 	uchar ch;
@@ -419,17 +413,17 @@ drawpropstr2(int x, int y, const char *str, vec4_t color, float sizeScale, qhand
 	while(*s){
 		ch = *s & 127;
 		if(ch == ' ')
-			aw = (float)PROP_SPACE_WIDTH * uis.xscale * sizeScale;
+			aw = (float)PROP_SPACE_WIDTH * uis.xscale * scale;
 		else if(propMap[ch][2] != -1){
 			fcol = (float)propMap[ch][0] / 256.0f;
 			frow = (float)propMap[ch][1] / 256.0f;
 			fwidth = (float)propMap[ch][2] / 256.0f;
 			fheight = (float)PROP_HEIGHT / 256.0f;
-			aw = (float)propMap[ch][2] * uis.xscale * sizeScale;
-			ah = (float)PROP_HEIGHT * uis.yscale * sizeScale;
+			aw = (float)propMap[ch][2] * uis.xscale * scale;
+			ah = (float)PROP_HEIGHT * uis.yscale * scale;
 			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, charset);
 		}
-		ax += (aw + (float)PROP_GAP_WIDTH * uis.xscale * sizeScale);
+		ax += (aw + (float)PROP_GAP_WIDTH * uis.xscale * scale);
 		s++;
 	}
 	trap_R_SetColor(nil);
@@ -448,17 +442,17 @@ drawpropstr(int x, int y, const char *str, int style, vec4_t color)
 {
 	vec4_t drawcolor;
 	int width;
-	float sizeScale;
+	float scale;
 
-	sizeScale = propstrsizescale(style);
+	scale = propstrsizescale(style);
 
 	switch(style & UI_FORMATMASK){
 	case UI_CENTER:
-		width = propstrwidth(str, 0, -1) * sizeScale;
+		width = propstrwidth(str, 0, -1) * scale;
 		x -= width / 2;
 		break;
 	case UI_RIGHT:
-		width = propstrwidth(str, 0, -1) * sizeScale;
+		width = propstrwidth(str, 0, -1) * scale;
 		x -= width;
 		break;
 	case UI_LEFT:
@@ -468,14 +462,14 @@ drawpropstr(int x, int y, const char *str, int style, vec4_t color)
 	if(style & UI_DROPSHADOW){
 		drawcolor[0] = drawcolor[1] = drawcolor[2] = 0;
 		drawcolor[3] = color[3] * Shadowalpha;
-		drawpropstr2(x+2, y+2, str, drawcolor, sizeScale, uis.charsetProp);
+		drawpropstr2(x+2, y+2, str, drawcolor, scale, uis.charsetProp);
 	}
 	if(style & UI_INVERSE){
 		drawcolor[0] = color[0] * 0.7;
 		drawcolor[1] = color[1] * 0.7;
 		drawcolor[2] = color[2] * 0.7;
 		drawcolor[3] = color[3];
-		drawpropstr2(x, y, str, drawcolor, sizeScale, uis.charsetProp);
+		drawpropstr2(x, y, str, drawcolor, scale, uis.charsetProp);
 		return;
 	}
 	if(style & UI_PULSE){
@@ -483,16 +477,16 @@ drawpropstr(int x, int y, const char *str, int style, vec4_t color)
 		drawcolor[1] = color[1] * 0.7;
 		drawcolor[2] = color[2] * 0.7;
 		drawcolor[3] = color[3];
-		drawpropstr2(x, y, str, color, sizeScale, uis.charsetProp);
+		drawpropstr2(x, y, str, color, scale, uis.charsetProp);
 
 		drawcolor[0] = color[0];
 		drawcolor[1] = color[1];
 		drawcolor[2] = color[2];
 		drawcolor[3] = 0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR);
-		drawpropstr2(x, y, str, drawcolor, sizeScale, uis.charsetPropGlow);
+		drawpropstr2(x, y, str, drawcolor, scale, uis.charsetPropGlow);
 		return;
 	}
-	drawpropstr2(x, y, str, color, sizeScale, uis.charsetProp);
+	drawpropstr2(x, y, str, color, scale, uis.charsetProp);
 }
 
 void
@@ -500,14 +494,14 @@ drawpropstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style
 {
 	int width;
 	char *s1, *s2, *s3;
-	char c_bcp;
+	char c;
 	char buf[1024];
-	float sizeScale;
+	float scale;
 
 	if(!str || str[0]=='\0')
 		return;
 
-	sizeScale = propstrsizescale(style);
+	scale = propstrsizescale(style);
 
 	Q_strncpyz(buf, str, sizeof(buf));
 	s1 = s2 = s3 = buf;
@@ -515,12 +509,11 @@ drawpropstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style
 	while(1){
 		do
 			s3++;
-		while(*s3!=' ' && *s3!='\0')
-		;
-		c_bcp = *s3;
+		while(*s3!=' ' && *s3!='\0');
+		c = *s3;
 		*s3 = '\0';
-		width = propstrwidth(s1, 0, -1) * sizeScale;
-		*s3 = c_bcp;
+		width = propstrwidth(s1, 0, -1) * scale;
+		*s3 = c;
 		if(width > xmax){
 			if(s1==s2)
 				// fuck, don't have a clean cut, we'll overflow
@@ -528,7 +521,7 @@ drawpropstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style
 			*s2 = '\0';
 			drawpropstr(x, y, s1, style, color);
 			y += ystep;
-			if(c_bcp == '\0'){
+			if(c == '\0'){
 				// that was the last word
 				// we could start a new loop, but that wouldn't be much use
 				// even if the word is too long, we would overflow it (see above)
@@ -543,7 +536,7 @@ drawpropstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style
 			s3 = s2;
 		}else{
 			s2 = s3;
-			if(c_bcp == '\0'){	// we reached the end
+			if(c == '\0'){	// we reached the end
 				drawpropstr(x, y, s1, style, color);
 				break;
 			}
@@ -556,7 +549,7 @@ drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 {
 	const char *s;
 	char ch;
-	int forceColor = qfalse;//APSFIXME;
+	int forceColor = qfalse;
 	vec4_t tempcolor;
 	float ax, ay, aw, ah, frow, fcol;
 
@@ -600,13 +593,10 @@ drawstr2(int x, int y, const char *str, vec4_t color, int charw, int charh)
 void
 drawstr(int x, int y, const char *str, int style, vec4_t color)
 {
-	int len;
-	int charw;
-	int charh;
-	vec4_t newcolor;
-	vec4_t lowlight;
-	float *drawcolor;
+	int len, charw, charh;
+	vec4_t newcolor, lowlight;
 	vec4_t dropcolor;
+	float *drawcolor;
 
 	if(!str)
 		return;
@@ -626,10 +616,10 @@ drawstr(int x, int y, const char *str, int style, vec4_t color)
 	}
 
 	if(style & UI_PULSE){
-		lowlight[0] = 0.8*color[0];
-		lowlight[1] = 0.8*color[1];
-		lowlight[2] = 0.8*color[2];
-		lowlight[3] = 0.8*color[3];
+		lowlight[0] = 0.8f*color[0];
+		lowlight[1] = 0.8f*color[1];
+		lowlight[2] = 0.8f*color[2];
+		lowlight[3] = 0.8f*color[3];
 		lerpcolour(color, lowlight, newcolor, 0.5+0.5*sin(uis.realtime/PULSE_DIVISOR));
 		drawcolor = newcolor;
 	}else
@@ -659,10 +649,8 @@ void
 drawstrwrapped(int x, int y, int xmax, int ystep, const char *str, int style, vec4_t color)
 {
 	int len, width, charw, charh;
-	vec4_t newcolor;
-	vec4_t lowlight;
+	vec4_t newcolor, lowlight, dropcolor;
 	float *drawcolor;
-	vec4_t dropcolor;
 	char *s1, *s2, *s3;
 	char buf[1024];
 	int c;
@@ -912,10 +900,7 @@ drawnamedpic(float x, float y, float width, float height, const char *picname)
 void
 drawpic(float x, float y, float w, float h, qhandle_t hShader)
 {
-	float s0;
-	float s1;
-	float t0;
-	float t1;
+	float s0, s1, t0, t1;
 
 	if(w < 0){	// flip about vertical
 		w = -w;
@@ -1062,12 +1047,10 @@ refresh(int realtime)
 	setcolour(nil);
 	drawpic(uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 
-#ifndef NDEBUG
 	if(uis.debug)
 		// cursor coordinates
-		drawstr(0, 0, va("(%d,%d)", uis.cursorx, uis.cursory), UI_LEFT|UI_SMALLFONT, colorRed);
-
-#endif
+		drawstr(0, 0, va("(%d,%d)", uis.cursorx, uis.cursory),
+		   UI_LEFT|UI_SMALLFONT, CMagenta);
 
 	// finish the frame
 	if(!uis.keys[K_MOUSE1])
