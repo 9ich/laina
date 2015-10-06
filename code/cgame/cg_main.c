@@ -231,7 +231,7 @@ static cvarTable_t cvarTable[] = {
 	{&cg_tracerLength, "cg_tracerlength", "100", CVAR_CHEAT},
 	{&cg_thirdPersonRange, "cg_thirdPersonRange", "80", CVAR_ARCHIVE},
 	{&cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_CHEAT},
-	{&cg_thirdPerson, "cg_thirdPerson", "1", 0},
+	{&cg_thirdPerson, "cg_thirdPerson", "1", CVAR_ARCHIVE},
 	{&cg_teamChatTime, "cg_teamChatTime", "3000", CVAR_ARCHIVE},
 	{&cg_teamChatHeight, "cg_teamChatHeight", "0", CVAR_ARCHIVE},
 	{&cg_forceModel, "cg_forceModel", "0", CVAR_ARCHIVE},
