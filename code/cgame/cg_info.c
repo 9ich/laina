@@ -19,29 +19,17 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_info.c -- display information while data is being loading
+// This is the loading screen while connecting.
 
 #include "cg_local.h"
 
-/*
-======================
-loadingstr
-
-======================
-*/
 void
 loadingstr(const char *s)
 {
 	Q_strncpyz(cg.infoscreentext, s, sizeof(cg.infoscreentext));
-
 	trap_UpdateScreen();
 }
 
-/*
-===================
-loadingitem
-===================
-*/
 void
 loadingitem(int itemNum)
 {
@@ -51,17 +39,11 @@ loadingitem(int itemNum)
 	loadingstr(item->pickupname);
 }
 
-/*
-===================
-loadingclient
-===================
-*/
 void
 loadingclient(int clientNum)
 {
 	const char *info;
-	char *skin;
-	char personality[MAX_QPATH];
+	char *skin, personality[MAX_QPATH];
 
 	info = getconfigstr(CS_PLAYERS + clientNum);
 	Q_strncpyz(personality, Info_ValueForKey(info, "n"), sizeof(personality));
@@ -70,20 +52,13 @@ loadingclient(int clientNum)
 }
 
 /*
-====================
-drawinfo
-
-Draw all the status / pacifier stuff during level loading
-====================
+Draw all the status stuff during level loading.
 */
 void
 drawinfo(void)
 {
-	const char *s;
-	const char *info;
-	const char *sysInfo;
-	int y;
-	int value;
+	const char *s, *info, *sysInfo;
+	int y, value;
 	qhandle_t background;
 	char buf[1024];
 
