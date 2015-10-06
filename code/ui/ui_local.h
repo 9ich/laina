@@ -32,55 +32,6 @@ extern vmCvar_t ui_drawCrosshair;
 extern vmCvar_t ui_drawCrosshairNames;
 extern vmCvar_t ui_drawfps;
 
-// ui_widgets.c
-extern vec4_t CBlack;
-extern vec4_t CWhite;
-extern vec4_t CAmethyst;
-extern vec4_t CApple;
-extern vec4_t CAquamarine;
-extern vec4_t CBlue;
-extern vec4_t CBrown;
-extern vec4_t CCream;
-extern vec4_t CCyan;
-extern vec4_t CDkBlue;
-extern vec4_t CDkGreen;
-extern vec4_t CDkGrey;
-extern vec4_t CDkLavender;
-extern vec4_t CGreen;
-extern vec4_t CIndigo;
-extern vec4_t CLtBlue;
-extern vec4_t CLtGreen;
-extern vec4_t CLtGrey;
-extern vec4_t CLtMagenta;
-extern vec4_t CLtOrange;
-extern vec4_t CMagenta;
-extern vec4_t COrange;
-extern vec4_t CPink;
-extern vec4_t CPurple;
-extern vec4_t CRed;
-extern vec4_t CTeal;
-extern vec4_t CViolet;
-extern vec4_t CYellow;
-
-extern float *CText;
-extern float *CWBorder;
-extern float *CWBody;
-extern float *CWText;
-extern float *CWHot;
-extern float *CWActive;
-extern float *CWFocus;
-extern float *CWShadow;
-
-// drop shadows
-#define Shadowalpha	0.7f
-
-qboolean	button(const char *id, int x, int y, int just, const char *label);
-qboolean	checkbox(const char *id, int x, int y, int just, qboolean *state);
-qboolean	slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt);
-qboolean	textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz);
-qboolean	textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts);
-qboolean	keybinder(const char *id, int x, int y, int just, int key);
-
 // ui_main.c
 extern void	cacheui(void);
 extern void	registercvars(void);
@@ -125,11 +76,7 @@ typedef struct
 	qhandle_t	menuBackShader;
 	qhandle_t	charset;
 	qhandle_t	charsetProp;
-	qhandle_t	charsetPropGlow;
-	qhandle_t	charsetPropB;
 	qhandle_t	cursor;
-	qhandle_t	rb_on;
-	qhandle_t	rb_off;
 	sfxHandle_t	fieldUpdateSound;
 	float		xscale;
 	float		yscale;
@@ -137,6 +84,47 @@ typedef struct
 	qboolean	demoversion;
 	qboolean	firstdraw;
 } uiStatic_t;
+
+extern vec4_t CBlack;
+extern vec4_t CWhite;
+extern vec4_t CAmethyst;
+extern vec4_t CApple;
+extern vec4_t CAquamarine;
+extern vec4_t CBlue;
+extern vec4_t CBrown;
+extern vec4_t CCream;
+extern vec4_t CCyan;
+extern vec4_t CDkBlue;
+extern vec4_t CDkGreen;
+extern vec4_t CDkGrey;
+extern vec4_t CDkLavender;
+extern vec4_t CGreen;
+extern vec4_t CIndigo;
+extern vec4_t CLtBlue;
+extern vec4_t CLtGreen;
+extern vec4_t CLtGrey;
+extern vec4_t CLtMagenta;
+extern vec4_t CLtOrange;
+extern vec4_t CMagenta;
+extern vec4_t COrange;
+extern vec4_t CPink;
+extern vec4_t CPurple;
+extern vec4_t CRed;
+extern vec4_t CTeal;
+extern vec4_t CViolet;
+extern vec4_t CYellow;
+
+extern float *CText;
+extern float *CWBorder;
+extern float *CWBody;
+extern float *CWText;
+extern float *CWHot;
+extern float *CWActive;
+extern float *CWFocus;
+extern float *CWShadow;
+
+// drop shadows
+#define Shadowalpha	0.7f
 
 extern void	init(void);
 extern void	shutdown(void);
@@ -153,7 +141,6 @@ extern void	drawrect(float x, float y, float width, float height, const float *c
 extern void	updatescreen(void);
 extern void	setcolour(const float *rgba);
 extern void	lerpcolour(vec4_t a, vec4_t b, vec4_t c, float t);
-extern void	drawbannerstr(int x, int y, const char *str, int style, vec4_t color);
 extern float	propsizescale(int style);
 extern void	drawpropstr(int x, int y, const char *str, int style, vec4_t color);
 extern void	drawpropstrwrapped(int x, int ystart, int xmax, int ystep, const char *str, int style, vec4_t color);
@@ -181,8 +168,15 @@ extern char	*UI_Cvar_VariableString(const char *var_name);
 extern void	refresh(int time);
 extern void	startdemoloop(void);
 
-extern qboolean m_entersound;
 extern uiStatic_t uis;
+
+// ui_widgets.c
+qboolean	button(const char *id, int x, int y, int just, const char *label);
+qboolean	checkbox(const char *id, int x, int y, int just, qboolean *state);
+qboolean	slider(const char *id, int x, int y, int just, float min, float max, float *val, const char *displayfmt);
+qboolean	textfield(const char *id, int x, int y, int just, int width, char *buf, int *caret, int sz);
+qboolean	textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts);
+qboolean	keybinder(const char *id, int x, int y, int just, int key);
 
 // ui_menus.c
 void		mainmenu(void);

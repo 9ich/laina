@@ -255,124 +255,6 @@ static int propMap[128][3] = {
 	{0, 0, -1}			// DEL
 };
 
-static int propMapB[26][3] = {
-	{11, 12, 33},
-	{49, 12, 31},
-	{85, 12, 31},
-	{120, 12, 30},
-	{156, 12, 21},
-	{183, 12, 21},
-	{207, 12, 32},
-
-	{13, 55, 30},
-	{49, 55, 13},
-	{66, 55, 29},
-	{101, 55, 31},
-	{135, 55, 21},
-	{158, 55, 40},
-	{204, 55, 32},
-
-	{12, 97, 31},
-	{48, 97, 31},
-	{82, 97, 30},
-	{118, 97, 30},
-	{153, 97, 30},
-	{185, 97, 25},
-	{213, 97, 30},
-
-	{11, 139, 32},
-	{42, 139, 51},
-	{93, 139, 32},
-	{126, 139, 31},
-	{158, 139, 25},
-};
-
-#define PROPB_GAP_WIDTH		4
-#define PROPB_SPACE_WIDTH	12
-#define PROPB_HEIGHT		36
-
-static void
-drawbannerstring2(int x, int y, const char *str, vec4_t color)
-{
-	float ax, ay, aw, ah, frow, fcol, fwidth, fheight;
-	const char *s;
-	uchar ch;
-
-	// draw the colored text
-	trap_R_SetColor(color);
-
-	ax = x * uis.xscale + uis.bias;
-	ay = y * uis.yscale;
-
-	s = str;
-	while(*s){
-		ch = *s & 127;
-		if(ch == ' ')
-			ax += ((float)PROPB_SPACE_WIDTH + (float)PROPB_GAP_WIDTH)* uis.xscale;
-		else if(ch >= 'A' && ch <= 'Z'){
-			ch -= 'A';
-			fcol = (float)propMapB[ch][0] / 256.0f;
-			frow = (float)propMapB[ch][1] / 256.0f;
-			fwidth = (float)propMapB[ch][2] / 256.0f;
-			fheight = (float)PROPB_HEIGHT / 256.0f;
-			aw = (float)propMapB[ch][2] * uis.xscale;
-			ah = (float)PROPB_HEIGHT * uis.yscale;
-			trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol+fwidth,
-			   frow+fheight, uis.charsetPropB);
-			ax += (aw + (float)PROPB_GAP_WIDTH * uis.xscale);
-		}
-		s++;
-	}
-
-	trap_R_SetColor(nil);
-}
-
-/*
-Find the width of the drawn text.
-*/
-void
-drawbannerstring(int x, int y, const char *str, int style, vec4_t color)
-{
-	const char *s;
-	int ch;
-	int width;
-	vec4_t drawcolor;
-
-	s = str;
-	width = 0;
-	while(*s){
-		ch = *s;
-		if(ch == ' ')
-			width += PROPB_SPACE_WIDTH;
-		else if(ch >= 'A' && ch <= 'Z')
-			width += propMapB[ch - 'A'][2] + PROPB_GAP_WIDTH;
-		s++;
-	}
-	width -= PROPB_GAP_WIDTH;
-
-	switch(style & UI_FORMATMASK){
-	case UI_CENTER:
-		x -= width / 2;
-		break;
-
-	case UI_RIGHT:
-		x -= width;
-		break;
-
-	case UI_LEFT:
-	default:
-		break;
-	}
-
-	if(style & UI_DROPSHADOW){
-		drawcolor[0] = drawcolor[1] = drawcolor[2] = 0;
-		drawcolor[3] = color[3] * Shadowalpha;
-		drawbannerstring2(x+2, y+2, str, drawcolor);
-	}
-
-	drawbannerstring2(x, y, str, color);
-}
-
 /*
 Sliceend=-1 means up to the terminating \0.
 */
@@ -483,7 +365,7 @@ drawpropstr(int x, int y, const char *str, int style, vec4_t color)
 		drawcolor[1] = color[1];
 		drawcolor[2] = color[2];
 		drawcolor[3] = 0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR);
-		drawpropstr2(x, y, str, drawcolor, scale, uis.charsetPropGlow);
+		drawpropstr2(x, y, str, drawcolor, scale, uis.charsetProp);
 		return;
 	}
 	drawpropstr2(x, y, str, color, scale, uis.charsetProp);
@@ -823,8 +705,6 @@ cacheui(void)
 {
 	uis.charset = trap_R_RegisterShaderNoMip("gfx/2d/bigchars");
 	uis.charsetProp = trap_R_RegisterShaderNoMip("menu/art/font1_prop");
-	uis.charsetPropGlow = trap_R_RegisterShaderNoMip("menu/art/font1_prop_glo");
-	uis.charsetPropB = trap_R_RegisterShaderNoMip("menu/art/font2_prop");
 	uis.cursor = trap_R_RegisterShaderNoMip("menu/art/cursor");
 	uis.whiteShader = trap_R_RegisterShaderNoMip("white");
 	uis.menuBackShader = trap_R_RegisterShaderNoMip("menuback");
@@ -1056,8 +936,6 @@ refresh(int realtime)
 	// finish the frame
 	if(!uis.keys[K_MOUSE1])
 		Q_strncpyz(uis.active, "", sizeof uis.active);
-	else if(strcmp(uis.active, "") == 0)
-		Q_strncpyz(uis.active, "minusone", sizeof uis.active);
 	memset(uis.text, 0, TEXTLEN);
 	memset(uis.keys+'0', 0, '0'+'9');
 	memset(uis.keys+'A', 0, 'A'+'Z');
