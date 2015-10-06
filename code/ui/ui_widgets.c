@@ -18,7 +18,7 @@ button(const char *id, int x, int y, int just, const char *label)
 {
 	float w = 48, h = 28;
 	float propw;
-	qboolean hot;
+	qboolean hot, changed;
 	float *clr;
 
 	hot = qfalse;
@@ -44,9 +44,16 @@ button(const char *id, int x, int y, int just, const char *label)
 	}
 	drawpropstr(x+w/2, y, label, UI_CENTER|UI_DROPSHADOW, clr);
 
-	if(strcmp(id, uis.focus) == 0)
+	changed = !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
+
+	if(strcmp(id, uis.focus) == 0){
 		drawrect(x-2, y-2, w+4, h+4, CWFocus);
-	return !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
+		if(uis.keys[K_ENTER]){
+			changed = qtrue;
+			uis.keys[K_ENTER] = qfalse;
+		}
+	}
+	return changed;
 }
 
 qboolean
@@ -109,8 +116,36 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 		*val = atof(s);
 	}
 
-	if(strcmp(id, uis.focus) == 0)
+	if(strcmp(id, uis.focus) == 0){
+		char buf[32], *p;
+		float incr;
+
 		drawrect(x-2, y-2, w+4, h+4, CWFocus);
+
+		incr = 0.01f;
+		if(*s != '\0' && (uis.keys[K_LEFTARROW] || uis.keys[K_RIGHTARROW])){
+			// derive an increment value from the display string
+			Q_strncpyz(buf, s, sizeof buf);
+			for(p = buf; *p != '\0'; p++){
+				if((*p >= '0' && *p <= '9') ||
+				   (*p == '-' || *p == 'e' || *p == 'E'))
+					*p = '0';
+			}
+			*(p - 1) = '1';
+			incr = atof(buf);
+		}
+		if(uis.keys[K_LEFTARROW]){
+			if(*val-incr >= min)
+				*val -= incr;
+			uis.keys[K_LEFTARROW] = qfalse;
+			updated = qtrue;
+		}else if(uis.keys[K_RIGHTARROW]){
+			if(*val+incr <= max)
+				*val += incr;
+			uis.keys[K_RIGHTARROW] = qfalse;
+			updated = qtrue;
+		}
+	}	
 	return updated;
 }
 
@@ -118,9 +153,10 @@ qboolean
 checkbox(const char *id, int x, int y, int just, qboolean *state)
 {
 	const float w = 16, h = 16;
-	qboolean hot;
+	qboolean hot, changed;
 
 	hot = qfalse;
+	changed = qfalse;
 	justify(just, &x, w);
 
 	if(mouseover(x, y, w, h)){
@@ -146,9 +182,22 @@ checkbox(const char *id, int x, int y, int just, qboolean *state)
 		setcolour(nil);
 	}
 
-	if(strcmp(id, uis.focus) == 0)
+	changed = !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
+
+	if(strcmp(id, uis.focus) == 0){
 		drawrect(x-2, y-2, w+4, h+4, CWFocus);
-	return !uis.keys[K_MOUSE1] && hot && strcmp(uis.active, id) == 0;
+		if(uis.keys[K_ENTER]){
+			*state = !*state;
+			uis.keys[K_ENTER] = qfalse;
+			changed = qtrue;
+		}
+		if(uis.keys[K_SPACE]){
+			*state = !*state;
+			uis.keys[K_SPACE] = qfalse;
+			changed = qtrue;
+		}
+	}
+	return changed;
 }
 
 static qboolean
@@ -296,22 +345,22 @@ qboolean
 textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nopts)
 {
 	const float w = 13*SMALLCHAR_WIDTH, h = 18, bsz = 18;
-	qboolean updated;
+	qboolean changed;
 	char bid[IDLEN];
 
-	updated = qfalse;
+	changed = qfalse;
 	justify(just, &x, w);
 
 	if(nopts > 1){
 		Com_sprintf(bid, sizeof bid, "%s.prev", id);
 		if(spinnerbutton(bid, x, y, "menu/art/left")){
 			*i = (*i <= 0)? nopts-1 : *i-1;
-			updated = qtrue;
+			changed = qtrue;
 		}
 		Com_sprintf(bid, sizeof bid, "%s.next", id);
 		if(spinnerbutton(bid, x+bsz+w, y, "menu/art/right")){
 			*i = (*i + 1) % nopts;
-			updated = qtrue;
+			changed = qtrue;
 		}
 	}
 
@@ -328,9 +377,19 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 	drawstr(x+bsz+w/2, y+2, opts[*i], UI_SMALLFONT|UI_CENTER|UI_DROPSHADOW,
 	   CWText);
 
-	if(strcmp(uis.focus, id) == 0)
+	if(strcmp(uis.focus, id) == 0){
 		drawrect(x+bsz-2, y-2, w+4, h+4, CWFocus);
-	return updated;
+		if(uis.keys[K_LEFTARROW]){
+			*i = (*i <= 0)? nopts-1 : *i-1;
+			uis.keys[K_LEFTARROW] = qfalse;
+			changed = qtrue;
+		}else if(uis.keys[K_RIGHTARROW]){
+			*i = (*i + 1) % nopts;
+			uis.keys[K_RIGHTARROW] = qfalse;
+			changed = qtrue;
+		}
+	}		
+	return changed;
 }
 
 /*
