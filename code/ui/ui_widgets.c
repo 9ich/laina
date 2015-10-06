@@ -48,10 +48,8 @@ button(const char *id, int x, int y, int just, const char *label)
 
 	if(strcmp(id, uis.focus) == 0){
 		drawrect(x-2, y-2, w+4, h+4, CWFocus);
-		if(uis.keys[K_ENTER]){
+		if(keydown(K_ENTER))
 			changed = qtrue;
-			uis.keys[K_ENTER] = qfalse;
-		}
 	}
 	return changed;
 }
@@ -134,15 +132,13 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 			*(p - 1) = '1';
 			incr = atof(buf);
 		}
-		if(uis.keys[K_LEFTARROW]){
+		if(keydown(K_LEFTARROW)){
 			if(*val-incr >= min)
 				*val -= incr;
-			uis.keys[K_LEFTARROW] = qfalse;
 			updated = qtrue;
-		}else if(uis.keys[K_RIGHTARROW]){
+		}else if(keydown(K_RIGHTARROW)){
 			if(*val+incr <= max)
 				*val += incr;
-			uis.keys[K_RIGHTARROW] = qfalse;
 			updated = qtrue;
 		}
 	}	
@@ -186,14 +182,12 @@ checkbox(const char *id, int x, int y, int just, qboolean *state)
 
 	if(strcmp(id, uis.focus) == 0){
 		drawrect(x-2, y-2, w+4, h+4, CWFocus);
-		if(uis.keys[K_ENTER]){
+		if(keydown(K_ENTER)){
 			*state = !*state;
-			uis.keys[K_ENTER] = qfalse;
 			changed = qtrue;
 		}
-		if(uis.keys[K_SPACE]){
+		if(keydown(K_SPACE)){
 			*state = !*state;
-			uis.keys[K_SPACE] = qfalse;
 			changed = qtrue;
 		}
 	}
@@ -242,29 +236,20 @@ updatefield(char *buf, int *caret, int sz)
 		updated = qtrue;
 	}
 
-	if(uis.keys[K_LEFTARROW]){
+	if(keydown(K_LEFTARROW))
 		if(i > 0)
 			i = i - 1;
-		uis.keys[K_LEFTARROW] = qfalse;
-	}
-	if(uis.keys[K_RIGHTARROW]){
+	if(keydown(K_RIGHTARROW))
 		if(i < sz-1 && buf[i] != '\0')
 			i = i + 1;
-		uis.keys[K_RIGHTARROW] = qfalse;
-	}
-	if(uis.keys[K_HOME]){
+	if(keydown(K_HOME))
 		i = 0;
-		uis.keys[K_HOME] = qfalse;
-	}
-	if(uis.keys[K_END]){
+	if(keydown(K_END))
 		i = (int)(strchr(buf, '\0') - buf);
-		uis.keys[K_END] = qfalse;
-	}
-	if(uis.keys[K_DEL]){
+	if(keydown(K_DEL)){
 		buf[i] = '\0';
 		if(i < sz-1)
 			memcpy(buf+i, buf+i+1, sz-i-1);
-		uis.keys[K_DEL] = qfalse;
 		updated = qtrue;
 	}
 	*caret = i;
@@ -379,13 +364,11 @@ textspinner(const char *id, int x, int y, int just, char **opts, int *i, int nop
 
 	if(strcmp(uis.focus, id) == 0){
 		drawrect(x+bsz-2, y-2, w+4, h+4, CWFocus);
-		if(uis.keys[K_LEFTARROW]){
+		if(keydown(K_LEFTARROW)){
 			*i = (*i <= 0)? nopts-1 : *i-1;
-			uis.keys[K_LEFTARROW] = qfalse;
 			changed = qtrue;
-		}else if(uis.keys[K_RIGHTARROW]){
+		}else if(keydown(K_RIGHTARROW)){
 			*i = (*i + 1) % nopts;
-			uis.keys[K_RIGHTARROW] = qfalse;
 			changed = qtrue;
 		}
 	}		

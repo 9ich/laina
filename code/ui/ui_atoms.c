@@ -764,7 +764,7 @@ setactivemenu(uiMenuCommand_t menu)
 		char buf[MAX_STRING_CHARS];
 
 		uis.sp = -1;
-		memset(uis.keys, 0, sizeof uis.keys);
+		clearkeys();
 		trap_Cvar_VariableStringBuffer("com_errormessage", buf, sizeof buf);
 		if(*buf != '\0')
 			push(errormenu);
@@ -791,6 +791,7 @@ keyevent(int key, int down)
 	if(key < 0 || key >= MAX_KEYS)
 		return;
 	uis.keys[key] = down;
+	uis.keyshadow[key] = qfalse;
 }
 
 void
@@ -1060,6 +1061,8 @@ refresh(int realtime)
 	memset(uis.text, 0, TEXTLEN);
 	memset(uis.keys+'0', 0, '0'+'9');
 	memset(uis.keys+'A', 0, 'A'+'Z');
+	memset(uis.keyshadow+'0', 0, '0'+'9');
+	memset(uis.keyshadow+'A', 0, 'A'+'Z');
 	uis.texti = 0;
 	cyclefocus();
 }
@@ -1120,14 +1123,12 @@ defaultfocus(const char *id)
 void
 cyclefocus(void)
 {
-	if(uis.keys[K_UPARROW]){
+	if(keydown(K_UPARROW)){
 		uis.foci = (uis.foci-1 >= 0)? uis.foci-1 : uis.nfoc-1;
 		Q_strncpyz(uis.focus, uis.foclist[uis.foci], sizeof uis.focus);
-		uis.keys[K_UPARROW] = qfalse;
-	}else if(uis.keys[K_DOWNARROW]){
+	}else if(keydown(K_DOWNARROW)){
 		uis.foci = (uis.foci+1) % uis.nfoc;
 		Q_strncpyz(uis.focus, uis.foclist[uis.foci], sizeof uis.focus);
-		uis.keys[K_DOWNARROW] = qfalse;
 	}
 }
 
@@ -1149,4 +1150,26 @@ clearfocus(void)
 	uis.foci = 0;
 	*uis.focus = '\0';
 	*uis.defaultfocus = '\0';
+}
+
+/*
+Returns whether there is a pending keypress on k this frame.  A key is
+no longer pending when its state has been set qtrue in the uis.keyshadow
+array.
+*/
+qboolean
+keydown(int k)
+{
+	if(uis.keyshadow[k])
+		return qfalse;
+	if(uis.keys[k])
+		uis.keyshadow[k] = qtrue;
+	return uis.keys[k];
+}
+
+void
+clearkeys(void)
+{
+	memset(uis.keys, 0, sizeof uis.keys);
+	memset(uis.keyshadow, 0, sizeof uis.keyshadow);
 }

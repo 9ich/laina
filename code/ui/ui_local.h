@@ -108,6 +108,7 @@ typedef struct
 	qboolean	debug;
 	qboolean	fullscreen;
 	qboolean	keys[MAX_KEYS];		// keys down this refresh
+	qboolean	keyshadow[MAX_KEYS];	// keys processed this refresh
 	char		text[TEXTLEN];		// text entered this refresh
 	int		texti;			// text index
 	char		hot[IDLEN];		// id hovered over
@@ -173,6 +174,8 @@ extern void	defaultfocus(const char *id);
 extern void	cyclefocus(void);
 extern void	clearfocuslist(void);
 extern void	clearfocus(void);
+extern qboolean	keydown(int k);
+extern void	clearkeys(void);
 extern char	*Argv(int arg);
 extern char	*UI_Cvar_VariableString(const char *var_name);
 extern void	refresh(int time);

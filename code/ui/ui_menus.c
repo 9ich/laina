@@ -594,7 +594,7 @@ bindwaitmenu(void)
 	drawstr(320, 200, s, style, CText);
 	drawstr(320, 240, "Press ESC to cancel", style, CText);
 
-	if(uis.keys[K_ESCAPE]){
+	if(keydown(K_ESCAPE)){
 		bw.i = -1;
 		bw.whichkey = -1;
 		pop();
@@ -714,7 +714,7 @@ inputmenu(void)
 		if(keybinder(id, xx, y, UI_LEFT, binds[i].k)){
 			bw.i = i;
 			bw.whichkey = 0;
-			memset(uis.keys, 0, sizeof uis.keys);
+			clearkeys();
 			push(bindwaitmenu);
 		}
 
@@ -726,7 +726,7 @@ inputmenu(void)
 		if(keybinder(id, xxx, y, UI_LEFT|UI_DROPSHADOW, binds[i].alt)){
 			bw.i = i;
 			bw.whichkey = 1;
-			memset(uis.keys, 0, sizeof uis.keys);
+			clearkeys();
 			push(bindwaitmenu);
 		}
 		y += spc;
@@ -821,7 +821,7 @@ ingamemenu(void)
 	defaultfocus(".im.r");
 
 	y = 180;
-	if(uis.keys[K_ESCAPE] || button(".im.r", SCREEN_WIDTH/2, y, UI_CENTER, "Resume")){
+	if(keydown(K_ESCAPE) || button(".im.r", SCREEN_WIDTH/2, y, UI_CENTER, "Resume")){
 		pop();
 		trap_Cvar_Set("cl_paused", "0");
 	}
