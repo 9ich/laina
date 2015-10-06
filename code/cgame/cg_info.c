@@ -23,40 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-#define MAX_LOADING_PLAYER_ICONS	16
-#define MAX_LOADING_ITEM_ICONS		26
-
-static int loadingPlayerIconCount;
-static int loadingItemIconCount;
-static qhandle_t loadingPlayerIcons[MAX_LOADING_PLAYER_ICONS];
-static qhandle_t loadingItemIcons[MAX_LOADING_ITEM_ICONS];
-
-/*
-===================
-drawloadingicons
-===================
-*/
-static void
-drawloadingicons(void)
-{
-	int n;
-	int x, y;
-
-	for(n = 0; n < loadingPlayerIconCount; n++){
-		x = 16 + n * 78;
-		y = 324-40;
-		drawpic(x, y, 64, 64, loadingPlayerIcons[n]);
-	}
-
-	for(n = 0; n < loadingItemIconCount; n++){
-		y = 400-40;
-		if(n >= 13)
-			y += 40;
-		x = 16 + n % 13 * 48;
-		drawpic(x, y, 32, 32, loadingItemIcons[n]);
-	}
-}
-
 /*
 ======================
 loadingstr
@@ -82,10 +48,6 @@ loadingitem(int itemNum)
 	item_t *item;
 
 	item = &bg_itemlist[itemNum];
-
-	if(item->icon && loadingItemIconCount < MAX_LOADING_ITEM_ICONS)
-		loadingItemIcons[loadingItemIconCount++] = trap_R_RegisterShaderNoMip(item->icon);
-
 	loadingstr(item->pickupname);
 }
 
@@ -100,34 +62,8 @@ loadingclient(int clientNum)
 	const char *info;
 	char *skin;
 	char personality[MAX_QPATH];
-	char model[MAX_QPATH];
-	char iconName[MAX_QPATH];
 
 	info = getconfigstr(CS_PLAYERS + clientNum);
-
-	if(loadingPlayerIconCount < MAX_LOADING_PLAYER_ICONS){
-		Q_strncpyz(model, Info_ValueForKey(info, "model"), sizeof(model));
-		skin = strrchr(model, '/');
-		if(skin)
-			*skin++ = '\0';
-		else
-			skin = "default";
-
-		Com_sprintf(iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skin);
-
-		loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip(iconName);
-		if(!loadingPlayerIcons[loadingPlayerIconCount]){
-			Com_sprintf(iconName, MAX_QPATH, "models/players/characters/%s/icon_%s.tga", model, skin);
-			loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip(iconName);
-		}
-		if(!loadingPlayerIcons[loadingPlayerIconCount]){
-			Com_sprintf(iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", DEFAULT_MODEL, "default");
-			loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip(iconName);
-		}
-		if(loadingPlayerIcons[loadingPlayerIconCount])
-			loadingPlayerIconCount++;
-	}
-
 	Q_strncpyz(personality, Info_ValueForKey(info, "n"), sizeof(personality));
 	Q_CleanStr(personality);
 	loadingstr(personality);
@@ -148,43 +84,29 @@ drawinfo(void)
 	const char *sysInfo;
 	int y;
 	int value;
-	qhandle_t levelshot;
-	qhandle_t detail;
+	qhandle_t background;
 	char buf[1024];
 
 	info = getconfigstr(CS_SERVERINFO);
 	sysInfo = getconfigstr(CS_SYSTEMINFO);
 
-	trap_Cvar_VariableStringBuffer("developer", buf, sizeof(buf));
-	if(!atoi(buf))
-		return;
+	background = trap_R_RegisterShaderNoMip("menuback");
+	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, background);
 
-	s = Info_ValueForKey(info, "mapname");
-	levelshot = trap_R_RegisterShaderNoMip(va("levelshots/%s.tga", s));
-	if(!levelshot)
-		levelshot = trap_R_RegisterShaderNoMip("menu/art/unknownmap");
-	trap_R_SetColor(nil);
-	drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, levelshot);
-
-	// blend a detail texture over it
-	detail = trap_R_RegisterShader("levelShotDetail");
-	trap_R_DrawStretchPic(0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 2.5, 2, detail);
-
-	// draw the icons of things as they are loaded
-	drawloadingicons();
+	y = 200;
 
 	// the first 150 rows are reserved for the client connection
 	// screen to write into
 	if(cg.infoscreentext[0])
-		drawpropstr(320, 128-32, va("Loading... %s", cg.infoscreentext),
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		drawpropstr(320, y, va("Loading %s", cg.infoscreentext),
+		   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 	else
-		drawpropstr(320, 128-32, "Awaiting snapshot...",
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		drawpropstr(320, y, "Awaiting snapshot",
+		   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 
 	// draw info string information
 
-	y = 180-32;
+	y = 240;
 
 	// don't print server lines if playing a local game
 	trap_Cvar_VariableStringBuffer("sv_running", buf, sizeof(buf));
@@ -193,14 +115,14 @@ drawinfo(void)
 		Q_strncpyz(buf, Info_ValueForKey(info, "sv_hostname"), 1024);
 		Q_CleanStr(buf);
 		drawpropstr(320, y, buf,
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 		y += PROP_HEIGHT;
 
 		// pure server
 		s = Info_ValueForKey(sysInfo, "sv_pure");
 		if(s[0] == '1'){
 			drawpropstr(320, y, "Pure Server",
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+			   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 			y += PROP_HEIGHT;
 		}
 
@@ -208,7 +130,7 @@ drawinfo(void)
 		s = getconfigstr(CS_MOTD);
 		if(s[0]){
 			drawpropstr(320, y, s,
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+			   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 			y += PROP_HEIGHT;
 		}
 
@@ -220,15 +142,7 @@ drawinfo(void)
 	s = getconfigstr(CS_MESSAGE);
 	if(s[0]){
 		drawpropstr(320, y, s,
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-		y += PROP_HEIGHT;
-	}
-
-	// cheats warning
-	s = Info_ValueForKey(sysInfo, "sv_cheats");
-	if(s[0] == '1'){
-		drawpropstr(320, y, "CHEATS ARE ENABLED",
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 		y += PROP_HEIGHT;
 	}
 
@@ -256,22 +170,23 @@ drawinfo(void)
 		s = "Unknown Gametype";
 		break;
 	}
-	drawpropstr(320, y, s,
-				  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+	drawpropstr(320, y, s, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW,
+	   colorWhite);
 	y += PROP_HEIGHT;
 
 	value = atoi(Info_ValueForKey(info, "timelimit"));
-	if(value){
+	if(value && cgs.gametype != GT_COOP && cgs.gametype != GT_SINGLE_PLAYER){
 		drawpropstr(320, y, va("timelimit %i", value),
-					  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+		   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 		y += PROP_HEIGHT;
 	}
 
-	if(cgs.gametype < GT_CTF){
+	if(cgs.gametype < GT_CTF && cgs.gametype != GT_COOP &&
+	   cgs.gametype != GT_SINGLE_PLAYER){
 		value = atoi(Info_ValueForKey(info, "fraglimit"));
 		if(value){
 			drawpropstr(320, y, va("fraglimit %i", value),
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+			   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 			y += PROP_HEIGHT;
 		}
 	}
@@ -280,6 +195,6 @@ drawinfo(void)
 		value = atoi(Info_ValueForKey(info, "capturelimit"));
 		if(value)
 			drawpropstr(320, y, va("capturelimit %i", value),
-						  UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+			   UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
 	}
 }

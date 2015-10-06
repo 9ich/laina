@@ -154,10 +154,10 @@ to prevent it from blinking away too rapidly on local or lan games.
 void
 drawconnectscreen(qboolean overlay)
 {
-	char *s;
 	uiClientState_t cstate;
 	char info[MAX_INFO_VALUE];
-	char buf[2];
+	char buf[2], s[MAX_STRING_CHARS];
+	int style, bigstyle;
 
 	if(uis.keys[K_ESCAPE]){
 		trap_Cmd_ExecuteText(EXEC_APPEND, "disconnect\n");
@@ -166,12 +166,8 @@ drawconnectscreen(qboolean overlay)
 
 	cacheui();
 
-	trap_Cvar_VariableStringBuffer("developer", buf, sizeof buf);
-	if(!atoi(buf)){
-		drawpic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader);
-		drawpropstr(320, 220, "loading", UI_BIGFONT|UI_CENTER|UI_DROPSHADOW, CWhite);
-		return;
-	}
+	style = UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW;
+	bigstyle = UI_BIGFONT|UI_CENTER|UI_DROPSHADOW;
 
 	if(!overlay){
 		setcolour(CWhite);
@@ -182,25 +178,29 @@ drawconnectscreen(qboolean overlay)
 	trap_GetClientState(&cstate);
 
 	info[0] = '\0';
-	if(trap_GetConfigString(CS_SERVERINFO, info, sizeof(info)))
-		drawpropstr(320, 16, va("Loading %s", Info_ValueForKey(info, "mapname")), UI_BIGFONT|UI_CENTER|UI_DROPSHADOW, CWhite);
+	if(trap_GetConfigString(CS_SERVERINFO, info, sizeof(info))){
+		Com_sprintf(s, sizeof s, "Loading %s",
+		   Info_ValueForKey(info, "mapname"));
+		drawpropstr(320, 16, s, bigstyle, CWhite);
+	}
 
-	drawpropstr(320, 64, va("Connecting to %s", cstate.servername), UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, CText);
-	drawpropstr(320, 96, "Press Esc to abort", UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, CText);
+	Com_sprintf(s, sizeof s, "Connecting to %s", cstate.servername);
+	drawpropstr(320, 64, s, style, CText);
+	drawpropstr(320, 96, "Press ESC to abort", style, CText);
 
 	// display global MOTD at bottom
 	drawpropstr(SCREEN_WIDTH/2, SCREEN_HEIGHT-32,
-		    Info_ValueForKey(cstate.updateInfoString, "motd"), UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, CText);
+	   Info_ValueForKey(cstate.updateInfoString, "motd"),
+	   style, CText);
 
 	// print any server info (server full, bad version, etc)
 	if(cstate.connState < CA_CONNECTED)
-		drawpropstrwrapped(320, 192, 630, 20, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, CText);
+		drawpropstrwrapped(320, 192, 630, 20, cstate.messageString,
+		   style, CText);
 
-#if 0
 	// display password field
 	if(passwordNeeded){
 	}
-#endif
 
 	if(lastConnState > cstate.connState)
 		lastLoadingText[0] = '\0';
@@ -208,21 +208,24 @@ drawconnectscreen(qboolean overlay)
 
 	switch(cstate.connState){
 	case CA_CONNECTING:
-		s = va("Awaiting challenge...%i", cstate.connectPacketCount);
+		Com_sprintf(s, sizeof s, "Awaiting challenge - %i",
+		   cstate.connectPacketCount);
 		break;
 	case CA_CHALLENGING:
-		s = va("Awaiting connection...%i", cstate.connectPacketCount);
+		Com_sprintf(s, sizeof s, "Awaiting connection - %i",
+		   cstate.connectPacketCount);
 		break;
 	case CA_CONNECTED: {
 		char downloadName[MAX_INFO_VALUE];
 
-		trap_Cvar_VariableStringBuffer("cl_downloadName", downloadName, sizeof(downloadName));
+		trap_Cvar_VariableStringBuffer("cl_downloadName", downloadName,
+		   sizeof(downloadName));
 		if(*downloadName){
 			displaydownloadinfo(downloadName);
 			return;
 		}
-	}
-		s = "Awaiting gamestate...";
+		}
+		Q_strncpyz(s, "Awaiting gamestate", sizeof s);
 		break;
 	case CA_LOADING:
 		return;
@@ -232,7 +235,7 @@ drawconnectscreen(qboolean overlay)
 		return;
 	}
 
-	drawpropstr(320, 128, s, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, CWhite);
+	drawpropstr(320, 128, s, style, CWhite);
 
 	// password required / connection rejected information goes here
 }
