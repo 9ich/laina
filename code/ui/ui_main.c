@@ -80,8 +80,11 @@ vmCvar_t ui_drawCrosshair;
 vmCvar_t ui_drawfps;
 
 static cvarTable_t cvarTable[] = {
+	// sets default options if modules have never run before
 	{&ui_drawCrosshair, "cg_drawCrosshair", "4", CVAR_ARCHIVE},
 	{&ui_drawfps, "cg_drawfps", "1", CVAR_ARCHIVE},
+	{nil, "cg_fov", "90", CVAR_ARCHIVE},
+	{nil, "cg_thirdperson", "1", CVAR_ARCHIVE}
 };
 
 void
@@ -101,6 +104,9 @@ updatecvars(void)
 	int i;
 	cvarTable_t *cv;
 
-	for(i = 0, cv = cvarTable; i < ARRAY_LEN(cvarTable); i++, cv++)
+	for(i = 0, cv = cvarTable; i < ARRAY_LEN(cvarTable); i++, cv++){
+		if(cv->vmCvar == nil)
+			continue;
 		trap_Cvar_Update(cv->vmCvar);
+	}
 }
