@@ -386,6 +386,7 @@ keybinder(const char *id, int x, int y, int just, int key)
 	const float h = 16, pad = 4;
 	char buf[32], *p;
 	float *clr;
+	qboolean changed;
 
 	justify(just, &x, w);
 
@@ -419,7 +420,13 @@ keybinder(const char *id, int x, int y, int just, int key)
 		clr = CWHot;
 	drawstr(x, y+2, buf, UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW, clr);
 	
-	if(strcmp(uis.focus, id) == 0)
+	changed = !uis.keys[K_MOUSE1] && strcmp(uis.hot, id) == 0 &&
+	   strcmp(uis.active, id) == 0;	
+	
+	if(strcmp(uis.focus, id) == 0){
 		drawrect(x-2, y-2, w+4, h+4, CWFocus);
-	return !uis.keys[K_MOUSE1] && strcmp(uis.hot, id) == 0 && strcmp(uis.active, id) == 0;	
+		if(keydown(K_ENTER))
+			changed = qtrue;
+	}
+	return changed;
 }
