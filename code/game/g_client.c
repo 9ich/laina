@@ -508,6 +508,7 @@ void
 clientrespawn(ent_t *ent)
 {
 	copytobodyqueue(ent);
+	levelrespawn();
 	clientspawn(ent);
 }
 
@@ -1007,8 +1008,7 @@ clientspawn(ent_t *ent)
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
 	if(client->sess.team == TEAM_SPECTATOR)
-		spawnPoint = SelectSpectatorSpawnPoint(
-			spawn_origin, spawn_angles);
+		spawnPoint = SelectSpectatorSpawnPoint(spawn_origin, spawn_angles);
 	else if(g_gametype.integer >= GT_CTF)
 		// all base oriented team games use the CTF spawn points
 		spawnPoint = selctfspawnpoint(

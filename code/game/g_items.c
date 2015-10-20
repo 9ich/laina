@@ -197,7 +197,8 @@ Pickup_Token(ent_t *ent, ent_t *other)
 		other->client->ps.persistant[PERS_LIVES]++;
 		other->client->ps.stats[STAT_TOKENS] -= 100;
 	}
-	level.ncarrotspickedup++;
+	if(!(ent->flags & FL_DROPPED_ITEM))
+		level.ncarrotspickedup++;
 	return RESPAWN_TOKEN;
 }
 
@@ -260,7 +261,6 @@ itemrespawn(ent_t *ent)
 		for(count = 0, ent = master; ent && count < choice; ent = ent->teamchain, count++)
 			;
 	}
-
 	if(!ent)
 		return;
 
@@ -286,6 +286,9 @@ itemrespawn(ent_t *ent)
 	addevent(ent, EV_ITEM_RESPAWN, 0);
 
 	ent->nextthink = 0;
+	ent->ckpoint = ENTITYNUM_WORLD;
+	if(ent->item->type == IT_TOKEN)
+		level.ncarrotspickedup--;
 }
 
 /*
@@ -350,6 +353,8 @@ item_touch(ent_t *ent, ent_t *other, trace_t *trace)
 
 	if(!respawn)
 		return;
+
+	ent->ckpoint = level.checkpoint;
 
 	// play the normal pickup sound
 	if(predict)
@@ -469,9 +474,6 @@ itemlaunch(item_t *item, vec3_t origin, vec3_t velocity)
 	}
 
 	dropped->flags = FL_DROPPED_ITEM;
-
-	if(dropped->item->type == IT_TOKEN)
-		level.ncarrots++;
 
 	trap_LinkEntity(dropped);
 
@@ -714,9 +716,10 @@ itemspawn(ent_t *ent, item_t *item)
 		soundindex("sound/items/poweruprespawn.wav");
 		spawnfloat("noglobalsound", "0", &ent->speed);
 	}
-	if(item->type == IT_TOKEN)
+	if(item->type == IT_TOKEN){
+		ent->levelrespawn = itemrespawn;
 		level.ncarrots++;
-
+	}
 }
 
 /*

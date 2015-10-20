@@ -703,7 +703,7 @@ typedef enum
 	ET_ITEM,
 	ET_MISSILE,
 	ET_MOVER,
-	ET_CRATE,	// breakable boxes
+	ET_CRATE,
 	ET_CRATE_BOUNCY,
 	ET_CHECKPOINTHALO,
 	ET_BEAM,

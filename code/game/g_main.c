@@ -498,6 +498,35 @@ shutdowngame(int restart)
 		BotAIShutdown(restart);
 }
 
+/*
+Soft re-initialisation of the level.
+
+Called on singleplayer respawn.  Respawns anything with levelrespawn !=
+nil, i.e. ordinary items and crates.
+*/
+void
+levelrespawn(void)
+{
+	ent_t *e;
+	int i;
+
+	gprintf("------- levelrespawn -------\n");
+
+	level.sightclient = nil;
+	level.sightent = nil;
+	level.sightentframenum = 0;
+	level.soundent = nil;
+	level.soundentframe = 0;
+
+	for(i = 0, e = level.entities; i < level.nentities; i++, e++){
+		if(!e->inuse || e->levelrespawn == nil ||
+		   e->ckpoint != level.checkpoint){
+			continue;
+		}
+		e->levelrespawn(e);
+	}
+}
+
 //===================================================================
 
 void QDECL

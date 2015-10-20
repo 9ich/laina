@@ -427,10 +427,6 @@ player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int means
 	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
 
-	self->s.angles[0] = 0;
-	self->s.angles[2] = 0;
-	LookAtKiller(self, inflictor, attacker);
-
 	veccpy(self->s.angles, self->client->ps.viewangles);
 
 	self->s.loopSound = 0;

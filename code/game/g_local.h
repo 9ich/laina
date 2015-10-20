@@ -181,6 +181,7 @@ struct ent_s
 	//================================
 
 	gclient_t		*client;	// nil if not a client
+	item_t			*item;		// nil if not an item
 	npc_t			npc;		// just for NPCs
 
 	qboolean		inuse;
@@ -242,6 +243,7 @@ struct ent_s
 	void		(*use)(ent_t *self, ent_t *other, ent_t *activator);
 	void		(*pain)(ent_t *self, ent_t *attacker, int damage);
 	void		(*die)(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int mod);
+	void		(*levelrespawn)(ent_t *self);	// respawn with the level
 
 	int		paindebouncetime;
 	int		flysounddebouncetime;	// wind tunnel
@@ -269,6 +271,8 @@ struct ent_s
 
 	int		doorkey;	// bg_itemlist index
 
+	int		ckpoint;	// for items and crates, saves level.checkpoint
+					// at time of activation
 
 	int		watertype;
 	int		waterlevel;
@@ -278,8 +282,6 @@ struct ent_s
 	// timing variables
 	float		wait;
 	float		random;
-
-	item_t		*item;	// for bonus items
 
 	int		airouttime;
 };
@@ -450,7 +452,7 @@ typedef struct
 	int			lastteamlocationtime;	// last time of client team location update
 
 	qboolean		newsess;		// don't use any old session data, because
-	// we changed gametype
+							// we changed gametype
 
 	qboolean		restarted;	// waiting for a map_restart to fire
 

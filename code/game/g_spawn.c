@@ -470,6 +470,8 @@ spawngentityfromspawnvars(void)
 	veccpy(ent->s.origin, ent->s.pos.trBase);
 	veccpy(ent->s.origin, ent->r.currentOrigin);
 
+	ent->ckpoint = ENTITYNUM_WORLD;
+
 	// if we didn't get a classname, don't bother spawning anything
 	if(!callspawn(ent))
 		entfree(ent);

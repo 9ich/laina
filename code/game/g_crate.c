@@ -9,6 +9,7 @@ extern void	AimAtTarget(ent_t *self);
 
 static void	crate_use(ent_t*, ent_t*, ent_t*);
 static void	crate_touch(ent_t*, ent_t*, trace_t*);
+static void	crate_levelrespawn(ent_t*);
 static void	crate_checkpoint_use(ent_t*, ent_t*, ent_t*);
 static void	crate_bouncy_touch(ent_t*, ent_t*, trace_t*);
 static void	SP_checkpoint_halo(ent_t *ent);
@@ -47,6 +48,7 @@ SP_crate(ent_t *ent)
 	ent->physbounce = 0.2;
 	ent->touch = crate_touch;
 	ent->use = crate_use;
+	ent->levelrespawn = crate_levelrespawn;
 	ent->nextthink = -1;
 	ent->takedmg = qtrue;
 	ent->s.eType = ET_CRATE;
@@ -56,6 +58,7 @@ SP_crate(ent_t *ent)
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 	vecset(ent->r.mins, -16, -16, -16);
 	vecset(ent->r.maxs, 16, 16, 16);
+	ent->ckpoint = ENTITYNUM_WORLD;
 	level.ncrates++;
 	trap_LinkEntity(ent);
 }
@@ -93,6 +96,7 @@ Recycles ent and transforms it into a checkpoint halo.
 static void
 SP_checkpoint_halo(ent_t *ent)
 {
+	ent->classname = "ckpointhalo";
 	ent->model = "models/mapobjects/ckpoint/ckpoint";
 	ent->s.modelindex = modelindex(ent->model);
 	ent->s.eType = ET_CHECKPOINTHALO;
@@ -154,8 +158,9 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 		}
 	}
 	usetargets(self, activator);
-	entfree(self);
+	trap_UnlinkEntity(self);
 	level.ncratesbroken++;
+	self->ckpoint = level.checkpoint;
 }
 
 /*
@@ -173,6 +178,14 @@ crate_touch(ent_t *self, ent_t *other, trace_t *trace)
 	if(!touchcrate(&other->client->ps, &self->s))
 		return;
 	self->use(self, nil, other);
+}
+
+static void
+crate_levelrespawn(ent_t *self)
+{
+	level.ncratesbroken--;
+	self->ckpoint = ENTITYNUM_WORLD;
+	trap_LinkEntity(self);
 }
 
 static void
