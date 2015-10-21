@@ -706,6 +706,7 @@ void		setleader(int team, int client);
 void		chkteamleader(int team);
 void		runthink(ent_t *ent);
 void		addtourneyqueue(gclient_t *client);
+void		levelrespawn(void);
 void		gameover(void);
 void QDECL	logprintf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 void		sendscoreboardmsgall(void);
