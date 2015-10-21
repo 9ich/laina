@@ -648,7 +648,6 @@ typedef struct
 	qhandle_t	charsetShader;
 	qhandle_t	charsetProp;
 	qhandle_t	charsetPropGlow;
-	qhandle_t	charsetPropB;
 	qhandle_t	whiteShader;
 
 	qhandle_t	redFlagModel;

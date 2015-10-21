@@ -743,7 +743,6 @@ cginit(int serverMessageNum, int serverCommandSequence, int clientNum)
 	cgs.media.whiteShader = trap_R_RegisterShader("white");
 	cgs.media.charsetProp = trap_R_RegisterShaderNoMip("menu/art/font1_prop.tga");
 	cgs.media.charsetPropGlow = trap_R_RegisterShaderNoMip("menu/art/font1_prop_glo.tga");
-	cgs.media.charsetPropB = trap_R_RegisterShaderNoMip("menu/art/font2_prop.tga");
 
 	registercvars();
 
