@@ -281,10 +281,14 @@ drawscoreboard(void)
 	// scoreboard
 	y = SB_HEADER;
 
-	drawpic(SB_SCORE_X + (SB_RATING_WIDTH / 2), y, 64, 32, cgs.media.scoreboardScore);
-	drawpic(SB_PING_X - (SB_RATING_WIDTH / 2), y, 64, 32, cgs.media.scoreboardPing);
-	drawpic(SB_TIME_X - (SB_RATING_WIDTH / 2), y, 64, 32, cgs.media.scoreboardTime);
-	drawpic(SB_NAME_X - (SB_RATING_WIDTH / 2), y, 64, 32, cgs.media.scoreboardName);
+	drawstr2(SB_SCORE_X + (SB_RATING_WIDTH / 2), y, "Score", colorWhite,
+	   qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0);
+	drawstr2(SB_PING_X - (SB_RATING_WIDTH / 2), y, "Ping", colorWhite,
+	   qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0);
+	drawstr2(SB_TIME_X - (SB_RATING_WIDTH / 2), y, "Time", colorWhite,
+	   qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0);
+	drawstr2(SB_NAME_X - (SB_RATING_WIDTH / 2), y, "Name", colorWhite,
+	   qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0);
 
 	y = SB_TOP;
 

@@ -752,12 +752,6 @@ typedef struct
 	qhandle_t	teleportEffectModel;
 	qhandle_t	teleportEffectShader;
 
-	// scoreboard headers
-	qhandle_t	scoreboardName;
-	qhandle_t	scoreboardPing;
-	qhandle_t	scoreboardScore;
-	qhandle_t	scoreboardTime;
-
 	// medals shown during gameplay
 	qhandle_t	medalImpressive;
 	qhandle_t	medalExcellent;

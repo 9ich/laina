@@ -574,11 +574,6 @@ reggraphics(void)
 
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip("gfx/2d/defer.tga");
 
-	cgs.media.scoreboardName = trap_R_RegisterShaderNoMip("menu/tab/name.tga");
-	cgs.media.scoreboardPing = trap_R_RegisterShaderNoMip("menu/tab/ping.tga");
-	cgs.media.scoreboardScore = trap_R_RegisterShaderNoMip("menu/tab/score.tga");
-	cgs.media.scoreboardTime = trap_R_RegisterShaderNoMip("menu/tab/time.tga");
-
 	cgs.media.smokePuffShader = trap_R_RegisterShader("smokePuff");
 
 	cgs.media.lagometerShader = trap_R_RegisterShader("lagometer");
