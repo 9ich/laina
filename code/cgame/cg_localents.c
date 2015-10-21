@@ -113,44 +113,6 @@ or generates more localentities along a trail.
 
 /*
 ================
-bloodtrail
-
-Leave expanding blood puffs behind gibs
-================
-*/
-void
-bloodtrail(localent_t *le)
-{
-	int t;
-	int t2;
-	int step;
-	vec3_t newOrigin;
-	localent_t *blood;
-
-	step = 150;
-	t = step * ((cg.time - cg.frametime + step) / step);
-	t2 = step * (cg.time / step);
-
-	for(; t <= t2; t += step){
-		evaltrajectory(&le->pos, t, newOrigin);
-
-		blood = smokepuff(newOrigin, vec3_origin,
-				     20,		// radius
-				     1, 1, 1, 1,	// color
-				     2000,		// trailtime
-				     t,			// starttime
-				     0,			// fadeintime
-				     0,			// flags
-				     cgs.media.bloodTrailShader);
-		// use the optimized version
-		blood->type = LE_FALL_SCALE_FADE;
-		// drop a total of 40 units over its lifetime
-		blood->pos.trDelta[2] = 40;
-	}
-}
-
-/*
-================
 fragmentbouncemark
 ================
 */
@@ -288,10 +250,6 @@ addfragment(localent_t *le)
 		}
 
 		trap_R_AddRefEntityToScene(&le->refEntity);
-
-		// add a blood trail
-		if(le->bouncesoundtype == LEBS_BLOOD)
-			bloodtrail(le);
 
 		return;
 	}
