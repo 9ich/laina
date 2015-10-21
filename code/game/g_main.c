@@ -503,6 +503,10 @@ Soft re-initialisation of the level.
 
 Called on singleplayer respawn.  Respawns anything with levelrespawn !=
 nil, i.e. ordinary items and crates.  Frees dropped items.
+
+This ought to reset level times as well, but that causes brief lag/loss
+warning messages in cgame. This probably requires a new server syscall
+to reset times like map_restart does.
 */
 void
 levelrespawn(void)
@@ -521,7 +525,9 @@ levelrespawn(void)
 	for(i = 0, e = level.entities; i < level.nentities; i++, e++){
 		if(!e->inuse)
 			continue;
-		if(e->flags & FL_DROPPED_ITEM)
+		if(i < MAX_CLIENTS && e->client->pers.connected == CON_CONNECTED)
+			addevent(e, EV_LEVELRESPAWN, 0);
+		else if(e->flags & FL_DROPPED_ITEM)
 			entfree(e);
 		else if(e->levelrespawn != nil &&
 		   e->ckpoint == level.checkpoint)

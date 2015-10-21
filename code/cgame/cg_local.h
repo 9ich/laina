@@ -479,7 +479,7 @@ typedef struct
 	int		frametime;		// cg.time - cg.oldtime
 
 	int		time;			// this is the time value that the client
-	// is rendering at.
+						// is rendering at.
 	int		oldtime;		// time at last frame, used for missile trails and prediction checking
 
 	int		phystime;		// either cg.snap->time or cg.nextsnap->time

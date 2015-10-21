@@ -447,7 +447,8 @@ typedef enum
 	EV_DEATH2,
 	EV_DEATH3,
 	EV_OBITUARY,
-	EV_GAMEOVER,	// parm=1 means total gameover, parm=0 means just for this player
+	EV_GAMEOVER,		// parm=1 means total gameover, parm=0 means just for this player
+	EV_LEVELRESPAWN,	// cgame should clear localents
 
 	EV_POWERUP_QUAD,
 	EV_POWERUP_BATTLESUIT,

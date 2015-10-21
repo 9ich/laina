@@ -395,7 +395,7 @@ entevent(cent_t *cent, vec3_t position)
 	event = es->event & ~EV_EVENT_BITS;
 
 	if(!event){
-		DEBUGNAME("ZEROEVENT");
+		DEBUGNAME("ZEROEVENT\n");
 		return;
 	}
 
@@ -915,6 +915,11 @@ entevent(cent_t *cent, vec3_t position)
 		DEBUGNAME("EV_GAMEOVER");
 		cg.gameovertime = cg.time + 5000;
 		cg.gameover = es->eventParm;
+		break;
+
+	case EV_LEVELRESPAWN:
+		DEBUGNAME("EV_LEVELRESPAWN");
+		initlocalents();
 		break;
 		
 
