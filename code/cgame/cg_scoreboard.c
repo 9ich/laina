@@ -229,12 +229,7 @@ drawscoreboard(void)
 		return qfalse;
 	}
 
-	// don't draw scoreboard during death while warmup up
-	if(cg.warmup && !cg.showscores)
-		return qfalse;
-
-	if(cg.showscores || cg.pps.pm_type == PM_DEAD ||
-	   cg.pps.pm_type == PM_INTERMISSION){
+	if(cg.showscores){
 		fade = 1.0;
 		fadeColor = colorWhite;
 	}else{

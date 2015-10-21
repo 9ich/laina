@@ -234,12 +234,6 @@ offsetthirdpersonview(void)
 
 	veccpy(cg.refdefviewangles, focusAngles);
 
-	// if dead, look at killer
-	if(pps->stats[STAT_HEALTH] <= 0){
-		focusAngles[YAW] = pps->stats[STAT_DEAD_YAW];
-		cg.refdefviewangles[YAW] = pps->stats[STAT_DEAD_YAW];
-	}
-
 	focusAngles[PITCH] = MIN(89.999f, focusAngles[PITCH]);
 	anglevecs(focusAngles, forward, nil, nil);
 
@@ -330,9 +324,6 @@ offsetfirstpersonview(void)
 
 	// if dead, fix the angle and don't add any kick
 	if(cg.snap->ps.stats[STAT_HEALTH] <= 0){
-		angles[ROLL] = 40;
-		angles[PITCH] = -15;
-		angles[YAW] = cg.snap->ps.stats[STAT_DEAD_YAW];
 		origin[2] += cg.pps.viewheight;
 		return;
 	}

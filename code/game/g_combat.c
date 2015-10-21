@@ -121,29 +121,6 @@ tossclientitems(ent_t *self)
 	}
 }
 
-
-/*
-==================
-LookAtKiller
-==================
-*/
-void
-LookAtKiller(ent_t *self, ent_t *inflictor, ent_t *attacker)
-{
-	vec3_t dir;
-
-	if(attacker && attacker != self)
-		vecsub(attacker->s.pos.trBase, self->s.pos.trBase, dir);
-	else if(inflictor && inflictor != self)
-		vecsub(inflictor->s.pos.trBase, self->s.pos.trBase, dir);
-	else{
-		self->client->ps.stats[STAT_DEAD_YAW] = self->s.angles[YAW];
-		return;
-	}
-
-	self->client->ps.stats[STAT_DEAD_YAW] = vectoyaw(dir);
-}
-
 /*
 ==================
 GibEntity
