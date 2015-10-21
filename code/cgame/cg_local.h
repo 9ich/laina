@@ -678,16 +678,7 @@ typedef struct
 	qhandle_t	deferShader;
 
 	// gib explosions
-	qhandle_t	gibAbdomen;
-	qhandle_t	gibArm;
-	qhandle_t	gibChest;
-	qhandle_t	gibFist;
-	qhandle_t	gibFoot;
-	qhandle_t	gibForearm;
-	qhandle_t	gibIntestine;
-	qhandle_t	gibLeg;
-	qhandle_t	gibSkull;
-	qhandle_t	gibBrain;
+	qhandle_t	gib;
 
 	qhandle_t	splinter;
 
@@ -728,7 +719,6 @@ typedef struct
 
 	// wall mark shaders
 	qhandle_t	wakeMarkShader;
-	qhandle_t	bloodMarkShader;
 	qhandle_t	bulletMarkShader;
 	qhandle_t	burnMarkShader;
 	qhandle_t	holeMarkShader;

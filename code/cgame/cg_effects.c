@@ -454,79 +454,23 @@ Generated a bunch of gibs launching out from the bodies location
 #define GIB_VELOCITY	250
 #define GIB_JUMP	250
 void
-gibplayer(vec3_t playerOrigin)
+gibplayer(vec3_t playerpos)
 {
-	vec3_t origin, velocity;
+	vec3_t pos, vel;
+	int i;
 
 	if(!cg_blood.integer)
 		return;
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	if(rand() & 1)
-		launchgib(origin, velocity, cgs.media.gibSkull);
-	else
-		launchgib(origin, velocity, cgs.media.gibBrain);
-
-	// allow gibs to be turned off for speed
 	if(!cg_gibs.integer)
 		return;
 
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibAbdomen);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibArm);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibChest);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibFist);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibFoot);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibForearm);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibIntestine);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibLeg);
-
-	veccpy(playerOrigin, origin);
-	velocity[0] = crandom()*GIB_VELOCITY;
-	velocity[1] = crandom()*GIB_VELOCITY;
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-	launchgib(origin, velocity, cgs.media.gibLeg);
+	for(i = 0; i < 9; i++){
+		veccpy(playerpos, pos);
+		vel[0] = crandom()*GIB_VELOCITY;
+		vel[1] = crandom()*GIB_VELOCITY;
+		vel[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
+		launchgib(pos, vel, cgs.media.gib);
+	}
 }
 
 /*

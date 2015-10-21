@@ -121,11 +121,7 @@ fragmentbouncemark(localent_t *le, trace_t *trace)
 {
 	int radius;
 
-	if(le->marktype == LEMT_BLOOD){
-		radius = 16 + (rand()&31);
-		impactmark(cgs.media.bloodMarkShader, trace->endpos, trace->plane.normal, random()*360,
-			      1, 1, 1, 1, qtrue, radius, qfalse);
-	}else if(le->marktype == LEMT_BURN){
+	if(le->marktype == LEMT_BURN){
 		radius = 8 + (rand()&15);
 		impactmark(cgs.media.burnMarkShader, trace->endpos, trace->plane.normal, random()*360,
 			      1, 1, 1, 1, qtrue, radius, qfalse);
