@@ -405,6 +405,8 @@ struct gclient_s
 
 	// timers
 	int		respawntime;		// can respawn when time > this, force after g_forcerespwan
+	qboolean	deathspec;		// died in coop and spectating live players
+	int		deathspectime;		// died in coop and about to be moved to spec
 	int		inactivitytime;		// kick players when time > this
 	qboolean	inactivitywarning;	// qtrue if the five seoond warning has been given
 	int		rewardtime;		// clear the EF_AWARD_IMPRESSIVE, etc when time > this

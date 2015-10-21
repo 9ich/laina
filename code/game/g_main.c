@@ -1675,11 +1675,14 @@ gameover(void)
 	ent_t *ent;
 	int i;
 
-	for(i = 0; i < MAX_CLIENTS; i++){
-		ent = &g_entities[i];
-		if(ent->inuse)
+	gprintf("------- gameover -------\n");
+
+	for(i = 0, ent = level.entities; i < MAX_CLIENTS; i++, ent++)
+		if(ent->inuse && ent->client->sess.specstate == SPECTATOR_NOT){
 			addevent(ent, EV_GAMEOVER, 2);
-	}
+			// force spec now
+			ent->client->deathspectime = level.time;
+		}
 	level.gameovertime = level.time + 5000;
 }
 

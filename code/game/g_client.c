@@ -933,7 +933,7 @@ clientbegin(int clientNum)
 {
 	ent_t *ent;
 	gclient_t *client;
-	int flags;
+	int flags, nspawns;
 
 	ent = g_entities + clientNum;
 
@@ -955,9 +955,14 @@ clientbegin(int clientNum)
 	// want to make sure the teleport bit is set right
 	// so the viewpoint doesn't interpolate through the
 	// world to the new position
+	//
+	// also save number of spawns so we can tell when a client
+	// is coming out of deathspec
 	flags = client->ps.eFlags;
+	nspawns = client->ps.persistant[PERS_SPAWNS];
 	memset(&client->ps, 0, sizeof(client->ps));
 	client->ps.eFlags = flags;
+	client->ps.persistant[PERS_SPAWNS] = nspawns;
 
 	// locate ent at a spawn point
 	clientspawn(ent);
@@ -996,6 +1001,7 @@ clientspawn(ent_t *ent)
 	int savedPing;
 //	char	*savedAreaBits;
 	int accuracyhits, accuracyshots;
+	qboolean deathspec;
 	int eventSequence;
 	char userinfo[MAX_INFO_STRING];
 
@@ -1042,11 +1048,12 @@ clientspawn(ent_t *ent)
 //	savedAreaBits = client->areabits;
 	accuracyhits = client->accuracyhits;
 	accuracyshots = client->accuracyshots;
+	deathspec = client->deathspec;
 	for(i = 0; i < MAX_PERSISTANT; i++)
 		persistant[i] = client->ps.persistant[i];
 	eventSequence = client->ps.eventSequence;
 
-	Com_Memset(client, 0, sizeof(*client));
+	memset(client, 0, sizeof(*client));
 
 	client->pers = saved;
 	client->sess = savedSess;
@@ -1054,6 +1061,7 @@ clientspawn(ent_t *ent)
 //	client->areabits = savedAreaBits;
 	client->accuracyhits = accuracyhits;
 	client->accuracyshots = accuracyshots;
+	client->deathspec = deathspec;
 	client->lastkilledclient = -1;
 
 	for(i = 0; i < MAX_PERSISTANT; i++)
@@ -1094,9 +1102,8 @@ clientspawn(ent_t *ent)
 	client->ps.ammo[WP_GAUNTLET] = -1;
 	client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
 
-	if(client->ps.persistant[PERS_SPAWNS] == 0){
+	if(client->ps.persistant[PERS_SPAWNS] == 0)
 		client->ps.persistant[PERS_LIVES] = 3;
-	}
 
 	ent->health = client->ps.stats[STAT_HEALTH] = 1;
 	client->ps.persistant[PERS_SPAWNS]++;
@@ -1243,8 +1250,8 @@ clientdisconnect(int clientNum)
 }
 
 /*
-Game over for this client.  If they were the only active client left,
-the game ends.  If not, they're moved to spectate.
+Game over for this client.  If they were the only live client left,
+the game ends.  If not, they're stuck in spectate.
 */
 void
 clientgameover(ent_t *e)
@@ -1252,21 +1259,10 @@ clientgameover(ent_t *e)
 	ent_t *ent;
 	int i;
 
-	e->client->ps.persistant[PERS_TEAM] = TEAM_SPECTATOR;
-	e->client->sess.team = TEAM_SPECTATOR;
-	e->client->sess.specstate = SPECTATOR_FREE;
-	e->r.svFlags &= ~SVF_BOT;
-	// don't use dead view angles
-	e->client->ps.stats[STAT_HEALTH] = 1;
-
-	trap_SendConsoleCommand(e->client - level.clients, "follownext");
-
-	for(i = 0; i < MAX_CLIENTS; i++){
-		ent = &g_entities[i];
-		if(ent->client != nil &&
-		   e->client->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR)
+	for(i = 0, ent = level.entities; i < MAX_CLIENTS; i++, ent++)
+		if(ent->inuse && ent->client->sess.specstate == SPECTATOR_NOT &&
+		   !ent->client->deathspec && ent->s.number != e->s.number)
 			break;
-	}
 	if(i == MAX_CLIENTS)
 		gameover();
 	else

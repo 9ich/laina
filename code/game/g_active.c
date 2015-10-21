@@ -560,6 +560,10 @@ ClientThink_real(ent_t *ent)
 		//if(ucmd->serverTime - client->ps.commandTime <= 0)
 		//	return;
 
+	// check if we died in co-op and are moving to spectate
+	if(client->deathspectime > 0 && level.time > client->deathspectime)
+		setteam(ent, "spectator");
+
 	// check for exiting intermission
 	if(level.intermissiontime){
 		ClientIntermissionThink(client);

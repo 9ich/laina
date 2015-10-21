@@ -671,12 +671,17 @@ Cmd_Team_f(ent_t *ent)
 		return;
 	}
 
-	// if they are playing a tournement game, count as a loss
+	trap_Argv(1, s, sizeof(s));
+	
+	if(Q_stricmp(s, "spectator") != 0 && Q_stricmp(s, "s") != 0 &&
+	   !CheatsOk(ent) && ent->client->deathspec){
+		return;
+	}
+
+	// if they are playing a tournament game, count as a loss
 	if((g_gametype.integer == GT_TOURNAMENT)
 	   && ent->client->sess.team == TEAM_FREE)
 		ent->client->sess.losses++;
-
-	trap_Argv(1, s, sizeof(s));
 
 	setteam(ent, s);
 

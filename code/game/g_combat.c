@@ -482,11 +482,16 @@ player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int means
 		i = (i + 1) % 3;
 	}
 
-	self->client->ps.persistant[PERS_LIVES]--;
-	if(self->client->ps.persistant[PERS_LIVES] <= 0){
-		self->client->respawntime = -1;
-		clientgameover(self);
+	if((g_gametype.integer == GT_SINGLE_PLAYER || g_gametype.integer == GT_COOP) &&
+	   level.nnonspecclients > 1){
+		// client spectates living players
+		self->client->respawntime = level.time + 9999;
+		self->client->deathspec = qtrue;
+		self->client->deathspectime = level.time + 3000;
 	}
+	self->client->ps.persistant[PERS_LIVES]--;
+	if(self->client->ps.persistant[PERS_LIVES] <= 0)
+		clientgameover(self);
 
 	trap_LinkEntity(self);
 }
