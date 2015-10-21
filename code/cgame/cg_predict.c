@@ -529,7 +529,7 @@ predictplayerstate(void)
 		touchtriggerprediction();
 
 		// check for predictable events that changed from previous predictions
-		//chkchangedpredictableevents(&cg.pps);
+		//chkpredictableevents(&cg.pps);
 	}
 
 	if(cg_showmiss.integer > 1)
@@ -558,7 +558,7 @@ predictplayerstate(void)
 	}
 
 	// fire events and other transition triggered things
-	transitionplayerstate(&cg.pps, &oldPlayerState);
+	pstransition(&cg.pps, &oldPlayerState);
 
 	if(cg_showmiss.integer)
 		if(cg.eventSequence > cg.pps.eventSequence){

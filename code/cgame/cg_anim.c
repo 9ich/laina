@@ -26,7 +26,7 @@ setlerpframeanimation(animation_t *anims, lerpframe_t *lf, int newanim)
 }
 
 /*
-cg.time should be between oldFrameTime and frametime after exit
+cg.time should be between oldframetime and frametime after exit
 */
 void
 runlerpframe(animation_t *anims, lerpframe_t *lf, int newanim, float speedscale)
@@ -48,7 +48,7 @@ runlerpframe(animation_t *anims, lerpframe_t *lf, int newanim, float speedscale)
 	// oldframe and calculate a new frame
 	if(cg.time >= lf->frametime){
 		lf->oldframe = lf->frame;
-		lf->oldFrameTime = lf->frametime;
+		lf->oldframetime = lf->frametime;
 
 		// get the next frame based on the animation
 		anim = lf->animation;
@@ -57,7 +57,7 @@ runlerpframe(animation_t *anims, lerpframe_t *lf, int newanim, float speedscale)
 		if(cg.time < lf->animtime)
 			lf->frametime = lf->animtime;	// initial lerp
 		else
-			lf->frametime = lf->oldFrameTime + anim->framelerp;
+			lf->frametime = lf->oldframetime + anim->framelerp;
 		f = (lf->frametime - lf->animtime) / anim->framelerp;
 		f *= speedscale;	// adjust for haste, etc
 
@@ -92,19 +92,19 @@ runlerpframe(animation_t *anims, lerpframe_t *lf, int newanim, float speedscale)
 	if(lf->frametime > cg.time + 200)
 		lf->frametime = cg.time;
 
-	if(lf->oldFrameTime > cg.time)
-		lf->oldFrameTime = cg.time;
+	if(lf->oldframetime > cg.time)
+		lf->oldframetime = cg.time;
 	// calculate current lerp value
-	if(lf->frametime == lf->oldFrameTime)
+	if(lf->frametime == lf->oldframetime)
 		lf->backlerp = 0;
 	else
-		lf->backlerp = 1.0 - (float)(cg.time - lf->oldFrameTime) / (lf->frametime - lf->oldFrameTime);
+		lf->backlerp = 1.0 - (float)(cg.time - lf->oldframetime) / (lf->frametime - lf->oldframetime);
 }
 
 void
 clearlerpframe(animation_t *anims, lerpframe_t *lf, int animnum)
 {
-	lf->frametime = lf->oldFrameTime = cg.time;
+	lf->frametime = lf->oldframetime = cg.time;
 	setlerpframeanimation(anims, lf, animnum);
 	lf->oldframe = lf->frame = lf->animation->firstframe;
 }

@@ -19,168 +19,18 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_view.c -- setup all the parameters (position, angle, etc)
-// for a 3D rendering
+// Setup all the parameters (position, angle, etc) for a 3D rendering.
+
 #include "cg_local.h"
 
-/*
-=============================================================================
+#define WAVE_AMPLITUDE	1
+#define WAVE_FREQUENCY	0.4
+#define FOCUS_DISTANCE	150
 
-  MODEL TESTING
-
-The viewthing and gun positioning tools from Q2 have been integrated and
-enhanced into a single model testing facility.
-
-Model viewing can begin with either "testmodel <modelname>" or "testgun <modelname>".
-
-The names must be the full pathname after the basedir, like
-"models/weapons/v_launch/tris.md3" or "players/male/tris.md3"
-
-Testmodel will create a fake entity 100 units in front of the current view
-position, directly facing the viewer.  It will remain immobile, so you can
-move around it to view it from different angles.
-
-Testgun will cause the model to follow the player around and supress the real
-view weapon model.  The default frame 0 of most guns is completely off screen,
-so you will probably have to cycle a couple frames to see it.
-
-"nextframe", "prevframe", "nextskin", and "prevskin" commands will change the
-frame or skin of the testmodel.  These are bound to F5, F6, F7, and F8 in
-q3default.cfg.
-
-If a gun is being tested, the "gun_x", "gun_y", and "gun_z" variables will let
-you adjust the positioning.
-
-Note that none of the model testing features update while the game is paused, so
-it may be convenient to test with deathmatch set to 1 so that bringing down the
-console doesn't pause the game.
-
-=============================================================================
-*/
+static void addtestmodel(void);
 
 /*
-=================
-testmodel_f
-
-Creates an entity in front of the current position, which
-can then be moved around
-=================
-*/
-void
-testmodel_f(void)
-{
-	vec3_t angles;
-
-	memset(&cg.testmodelent, 0, sizeof(cg.testmodelent));
-	if(trap_Argc() < 2)
-		return;
-
-	Q_strncpyz(cg.testmodelname, cgargv(1), MAX_QPATH);
-	cg.testmodelent.hModel = trap_R_RegisterModel(cg.testmodelname);
-
-	if(trap_Argc() == 3){
-		cg.testmodelent.backlerp = atof(cgargv(2));
-		cg.testmodelent.frame = 1;
-		cg.testmodelent.oldframe = 0;
-	}
-	if(!cg.testmodelent.hModel){
-		cgprintf("Can't register model\n");
-		return;
-	}
-
-	vecmad(cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testmodelent.origin);
-
-	angles[PITCH] = 0;
-	angles[YAW] = 180 + cg.refdefviewangles[1];
-	angles[ROLL] = 0;
-
-	AnglesToAxis(angles, cg.testmodelent.axis);
-	cg.testgun = qfalse;
-}
-
-/*
-=================
-testgun_f
-
-Replaces the current view weapon with the given model
-=================
-*/
-void
-testgun_f(void)
-{
-	testmodel_f();
-	cg.testgun = qtrue;
-	cg.testmodelent.renderfx = RF_MINLIGHT | RF_DEPTHHACK | RF_FIRST_PERSON;
-}
-
-void
-testmodelnextframe_f(void)
-{
-	cg.testmodelent.frame++;
-	cgprintf("frame %i\n", cg.testmodelent.frame);
-}
-
-void
-testmodelprevframe_f(void)
-{
-	cg.testmodelent.frame--;
-	if(cg.testmodelent.frame < 0)
-		cg.testmodelent.frame = 0;
-	cgprintf("frame %i\n", cg.testmodelent.frame);
-}
-
-void
-testmodelnextskin_f(void)
-{
-	cg.testmodelent.skinNum++;
-	cgprintf("skin %i\n", cg.testmodelent.skinNum);
-}
-
-void
-testmodelprevskin_f(void)
-{
-	cg.testmodelent.skinNum--;
-	if(cg.testmodelent.skinNum < 0)
-		cg.testmodelent.skinNum = 0;
-	cgprintf("skin %i\n", cg.testmodelent.skinNum);
-}
-
-static void
-addtestmodel(void)
-{
-	int i;
-
-	// re-register the model, because the level may have changed
-	cg.testmodelent.hModel = trap_R_RegisterModel(cg.testmodelname);
-	if(!cg.testmodelent.hModel){
-		cgprintf("Can't register model\n");
-		return;
-	}
-
-	// if testing a gun, set the origin relative to the view origin
-	if(cg.testgun){
-		veccpy(cg.refdef.vieworg, cg.testmodelent.origin);
-		veccpy(cg.refdef.viewaxis[0], cg.testmodelent.axis[0]);
-		veccpy(cg.refdef.viewaxis[1], cg.testmodelent.axis[1]);
-		veccpy(cg.refdef.viewaxis[2], cg.testmodelent.axis[2]);
-
-		// allow the position to be adjusted
-		for(i = 0; i<3; i++){
-			cg.testmodelent.origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
-			cg.testmodelent.origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
-			cg.testmodelent.origin[i] += cg.refdef.viewaxis[2][i] * cg_gun_z.value;
-		}
-	}
-
-	trap_R_AddRefEntityToScene(&cg.testmodelent);
-}
-
-/*
-=================
-calcvrect
-
-Sets the coordinates of the rendered window
-=================
+Sets the coordinates of the rendered window.
 */
 static void
 calcvrect(void)
@@ -213,14 +63,24 @@ calcvrect(void)
 }
 
 /*
-===============
-offsetthirdpersonview
-
-===============
+Smooths stair climbing.
 */
-#define FOCUS_DISTANCE 150
 static void
-offsetthirdpersonview(void)
+stepoffset(void)
+{
+	int timeDelta;
+
+	timeDelta = cg.time - cg.steptime;
+	if(timeDelta < STEP_TIME)
+		cg.refdef.vieworg[2] -= cg.stepchange *
+		   (STEP_TIME - timeDelta) / STEP_TIME;
+}
+
+/*
+Offsets the third-person view.
+*/
+static void
+calc3rdperson(void)
 {
 	playerState_t *pps;
 	vec3_t forward, right, up, view, focusAngles, focusPoint;
@@ -284,36 +144,15 @@ offsetthirdpersonview(void)
 	}
 }
 
-// this causes a compiler bug on mac MrC compiler
-static void
-stepoffset(void)
-{
-	int timeDelta;
-
-	// smooth out stair climbing
-	timeDelta = cg.time - cg.steptime;
-	if(timeDelta < STEP_TIME)
-		cg.refdef.vieworg[2] -= cg.stepchange
-					* (STEP_TIME - timeDelta) / STEP_TIME;
-}
-
 /*
-===============
-offsetfirstpersonview
-
-===============
+Offsets the first-person view for view bob, etc.
 */
 static void
-offsetfirstpersonview(void)
+calc1stperson(void)
 {
-	float *origin;
-	float *angles;
-	float bob;
-	float ratio;
-	float delta;
-	float speed;
-	float f;
-	vec3_t predictedVelocity;
+	float *origin, *angles;
+	float bob, ratio, delta, speed, f;
+	vec3_t predictedvel;
 	int timeDelta;
 
 	if(cg.snap->ps.pm_type == PM_INTERMISSION)
@@ -325,7 +164,6 @@ offsetfirstpersonview(void)
 	// if dead, fix the angle and don't add any kick
 	if(cg.snap->ps.stats[STAT_HEALTH] <= 0){
 		origin[2] += cg.pps.viewheight;
-		return;
 	}
 
 	// add angles based on damage kick
@@ -345,12 +183,12 @@ offsetfirstpersonview(void)
 	}
 
 	// add angles based on velocity
-	veccpy(cg.pps.velocity, predictedVelocity);
+	veccpy(cg.pps.velocity, predictedvel);
 
-	delta = vecdot(predictedVelocity, cg.refdef.viewaxis[0]);
+	delta = vecdot(predictedvel, cg.refdef.viewaxis[0]);
 	angles[PITCH] += delta * cg_runpitch.value;
 
-	delta = vecdot(predictedVelocity, cg.refdef.viewaxis[1]);
+	delta = vecdot(predictedvel, cg.refdef.viewaxis[1]);
 	angles[ROLL] -= delta * cg_runroll.value;
 
 	// add angles based on bob
@@ -396,49 +234,18 @@ offsetfirstpersonview(void)
 		cg.refdef.vieworg[2] += cg.landchange * f;
 	}
 
-	// add step offset
 	stepoffset();
 }
 
-//======================================================================
-
-void
-zoomdown_f(void)
-{
-	if(cg.zoomed)
-		return;
-	cg.zoomed = qtrue;
-	cg.zoomtime = cg.time;
-}
-
-void
-zoomup_f(void)
-{
-	if(!cg.zoomed)
-		return;
-	cg.zoomed = qfalse;
-	cg.zoomtime = cg.time;
-}
-
 /*
-====================
-calcfov
-
 Fixed fov at intermissions, otherwise account for fov variable and zooms.
-====================
 */
-#define WAVE_AMPLITUDE	1
-#define WAVE_FREQUENCY	0.4
-
 static int
 calcfov(void)
 {
-	float x;
-	float phase;
-	float v;
+	float x, phase, v;
 	int contents;
-	float fov_x, fov_y;
-	float zoomFov;
+	float fov_x, fov_y, zoomfov;
 	float f;
 	int inwater;
 
@@ -448,18 +255,18 @@ calcfov(void)
 	else{
 		// user selectable
 		fov_x = MAX(1, MIN(170, cg_fov.value));
-		zoomFov = MAX(1, MIN(170, cg_zoomFov.value));
+		zoomfov = MAX(1, MIN(170, cg_zoomFov.value));
 
 		if(cg.zoomed){
 			f = (cg.time - cg.zoomtime) / (float)ZOOM_TIME;
 			if(f > 1.0)
-				fov_x = zoomFov;
+				fov_x = zoomfov;
 			else
-				fov_x = fov_x + f * (zoomFov - fov_x);
+				fov_x = fov_x + f * (zoomfov - fov_x);
 		}else{
 			f = (cg.time - cg.zoomtime) / (float)ZOOM_TIME;
 			if(f <= 1.0)
-				fov_x = zoomFov + f * (fov_x - zoomFov);
+				fov_x = zoomfov + f * (fov_x - zoomfov);
 		}
 	}
 
@@ -491,12 +298,6 @@ calcfov(void)
 	return inwater;
 }
 
-/*
-===============
-damageblendblob
-
-===============
-*/
 static void
 damageblendblob(void)
 {
@@ -542,11 +343,7 @@ damageblendblob(void)
 }
 
 /*
-===============
-calcviewvalues
-
-Sets cg.refdef view values
-===============
+Sets cg.refdef view values.
 */
 static int
 calcviewvalues(void)
@@ -611,11 +408,9 @@ calcviewvalues(void)
 	}
 
 	if(cg.thirdperson)
-		// back away from character
-		offsetthirdpersonview();
+		calc3rdperson();
 	else
-		// offset for local bobbing and kicks
-		offsetfirstpersonview();
+		calc1stperson();
 
 	// position eye relative to origin
 	AnglesToAxis(cg.refdefviewangles, cg.refdef.viewaxis);
@@ -623,20 +418,13 @@ calcviewvalues(void)
 	if(cg.hyperspace)
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL | RDF_HYPERSPACE;
 
-	// field of view
 	return calcfov();
 }
 
-/*
-=====================
-poweruptimersounds
-=====================
-*/
 static void
 poweruptimersounds(void)
 {
-	int i;
-	int t;
+	int i, t;
 
 	// powerup timers going away
 	for(i = 0; i < MAX_POWERUPS; i++){
@@ -650,11 +438,6 @@ poweruptimersounds(void)
 	}
 }
 
-/*
-=====================
-addbufferedsound
-=====================
-*/
 void
 addbufferedsound(sfxHandle_t sfx)
 {
@@ -666,11 +449,6 @@ addbufferedsound(sfxHandle_t sfx)
 		cg.sndbufout++;
 }
 
-/*
-=====================
-playbufferedsounds
-=====================
-*/
 static void
 playbufferedsounds(void)
 {
@@ -683,17 +461,11 @@ playbufferedsounds(void)
 		}
 }
 
-//=========================================================================
-
 /*
-=================
-drawframe
-
 Generates and draws a game scene and status information at the given time.
-=================
 */
 void
-drawframe(int serverTime, stereoFrame_t stereoView, qboolean demoplayback)
+drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 {
 	int inwater;
 
@@ -771,12 +543,12 @@ drawframe(int serverTime, stereoFrame_t stereoView, qboolean demoplayback)
 	trap_S_Respatialize(cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater);
 
 	// make sure the lagometerSample and frame timing isn't done twice when in stereo
-	if(stereoView != STEREO_RIGHT){
+	if(stereoview != STEREO_RIGHT){
 		cg.frametime = cg.time - cg.oldtime;
 		if(cg.frametime < 0)
 			cg.frametime = 0;
 		cg.oldtime = cg.time;
-		addlagometerframeinfo();
+		lagometerframeinfo();
 	}
 	if(cg_timescale.value != cg_timescaleFadeEnd.value){
 		if(cg_timescale.value < cg_timescaleFadeEnd.value){
@@ -793,7 +565,7 @@ drawframe(int serverTime, stereoFrame_t stereoView, qboolean demoplayback)
 	}
 
 	// actually issue the rendering calls
-	drawactive(stereoView);
+	drawactive(stereoview);
 
 	if(cg_stats.integer)
 		cgprintf("cg.clframe:%i\n", cg.clframe);
@@ -802,4 +574,158 @@ drawframe(int serverTime, stereoFrame_t stereoView, qboolean demoplayback)
 		cgprintf("yaw=%06.2f pitch=%06.2f roll=%06.2f\n", cg.pps.viewangles[YAW],
 		   cg.pps.viewangles[PITCH], cg.pps.viewangles[ROLL]);
 
+}
+
+void
+zoomdown_f(void)
+{
+	if(cg.zoomed)
+		return;
+	cg.zoomed = qtrue;
+	cg.zoomtime = cg.time;
+}
+
+void
+zoomup_f(void)
+{
+	if(!cg.zoomed)
+		return;
+	cg.zoomed = qfalse;
+	cg.zoomtime = cg.time;
+}
+
+/*
+Model viewing can begin with either "testmodel <modelname>" or "testgun
+<modelname>".
+
+The names must be the full pathname after the basedir, like
+"models/weapons/v_launch/tris.md3" or "players/male/tris.md3"
+
+Testmodel will create a fake entity 100 units in front of the current
+view position, directly facing the viewer.  It will remain immobile,
+so you can move around it to view it from different angles.
+
+Testgun will cause the model to follow the player around and supress the
+real view weapon model.  The default frame 0 of most guns is completely
+off screen, so you will probably have to cycle a couple frames to see it.
+
+"nextframe", "prevframe", "nextskin", and "prevskin" commands will
+change the frame or skin of the testmodel.  These are bound to F5, F6,
+F7, and F8 in default.cfg.
+
+If a gun is being tested, the "gun_x", "gun_y", and "gun_z" variables
+will let you adjust the positioning.
+
+Note that none of the model testing features update while the game is
+paused, so it may be convenient to test with deathmatch set to 1 so that
+bringing down the console doesn't pause the game.
+*/
+
+/*
+Creates an entity in front of the current position, which
+can then be moved around
+*/
+void
+testmodel_f(void)
+{
+	vec3_t angles;
+
+	memset(&cg.testmodelent, 0, sizeof(cg.testmodelent));
+	if(trap_Argc() < 2)
+		return;
+
+	Q_strncpyz(cg.testmodelname, cgargv(1), MAX_QPATH);
+	cg.testmodelent.hModel = trap_R_RegisterModel(cg.testmodelname);
+
+	if(trap_Argc() == 3){
+		cg.testmodelent.backlerp = atof(cgargv(2));
+		cg.testmodelent.frame = 1;
+		cg.testmodelent.oldframe = 0;
+	}
+	if(!cg.testmodelent.hModel){
+		cgprintf("Can't register model\n");
+		return;
+	}
+
+	vecmad(cg.refdef.vieworg, 100, cg.refdef.viewaxis[0], cg.testmodelent.origin);
+
+	angles[PITCH] = 0;
+	angles[YAW] = 180 + cg.refdefviewangles[1];
+	angles[ROLL] = 0;
+
+	AnglesToAxis(angles, cg.testmodelent.axis);
+	cg.testgun = qfalse;
+}
+
+/*
+Replaces the current view weapon with the given model
+*/
+void
+testgun_f(void)
+{
+	testmodel_f();
+	cg.testgun = qtrue;
+	cg.testmodelent.renderfx = RF_MINLIGHT | RF_DEPTHHACK | RF_FIRST_PERSON;
+}
+
+void
+testmodelnextframe_f(void)
+{
+	cg.testmodelent.frame++;
+	cgprintf("frame %i\n", cg.testmodelent.frame);
+}
+
+void
+testmodelprevframe_f(void)
+{
+	cg.testmodelent.frame--;
+	if(cg.testmodelent.frame < 0)
+		cg.testmodelent.frame = 0;
+	cgprintf("frame %i\n", cg.testmodelent.frame);
+}
+
+void
+testmodelnextskin_f(void)
+{
+	cg.testmodelent.skinNum++;
+	cgprintf("skin %i\n", cg.testmodelent.skinNum);
+}
+
+void
+testmodelprevskin_f(void)
+{
+	cg.testmodelent.skinNum--;
+	if(cg.testmodelent.skinNum < 0)
+		cg.testmodelent.skinNum = 0;
+	cgprintf("skin %i\n", cg.testmodelent.skinNum);
+}
+
+static void
+addtestmodel(void)
+{
+	int i;
+
+	// re-register the model, because the level may have changed
+	cg.testmodelent.hModel = trap_R_RegisterModel(cg.testmodelname);
+	if(!cg.testmodelent.hModel){
+		cgprintf("Can't register model\n");
+		return;
+	}
+
+	// if testing a gun, set the origin relative to the view origin
+	if(cg.testgun){
+		veccpy(cg.refdef.vieworg, cg.testmodelent.origin);
+		veccpy(cg.refdef.viewaxis[0], cg.testmodelent.axis[0]);
+		veccpy(cg.refdef.viewaxis[1], cg.testmodelent.axis[1]);
+		veccpy(cg.refdef.viewaxis[2], cg.testmodelent.axis[2]);
+
+		// allow the position to be adjusted
+		for(i = 0; i<3; i++){
+			cg.testmodelent.origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
+			cg.testmodelent.origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
+			cg.testmodelent.origin[i] += cg.refdef.viewaxis[2][i] * cg_gun_z.value;
+		}
+	}
+
+	trap_R_AddRefEntityToScene(&cg.testmodelent);
 }

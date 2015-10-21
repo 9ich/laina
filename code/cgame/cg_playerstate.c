@@ -19,110 +19,18 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_playerstate.c -- this file acts on changes in a new playerState_t
-// With normal play, this will be done after local prediction, but when
-// following another player or playing back a demo, it will be checked
-// when the snapshot transitions like all the other entities
+
+/*
+This file acts on changes in a new playerState_t.  With normal play,
+this will be done after local prediction, but when following another
+player or playing back a demo, it will be checked when the snapshot
+transitions like all the other entities.
+*/
 
 #include "cg_local.h"
 
 /*
-==============
-damagefeedback
-==============
-*/
-void
-damagefeedback(int yawByte, int pitchByte, int damage)
-{
-	float left, front, up;
-	float kick;
-	int health;
-	float scale;
-	vec3_t dir;
-	vec3_t angles;
-	float dist;
-	float yaw, pitch;
-
-	// show the attacking player's head and name in corner
-	cg.attackertime = cg.time;
-
-	// the lower on health you are, the greater the view kick will be
-	health = cg.snap->ps.stats[STAT_HEALTH];
-	if(health < 40)
-		scale = 1;
-	else
-		scale = 40.0 / health;
-	kick = damage * scale;
-
-	if(kick < 5)
-		kick = 5;
-	if(kick > 10)
-		kick = 10;
-
-	// if yaw and pitch are both 255, make the damage always centered (falling, etc)
-	if(yawByte == 255 && pitchByte == 255){
-		cg.dmgx = 0;
-		cg.dmgy = 0;
-		cg.vdmgroll = 0;
-		cg.vdmgpitch = -kick;
-	}else{
-		// positional
-		pitch = pitchByte / 255.0 * 360;
-		yaw = yawByte / 255.0 * 360;
-
-		angles[PITCH] = pitch;
-		angles[YAW] = yaw;
-		angles[ROLL] = 0;
-
-		anglevecs(angles, dir, nil, nil);
-		vecsub(vec3_origin, dir, dir);
-
-		front = vecdot(dir, cg.refdef.viewaxis[0]);
-		left = vecdot(dir, cg.refdef.viewaxis[1]);
-		up = vecdot(dir, cg.refdef.viewaxis[2]);
-
-		dir[0] = front;
-		dir[1] = left;
-		dir[2] = 0;
-		dist = veclen(dir);
-		if(dist < 0.1)
-			dist = 0.1f;
-
-		cg.vdmgroll = kick * left;
-
-		cg.vdmgpitch = -kick * front;
-
-		if(front <= 0.1)
-			front = 0.1f;
-		cg.dmgx = -left / front;
-		cg.dmgy = up / dist;
-	}
-
-	// clamp the position
-	if(cg.dmgx > 1.0)
-		cg.dmgx = 1.0;
-	if(cg.dmgx < -1.0)
-		cg.dmgx = -1.0;
-
-	if(cg.dmgy > 1.0)
-		cg.dmgy = 1.0;
-	if(cg.dmgy < -1.0)
-		cg.dmgy = -1.0;
-
-	// don't let the screen flashes vary as much
-	if(kick > 10)
-		kick = 10;
-	cg.dmgval = kick;
-	cg.vdmgtime = cg.time + DAMAGE_TIME;
-	cg.dmgtime = cg.snap->serverTime;
-}
-
-/*
-================
-respawn
-
 A respawn happened this snapshot
-================
 */
 void
 respawn(void)
@@ -141,15 +49,8 @@ respawn(void)
 	cg.displives = cg.snap->ps.persistant[PERS_LIVES];
 }
 
-extern char *eventnames[];
-
-/*
-==============
-checkplayerstateevents
-==============
-*/
 void
-checkplayerstateevents(playerState_t *ps, playerState_t *ops)
+chkpsevents(playerState_t *ps, playerState_t *ops)
 {
 	int i;
 	int event;
@@ -181,13 +82,8 @@ checkplayerstateevents(playerState_t *ps, playerState_t *ops)
 		}
 }
 
-/*
-==================
-chkchangedpredictableevents
-==================
-*/
 void
-chkchangedpredictableevents(playerState_t *ps)
+chkpredictableevents(playerState_t *ps)
 {
 	int i;
 	int event;
@@ -197,10 +93,12 @@ chkchangedpredictableevents(playerState_t *ps)
 	for(i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++){
 		if(i >= cg.eventSequence)
 			continue;
-		// if this event is not further back in than the maximum predictable events we remember
+		// if this event is not further back in than the maximum
+		// predictable events we remember
 		if(i > cg.eventSequence - MAX_PREDICTED_EVENTS)
 			// if the new playerstate event is different from a previously predicted one
-			if(ps->events[i & (MAX_PS_EVENTS-1)] != cg.pevents[i & (MAX_PREDICTED_EVENTS-1)]){
+			if(ps->events[i & (MAX_PS_EVENTS-1)] !=
+			   cg.pevents[i & (MAX_PREDICTED_EVENTS-1)]){
 				event = ps->events[i & (MAX_PS_EVENTS-1)];
 				cent->currstate.event = event;
 				cent->currstate.eventParm = ps->eventParms[i & (MAX_PS_EVENTS-1)];
@@ -214,13 +112,8 @@ chkchangedpredictableevents(playerState_t *ps)
 	}
 }
 
-/*
-==================
-pushReward
-==================
-*/
 static void
-pushReward(sfxHandle_t sfx, qhandle_t shader, int nrewards)
+pushreward(sfxHandle_t sfx, qhandle_t shader, int nrewards)
 {
 	if(cg.rewardstack < (MAX_REWARDSTACK-1)){
 		cg.rewardstack++;
@@ -230,13 +123,8 @@ pushReward(sfxHandle_t sfx, qhandle_t shader, int nrewards)
 	}
 }
 
-/*
-==================
-checklocalsounds
-==================
-*/
 void
-checklocalsounds(playerState_t *ps, playerState_t *ops)
+feedback(playerState_t *ps, playerState_t *ops)
 {
 	int i, highScore, reward;
 	sfxHandle_t sfx;
@@ -291,35 +179,35 @@ checklocalsounds(playerState_t *ps, playerState_t *ops)
 
 	reward = qfalse;
 	if(ps->persistant[PERS_CAPTURES] != ops->persistant[PERS_CAPTURES]){
-		pushReward(cgs.media.captureAwardSound, cgs.media.medalCapture, ps->persistant[PERS_CAPTURES]);
+		pushreward(cgs.media.captureAwardSound, cgs.media.medalCapture, ps->persistant[PERS_CAPTURES]);
 		reward = qtrue;
 		//Com_Printf("capture\n");
 	}
 	if(ps->persistant[PERS_IMPRESSIVE_COUNT] != ops->persistant[PERS_IMPRESSIVE_COUNT]){
 		sfx = cgs.media.impressiveSound;
-		pushReward(sfx, cgs.media.medalImpressive, ps->persistant[PERS_IMPRESSIVE_COUNT]);
+		pushreward(sfx, cgs.media.medalImpressive, ps->persistant[PERS_IMPRESSIVE_COUNT]);
 		reward = qtrue;
 		//Com_Printf("impressive\n");
 	}
 	if(ps->persistant[PERS_EXCELLENT_COUNT] != ops->persistant[PERS_EXCELLENT_COUNT]){
 		sfx = cgs.media.excellentSound;
-		pushReward(sfx, cgs.media.medalExcellent, ps->persistant[PERS_EXCELLENT_COUNT]);
+		pushreward(sfx, cgs.media.medalExcellent, ps->persistant[PERS_EXCELLENT_COUNT]);
 		reward = qtrue;
 		//Com_Printf("excellent\n");
 	}
 	if(ps->persistant[PERS_GAUNTLET_FRAG_COUNT] != ops->persistant[PERS_GAUNTLET_FRAG_COUNT]){
 		sfx = cgs.media.humiliationSound;
-		pushReward(sfx, cgs.media.medalGauntlet, ps->persistant[PERS_GAUNTLET_FRAG_COUNT]);
+		pushreward(sfx, cgs.media.medalGauntlet, ps->persistant[PERS_GAUNTLET_FRAG_COUNT]);
 		reward = qtrue;
 		//Com_Printf("gauntlet frag\n");
 	}
 	if(ps->persistant[PERS_DEFEND_COUNT] != ops->persistant[PERS_DEFEND_COUNT]){
-		pushReward(cgs.media.defendSound, cgs.media.medalDefend, ps->persistant[PERS_DEFEND_COUNT]);
+		pushreward(cgs.media.defendSound, cgs.media.medalDefend, ps->persistant[PERS_DEFEND_COUNT]);
 		reward = qtrue;
 		//Com_Printf("defend\n");
 	}
 	if(ps->persistant[PERS_ASSIST_COUNT] != ops->persistant[PERS_ASSIST_COUNT]){
-		pushReward(cgs.media.assistSound, cgs.media.medalAssist, ps->persistant[PERS_ASSIST_COUNT]);
+		pushreward(cgs.media.assistSound, cgs.media.medalAssist, ps->persistant[PERS_ASSIST_COUNT]);
 		reward = qtrue;
 		//Com_Printf("assist\n");
 	}
@@ -396,14 +284,91 @@ checklocalsounds(playerState_t *ps, playerState_t *ops)
 	}
 }
 
-/*
-===============
-transitionplayerstate
-
-===============
-*/
 void
-transitionplayerstate(playerState_t *ps, playerState_t *ops)
+damagefeedback(int yawbyte, int pitchbyte, int damage)
+{
+	float left, front, up, kick;
+	int health;
+	float scale;
+	vec3_t dir, angles;
+	float dist, yaw, pitch;
+
+	// show the attacking player's head and name in corner
+	cg.attackertime = cg.time;
+
+	// the lower on health you are, the greater the view kick will be
+	health = cg.snap->ps.stats[STAT_HEALTH];
+	if(health < 40)
+		scale = 1;
+	else
+		scale = 40.0 / health;
+	kick = damage * scale;
+
+	if(kick < 5)
+		kick = 5;
+	if(kick > 10)
+		kick = 10;
+
+	// if yaw and pitch are both 255, make the damage always centered (falling, etc)
+	if(yawbyte == 255 && pitchbyte == 255){
+		cg.dmgx = 0;
+		cg.dmgy = 0;
+		cg.vdmgroll = 0;
+		cg.vdmgpitch = -kick;
+	}else{
+		// positional
+		pitch = pitchbyte / 255.0 * 360;
+		yaw = yawbyte / 255.0 * 360;
+
+		angles[PITCH] = pitch;
+		angles[YAW] = yaw;
+		angles[ROLL] = 0;
+
+		anglevecs(angles, dir, nil, nil);
+		vecsub(vec3_origin, dir, dir);
+
+		front = vecdot(dir, cg.refdef.viewaxis[0]);
+		left = vecdot(dir, cg.refdef.viewaxis[1]);
+		up = vecdot(dir, cg.refdef.viewaxis[2]);
+
+		dir[0] = front;
+		dir[1] = left;
+		dir[2] = 0;
+		dist = veclen(dir);
+		if(dist < 0.1)
+			dist = 0.1f;
+
+		cg.vdmgroll = kick * left;
+
+		cg.vdmgpitch = -kick * front;
+
+		if(front <= 0.1)
+			front = 0.1f;
+		cg.dmgx = -left / front;
+		cg.dmgy = up / dist;
+	}
+
+	// clamp the position
+	if(cg.dmgx > 1.0)
+		cg.dmgx = 1.0;
+	if(cg.dmgx < -1.0)
+		cg.dmgx = -1.0;
+
+	if(cg.dmgy > 1.0)
+		cg.dmgy = 1.0;
+	if(cg.dmgy < -1.0)
+		cg.dmgy = -1.0;
+
+	// don't let the screen flashes vary as much
+	if(kick > 10)
+		kick = 10;
+	cg.dmgval = kick;
+	cg.vdmgtime = cg.time + DAMAGE_TIME;
+	cg.dmgtime = cg.snap->serverTime;
+}
+
+void
+pstransition(playerState_t *ps, playerState_t *ops)
 {
 	// check for changing follow mode
 	if(ps->clientNum != ops->clientNum){
@@ -427,10 +392,10 @@ transitionplayerstate(playerState_t *ps, playerState_t *ops)
 
 	if(cg.snap->ps.pm_type != PM_INTERMISSION
 	   && ps->persistant[PERS_TEAM] != TEAM_SPECTATOR)
-		checklocalsounds(ps, ops);
+		feedback(ps, ops);
 
 	// run events
-	checkplayerstateevents(ps, ops);
+	chkpsevents(ps, ops);
 
 	// smooth the ducking viewheight change
 	if(ps->viewheight != ops->viewheight){

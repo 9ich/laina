@@ -19,19 +19,12 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// cg_event.c -- handle entity events at snapshot or playerstate transitions
+// Handle entity events at snapshot or playerstate transitions.
 
 #include "cg_local.h"
 
-// for the voice chats
-//==========================================================================
-
 /*
-===================
-placestr
-
 Also called by scoreboard drawing
-===================
 */
 const char      *
 placestr(int rank)
@@ -70,11 +63,6 @@ placestr(int rank)
 	return str;
 }
 
-/*
-=============
-obituary
-=============
-*/
 static void
 obituary(entityState_t *ent)
 {
@@ -289,8 +277,6 @@ obituary(entityState_t *ent)
 	cgprintf("%s died.\n", targetName);
 }
 
-//==========================================================================
-
 static void
 useitem(cent_t *cent)
 {
@@ -303,9 +289,9 @@ A new item was picked up this frame.
 static void
 itempickup(int itemNum)
 {
-	cg.itemPickup = itemNum;
-	cg.itemPickupTime = cg.time;
-	cg.itemPickupBlendTime = cg.time;
+	cg.itempkup = itemNum;
+	cg.itempkuptime = cg.time;
+	cg.itempkupblendtime = cg.time;
 	// see if it should be the grabbed weapon
 	if(bg_itemlist[itemNum].type == IT_WEAPON)
 		// select it immediately
@@ -316,11 +302,7 @@ itempickup(int itemNum)
 }
 
 /*
-================
-waterlevel
-
-Returns waterlevel for entity origin
-================
+Returns waterlevel for entity origin.
 */
 int
 waterlevel(cent_t *cent)
@@ -362,11 +344,7 @@ waterlevel(cent_t *cent)
 }
 
 /*
-================
-painevent
-
-Also called by playerstate transition
-================
+Also called by playerstate transition.
 */
 void
 painevent(cent_t *cent, int health)
@@ -399,12 +377,8 @@ painevent(cent_t *cent, int health)
 }
 
 /*
-==============
-entevent
-
 An entity has an event value
-also called by checkplayerstateevents
-==============
+also called by chkpsevents
 */
 #define DEBUGNAME(x) if(cg_debugEvents.integer){cgprintf("%22s", x); }
 void
@@ -869,7 +843,7 @@ entevent(cent_t *cent, vec3_t position)
 			break;
 
 		case GTS_RED_TAKEN:	// CTF: red team took blue flag, 1FCTF: blue team took the neutral flag
-			// if this player picked up the flag then a sound is played in checklocalsounds
+			// if this player picked up the flag then a sound is played in feedback
 			if(cg.snap->ps.powerups[PW_BLUEFLAG] || cg.snap->ps.powerups[PW_NEUTRALFLAG]){
 			}else{
 				if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE){
@@ -880,7 +854,7 @@ entevent(cent_t *cent, vec3_t position)
 			}
 			break;
 		case GTS_BLUE_TAKEN:	// CTF: blue team took the red flag, 1FCTF red team took the neutral flag
-			// if this player picked up the flag then a sound is played in checklocalsounds
+			// if this player picked up the flag then a sound is played in feedback
 			if(cg.snap->ps.powerups[PW_REDFLAG] || cg.snap->ps.powerups[PW_NEUTRALFLAG]){
 			}else{
 				if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED){
@@ -913,7 +887,7 @@ entevent(cent_t *cent, vec3_t position)
 	}
 
 	case EV_PAIN:
-		// local player sounds are triggered in checklocalsounds,
+		// local player sounds are triggered in feedback,
 		// so ignore events on the player
 		DEBUGNAME("EV_PAIN");
 		if(cent->currstate.number != cg.snap->ps.clientNum)
@@ -997,12 +971,6 @@ entevent(cent_t *cent, vec3_t position)
 		cgprintf(" (%02i) ent=%03i parm=%i\n", event, es->number, es->eventParm);
 }
 
-/*
-==============
-chkevents
-
-==============
-*/
 void
 chkevents(cent_t *cent)
 {

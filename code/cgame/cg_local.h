@@ -54,8 +54,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define PULSE_SCALE			1.5	// amount to scale up the icons when activating
 
-#define MAXPICKUPANIMS			128	// stack capacity for item pickups flying across hud
-#define PICKUPANIMTIME			150
+#define MAXPKUPANIMS			128	// stack capacity for item pickups flying across hud
+#define PKUPANIMTIME			150
 
 #define MAX_STEP_CHANGE			32
 
@@ -124,7 +124,7 @@ typedef enum
 typedef struct
 {
 	int		oldframe;
-	int		oldFrameTime;	// time when ->oldframe was exactly on
+	int		oldframetime;	// time when ->oldframe was exactly on
 
 	int		frame;
 	int		frametime;	// time when ->frame will be exactly on
@@ -326,8 +326,8 @@ typedef struct
 	vec3_t		color1;
 	vec3_t		color2;
 
-	byte		c1RGBA[4];
-	byte		c2RGBA[4];
+	byte		c1rgba[4];
+	byte		c2rgba[4];
 
 	int		score;		// updated by score servercmds
 	int		location;	// location index for team mode
@@ -342,12 +342,6 @@ typedef struct
 	qboolean	teamleader;	// true when this is a team leader
 
 	int		powerups;	// so can display quad/flag status
-
-	int		medkitUsageTime;
-	int		invulnerabilityStartTime;
-	int		invulnerabilityStopTime;
-
-	int		breathPuffTime;
 
 	// when clientinfo is changed, the loading of models/skins/sounds
 	// can be deferred until you are dead, to prevent hitches in
@@ -392,21 +386,21 @@ typedef struct weapinfo_s
 	qboolean	registered;
 	item_t		*item;
 
-	qhandle_t	handsModel;	// the hands don't actually draw, they just position the weapon
-	qhandle_t	weaponModel;
-	qhandle_t	barrelModel;
-	qhandle_t	flashModel;
+	qhandle_t	handsmodel;	// the hands don't actually draw, they just position the weapon
+	qhandle_t	model;
+	qhandle_t	barrelmodel;
+	qhandle_t	flashmodel;
 
-	vec3_t		weaponMidpoint;	// so it will rotate centered instead of by tag
+	vec3_t		midpoint;	// so it will rotate centered instead of by tag
 
-	float		flashDlight;
-	vec3_t		flashDlightColor;
-	sfxHandle_t	flashSound[4];	// fast firing weapons randomly choose
+	float		flashdlight;
+	vec3_t		flashcolor;
+	sfxHandle_t	flashsnd[4];	// fast firing weapons randomly choose
 
-	qhandle_t	weaponIcon;
-	qhandle_t	ammoIcon;
+	qhandle_t	icon;
+	qhandle_t	ammoicon;
 
-	qhandle_t	ammoModel;
+	qhandle_t	ammomodel;
 
 	qhandle_t	missilemodel;
 	sfxHandle_t	missilesound;
@@ -415,12 +409,12 @@ typedef struct weapinfo_s
 	vec3_t		missilelightcolor;
 	int		missilerenderfx;
 
-	void (*ejectBrassFunc)(cent_t *);
+	void (*ejectbrass)(cent_t *);
 
-	float		trailRadius;
-	float		wiTrailTime;
+	float		trailradius;
+	float		trailtime;
 
-	sfxHandle_t	readysound;
+	sfxHandle_t	rdysound;
 	sfxHandle_t	firingsound;
 } weapinfo_t;
 
@@ -522,7 +516,7 @@ typedef struct
 
 	// auto rotating items
 	vec3_t		autoangles;
-	vec3_t		autoAxis[3];
+	vec3_t		autoaxis[3];
 	vec3_t		autoanglesfast;
 	vec3_t		autoaxisfast[3];
 
@@ -600,15 +594,15 @@ typedef struct
 
 	//==========================
 
-	int	itemPickup;
-	int	itemPickupTime;
-	int	itemPickupBlendTime;	// the pulse around the crosshair is timed seperately
+	int	itempkup;
+	int	itempkuptime;
+	int	itempkupblendtime;	// the pulse around the crosshair is timed seperately
 
 	// special item pickups that fly across the screen
-	pickupanim_t	pickupanimstk[MAXPICKUPANIMS];
-	int	pickupanimtime;
-	int	pickupanimstarttime;
-	int	npickupanims;
+	pickupanim_t	pkupanimstk[MAXPKUPANIMS];
+	int	pkupanimtime;
+	int	pkupanimstarttime;
+	int	npkupanims;
 
 	// stats that can lag behind the real stats slightly
 	// for pickupanims
@@ -622,15 +616,6 @@ typedef struct
 	// blend blobs
 	float	dmgtime;
 	float	dmgx, dmgy, dmgval;
-
-	// status bar head
-	float	headYaw;
-	float	headEndPitch;
-	float	headEndYaw;
-	int	headEndTime;
-	float	headStartPitch;
-	float	headStartYaw;
-	int	headStartTime;
 
 	// view movement
 	float	vdmgtime;
@@ -891,16 +876,11 @@ typedef struct
 	sfxHandle_t	countFightSound;
 	sfxHandle_t	countPrepareSound;
 
-
 	sfxHandle_t	regenSound;
 	sfxHandle_t	protectSound;
 	sfxHandle_t	n_healthSound;
 	sfxHandle_t	hgrenb1aSound;
 	sfxHandle_t	hgrenb2aSound;
-	sfxHandle_t	wstbimplSound;
-	sfxHandle_t	wstbimpmSound;
-	sfxHandle_t	wstbimpdSound;
-	sfxHandle_t	wstbactvSound;
 } cgmedia_t;
 
 // The client game static (cgs) structure hold everything
@@ -1124,7 +1104,7 @@ void		zoomdown_f(void);
 void		zoomup_f(void);
 void		addbufferedsound(sfxHandle_t sfx);
 
-void		drawframe(int serverTime, stereoFrame_t stereoView, qboolean demoplayback);
+void		drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback);
 
 // cg_drawtools.c
 void		adjustcoords(float *x, float *y, float *w, float *h);
@@ -1161,11 +1141,11 @@ extern char syschat[256];
 extern char teamchat1[256];
 extern char teamchat2[256];
 
-void		addlagometerframeinfo(void);
-void		addlagometersnapinfo(snapshot_t *snap);
+void		lagometerframeinfo(void);
+void		lagometersnapinfo(snapshot_t *snap);
 void		centerprint(const char *str, int y, int charWidth);
 void		drawhead(float x, float y, float w, float h, int clientNum, vec3_t headAngles);
-void		drawactive(stereoFrame_t stereoView);
+void		drawactive(stereoFrame_t stereoview);
 void		drawflag(float x, float y, float w, float h, int team, qboolean force2D);
 void		drawteambg(int x, int y, int w, int h, float alpha, int team);
 qboolean	ownerdrawvisible(int flags);
@@ -1291,8 +1271,8 @@ void		shaderstatechanged(void);
 
 // cg_playerstate.c
 void	respawn(void);
-void	transitionplayerstate(playerState_t *ps, playerState_t *ops);
-void	chkchangedpredictableevents(playerState_t *ps);
+void	pstransition(playerState_t *ps, playerState_t *ops);
+void	chkpredictableevents(playerState_t *ps);
 
 //===============================================
 

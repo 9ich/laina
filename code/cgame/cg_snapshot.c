@@ -179,7 +179,7 @@ transitionsnapshot(void)
 		// reason, then the client events and view changes will be issued now
 		if(cg.demoplayback || (cg.snap->ps.pm_flags & PMF_FOLLOW)
 		   || cg_nopredict.integer || cg_synchronousClients.integer)
-			transitionplayerstate(ps, ops);
+			pstransition(ps, ops);
 	}
 }
 
@@ -275,7 +275,7 @@ readnextsnapshot(void)
 
 		// if it succeeded, return
 		if(r){
-			addlagometersnapinfo(dest);
+			lagometersnapinfo(dest);
 			return dest;
 		}
 
@@ -285,7 +285,7 @@ readnextsnapshot(void)
 		// buffer in the client system.
 
 		// record as a dropped packet
-		addlagometersnapinfo(nil);
+		lagometersnapinfo(nil);
 
 		// If there are additional snapshots, continue trying to
 		// read them.

@@ -819,18 +819,18 @@ newclientinfo(int clientNum)
 	v = Info_ValueForKey(configstring, "c1");
 	colorfromstring(v, newInfo.color1);
 
-	newInfo.c1RGBA[0] = 255 * newInfo.color1[0];
-	newInfo.c1RGBA[1] = 255 * newInfo.color1[1];
-	newInfo.c1RGBA[2] = 255 * newInfo.color1[2];
-	newInfo.c1RGBA[3] = 255;
+	newInfo.c1rgba[0] = 255 * newInfo.color1[0];
+	newInfo.c1rgba[1] = 255 * newInfo.color1[1];
+	newInfo.c1rgba[2] = 255 * newInfo.color1[2];
+	newInfo.c1rgba[3] = 255;
 
 	v = Info_ValueForKey(configstring, "c2");
 	colorfromstring(v, newInfo.color2);
 
-	newInfo.c2RGBA[0] = 255 * newInfo.color2[0];
-	newInfo.c2RGBA[1] = 255 * newInfo.color2[1];
-	newInfo.c2RGBA[2] = 255 * newInfo.color2[2];
-	newInfo.c2RGBA[3] = 255;
+	newInfo.c2rgba[0] = 255 * newInfo.color2[0];
+	newInfo.c2rgba[1] = 255 * newInfo.color2[1];
+	newInfo.c2rgba[2] = 255 * newInfo.color2[2];
+	newInfo.c2rgba[3] = 255;
 
 	// bot skill
 	v = Info_ValueForKey(configstring, "skill");

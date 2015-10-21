@@ -308,7 +308,7 @@ doitem(cent_t *cent)
 		AxisCopy(cg.autoaxisfast, ent.axis);
 	}else{
 		veccpy(cg.autoangles, cent->lerpangles);
-		AxisCopy(cg.autoAxis, ent.axis);
+		AxisCopy(cg.autoaxis, ent.axis);
 	}
 
 	wi = nil;
@@ -318,24 +318,24 @@ doitem(cent_t *cent)
 	if(item->type == IT_WEAPON){
 		wi = &cg_weapons[item->tag];
 		cent->lerporigin[0] -=
-			wi->weaponMidpoint[0] * ent.axis[0][0] +
-			wi->weaponMidpoint[1] * ent.axis[1][0] +
-			wi->weaponMidpoint[2] * ent.axis[2][0];
+			wi->midpoint[0] * ent.axis[0][0] +
+			wi->midpoint[1] * ent.axis[1][0] +
+			wi->midpoint[2] * ent.axis[2][0];
 		cent->lerporigin[1] -=
-			wi->weaponMidpoint[0] * ent.axis[0][1] +
-			wi->weaponMidpoint[1] * ent.axis[1][1] +
-			wi->weaponMidpoint[2] * ent.axis[2][1];
+			wi->midpoint[0] * ent.axis[0][1] +
+			wi->midpoint[1] * ent.axis[1][1] +
+			wi->midpoint[2] * ent.axis[2][1];
 		cent->lerporigin[2] -=
-			wi->weaponMidpoint[0] * ent.axis[0][2] +
-			wi->weaponMidpoint[1] * ent.axis[1][2] +
-			wi->weaponMidpoint[2] * ent.axis[2][2];
+			wi->midpoint[0] * ent.axis[0][2] +
+			wi->midpoint[1] * ent.axis[1][2] +
+			wi->midpoint[2] * ent.axis[2][2];
 
 		cent->lerporigin[2] += 8;	// an extra height boost
 	}
 
 	if(item->type == IT_WEAPON && item->tag == WP_RAILGUN){
 		clientinfo_t *ci = &cgs.clientinfo[cg.snap->ps.clientNum];
-		Byte4Copy(ci->c1RGBA, ent.shaderRGBA);
+		Byte4Copy(ci->c1rgba, ent.shaderRGBA);
 	}
 
 	ent.hModel = cg_items[es->modelindex].models[0];
@@ -950,7 +950,7 @@ addpacketents(void)
 	cg.autoanglesfast[1] = (cg.time & 1023) * 360 / 1024.0f;
 	cg.autoanglesfast[2] = 0;
 
-	AnglesToAxis(cg.autoangles, cg.autoAxis);
+	AnglesToAxis(cg.autoangles, cg.autoaxis);
 	AnglesToAxis(cg.autoanglesfast, cg.autoaxisfast);
 
 	// generate and add the entity from the playerstate

@@ -532,9 +532,9 @@ queuepickupanim(const char *classname)
 	item_t *it;
 	int i;
 
-	i = cg.npickupanims;
+	i = cg.npkupanims;
 
-	if(i >= MAXPICKUPANIMS)
+	if(i >= MAXPKUPANIMS)
 		return;
 	for(it = bg_itemlist + 1; it->classname != nil; it++)
 		if(Q_stricmp(it->classname, classname) == 0)
@@ -544,22 +544,22 @@ queuepickupanim(const char *classname)
 
 	switch(it->type){
 	case IT_TOKEN:
-		vecset(cg.pickupanimstk[i].beg, 0, 310, 260);
-		vecset(cg.pickupanimstk[i].end, 0, 60, 60);
+		vecset(cg.pkupanimstk[i].beg, 0, 310, 260);
+		vecset(cg.pkupanimstk[i].end, 0, 60, 60);
 		break;
 	case IT_LIFE:
-		vecset(cg.pickupanimstk[i].beg, 0, 330, 260);
-		vecset(cg.pickupanimstk[i].end, 0, 580, 60);
+		vecset(cg.pkupanimstk[i].beg, 0, 330, 260);
+		vecset(cg.pkupanimstk[i].end, 0, 580, 60);
 		break;
 	case IT_KEY:
-		vecset(cg.pickupanimstk[i].beg, 0, 310, 260);
-		vecset(cg.pickupanimstk[i].end, 0, 60, 180);
+		vecset(cg.pkupanimstk[i].beg, 0, 310, 260);
+		vecset(cg.pkupanimstk[i].end, 0, 60, 180);
 		break;
 	default:
 		return;
 	}
-	cg.pickupanimstk[i].item = it - bg_itemlist;
-	cg.npickupanims++;
+	cg.pkupanimstk[i].item = it - bg_itemlist;
+	cg.npkupanims++;
 }
 
 static void
@@ -570,18 +570,18 @@ drawpickupanim(void)
 	vec3_t pos, viewportpos, angles;
 	float t;
 
-	if(cg.npickupanims == 0){
+	if(cg.npkupanims == 0){
 		// set display stats just in case the stack was ever full,
 		// causing us to miss increments
 		cg.disptokens = cg.snap->ps.stats[STAT_TOKENS];
 		cg.displives = cg.snap->ps.persistant[PERS_LIVES];
 		return;
 	}
-	if(cg.time > cg.pickupanimtime){
-		if(cg.pickupanimtime != 0){
+	if(cg.time > cg.pkupanimtime){
+		if(cg.pkupanimtime != 0){
 			// end of anim
-			cg.npickupanims--;
-			pa = &cg.pickupanimstk[cg.npickupanims];
+			cg.npkupanims--;
+			pa = &cg.pkupanimstk[cg.npkupanims];
 
 			// increment the stat displays
 			switch(bg_itemlist[pa->item].type){
@@ -602,22 +602,22 @@ drawpickupanim(void)
 			   CHAN_ANNOUNCER);
 			}
 		}	
-		cg.pickupanimstarttime = cg.time;
-		cg.pickupanimtime = cg.time + PICKUPANIMTIME;
-		if(cg.npickupanims == 0){
-			cg.pickupanimtime = 0;
+		cg.pkupanimstarttime = cg.time;
+		cg.pkupanimtime = cg.time + PKUPANIMTIME;
+		if(cg.npkupanims == 0){
+			cg.pkupanimtime = 0;
 			return;
 		}
 	}
 
-	pa = &cg.pickupanimstk[cg.npickupanims-1];
+	pa = &cg.pkupanimstk[cg.npkupanims-1];
 
 	// some items may not have had their data registered yet
 	if(cg_items[pa->item].models[0] == 0)
 		registeritemgfx(pa->item);
 
 	model = cg_items[pa->item].models[0];
-	t = 1 - (cg.pickupanimtime - cg.time) / (float)(cg.pickupanimtime - cg.pickupanimstarttime);
+	t = 1 - (cg.pkupanimtime - cg.time) / (float)(cg.pkupanimtime - cg.pkupanimstarttime);
 	t = MIN(1.0f, t);
 	pos[0] = 0;
 	pos[1] = pa->beg[1] + t * (pa->end[1] - pa->beg[1]);
@@ -625,7 +625,7 @@ drawpickupanim(void)
 	vecset(viewportpos, 200, 0, 0);
 	vecclear(angles);
 	// quick rotation
-	angles[YAW] = (cg.pickupanimtime - (cg.time & 255)) * 360 / 256.0f;
+	angles[YAW] = (cg.pkupanimtime - (cg.time & 255)) * 360 / 256.0f;
 	drawmodel(pos[1] - ICON_SIZE*1.5f, pos[2] - ICON_SIZE*1.5f,
 	   ICON_SIZE*3, ICON_SIZE*3, model, 0, viewportpos, angles);
 }
@@ -755,7 +755,7 @@ lagometer
 Adds the current interpolate / extrapolate bar for this frame
 */
 void
-addlagometerframeinfo(void)
+lagometerframeinfo(void)
 {
 	int offset;
 
@@ -771,7 +771,7 @@ the number of snapshots that were dropped before it.
 Pass nil for a dropped packet.
 */
 void
-addlagometersnapinfo(snapshot_t *snap)
+lagometersnapinfo(snapshot_t *snap)
 {
 	// dropped packet
 	if(!snap){
@@ -1028,7 +1028,7 @@ drawxhair(void)
 	w = h = cg_crosshairSize.value;
 
 	// pulse the size of the crosshair when picking up items
-	f = cg.time - cg.itemPickupBlendTime;
+	f = cg.time - cg.itempkupblendtime;
 	if(f > 0 && f < ITEM_BLOB_TIME){
 		f /= ITEM_BLOB_TIME;
 		w *= (1 + f);
@@ -1075,7 +1075,7 @@ drawxhair3d(void)
 	w = cg_crosshairSize.value;
 
 	// pulse the size of the crosshair when picking up items
-	f = cg.time - cg.itemPickupBlendTime;
+	f = cg.time - cg.itempkupblendtime;
 	if(f > 0 && f < ITEM_BLOB_TIME){
 		f /= ITEM_BLOB_TIME;
 		w *= (1 + f);
@@ -1474,7 +1474,7 @@ draw2d(stereoFrame_t stereoFrame)
 Perform all drawing needed to completely fill the screen
 */
 void
-drawactive(stereoFrame_t stereoView)
+drawactive(stereoFrame_t stereoview)
 {
 	// optionally draw the info screen instead
 	if(!cg.snap){
@@ -1485,12 +1485,12 @@ drawactive(stereoFrame_t stereoView)
 	// clear around the rendered view if sized down
 	tileclear();
 
-	if(stereoView != STEREO_CENTER)
+	if(stereoview != STEREO_CENTER)
 		drawxhair3d();
 
 	// draw 3D view
 	trap_R_RenderScene(&cg.refdef);
 
 	// draw status bar and other floating elements
-	draw2d(stereoView);
+	draw2d(stereoview);
 }
