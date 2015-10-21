@@ -502,7 +502,7 @@ shutdowngame(int restart)
 Soft re-initialisation of the level.
 
 Called on singleplayer respawn.  Respawns anything with levelrespawn !=
-nil, i.e. ordinary items and crates.
+nil, i.e. ordinary items and crates.  Frees dropped items.
 */
 void
 levelrespawn(void)
@@ -519,11 +519,13 @@ levelrespawn(void)
 	level.soundentframe = 0;
 
 	for(i = 0, e = level.entities; i < level.nentities; i++, e++){
-		if(!e->inuse || e->levelrespawn == nil ||
-		   e->ckpoint != level.checkpoint){
+		if(!e->inuse)
 			continue;
-		}
-		e->levelrespawn(e);
+		if(e->flags & FL_DROPPED_ITEM)
+			entfree(e);
+		else if(e->levelrespawn != nil &&
+		   e->ckpoint == level.checkpoint)
+			e->levelrespawn(e);
 	}
 }
 
