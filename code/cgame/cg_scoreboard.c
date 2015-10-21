@@ -136,36 +136,14 @@ drawclientscore(int y, score_t *score, float *color, float fade, qboolean largeF
 	// highlight your position
 	if(score->client == cg.snap->ps.clientNum){
 		float hcolor[4];
-		int rank;
 
 		localclient = qtrue;
-
-		if(cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR
-		   || cgs.gametype >= GT_TEAM)
-			rank = -1;
-		else
-			rank = cg.snap->ps.persistant[PERS_RANK] & ~RANK_TIED_FLAG;
-		if(rank == 0){
-			hcolor[0] = 0;
-			hcolor[1] = 0;
-			hcolor[2] = 0.7f;
-		}else if(rank == 1){
-			hcolor[0] = 0.7f;
-			hcolor[1] = 0;
-			hcolor[2] = 0;
-		}else if(rank == 2){
-			hcolor[0] = 0.7f;
-			hcolor[1] = 0.7f;
-			hcolor[2] = 0;
-		}else{
-			hcolor[0] = 0.7f;
-			hcolor[1] = 0.7f;
-			hcolor[2] = 0.7f;
-		}
-
+		hcolor[0] = 0.99f;
+		hcolor[1] = 0.5f;
+		hcolor[2] = 0;
 		hcolor[3] = fade * 0.7;
 		fillrect(SB_SCORELINE_X + BIGCHAR_WIDTH + (SB_RATING_WIDTH / 2), y,
-			    640 - SB_SCORELINE_X - BIGCHAR_WIDTH, BIGCHAR_HEIGHT+1, hcolor);
+		   640 - SB_SCORELINE_X - BIGCHAR_WIDTH, BIGCHAR_HEIGHT+1, hcolor);
 	}
 
 	drawbigstr(SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, fade);

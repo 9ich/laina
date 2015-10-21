@@ -39,11 +39,11 @@ placestr(int rank)
 		t = "";
 
 	if(rank == 1)
-		s = S_COLOR_BLUE "1st" S_COLOR_WHITE;	// draw in blue
+		s = "1st";
 	else if(rank == 2)
-		s = S_COLOR_RED "2nd" S_COLOR_WHITE;	// draw in red
+		s = "2nd";
 	else if(rank == 3)
-		s = S_COLOR_YELLOW "3rd" S_COLOR_WHITE;	// draw in yellow
+		s = "3rd";
 	else if(rank == 11)
 		s = "11th";
 	else if(rank == 12)
