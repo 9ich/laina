@@ -45,6 +45,7 @@ static int forced_unload;
 
 #define	MAX_VM		3
 vm_t	vmTable[MAX_VM];
+cvar_t	*vm_dump;
 
 
 void VM_VmInfo_f( void );
@@ -73,6 +74,7 @@ void VM_Init( void ) {
 	Cvar_Get( "vm_cgame", "2", CVAR_ARCHIVE );	// !@# SHIP WITH SET TO 2
 	Cvar_Get( "vm_game", "2", CVAR_ARCHIVE );	// !@# SHIP WITH SET TO 2
 	Cvar_Get( "vm_ui", "2", CVAR_ARCHIVE );		// !@# SHIP WITH SET TO 2
+	vm_dump = Cvar_Get( "vm_dump", "0", 0 );
 
 	Cmd_AddCommand ("vmprofile", VM_VmProfile_f );
 	Cmd_AddCommand ("vminfo", VM_VmInfo_f );

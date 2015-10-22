@@ -1677,6 +1677,14 @@ void VM_Compile(vm_t *vm, vmHeader_t *header)
 	}
 #endif
 
+	if(vm_dump->integer){
+		char fname[MAX_QPATH];
+
+		Com_sprintf(fname, sizeof fname, "dump.%s%s.bin", vm->name,
+		   ARCH_STRING);
+		FS_WriteFile(fname, buf, compiledOfs);
+	}
+
 	Z_Free( code );
 	Z_Free( buf );
 	Z_Free( jused );

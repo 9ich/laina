@@ -186,7 +186,8 @@ struct vm_s {
 
 
 extern	vm_t	*currentVM;
-extern	int		vm_debugLevel;
+extern	int	vm_debugLevel;
+extern	cvar_t	*vm_dump;		// dump recompiled instructions when vm_* cvars = 2
 
 void VM_Compile( vm_t *vm, vmHeader_t *header );
 int	VM_CallCompiled( vm_t *vm, int *args );
