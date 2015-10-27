@@ -170,9 +170,6 @@ because the call to touchcrate already predicts one.
 static void
 crate_touch(ent_t *self, ent_t *other, trace_t *trace)
 {
-	vec3_t vel;
-	int i, it;
-
 	if(other->client == nil)
 		return;
 	if(!touchcrate(&other->client->ps, &self->s))

@@ -43,7 +43,7 @@ void
 loadingclient(int clientNum)
 {
 	const char *info;
-	char *skin, personality[MAX_QPATH];
+	char personality[MAX_QPATH];
 
 	info = getconfigstr(CS_PLAYERS + clientNum);
 	Q_strncpyz(personality, Info_ValueForKey(info, "n"), sizeof(personality));

@@ -156,7 +156,7 @@ drawconnectscreen(qboolean overlay)
 {
 	uiClientState_t cstate;
 	char info[MAX_INFO_VALUE];
-	char buf[2], s[MAX_STRING_CHARS];
+	char s[MAX_STRING_CHARS];
 	int style, bigstyle;
 
 	if(uis.keys[K_ESCAPE]){
