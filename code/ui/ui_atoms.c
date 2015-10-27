@@ -897,6 +897,7 @@ dismissui(void)
 	trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
 	trap_Key_ClearStates();
 	trap_Cvar_Set("cl_paused", 0);
+	uis.fullscreen = qfalse;
 }
 
 void
