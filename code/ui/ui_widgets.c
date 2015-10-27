@@ -70,6 +70,7 @@ slider(const char *id, int x, int y, int just, float min, float max, float *val,
 	ix = x+pad;
 	iy = y+pad;
 	iw = w - 2*pad;
+	*s = '\0';
 
 	if(mouseover(ix, y + h/2 - knobh/2, iw, knobh)){
 		Q_strncpyz(uis.hot, id, sizeof uis.hot);
