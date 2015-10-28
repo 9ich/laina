@@ -917,6 +917,27 @@ drawlagometer(void)
 }
 
 /*
+speedometer
+*/
+
+void
+drawspeedometer(void)
+{
+	int spd;
+	char s[32];
+	float w;
+
+	if(cg.snap == nil)
+		spd = 0;
+	else
+		spd = round(sqrt(Square(cg.snap->ps.velocity[0]) +
+		   Square(cg.snap->ps.velocity[1])));
+	Com_sprintf(s, sizeof s, "%iups", spd);
+	w = drawstrlen(s) * BIGCHAR_WIDTH;
+	drawbigstr(0.5f*SCREEN_WIDTH - 0.5f*w, 340, s, 1.0f);
+}
+
+/*
 center printing
 */
 
@@ -1452,6 +1473,9 @@ draw2d(stereoFrame_t stereoFrame)
 	drawteamvote();
 
 	drawlagometer();
+
+	if(cg_drawspeed.integer)
+		drawspeedometer();
 
 	drawupperright(stereoFrame);
 
