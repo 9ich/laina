@@ -259,13 +259,12 @@ cratesmash(vec3_t pos)
 	pt[0] += -4 + 8*Q_random(&seed);
 	pt[1] += -4 + 8*Q_random(&seed);
 	pt[2] += -4 + 8*Q_random(&seed);
-	vel[2] = -40;
 	smokepuff(pt, vel, 100, 0.85f, 0.58f, 0.44f, 0.7f, 700, cg.time,
 	   0, 0, cgs.media.smokePuffShader);
 	for(i = 0; i < NSPLINTERS; i++){
-		vel[0] = Q_crandom(&seed) * 300;
-		vel[1] = Q_crandom(&seed) * 300;
-		vel[2] = Q_crandom(&seed) * 600;
+		vel[0] = Q_crandom(&seed) * 400;
+		vel[1] = Q_crandom(&seed) * 400;
+		vel[2] = Q_crandom(&seed) * 400;
 		launchsplinter(pt, vel, cgs.media.splinter);
 	}
 	trap_S_StartSound(pos, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.crateSmash);
