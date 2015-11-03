@@ -418,7 +418,7 @@ checkairjump(void)
 	scale = cmdscale(&pm->cmd);
 	// kick the player in the dir they want
 	for(i = 0; i<2; i++)
-		pm->ps->velocity[i] = 2*scale*pml.forward[i]*pm->cmd.forwardmove + 2*scale*pml.right[i]*pm->cmd.rightmove;
+		pm->ps->velocity[i] += scale*pml.forward[i]*pm->cmd.forwardmove + scale*pml.right[i]*pm->cmd.rightmove;
 	pm->ps->velocity[2] = AIRJUMP_VELOCITY;
 	pm->ps->nAirjumps++;
 	pmaddevent(EV_AIRJUMP);
@@ -620,7 +620,7 @@ aircontrol(pmove_t *pm, vec3_t wishdir, float wishspeed)
 	speed = veclen(pm->ps->velocity);
 	// the player will sharply slow down in mid-air if all movement keys are released.
 	// note that this also has an effect if the player swaps turn direction mid-airstrafe.
-	if(wishspeed < 0.000001 && speed > 0.000001){
+	if(!(pm->ps->pm_flags & PMF_JUMP_HELD) && wishspeed < 0.000001 && speed > 0.000001){
 		vec_t newspeed;
 
 		newspeed = speed - (MAX(speed, pm_stopspeed)*pm_friction*pml.frametime);
