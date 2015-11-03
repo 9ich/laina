@@ -36,7 +36,7 @@
  */
 
 #include "../qcommon/q_shared.h"
-#include "bg_lib.h"
+#include "bg_libc.h"
 
 typedef long word;	/* "word" used for optimal mem copy speed */
 

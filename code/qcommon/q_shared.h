@@ -96,21 +96,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   VM Considerations
 
   The VM can not use the standard system headers because we aren't really
-  using the compiler they were meant for.  We use bg_lib.h which contains
-  prototypes for the functions we define for our own use in bg_lib.c.
+  using the compiler they were meant for.  We use bg_libc.h which contains
+  prototypes for the functions we define for our own use in bg_libc.c.
 
   When writing mods, please add needed headers HERE, do not start including
   stuff like <stdio.h> in the various .c files that make up each of the VMs
   since you will be including system headers files can will have issues.
 
-  Remember, if you use a C library function that is not defined in bg_lib.c,
+  Remember, if you use a C library function that is not defined in bg_libc.c,
   you will have to add your own version for support in the VM.
 
  **********************************************************************/
 
 #ifdef Q3_VM
 
-#include "../game/bg_lib.h"
+#include "../game/bg_libc.h"
 
 typedef int intptr_t;
 
