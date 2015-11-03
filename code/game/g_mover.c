@@ -1002,13 +1002,28 @@ Blocked_Piston(ent_t *ent, ent_t *other)
 	entfree(other);
 }
 
+static void
+Touch_Piston(ent_t *ent, ent_t *other, trace_t *tr)
+{
+	if(!(ent->spawnflags & (1<<1)) ||
+	   ent->moverstate == MOVER_POS1 ||
+	   other->health <= 0)
+		return;
+	entdamage(other, ent, ent, nil, nil, other->health, 0, MOD_CRUSH);
+}
+
 /*QUAKED func_piston (.8 .2 .2) ? START_OPEN
 TOGGLE		wait in both the start and end states for a trigger event.
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedmg doors).
+START_OPEN	the door to moves to its destination when spawned, and operate
+		in reverse.  It is used to temporarily or permanently close
+		off an area when triggered (not useful for touch or takedmg
+		doors).
+KILLER		kill on contact when piston is moving or up
 
 "model2"	.md3 model to also draw
 "angle"		determines the opening direction
-"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
+"targetname"	if set, no touch field will be spawned and a remote button or
+		trigger field activates the door.
 "speed"		movement speed (100 default)
 "wait"		interval between opening and closing (2 default, -1 = never return)
 "lip"		lip remaining at end of move (8 default)
@@ -1027,6 +1042,8 @@ SP_func_piston(ent_t *ent)
 	ent->soundpos1 = ent->soundpos2 = soundindex("sound/movers/piston/end");
 
 	ent->blocked = Blocked_Piston;
+	if(ent->spawnflags & (1<<1))
+		ent->touch = Touch_Piston;
 
 	// default speed of 400
 	if(!ent->speed)
