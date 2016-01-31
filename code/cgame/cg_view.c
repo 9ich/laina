@@ -85,8 +85,8 @@ calc3rdperson(void)
 	playerState_t *pps;
 	vec3_t forward, right, up, view, focusAngles, focusPoint;
 	trace_t trace;
-	static vec3_t mins = {-4, -4, -4};
-	static vec3_t maxs = {4, 4, 4};
+	static vec3_t mins = {-2, -2, -2};
+	static vec3_t maxs = {2, 2, 2};
 	float focusDist, forwardScale, sideScale;
 
 	pps = &cg.pps;
@@ -113,7 +113,7 @@ calc3rdperson(void)
 	vecmad(view, -cg_thirdPersonRange.value * sideScale, right, view);
 
 	// trace a ray from the origin to the viewpoint to make sure
-	// the view isn't in a solid block.  Use an 8 by 8 block to
+	// the view isn't in a solid block.  Use an 6 by 6 block to
 	// prevent the view from near clipping anything
 	if(!cg_cameraMode.integer){
 		cgtrace(&trace, cg.refdef.vieworg, mins, maxs, view,
