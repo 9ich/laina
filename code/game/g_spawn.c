@@ -177,6 +177,7 @@ void	SP_crate(ent_t *ent);
 void	SP_crate_strong(ent_t *ent);
 void	SP_crate_checkpoint(ent_t *ent);
 void	SP_crate_bouncy(ent_t *ent);
+void	SP_crate_tnt(ent_t *ent);
 
 void	SP_npc_test(ent_t *ent);
 
@@ -195,6 +196,7 @@ spawn_t spawns[] = {
 	{"crate_", SP_crate},	// underscore for radiant menu
 	{"crate_checkpoint", SP_crate_checkpoint},
 	{"crate_bouncy", SP_crate_bouncy},
+	{"crate_tnt", SP_crate_tnt},
 
 	{"npc_test", SP_npc_test},
 

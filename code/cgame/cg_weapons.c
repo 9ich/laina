@@ -1624,18 +1624,6 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 
 	switch(weapon){
 	default:
-	case WP_LIGHTNING:
-		// no explosion at LG impact, it is added with the beam
-		r = rand() & 3;
-		if(r < 2)
-			sfx = cgs.media.sfx_lghit2;
-		else if(r == 2)
-			sfx = cgs.media.sfx_lghit1;
-		else
-			sfx = cgs.media.sfx_lghit3;
-		mark = cgs.media.holeMarkShader;
-		radius = 12;
-		break;
 	case WP_GRENADE_LAUNCHER:
 		mod = cgs.media.dishFlashModel;
 		shader = cgs.media.grenadeExplosionShader;
@@ -1657,6 +1645,18 @@ missilehitwall(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactsound
 		lightcolor[0] = 1;
 		lightcolor[1] = 0.75;
 		lightcolor[2] = 0.0;
+		break;
+	case WP_LIGHTNING:
+		// no explosion at LG impact, it is added with the beam
+		r = rand() & 3;
+		if(r < 2)
+			sfx = cgs.media.sfx_lghit2;
+		else if(r == 2)
+			sfx = cgs.media.sfx_lghit1;
+		else
+			sfx = cgs.media.sfx_lghit3;
+		mark = cgs.media.holeMarkShader;
+		radius = 12;
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;

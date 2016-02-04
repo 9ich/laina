@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "bg_local.h"
 
 #define BOX_CONTENTS_SPEED	150.0f
 #define BOX_CONTENTS_JUMP	100.f
@@ -12,6 +13,11 @@ static void	crate_touch(ent_t*, ent_t*, trace_t*);
 static void	crate_levelrespawn(ent_t*);
 static void	crate_checkpoint_use(ent_t*, ent_t*, ent_t*);
 static void	crate_bouncy_touch(ent_t*, ent_t*, trace_t*);
+static void	crate_tnt_touch(ent_t*, ent_t*, trace_t*);
+static void	crate_tnt_pain(ent_t *e, ent_t *attacker, int dmg);
+static void	crate_tnt_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod);
+static void	crate_tnt_use(ent_t *e, ent_t *other, ent_t *activator);
+static void	crate_tnt_explode(ent_t *e);
 static void	SP_checkpoint_halo(ent_t *ent);
 
 /*
@@ -111,7 +117,7 @@ SP_checkpoint_halo(ent_t *ent)
 }
 
 /*
-An indestructible box which acts just like a jump pad.
+An indestructible crate which acts just like a jump pad.
 
 SUSPENDED	no drop to floor
 "target"	a target_position, which will be the apex of the leap
@@ -135,6 +141,43 @@ SP_crate_bouncy(ent_t *ent)
 	ent->s.eType = ET_CRATE_BOUNCY;
 	veccpy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
+	trap_LinkEntity(ent);
+}
+
+/*
+A breakable crate that explodes after a short delay if jumped on, or
+immediately if hit.
+
+SUSPENDED	no drop to floor
+*/
+void
+SP_crate_tnt(ent_t *ent)
+{
+	setorigin(ent, ent->s.origin);
+	vecset(ent->r.mins, -16, -16, -16);
+	vecset(ent->r.maxs, 16, 16, 16);
+	ent->model = "models/crates/tnt/tnt.md3";
+	ent->s.modelindex = modelindex(ent->model);
+	ent->physbounce = 0.2f;
+	ent->touch = crate_tnt_touch;
+	ent->use = crate_tnt_use;
+	ent->pain = crate_tnt_pain;
+	ent->die = crate_tnt_die;
+	ent->health = 1;
+	ent->takedmg = qtrue;
+	ent->s.eType = ET_CRATE_BOUNCY;
+	veccpy(ent->s.angles, ent->s.apos.trBase);
+	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
+
+	ent->r.ownerNum = ent->s.number;
+	ent->parent = ent;
+	ent->damage = 1;
+	ent->splashdmg = 1;
+	ent->splashradius = 120;
+	ent->meansofdeath = MOD_TNT;
+	ent->splashmeansofdeath = MOD_TNT;
+	ent->clipmask = MASK_SHOT;
+
 	trap_LinkEntity(ent);
 }
 
@@ -210,4 +253,60 @@ crate_bouncy_touch(ent_t *self, ent_t *other, trace_t *trace)
 	self->s.nextanim = ANIM_CRATEIDLE;
 	self->s.nextanimtime = level.time + 300;
 	self->s.anim = ANIM_CRATESMASH;
+}
+
+static void
+crate_tnt_pain(ent_t *e, ent_t *attacker, int dmg)
+{
+	crate_tnt_explode(e);
+}
+
+static void
+crate_tnt_use(ent_t *e, ent_t *other, ent_t *activator)
+{
+	crate_tnt_explode(e);
+}
+
+static void
+crate_tnt_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
+{
+	crate_tnt_explode(e);
+}
+
+static void
+crate_tnt_explode(ent_t *e)
+{
+	e->think = nil;
+	e->touch = nil;
+	e->use = nil;
+	e->pain = nil;
+	e->die = nil;
+
+	e->model = nil;
+	e->s.modelindex = 0;
+	e->r.contents = 0;
+	e->s.eType = ET_GENERAL;
+	e->takedmg = qfalse;
+	addevent(e, EV_TNT_EXPLODE, 0);
+	e->freeafterevent = qtrue;
+	radiusdamage(e->s.origin, e->parent, e->splashdmg,
+	   e->splashradius, e, e->splashmeansofdeath);
+}
+
+static void
+crate_tnt_touch(ent_t *self, ent_t *other, trace_t *trace)
+{
+	if(other->client == nil)
+		return;
+	if(other->s.groundEntityNum != self->s.number)
+		return;
+	other->client->ps.velocity[2] = JUMP_VELOCITY;
+	self->touch = nil;
+	self->use = nil;
+	self->pain = nil;
+	self->die = nil;
+	self->nextthink = level.time + 632;
+	self->think = crate_tnt_explode;
+	self->s.anim = ANIM_CRATESMASH;
+	mksound(other, CHAN_AUTO, soundindex("sound/misc/tntfuse.wav"));
 }

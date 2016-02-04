@@ -494,6 +494,7 @@ regsounds(void)
 	cgs.media.watrOutSound = trap_S_RegisterSound("sound/player/watr_out.wav", qfalse);
 	cgs.media.watrUnSound = trap_S_RegisterSound("sound/player/watr_un.wav", qfalse);
 	cgs.media.sfx_boltexp = trap_S_RegisterSound("sound/weapons/crossbow/bolthitwall", qfalse);
+	cgs.media.tntExpSound = trap_S_RegisterSound("sound/misc/tntexplode2.wav", qfalse);
 
 	for(i = 0; i<4; i++){
 		Com_sprintf(name, sizeof(name), "sound/player/footsteps/step%i.wav", i+1);
@@ -572,6 +573,10 @@ reggraphics(void)
 	for(i = 0; i<11; i++)
 		cgs.media.numberShaders[i] = trap_R_RegisterShader(sb_nums[i]);
 
+	cgs.media.burnMarkShader = trap_R_RegisterShader("gfx/damage/burn_med_mrk");
+	cgs.media.tntExpShader = trap_R_RegisterShader("tntexplosion");
+	cgs.media.tntExpModel = trap_R_RegisterModel("models/misc/expsprite");
+	
 	cgs.media.viewBloodShader = trap_R_RegisterShader("viewBloodBlend");
 
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip("gfx/2d/defer.tga");

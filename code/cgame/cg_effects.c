@@ -270,6 +270,30 @@ cratesmash(vec3_t pos)
 	trap_S_StartSound(pos, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.crateSmash);
 }
 
+void
+tntexplode(vec3_t pos)
+{
+	vec3_t up, vel;
+	localent_t *xplo;
+
+	vecset(up, 0, 0, 1);
+	vecset(vel, 0, 0, 16);
+
+	trap_S_StartSound(pos, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tntExpSound);
+
+	xplo = explosion(pos, up, cgs.media.tntExpModel, cgs.media.tntExpShader,
+	   1000, qtrue);
+	xplo->light = 100;
+	vecset(xplo->lightcolor, 1.0f, 0.8f, 0.4f);
+
+	impactmark(cgs.media.burnMarkShader, pos, up, random()*360, 1, 1, 1,
+	   1, qfalse, 100, qfalse);
+
+	pos[2] += 24.0f;
+	smokepuff(pos, vel, 64, 0.0f, 0.0f, 0.0, 1.0f, 3000, cg.time,
+	   0, LEF_PUFF_DONT_SCALE, cgs.media.smokePuffShader);
+}
+
 /*
 ==================
 spawneffect

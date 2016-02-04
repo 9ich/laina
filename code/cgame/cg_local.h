@@ -746,6 +746,8 @@ typedef struct
 	qhandle_t	grenadeExplosionShader;
 	qhandle_t	bfgExplosionShader;
 	qhandle_t	bloodExplosionShader;
+	qhandle_t	tntExpShader;
+	qhandle_t	tntExpModel;
 
 	// special effects models
 	qhandle_t	teleportEffectModel;
@@ -790,6 +792,7 @@ typedef struct
 	sfxHandle_t	airjumpSound;
 	sfxHandle_t	splinterBounce;
 	sfxHandle_t	crateSmash;
+	sfxHandle_t	tntExpSound;
 
 	sfxHandle_t	oneMinuteSound;
 	sfxHandle_t	fiveMinuteSound;
@@ -1216,6 +1219,7 @@ localent_t	*smokepuff(const vec3_t p,
 			      int flags,
 			      qhandle_t hShader);
 void		cratesmash(vec3_t pt);
+void		tntexplode(vec3_t pt);
 void		bubbletrail(vec3_t start, vec3_t end, float spacing);
 void		spawneffect(vec3_t org);
 void		scoreplum(int client, vec3_t org, int score);

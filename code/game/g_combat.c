@@ -178,7 +178,9 @@ char *modNames[] = {
 	"MOD_SUICIDE",
 	"MOD_TARGET_LASER",
 	"MOD_TRIGGER_HURT",
-	"MOD_GRAPPLE"
+	"MOD_GRAPPLE",
+	"MOD_CROSSBOW",
+	"MOD_TNT"
 };
 
 

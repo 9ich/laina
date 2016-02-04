@@ -399,6 +399,7 @@ typedef enum
 	EV_SMASH_CRATE,
 	EV_SMASH_STRONG_CRATE,
 	EV_SMASH_CHECKPOINT_CRATE,
+	EV_TNT_EXPLODE,			// crate_tnt blows up
 
 	EV_NOAMMO,
 	EV_CHANGE_WEAPON,
@@ -488,6 +489,9 @@ typedef enum
 // animations
 typedef enum
 {
+	// misc. animations
+	ANIM_IDLE = 0,
+
 	// crate animations
 	ANIM_CRATEIDLE	= 0,
 	ANIM_CRATESMASH,
@@ -621,7 +625,8 @@ typedef enum
 	MOD_TARGET_LASER,
 	MOD_TRIGGER_HURT,
 	MOD_GRAPPLE,
-	MOD_CROSSBOW
+	MOD_CROSSBOW,
+	MOD_TNT
 } meansofdeath_t;
 
 //---------------------------------------------------------

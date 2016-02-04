@@ -129,6 +129,9 @@ obituary(entityState_t *ent)
 	case MOD_BOLT:
 		message = "took a bolt";
 		break;
+	case MOD_TNT:
+		message = "was blown up with TNT";
+		break;
 	default:
 		message = nil;
 		break;
@@ -616,6 +619,10 @@ entevent(cent_t *cent, vec3_t position)
 	case EV_SMASH_CHECKPOINT_CRATE:
 		DEBUGNAME("EV_SMASH_CRATE");
 		cratesmash(cent->lerporigin);
+		break;
+	case EV_TNT_EXPLODE:
+		DEBUGNAME("EV_TNT_EXPLODE");
+		tntexplode(cent->lerporigin);
 		break;
 
 	// weapon events
