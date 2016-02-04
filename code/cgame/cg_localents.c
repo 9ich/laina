@@ -471,7 +471,7 @@ addspriteexplosion(localent_t *le)
 	re.shaderRGBA[0] = 0xff;
 	re.shaderRGBA[1] = 0xff;
 	re.shaderRGBA[2] = 0xff;
-	re.shaderRGBA[3] = 0xff * c * 0.33;
+	re.shaderRGBA[3] = 0xff * c;
 
 	re.reType = RT_SPRITE;
 	re.radius = 42 * (1.0 - c) + 30;
