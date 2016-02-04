@@ -1413,6 +1413,13 @@ Reached_Train(ent_t *ent)
 	}
 }
 
+static void
+Use_Train(ent_t *ent, ent_t *other, ent_t *activator)
+{
+	ent->nextthink = level.time + 1;
+	ent->think = Think_BeginMoving;
+}
+
 /*
 ===============
 Think_SetupTrainTargets
@@ -1437,11 +1444,9 @@ Think_SetupTrainTargets(ent_t *ent)
 		if(!start)
 			start = path;
 
-		if(!path->target){
-			gprintf("Train corner at %s without a target\n",
-				 vtos(path->s.origin));
-			return;
-		}
+		// if the corner has no target, the train will stop there
+		if(!path->target)
+			break;
 
 		// find a path_corner among the targets
 		// there may also be other targets that get fired when the corner
@@ -1454,14 +1459,17 @@ Think_SetupTrainTargets(ent_t *ent)
 					 vtos(path->s.origin));
 				return;
 			}
-		}while(strcmp(next->classname, "path_corner"))
-		;
+		}while(strcmp(next->classname, "path_corner"));
 
 		path->nexttrain = next;
 	}
 
-	// start the train moving from the first corner
+	// start the train from the first corner
 	Reached_Train(ent);
+
+	// and make it wait for activation
+	ent->s.pos.trType = TR_STATIONARY;
+	ent->use = Use_Train;
 }
 
 /*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8)
