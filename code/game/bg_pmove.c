@@ -951,7 +951,7 @@ noclipmove(void)
 
 	veccpy(wishvel, wishdir);
 	wishspeed = vecnorm(wishdir);
-	wishspeed *= scale;
+	wishspeed *= scale * 5;
 
 	accelerate(wishdir, wishspeed, pm_accelerate);
 
