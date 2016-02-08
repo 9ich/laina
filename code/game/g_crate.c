@@ -5,8 +5,8 @@
 #define BOX_CONTENTS_JUMP	100.f
 
 // g_trigger.c jump pad recycling
-extern void	trigger_push_touch(ent_t *self, ent_t *other, trace_t *trace);
-extern void	AimAtTarget(ent_t *self);
+extern void	trigger_push_touch(ent_t*, ent_t*, trace_t*);
+extern void	AimAtTarget(ent_t*);
 
 static void	crate_use(ent_t*, ent_t*, ent_t*);
 static void	crate_touch(ent_t*, ent_t*, trace_t*);
@@ -14,11 +14,12 @@ static void	crate_levelrespawn(ent_t*);
 static void	crate_checkpoint_use(ent_t*, ent_t*, ent_t*);
 static void	crate_bouncy_touch(ent_t*, ent_t*, trace_t*);
 static void	crate_tnt_touch(ent_t*, ent_t*, trace_t*);
-static void	crate_tnt_pain(ent_t *e, ent_t *attacker, int dmg);
-static void	crate_tnt_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod);
-static void	crate_tnt_use(ent_t *e, ent_t *other, ent_t *activator);
-static void	crate_tnt_explode(ent_t *e);
-static void	SP_checkpoint_halo(ent_t *ent);
+static void	crate_tnt_pain(ent_t*, ent_t*, int);
+static void	crate_tnt_die(ent_t*, ent_t*, ent_t*, int, int);
+static void	crate_tnt_use(ent_t*, ent_t*, ent_t*);
+static void	crate_tnt_levelrespawn(ent_t*);
+static void	crate_tnt_explode(ent_t*);
+static void	SP_checkpoint_halo(ent_t*);
 
 /*
 A breakable crate which usually contains items.
@@ -163,6 +164,7 @@ SP_crate_tnt(ent_t *ent)
 	ent->use = crate_tnt_use;
 	ent->pain = crate_tnt_pain;
 	ent->die = crate_tnt_die;
+	ent->levelrespawn = crate_tnt_levelrespawn;
 	ent->health = 1;
 	ent->takedmg = qtrue;
 	ent->s.eType = ET_CRATE_BOUNCY;
@@ -271,6 +273,13 @@ static void
 crate_tnt_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 {
 	crate_tnt_explode(e);
+}
+
+static void
+crate_tnt_levelrespawn(ent_t *self)
+{
+	self->ckpoint = ENTITYNUM_WORLD;
+	trap_LinkEntity(self);
 }
 
 static void
