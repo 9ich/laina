@@ -164,6 +164,7 @@ SP_crate_tnt(ent_t *ent)
 	ent->use = crate_tnt_use;
 	ent->pain = crate_tnt_pain;
 	ent->die = crate_tnt_die;
+	ent->ckpoint = level.checkpoint;
 	ent->levelrespawn = crate_tnt_levelrespawn;
 	ent->health = 1;
 	ent->takedmg = qtrue;
@@ -252,26 +253,29 @@ crate_bouncy_touch(ent_t *self, ent_t *other, trace_t *trace)
 	if(other->s.groundEntityNum != self->s.number)
 		return;
 	trigger_push_touch(self, other, trace);
+	self->s.anim = ANIM_CRATESMASH;
 	self->s.nextanim = ANIM_CRATEIDLE;
 	self->s.nextanimtime = level.time + 300;
-	self->s.anim = ANIM_CRATESMASH;
 }
 
 static void
 crate_tnt_pain(ent_t *e, ent_t *attacker, int dmg)
 {
+	e->ckpoint = level.checkpoint;
 	crate_tnt_explode(e);
 }
 
 static void
 crate_tnt_use(ent_t *e, ent_t *other, ent_t *activator)
 {
+	e->ckpoint = level.checkpoint;
 	crate_tnt_explode(e);
 }
 
 static void
 crate_tnt_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 {
+	e->ckpoint = level.checkpoint;
 	crate_tnt_explode(e);
 }
 
@@ -279,27 +283,21 @@ static void
 crate_tnt_levelrespawn(ent_t *self)
 {
 	self->ckpoint = ENTITYNUM_WORLD;
+	self->touch = crate_tnt_touch;
+	self->use = crate_tnt_use;
+	self->pain = crate_tnt_pain;
+	self->die = crate_tnt_die;
+	self->health = 1;
 	trap_LinkEntity(self);
 }
 
 static void
 crate_tnt_explode(ent_t *e)
 {
-	e->think = nil;
-	e->touch = nil;
-	e->use = nil;
-	e->pain = nil;
-	e->die = nil;
-
-	e->model = nil;
-	e->s.modelindex = 0;
-	e->r.contents = 0;
-	e->s.eType = ET_GENERAL;
-	e->takedmg = qfalse;
-	addevent(e, EV_TNT_EXPLODE, 0);
-	e->freeafterevent = qtrue;
-	radiusdamage(e->s.origin, e->parent, e->splashdmg,
+	trap_UnlinkEntity(e);
+	radiusdamage(e->s.origin, e, e->splashdmg,
 	   e->splashradius, e, e->splashmeansofdeath);
+	enttemp(e->s.origin, EV_TNT_EXPLODE);
 }
 
 static void
@@ -309,13 +307,12 @@ crate_tnt_touch(ent_t *self, ent_t *other, trace_t *trace)
 		return;
 	if(other->s.groundEntityNum != self->s.number)
 		return;
+	self->ckpoint = level.checkpoint;
 	other->client->ps.velocity[2] = JUMP_VELOCITY;
-	self->touch = nil;
-	self->use = nil;
-	self->pain = nil;
-	self->die = nil;
 	self->nextthink = level.time + 632;
 	self->think = crate_tnt_explode;
 	self->s.anim = ANIM_CRATESMASH;
+	self->s.nextanim = ANIM_CRATEIDLE;
+	self->s.nextanimtime = level.time + 632;
 	mksound(other, CHAN_AUTO, soundindex("sound/misc/tntfuse.wav"));
 }
