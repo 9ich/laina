@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 /*
-
   Items are any object that a player can touch to gain some effect.
 
   Pickup will return the number of seconds until they should respawn.
@@ -42,8 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define RESPAWN_MEGAHEALTH	35	//120
 #define RESPAWN_POWERUP		120
 #define RESPAWN_KEY		-1
-
-//======================================================================
 
 int
 Pickup_Powerup(ent_t *ent, ent_t *other)
@@ -82,7 +79,8 @@ Pickup_Powerup(ent_t *ent, ent_t *other)
 
 		// if same team in team game, no sound
 		// cannot use onsameteam as it expects to g_entities, not clients
-		if(g_gametype.integer >= GT_TEAM && other->client->sess.team == client->sess.team)
+		if(g_gametype.integer >= GT_TEAM &&
+		   other->client->sess.team == client->sess.team)
 			continue;
 
 		// if too far away, no sound
@@ -97,7 +95,8 @@ Pickup_Powerup(ent_t *ent, ent_t *other)
 			continue;
 
 		// if not line of sight, no sound
-		trap_Trace(&tr, client->ps.origin, nil, nil, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID);
+		trap_Trace(&tr, client->ps.origin, nil, nil, ent->s.pos.trBase,
+		   ENTITYNUM_NONE, CONTENTS_SOLID);
 		if(tr.fraction != 1.0)
 			continue;
 
@@ -107,9 +106,6 @@ Pickup_Powerup(ent_t *ent, ent_t *other)
 	return RESPAWN_POWERUP;
 }
 
-//======================================================================
-
-
 int
 Pickup_Holdable(ent_t *ent, ent_t *other)
 {
@@ -117,8 +113,6 @@ Pickup_Holdable(ent_t *ent, ent_t *other)
 
 	return RESPAWN_HOLDABLE;
 }
-
-//======================================================================
 
 void
 addammo(ent_t *ent, int weapon, int count)
@@ -142,8 +136,6 @@ Pickup_Ammo(ent_t *ent, ent_t *other)
 
 	return RESPAWN_AMMO;
 }
-
-//======================================================================
 
 int
 Pickup_Weapon(ent_t *ent, ent_t *other)
@@ -230,13 +222,6 @@ Pickup_Armor(ent_t *ent, ent_t *other)
 	return RESPAWN_ARMOR;
 }
 
-//======================================================================
-
-/*
-===============
-itemrespawn
-===============
-*/
 void
 itemrespawn(ent_t *ent)
 {
@@ -258,7 +243,8 @@ itemrespawn(ent_t *ent)
 
 		choice = rand() % count;
 
-		for(count = 0, ent = master; ent && count < choice; ent = ent->teamchain, count++)
+		for(count = 0, ent = master; ent && count < choice;
+		   ent = ent->teamchain, count++)
 			;
 	}
 	if(!ent)
@@ -291,11 +277,6 @@ itemrespawn(ent_t *ent)
 		level.ncarrotspickedup--;
 }
 
-/*
-===============
-item_touch
-===============
-*/
 void
 item_touch(ent_t *ent, ent_t *other, trace_t *trace)
 {
@@ -319,11 +300,9 @@ item_touch(ent_t *ent, ent_t *other, trace_t *trace)
 	switch(ent->item->type){
 	case IT_WEAPON:
 		respawn = Pickup_Weapon(ent, other);
-//		predict = qfalse;
 		break;
 	case IT_AMMO:
 		respawn = Pickup_Ammo(ent, other);
-//		predict = qfalse;
 		break;
 	case IT_ARMOR:
 		respawn = Pickup_Armor(ent, other);
@@ -430,16 +409,10 @@ item_touch(ent_t *ent, ent_t *other, trace_t *trace)
 	trap_LinkEntity(ent);
 }
 
-//======================================================================
-
 /*
-================
-itemlaunch
-
 Spawns an item and tosses it forward
-================
 */
-ent_t *
+ent_t*
 itemlaunch(item_t *item, vec3_t origin, vec3_t velocity)
 {
 	ent_t *dropped;
@@ -464,11 +437,12 @@ itemlaunch(item_t *item, vec3_t origin, vec3_t velocity)
 	veccpy(velocity, dropped->s.pos.trDelta);
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
-	if(g_gametype.integer == GT_CTF && item->type == IT_TEAM){								// Special case for CTF flags
+	if(g_gametype.integer == GT_CTF && item->type == IT_TEAM){							// Special case for CTF flags
 		dropped->think = teamdroppedflag_think;
 		dropped->nextthink = level.time + 30000;
 		ckhdroppedteamitem(dropped);
-	}else{// auto-remove after 30 seconds
+	}else{
+		// auto-remove after 30 seconds
 		dropped->think = entfree;
 		dropped->nextthink = level.time + 30000;
 	}
@@ -481,13 +455,9 @@ itemlaunch(item_t *item, vec3_t origin, vec3_t velocity)
 }
 
 /*
-================
-itemdrop
-
 Spawns an item and tosses it forward
-================
 */
-ent_t *
+ent_t*
 itemdrop(ent_t *ent, item_t *item, float angle)
 {
 	vec3_t velocity;
@@ -505,11 +475,7 @@ itemdrop(ent_t *ent, item_t *item, float angle)
 }
 
 /*
-================
-Use_Item
-
 Respawn the item
-================
 */
 void
 Use_Item(ent_t *ent, ent_t *other, ent_t *activator)
@@ -517,15 +483,9 @@ Use_Item(ent_t *ent, ent_t *other, ent_t *activator)
 	itemrespawn(ent);
 }
 
-//======================================================================
-
 /*
-================
-itemspawnfinish
-
 Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
-================
 */
 void
 itemspawnfinish(ent_t *ent)
@@ -551,9 +511,11 @@ itemspawnfinish(ent_t *ent)
 	else{
 		// drop to floor
 		vecset(dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096);
-		trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID);
+		trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs,
+		   dest, ent->s.number, MASK_SOLID);
 		if(tr.startsolid){
-			gprintf("itemspawnfinish: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
+			gprintf("itemspawnfinish: %s startsolid at %s\n",
+			   ent->classname, vtos(ent->s.origin));
 			entfree(ent);
 			return;
 		}
@@ -588,11 +550,6 @@ itemspawnfinish(ent_t *ent)
 
 qboolean itemRegistered[MAX_ITEMS];
 
-/*
-==================
-checkteamitems
-==================
-*/
 void
 checkteamitems(void)
 {
@@ -612,11 +569,6 @@ checkteamitems(void)
 	}
 }
 
-/*
-==============
-clearitems
-==============
-*/
 void
 clearitems(void)
 {
@@ -627,11 +579,7 @@ clearitems(void)
 }
 
 /*
-===============
-registeritem
-
 The item will be added to the precache list
-===============
 */
 void
 registeritem(item_t *item)
@@ -642,12 +590,8 @@ registeritem(item_t *item)
 }
 
 /*
-===============
-mkitemsconfigstr
-
 Write the needed items to a config string
 so the client will know which ones to precache
-===============
 */
 void
 mkitemsconfigstr(void)
@@ -670,11 +614,6 @@ mkitemsconfigstr(void)
 	trap_SetConfigstring(CS_ITEMS, string);
 }
 
-/*
-============
-itemdisabled
-============
-*/
 int
 itemdisabled(item_t *item)
 {
@@ -685,14 +624,10 @@ itemdisabled(item_t *item)
 }
 
 /*
-============
-itemspawn
-
 Sets the clipping size and plants the object on the floor.
 
 Items can't be immediately dropped to floor, because they might
 be on an entity that hasn't spawned yet.
-============
 */
 void
 itemspawn(ent_t *ent, item_t *item)
@@ -722,12 +657,6 @@ itemspawn(ent_t *ent, item_t *item)
 	}
 }
 
-/*
-================
-bounceitem
-
-================
-*/
 void
 bounceitem(ent_t *ent, trace_t *trace)
 {
@@ -758,12 +687,6 @@ bounceitem(ent_t *ent, trace_t *trace)
 	ent->s.pos.trTime = level.time;
 }
 
-/*
-================
-runitem
-
-================
-*/
 void
 runitem(ent_t *ent)
 {

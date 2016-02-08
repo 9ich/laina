@@ -236,15 +236,11 @@ errorf(const char *fmt, ...)
 }
 
 /*
-================
-findteams
-
 Chain together all entities with a matching team field.
 Entity teams are used for item groups and multi-entity mover groups.
 
 All but the first will have the FL_TEAMSLAVE flag set and teammaster field set
 All but the last will have the teamchain field set to the next one
-================
 */
 void
 findteams(void)
@@ -296,11 +292,6 @@ remapteamshaders(void)
 {
 }
 
-/*
-=================
-registercvars
-=================
-*/
 void
 registercvars(void)
 {
@@ -331,11 +322,6 @@ registercvars(void)
 	level.warmupmodificationcount = g_warmup.modificationCount;
 }
 
-/*
-=================
-updatecvars
-=================
-*/
 void
 updatecvars(void)
 {
@@ -363,12 +349,6 @@ updatecvars(void)
 		remapteamshaders();
 }
 
-/*
-============
-initgame
-
-============
-*/
 void
 initgame(int levelTime, int randomSeed, int restart)
 {
@@ -471,11 +451,6 @@ initgame(int levelTime, int randomSeed, int restart)
 	trap_SetConfigstring(CS_INTERMISSION, "");
 }
 
-/*
-=================
-shutdowngame
-=================
-*/
 void
 shutdowngame(int restart)
 {
@@ -535,8 +510,6 @@ levelrespawn(void)
 	}
 }
 
-//===================================================================
-
 void QDECL
 Com_Error(int level, const char *error, ...)
 {
@@ -564,20 +537,14 @@ Com_Printf(const char *msg, ...)
 }
 
 /*
-========================================================================
 
-PLAYER COUNTING / SCORE SORTING
+Player scoring & sorting
 
-========================================================================
 */
 
 /*
-=============
-AddTournamentPlayer
-
 If there are less than two tournament players, put a
 spectator in the game and restart
-=============
 */
 void
 AddTournamentPlayer(void)
@@ -620,13 +587,8 @@ AddTournamentPlayer(void)
 }
 
 /*
-=======================
-addtourneyqueue
-
 Add client to end of tournament queue
-=======================
 */
-
 void
 addtourneyqueue(gclient_t *client)
 {
@@ -646,11 +608,7 @@ addtourneyqueue(gclient_t *client)
 }
 
 /*
-=======================
-RemoveTournamentLoser
-
 Make the loser a spectator at the back of the line
-=======================
 */
 void
 RemoveTournamentLoser(void)
@@ -669,11 +627,6 @@ RemoveTournamentLoser(void)
 	setteam(&g_entities[clientNum], "s");
 }
 
-/*
-=======================
-RemoveTournamentWinner
-=======================
-*/
 void
 RemoveTournamentWinner(void)
 {
@@ -691,11 +644,6 @@ RemoveTournamentWinner(void)
 	setteam(&g_entities[clientNum], "s");
 }
 
-/*
-=======================
-AdjustTournamentScores
-=======================
-*/
 void
 AdjustTournamentScores(void)
 {
@@ -714,12 +662,6 @@ AdjustTournamentScores(void)
 	}
 }
 
-/*
-=============
-SortRanks
-
-=============
-*/
 int QDECL
 SortRanks(const void *a, const void *b)
 {
@@ -765,13 +707,9 @@ SortRanks(const void *a, const void *b)
 }
 
 /*
-============
-calcranks
-
 Recalculates the score ranks of all players
 This will be called on every client connect, begin, disconnect, death,
 and team change.
-============
 */
 void
 calcranks(void)
@@ -880,20 +818,14 @@ calcranks(void)
 }
 
 /*
-========================================================================
 
-MAP CHANGING
+Map changing
 
-========================================================================
 */
 
 /*
-========================
-sendscoreboardmsgall
-
 Do this at intermission time and whenever ranks are recalculated
 due to enters/exits/forced team changes
-========================
 */
 void
 sendscoreboardmsgall(void)
@@ -906,12 +838,8 @@ sendscoreboardmsgall(void)
 }
 
 /*
-========================
-clientintermission
-
 When the intermission starts, this will be called for all players.
 If a new client connects, this will be called after the spawn function.
-========================
 */
 void
 clientintermission(ent_t *ent)
@@ -940,11 +868,7 @@ clientintermission(ent_t *ent)
 }
 
 /*
-==================
-findintermissionpoint
-
 This is also used for spectator spawns
-==================
 */
 void
 findintermissionpoint(void)
@@ -955,7 +879,8 @@ findintermissionpoint(void)
 	// find the intermission spot
 	ent = findent(nil, FOFS(classname), "info_player_intermission");
 	if(ent == nil){	// the map creator forgot to put in an intermission point...
-		selectspawnpoint(vec3_origin, level.intermissionpos, level.intermissionangle, qfalse);
+		selectspawnpoint(vec3_origin, level.intermissionpos,
+		   level.intermissionangle, qfalse);
 		return;
 	}
 	veccpy(ent->s.origin, level.intermissionpos);
@@ -977,11 +902,6 @@ findintermissionpoint(void)
 	}
 }
 
-/*
-==================
-intermission
-==================
-*/
 void
 intermission(void)
 {
@@ -1012,13 +932,8 @@ intermission(void)
 }
 
 /*
-=============
-ExitLevel
-
 When the intermission has been exited, the server is either killed
 or moved to a new level based on the "nextmap" cvar
-
-=============
 */
 void
 ExitLevel(void)
@@ -1081,11 +996,7 @@ ExitLevel(void)
 }
 
 /*
-=================
-logprintf
-
 Print to the logfile with a time stamp if it is open
-=================
 */
 void QDECL
 logprintf(const char *fmt, ...)
@@ -1117,11 +1028,7 @@ logprintf(const char *fmt, ...)
 }
 
 /*
-================
-LogExit
-
 Append information about this game to the log file
-================
 */
 void
 LogExit(const char *string)
@@ -1157,20 +1064,18 @@ LogExit(const char *string)
 
 		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 
-		logprintf("score: %i  ping: %i  client: %i %s\n", cl->ps.persistant[PERS_SCORE], ping, level.sortedclients[i], cl->pers.netname);
+		logprintf("score: %i  ping: %i  client: %i %s\n",
+		   cl->ps.persistant[PERS_SCORE], ping, level.sortedclients[i],
+		   cl->pers.netname);
 	}
 
 }
 
 /*
-=================
-CheckIntermissionExit
-
 The level will stay at the intermission for a minimum of 5 seconds
 If all players wish to continue, the level will then exit.
 If one or more players have not acknowledged the continue, the game will
 wait 10 seconds before going on.
-=================
 */
 void
 CheckIntermissionExit(void)
@@ -1246,11 +1151,6 @@ CheckIntermissionExit(void)
 	ExitLevel();
 }
 
-/*
-=============
-ScoreIsTied
-=============
-*/
 qboolean
 ScoreIsTied(void)
 {
@@ -1269,13 +1169,9 @@ ScoreIsTied(void)
 }
 
 /*
-=================
-CheckExitRules
-
 There will be a delay between the time the exit is qualified for
 and the time everyone is moved to the intermission spot, so you
 can see the last frag.
-=================
 */
 void
 CheckExitRules(void)
@@ -1354,19 +1250,13 @@ CheckExitRules(void)
 }
 
 /*
-========================================================================
 
-FUNCTIONS CALLED EVERY FRAME
+Functions called every frame
 
-========================================================================
 */
 
 /*
-=============
-CheckTournament
-
 Once a frame, check for changes in tournement player state
-=============
 */
 void
 CheckTournament(void)
@@ -1476,11 +1366,6 @@ CheckTournament(void)
 	}
 }
 
-/*
-==================
-CheckVote
-==================
-*/
 void
 CheckVote(void)
 {
@@ -1509,11 +1394,6 @@ CheckVote(void)
 	trap_SetConfigstring(CS_VOTE_TIME, "");
 }
 
-/*
-==================
-PrintTeam
-==================
-*/
 void
 PrintTeam(int team, char *message)
 {
@@ -1526,22 +1406,19 @@ PrintTeam(int team, char *message)
 	}
 }
 
-/*
-==================
-setleader
-==================
-*/
 void
 setleader(int team, int client)
 {
 	int i;
 
 	if(level.clients[client].pers.connected == CON_DISCONNECTED){
-		PrintTeam(team, va("print \"%s is not connected\n\"", level.clients[client].pers.netname));
+		PrintTeam(team, va("print \"%s is not connected\n\"",
+		   level.clients[client].pers.netname));
 		return;
 	}
 	if(level.clients[client].sess.team != team){
-		PrintTeam(team, va("print \"%s is not on the team anymore\n\"", level.clients[client].pers.netname));
+		PrintTeam(team, va("print \"%s is not on the team anymore\n\"",
+		   level.clients[client].pers.netname));
 		return;
 	}
 	for(i = 0; i < level.maxclients; i++){
@@ -1554,14 +1431,10 @@ setleader(int team, int client)
 	}
 	level.clients[client].sess.teamleader = qtrue;
 	clientuserinfochanged(client);
-	PrintTeam(team, va("print \"%s is the new team leader\n\"", level.clients[client].pers.netname));
+	PrintTeam(team, va("print \"%s is the new team leader\n\"",
+	   level.clients[client].pers.netname));
 }
 
-/*
-==================
-chkteamleader
-==================
-*/
 void
 chkteamleader(int team)
 {
@@ -1593,11 +1466,6 @@ chkteamleader(int team)
 	}
 }
 
-/*
-==================
-CheckTeamVote
-==================
-*/
 void
 CheckTeamVote(int team)
 {
@@ -1634,11 +1502,6 @@ CheckTeamVote(int team)
 	trap_SetConfigstring(CS_TEAMVOTE_TIME + cs_offset, "");
 }
 
-/*
-==================
-CheckCvars
-==================
-*/
 void
 CheckCvars(void)
 {
@@ -1654,11 +1517,7 @@ CheckCvars(void)
 }
 
 /*
-=============
-runthink
-
 Runs thinking code for this frame if necessary
-=============
 */
 void
 runthink(ent_t *ent)
@@ -1695,11 +1554,7 @@ gameover(void)
 }
 
 /*
-================
-runframe
-
 Advances the non-player objects in the world
-================
 */
 void
 runframe(int levelTime)

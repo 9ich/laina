@@ -19,15 +19,9 @@ along with Quake III Arena source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-// g_combat.c
 
 #include "g_local.h"
 
-/*
-============
-ScorePlum
-============
-*/
 void
 ScorePlum(ent_t *ent, vec3_t origin, int score)
 {
@@ -42,11 +36,7 @@ ScorePlum(ent_t *ent, vec3_t origin, int score)
 }
 
 /*
-============
-addscore
-
 Adds score to both the client and his team
-============
 */
 void
 addscore(ent_t *ent, vec3_t origin, int score)
@@ -65,11 +55,7 @@ addscore(ent_t *ent, vec3_t origin, int score)
 }
 
 /*
-=================
-tossclientitems
-
 Toss the weapon and powerups for the killed player
-=================
 */
 void
 tossclientitems(ent_t *self)
@@ -121,11 +107,6 @@ tossclientitems(ent_t *self)
 	}
 }
 
-/*
-==================
-GibEntity
-==================
-*/
 void
 GibEntity(ent_t *self, int killer)
 {
@@ -135,11 +116,6 @@ GibEntity(ent_t *self, int killer)
 	self->r.contents = 0;
 }
 
-/*
-==================
-body_die
-==================
-*/
 void
 body_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int meansOfDeath)
 {
@@ -183,12 +159,6 @@ char *modNames[] = {
 	"MOD_TNT"
 };
 
-
-/*
-==================
-CheckAlmostCapture
-==================
-*/
 void
 CheckAlmostCapture(ent_t *self, ent_t *attacker)
 {
@@ -230,11 +200,6 @@ CheckAlmostCapture(ent_t *self, ent_t *attacker)
 	}
 }
 
-/*
-==================
-CheckAlmostScored
-==================
-*/
 void
 CheckAlmostScored(ent_t *self, ent_t *attacker)
 {
@@ -262,11 +227,6 @@ CheckAlmostScored(ent_t *self, ent_t *attacker)
 	}
 }
 
-/*
-==================
-player_die
-==================
-*/
 void
 player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int meansOfDeath)
 {
@@ -475,11 +435,6 @@ player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int means
 	trap_LinkEntity(self);
 }
 
-/*
-================
-CheckArmor
-================
-*/
 int
 CheckArmor(ent_t *ent, int damage, int dflags)
 {
@@ -512,11 +467,6 @@ CheckArmor(ent_t *ent, int damage, int dflags)
 	return save;
 }
 
-/*
-================
-RaySphereIntersections
-================
-*/
 int
 RaySphereIntersections(vec3_t origin, float radius, vec3_t point, vec3_t dir, vec3_t intersections[2])
 {
@@ -551,9 +501,6 @@ RaySphereIntersections(vec3_t origin, float radius, vec3_t point, vec3_t dir, ve
 }
 
 /*
-============
-entdamage
-
 targ		entity that is being damaged
 inflictor	entity that is causing the damage
 attacker	entity that caused the inflictor to damage targ
@@ -571,7 +518,6 @@ dflags		these flags are used to control how T_Damage works
         DAMAGE_NO_ARMOR			armor does not protect from this damage
         DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
         DAMAGE_NO_PROTECTION	kills godmode, armor, everything
-============
 */
 
 void
@@ -762,12 +708,8 @@ entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 }
 
 /*
-============
-candamage
-
 Returns qtrue if the inflictor can directly damage the target.  Used for
 explosions and melee attacks.
-============
 */
 qboolean
 candamage(ent_t *targ, vec3_t origin)
@@ -921,7 +863,8 @@ radiusdamage(vec3_t origin, ent_t *attacker, float damage, float radius,
 			// push the center of mass higher than the origin so players
 			// get knocked into the air more
 			dir[2] += 24;
-			entdamage(ent, nil, attacker, dir, origin, (int)points, DAMAGE_RADIUS, mod);
+			entdamage(ent, nil, attacker, dir, origin, (int)points,
+			   DAMAGE_RADIUS, mod);
 		}
 	}
 
