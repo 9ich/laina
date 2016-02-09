@@ -22,14 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-/*
-===============================================================================
-
-PUSHMOVE
-
-===============================================================================
-*/
-
 typedef struct
 {
 	ent_t	*ent;
@@ -37,15 +29,10 @@ typedef struct
 	vec3_t		angles;
 	float		deltayaw;
 } pushed_t;
+
 pushed_t pushed[MAX_GENTITIES], *pushed_p;
 
-/*
-============
-testentityposition
-
-============
-*/
-ent_t       *
+ent_t*
 testentityposition(ent_t *ent)
 {
 	trace_t tr;
@@ -56,9 +43,11 @@ testentityposition(ent_t *ent)
 	else
 		mask = MASK_SOLID;
 	if(ent->client)
-		trap_Trace(&tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin, ent->s.number, mask);
+		trap_Trace(&tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs,
+		   ent->client->ps.origin, ent->s.number, mask);
 	else
-		trap_Trace(&tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase, ent->s.number, mask);
+		trap_Trace(&tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs,
+		   ent->s.pos.trBase, ent->s.number, mask);
 
 	if(tr.startsolid)
 		return &g_entities[tr.entityNum];
@@ -66,11 +55,6 @@ testentityposition(ent_t *ent)
 	return nil;
 }
 
-/*
-================
-createrotationmatrix
-================
-*/
 void
 createrotationmatrix(vec3_t angles, vec3_t matrix[3])
 {
@@ -78,11 +62,6 @@ createrotationmatrix(vec3_t angles, vec3_t matrix[3])
 	vecinv(matrix[1]);
 }
 
-/*
-================
-transposematrix
-================
-*/
 void
 transposematrix(vec3_t matrix[3], vec3_t transpose[3])
 {
@@ -92,11 +71,6 @@ transposematrix(vec3_t matrix[3], vec3_t transpose[3])
 			transpose[i][j] = matrix[j][i];
 }
 
-/*
-================
-rotatepoint
-================
-*/
 void
 rotatepoint(vec3_t point, vec3_t matrix[3])
 {
@@ -109,11 +83,7 @@ rotatepoint(vec3_t point, vec3_t matrix[3])
 }
 
 /*
-==================
-trypushingentity
-
 Returns qfalse if the move is blocked
-==================
 */
 qboolean
 trypushingentity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
@@ -194,11 +164,6 @@ trypushingentity(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 	return qfalse;
 }
 
-/*
-==================
-checkproxmineposition
-==================
-*/
 qboolean
 checkproxmineposition(ent_t *check)
 {
@@ -215,11 +180,6 @@ checkproxmineposition(ent_t *check)
 	return qtrue;
 }
 
-/*
-==================
-trypushingproxmine
-==================
-*/
 qboolean
 trypushingproxmine(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 {
@@ -253,13 +213,9 @@ trypushingproxmine(ent_t *check, ent_t *pusher, vec3_t move, vec3_t amove)
 void explodemissile(ent_t *ent);
 
 /*
-============
-moverpush
-
 Objects need to be moved back on a failed push,
 otherwise riders would continue to slide.
 If qfalse is returned, *obstacle will be the blocking entity
-============
 */
 qboolean
 moverpush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
@@ -370,11 +326,6 @@ moverpush(ent_t *pusher, vec3_t move, vec3_t amove, ent_t **obstacle)
 	return qtrue;
 }
 
-/*
-=================
-moverteam
-=================
-*/
 void
 moverteam(ent_t *ent)
 {
@@ -423,12 +374,6 @@ moverteam(ent_t *ent)
 					part->reached(part);
 }
 
-/*
-================
-runmover
-
-================
-*/
 void
 runmover(ent_t *ent)
 {
@@ -446,20 +391,14 @@ runmover(ent_t *ent)
 }
 
 /*
-============================================================================
 
-GENERAL MOVERS
+General movers
 
 Doors, plats, and buttons are all binary (two position) movers
 Pos1 is "at rest", pos2 is "activated"
-============================================================================
+
 */
 
-/*
-===============
-SetMoverState
-===============
-*/
 void
 SetMoverState(ent_t *ent, moverstate_t moverstate, int time)
 {
@@ -498,12 +437,8 @@ SetMoverState(ent_t *ent, moverstate_t moverstate, int time)
 }
 
 /*
-================
-matchteam
-
 All entities in a mover team will move from pos1 to pos2
 in the same amount of time
-================
 */
 void
 matchteam(ent_t *teamleader, int moverstate, int time)
@@ -514,11 +449,6 @@ matchteam(ent_t *teamleader, int moverstate, int time)
 		SetMoverState(slave, moverstate, time);
 }
 
-/*
-================
-ReturnToPos1
-================
-*/
 void
 ReturnToPos1(ent_t *ent)
 {
@@ -532,11 +462,6 @@ ReturnToPos1(ent_t *ent)
 		addevent(ent, EV_GENERAL_SOUND, ent->sound2to1);
 }
 
-/*
-================
-Reached_BinaryMover
-================
-*/
 void
 Reached_BinaryMover(ent_t *ent)
 {
@@ -574,11 +499,6 @@ Reached_BinaryMover(ent_t *ent)
 		errorf("Reached_BinaryMover: bad moverstate");
 }
 
-/*
-================
-Use_BinaryMover
-================
-*/
 void
 Use_BinaryMover(ent_t *ent, ent_t *other, ent_t *activator)
 {
@@ -647,12 +567,8 @@ Use_BinaryMover(ent_t *ent, ent_t *other, ent_t *activator)
 }
 
 /*
-================
-InitMover
-
 "pos1", "pos2", and "speed" should be set before calling,
 so the movement delta can be calculated
-================
 */
 void
 InitMover(ent_t *ent)
@@ -718,21 +634,14 @@ InitMover(ent_t *ent)
 }
 
 /*
-===============================================================================
 
-DOOR
+Door
 
 A use can be triggered either by a touch function, by being shot, or by being
 targeted by another entity.
 
-===============================================================================
 */
 
-/*
-================
-Blocked_Door
-================
-*/
 void
 Blocked_Door(ent_t *ent, ent_t *other)
 {
@@ -757,11 +666,6 @@ Blocked_Door(ent_t *ent, ent_t *other)
 	Use_BinaryMover(ent, ent, other);
 }
 
-/*
-================
-Touch_DoorTriggerSpectator
-================
-*/
 static void
 Touch_DoorTriggerSpectator(ent_t *ent, ent_t *other, trace_t *trace)
 {
@@ -787,11 +691,6 @@ Touch_DoorTriggerSpectator(ent_t *ent, ent_t *other, trace_t *trace)
 	teleportentity(other, origin, tv(10000000.0, 0, 0));
 }
 
-/*
-================
-doortrigger_touch
-================
-*/
 void
 doortrigger_touch(ent_t *ent, ent_t *other, trace_t *trace)
 {
@@ -824,12 +723,8 @@ doortrigger_touch(ent_t *ent, ent_t *other, trace_t *trace)
 }
 
 /*
-======================
-Think_SpawnNewDoorTrigger
-
 All of the parts of a door have been spawned, so create
 a trigger that encloses all of them
-======================
 */
 void
 Think_SpawnNewDoorTrigger(ent_t *ent)
@@ -980,7 +875,7 @@ SP_func_door(ent_t *ent)
 
 /*
 
-piston
+Piston
 
 */
 
@@ -1091,19 +986,13 @@ SP_func_piston(ent_t *ent)
 }
 
 /*
-===============================================================================
 
-PLAT
+Platform
 
-===============================================================================
 */
 
 /*
-==============
-Touch_Plat
-
 Don't allow decent if a living player is on it
-===============
 */
 void
 Touch_Plat(ent_t *ent, ent_t *other, trace_t *trace)
@@ -1117,11 +1006,7 @@ Touch_Plat(ent_t *ent, ent_t *other, trace_t *trace)
 }
 
 /*
-==============
-Touch_PlatCenterTrigger
-
 If the plat is at the bottom position, start it going up
-===============
 */
 void
 Touch_PlatCenterTrigger(ent_t *ent, ent_t *other, trace_t *trace)
@@ -1134,13 +1019,9 @@ Touch_PlatCenterTrigger(ent_t *ent, ent_t *other, trace_t *trace)
 }
 
 /*
-================
-SpawnPlatTrigger
-
 Spawn a trigger in the middle of the plat's low position
 Elevator cars require that the trigger extend through the entire low position,
 not just sit on top of it.
-================
 */
 void
 SpawnPlatTrigger(ent_t *ent)
@@ -1234,19 +1115,11 @@ SP_func_plat(ent_t *ent)
 }
 
 /*
-===============================================================================
 
-BUTTON
+Button
 
-===============================================================================
 */
 
-/*
-==============
-Touch_Button
-
-===============
-*/
 void
 Touch_Button(ent_t *ent, ent_t *other, trace_t *trace)
 {
@@ -1300,7 +1173,8 @@ SP_func_button(ent_t *ent)
 	abs_movedir[1] = fabs(ent->movedir[1]);
 	abs_movedir[2] = fabs(ent->movedir[2]);
 	vecsub(ent->r.maxs, ent->r.mins, size);
-	distance = abs_movedir[0] * size[0] + abs_movedir[1] * size[1] + abs_movedir[2] * size[2] - lip;
+	distance = abs_movedir[0] * size[0] + abs_movedir[1] * size[1] + 
+	   abs_movedir[2] * size[2] - lip;
 	vecmad(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	if(ent->health)
@@ -1314,11 +1188,9 @@ SP_func_button(ent_t *ent)
 }
 
 /*
-===============================================================================
 
-TRAIN
+Train
 
-===============================================================================
 */
 
 #define TRAIN_START_ON		1
@@ -1326,11 +1198,7 @@ TRAIN
 #define TRAIN_BLOCK_STOPS	4
 
 /*
-===============
-Think_BeginMoving
-
 The wait time at a corner has completed, so start moving again
-===============
 */
 void
 Think_BeginMoving(ent_t *ent)
@@ -1339,11 +1207,6 @@ Think_BeginMoving(ent_t *ent)
 	ent->s.pos.trType = TR_LINEAR_STOP;
 }
 
-/*
-===============
-Reached_Train
-===============
-*/
 void
 Reached_Train(ent_t *ent)
 {
@@ -1421,11 +1284,7 @@ Use_Train(ent_t *ent, ent_t *other, ent_t *activator)
 }
 
 /*
-===============
-Think_SetupTrainTargets
-
 Link all the corners together
-===============
 */
 void
 Think_SetupTrainTargets(ent_t *ent)
@@ -1533,11 +1392,9 @@ SP_func_train(ent_t *self)
 }
 
 /*
-===============================================================================
 
-STATIC
+Static
 
-===============================================================================
 */
 
 /*QUAKED func_static (0 .5 .8) ?
@@ -1556,11 +1413,9 @@ SP_func_static(ent_t *ent)
 }
 
 /*
-===============================================================================
 
-ROTATING
+Rotating
 
-===============================================================================
 */
 
 /*QUAKED func_rotating (0 .5 .8) ? START_ON - X_AXIS Y_AXIS
@@ -1603,11 +1458,9 @@ SP_func_rotating(ent_t *ent)
 }
 
 /*
-===============================================================================
 
-BOBBING
+Bobbing
 
-===============================================================================
 */
 
 /*QUAKED func_bobbing (0 .5 .8) ? X_AXIS Y_AXIS
@@ -1651,11 +1504,9 @@ SP_func_bobbing(ent_t *ent)
 }
 
 /*
-===============================================================================
 
-PENDULUM
+Pendulum
 
-===============================================================================
 */
 
 /*QUAKED func_pendulum (0 .5 .8) ?
