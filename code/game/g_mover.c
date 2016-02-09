@@ -1659,11 +1659,14 @@ PENDULUM
 */
 
 /*QUAKED func_pendulum (0 .5 .8) ?
-You need to have an origin brush as part of this entity.
-Pendulums always swing north / south on unrotated models.  Add an angles field to the model to allow rotation in other directions.
-Pendulum frequency is a physical constant based on the length of the beam and gravity.
+You need to have an origin brush as part of this entity.  Pendulums
+always swing north / south on unrotated models.  Add an angles field
+to the model to allow rotation in other directions.  Pendulum
+frequency is a physical constant based on the length of the beam and
+gravity.  The frequency can be multiplied with the freq field.
 "model2"	.md3 model to also draw
 "speed"		the number of degrees each way the pendulum swings, (30 default)
+"freq"		frequency multiplier
 "phase"		the 0.0 to 1.0 offset in the cycle to start at
 "dmg"		damage to inflict when blocked (2 default)
 "color"		constantLight color
@@ -1672,12 +1675,10 @@ Pendulum frequency is a physical constant based on the length of the beam and gr
 void
 SP_func_pendulum(ent_t *ent)
 {
-	float freq;
-	float length;
-	float phase;
-	float speed;
+	float freq, freqmul, length, phase, speed;
 
 	spawnfloat("speed", "30", &speed);
+	spawnfloat("freq", "1", &freqmul);
 	spawnint("dmg", "2", &ent->damage);
 	spawnfloat("phase", "0", &phase);
 
@@ -1688,18 +1689,20 @@ SP_func_pendulum(ent_t *ent)
 	if(length < 8)
 		length = 8;
 
+	if(freqmul == 0.0f)
+		freqmul = 1.0f;
+
 	freq = 1 / (M_PI * 2) * sqrt(g_gravity.value / (3 * length));
 
-	ent->s.pos.trDuration = (1000 / freq);
+	ent->s.pos.trDuration = 1/freqmul * 1000/freq;
 
 	InitMover(ent);
 
 	veccpy(ent->s.origin, ent->s.pos.trBase);
 	veccpy(ent->s.origin, ent->r.currentOrigin);
-
 	veccpy(ent->s.angles, ent->s.apos.trBase);
 
-	ent->s.apos.trDuration = 1000 / freq;
+	ent->s.apos.trDuration = 1/freqmul * 1000/freq;
 	ent->s.apos.trTime = ent->s.apos.trDuration * phase;
 	ent->s.apos.trType = TR_SINE;
 	ent->s.apos.trDelta[2] = speed;
