@@ -625,8 +625,6 @@ spawnall(void)
 	level.spawning = qtrue;
 	level.nspawnvars = 0;
 
-	trailinit();
-
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)

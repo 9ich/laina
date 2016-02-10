@@ -1,391 +1,249 @@
-/*
-===========================================================================
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
-
 #include "g_local.h"
 
-void npcnoprint(char *fmt, ...) { (void)fmt; }
-#define dprint npcnoprint
+/*
+Think function. The wait time at a corner has completed, so start moving again.
+*/
+static void
+startmoving(ent_t *ent)
+{
+	ent->s.pos.trTime = level.time;
+	ent->s.pos.trType = TR_LINEAR_STOP;
+}
 
-static void	invalid(ent_t*);
+extern void	SetMoverState(ent_t *ent, moverstate_t moverstate, int time);
 
 static void
-beginmove(ent_t *e)
+npcreached(ent_t *ent)
 {
-	evaltrajectory(&e->s.pos, level.time, e->npc.pos);
-	evaltrajectory(&e->s.apos, level.time, e->npc.angles);
-	veccpy(e->npc.pos, e->s.origin);
-	veccpy(e->npc.pos, e->r.currentOrigin);
-	vecclear(e->npc.vel);
-	vecclear(e->npc.anglesvel);
+	ent_t *next;
+	float speed;
+	vec3_t move;
+	float length;
+
+	// copy the apropriate values
+	next = ent->nexttrain;
+	if(!next || !next->nexttrain)
+		return;	// just stop
+
+	// fire all other targets
+	usetargets(next, nil);
+
+	// set the new trajectory
+	ent->nexttrain = next->nexttrain;
+	veccpy(next->s.origin, ent->pos1);
+	veccpy(next->nexttrain->s.origin, ent->pos2);
+
+	// if the path_corner has a speed, use that
+	if(next->speed)
+		speed = next->speed;
+	else
+		// otherwise use the train's speed
+		speed = ent->speed;
+	if(speed < 1)
+		speed = 1;
+
+	// calculate duration
+	vecsub(ent->pos2, ent->pos1, move);
+	length = veclen(move);
+
+	ent->s.pos.trDuration = length * 1000 / speed;
+
+	ent->r.svFlags &= ~SVF_NOCLIENT;
+
+	if(ent->s.pos.trDuration < 1){
+		ent->s.pos.trDuration = 1;
+
+		ent->r.svFlags |= SVF_NOCLIENT;
+	}
+
+	// looping sound
+	ent->s.loopSound = next->soundloop;
+
+	// start it going
+	SetMoverState(ent, MOVER_1TO2, level.time);
+
+	// if there is a "wait" value on the target, don't start moving yet
+	if(next->wait){
+		ent->nextthink = level.time + next->wait * 1000;
+		ent->think = startmoving;
+		ent->s.pos.trType = TR_STATIONARY;
+	}
 }
 
 static void
-finishmove(ent_t *e)
+npcuse(ent_t *ent, ent_t *other, ent_t *activator)
 {
-	veccpy(e->npc.pos, e->s.pos.trBase);
-	veccpy(e->npc.vel, e->s.pos.trDelta);
-	e->s.pos.trTime = level.time;
-	if(e->npc.vel[0] == 0 && e->npc.vel[1] == 0 && e->npc.vel[2] == 0)
-		e->s.pos.trTime = 0;
-	evaltrajectory(&e->s.pos, level.time, e->npc.pos);
-	evaltrajectory(&e->s.apos, level.time, e->npc.angles);
-	veccpy(e->npc.pos, e->s.origin);
-	veccpy(e->npc.pos, e->r.currentOrigin);
-
-	veccpy(e->npc.angles, e->s.apos.trBase);
-	veccpy(e->npc.anglesvel, e->s.apos.trDelta);
-	e->s.apos.trTime = level.time;
-	if(e->npc.anglesvel[0] == 0 && e->npc.anglesvel[1] == 0 && e->npc.anglesvel[2] == 0)
-		e->s.apos.trTime = 0;
+	ent->nextthink = level.time + 1;
+	ent->think = startmoving;
 }
 
-void
-npccheckground(ent_t *e)
+/*
+Link all the corners together
+*/
+static void
+npclinktargets(ent_t *ent)
 {
-	vec3_t pt;
-	trace_t tr;
-
-	dprint("npccheckground\n");
-
-	if(e->s.pos.trDelta[2] > 100.0f){
-		e->s.groundEntityNum = ENTITYNUM_NONE;
-		return;
-	}
-
-	// if the hull point 1/4 u down is solid, the entity
-	// is on ground
-	pt[0] = e->s.pos.trBase[0];
-	pt[1] = e->s.pos.trBase[1];
-	pt[2] = e->s.pos.trBase[2] - 0.25f;
-
-	trap_Trace(&tr, e->s.pos.trBase, e->r.mins, e->r.maxs, pt, e->s.number, MASK_NPCSOLID);
-	// check steepness
-	if(tr.plane.normal[2] < 0.7f && !tr.startsolid){
-		e->s.groundEntityNum = ENTITYNUM_NONE;
-		return;
-	}
-
-	if(!tr.startsolid && !tr.allsolid){
-		veccpy(tr.endpos, e->s.pos.trBase);
-		e->s.groundEntityNum = tr.entityNum;
-		e->s.pos.trDelta[2] = 0.0f;
-	}
-}
-
-void
-npcworldeffects(ent_t *e)
-{
-	int dmg;
-
-	if(e->health > 0){
-		if(e->waterlevel > 0)
-			e->airouttime = level.time + 9;
-		else if(e->airouttime < level.time){
-			// suffocate
-			if(e->paindebouncetime < level.time){
-				dmg = 2 + 2*floor(level.time - e->airouttime);
-				dmg = MIN(dmg, 15);
-				entdamage(e, nil, nil, vec3_origin,
-				   e->s.pos.trBase, dmg,
-				   DAMAGE_NO_ARMOR, MOD_WATER);
-			}
-		}
-	}
-
-	if((e->watertype & CONTENTS_LAVA)){
-		if(e->paindebouncetime < level.time){
-			e->paindebouncetime = level.time + 0.2f;
-			entdamage(e, nil, nil, vec3_origin,
-			   e->s.pos.trBase, 10*e->waterlevel,
-			   0, MOD_LAVA);
-		}
-	}
-
-	if((e->watertype & CONTENTS_SLIME)){
-		if(e->paindebouncetime < level.time){
-			e->paindebouncetime = level.time + 1.0f;
-			entdamage(e, nil, nil, vec3_origin,
-			   e->s.pos.trBase, 10*e->waterlevel,
-			   0, MOD_SLIME);
-		}
-	}
-}
-
-void
-npcdroptofloor(ent_t *e)
-{
+	ent_t *path, *next, *start;
 	vec3_t end;
 	trace_t tr;
 
-	e->s.pos.trBase[2] += 1.0f;
-	veccpy(e->s.pos.trBase, end);
-	end[2] -= 99999;
-	trap_Trace(&tr, e->s.pos.trBase, e->r.mins, e->r.maxs, end, e->s.number,
-	   MASK_NPCSOLID);
-	if(tr.fraction == 1.0f || tr.allsolid)
-		return;
-	veccpy(tr.endpos, e->s.pos.trBase);
-	trap_LinkEntity(e);
-	npccheckground(e);
-	//npccategorizepos(e);
-}
-
-void
-npcmoveframe(ent_t *e)
-{
-	npcmove_t *m;
-	npcframe_t *f;
-	int i;
-
-	dprint("npcmoveframe\n");
-
-	m = e->npc.mv;
-	e->nextthink = level.time + FRAMETIME;
-
-	if(e->npc.nextframe && e->npc.nextframe >= m->firstframe &&
-	   e->npc.nextframe <= m->lastframe){
-		e->s.frame = e->npc.nextframe;
-		e->npc.nextframe = 0;
-	}else{
-		if(e->s.frame == m->lastframe && m->endfn != nil){
-			m->endfn(e);
-			// regrab move; endfn is likely to change it
-			m = e->npc.mv;
-		}
-
-		if(e->s.frame < m->firstframe || e->s.frame > m->lastframe){
-			e->npc.aiflags &= ~AI_HOLDFRAME;
-			e->s.frame = m->firstframe;
-		}else if(!(e->npc.aiflags & AI_HOLDFRAME)){
-			e->s.frame++;
-			if(e->s.frame > m->lastframe)
-				e->s.frame = m->firstframe;
-		}
-	}
-
-	i = e->s.frame - m->firstframe;
-	if(m == nil){
-		gprintf("npcmoveframe: nil e->npc.mv for %s\n",
-		   e->classname);
+	ent->nexttrain = findent(nil, FOFS(targetname), ent->target);
+	if(!ent->nexttrain){
+		gprintf("npc at %s with an unfound target\n",
+		   vtos(ent->r.absmin));
 		return;
 	}
-	f = &m->frame[i];
-	if(f->aifn != nil){
-		if(!(e->npc.aiflags & AI_HOLDFRAME))
-			f->aifn(e, f->dist*e->npc.scale);
-		else
-			f->aifn(e, 0);
-	}
-	if(f->think != nil){
-		f->think(e);
-	}
-}
 
-void
-npcthink(ent_t *e)
-{
-	dprint("npcthink\n");
-	beginmove(e);
-	npcmoveframe(e);
-	finishmove(e);
-	touchtriggers(e);
-}
+	start = nil;
+	for(path = ent->nexttrain; path != start; path = next){
+		if(!start)
+			start = path;
 
-void
-npcuse(ent_t *e, ent_t *other, ent_t *activator)
-{
-	if(e->npc.enemy != nil ||
-	   e->health <= 0 ||
-	   activator->flags & FL_NOTARGET ||
-	   (activator->client == nil &&
-	   !(activator->npc.aiflags & AI_GOODGUY))){
-		return;
-	}
-	e->npc.enemy = activator;
-	foundtarget(e);
-}
+		// if the corner has no target, the train will stop there
+		if(!path->target)
+			break;
 
-void
-npctriggeredspawn(ent_t *e)
-{
-	e->s.pos.trBase[2] += 1.0f;
-	//killbox(e);
-	//e->solid = SOLID_BBOX;
-	//e->movetype = MOVETYPE_STEP;	// FIXME
-	e->r.svFlags &= ~SVF_NOCLIENT;
-	e->airouttime = level.time + 12;
-	trap_LinkEntity(e);
-	npcstart(e);
-	if(e->npc.enemy != nil && !(e->spawnflags & 1) && 
-	   !(e->npc.enemy->flags & FL_NOTARGET))
-		foundtarget(e);
-	else
-		e->npc.enemy = nil;
-}
-
-void
-npctriggeredspawnuse(ent_t *e, ent_t *other, ent_t *activator)
-{
-	e->think = npctriggeredspawn;
-	e->nextthink = level.time + FRAMETIME;
-	if(activator->client != nil)
-		e->npc.enemy = activator;
-	e->use = npcuse;
-}
-
-void
-npctriggeredstart(ent_t *e)
-{
-	//e->solid = SOLID_NOT;
-	//e->movetype = MOVETYPE_NONE;
-	e->r.svFlags |= SVF_NOCLIENT;
-	e->nextthink = 0;
-	e->use = npctriggeredspawnuse;
-}
-
-/*
- * Dying NPCs trigger all their targets.
- */
-void
-npcdeathuse(ent_t *e)
-{
-	dprint("npcdeathuse\n");
-
-	e->npc.aiflags &= AI_GOODGUY;
-	if(e->item != nil){
-		itemdrop(e, e->item, 0);
-		e->item = nil;
-	}
-	/*
-	if(e->deathtarget != nil)
-		e->target = e->deathtarget;
-
-	*/
-	if(e->target == nil)
-		return;
-	usetargets(e, e->enemy);
-}
-
-void
-npcstart(ent_t *e)
-{
-	dprint("npcstart\n");
-
-	e->s.pos.trType = TR_LINEAR;
-	e->s.apos.trType = TR_LINEAR;
-	e->think = npcstartgo;
-	e->nextthink = level.time + FRAMETIME;
-	e->r.svFlags |= SVF_NPC;
-	e->takedmg = qtrue;
-	e->airouttime = level.time + 12;
-	e->use = npcuse;
-	e->clipmask = MASK_NPCSOLID;
-	//e->s.skinnum = 0;
-	//e->deadflag = DEAD_NO;	// FIXME
-	//e->r.svFlags &= ~SVF_DEADBODY;
-	//veccpy(e->s.pos.trBase, e->s.oldorigin);
-
-	if(e->npc.checkattack == nil)
-		e->npc.checkattack = npccheckattack;
-
-	level.numnpcs++;
-	//return qtrue;
-}
-
-void
-npcstartgo(ent_t *e)
-{
-	vec3_t v;
-	qboolean nocombat, fix;
-	ent_t *targ;
-
-	dprint("npcstartgo\n");
-
-	npcdroptofloor(e);
-
-	targ = nil;
-	nocombat = qfalse;
-	fix = qfalse;
-
-	if(e->health <= 0)
-		return;
-
-	if(e->target != nil){
-		while((targ = findent(targ, FOFS(targetname), e->target)) != nil){
-			if(strcmp(targ->classname, "point_combat") == 0){
-				e->npc.combattarg = e->target;
-				fix = qtrue;
-			}else{
-				nocombat = qtrue;
+		// find a path_corner among the targets
+		// there may also be other targets that get fired when the corner
+		// is reached
+		next = nil;
+		do{
+			next = findent(next, FOFS(targetname), path->target);
+			if(!next){
+				gprintf("npc corner at %s without a target path_corner\n",
+					 vtos(path->s.origin));
+				return;
 			}
-		}
-		if(nocombat && e->npc.combattarg)
-			gprintf("%s at %s has target with mixed types\n",
-			   e->classname, vtos(e->s.pos.trBase));
-		if(fix)
-			e->target = nil;
+			// drop target path_corners to floor, subject to npc bounds
+			veccpy(next->s.origin, end);
+			end[2] -= 99999;
+			trap_Trace(&tr, next->s.origin, ent->r.mins, ent->r.maxs, end,
+			   next->s.number, MASK_NPCSOLID);
+			if(tr.fraction == 1.0f || tr.allsolid)
+				continue;
+			veccpy(tr.endpos, next->s.origin);
+		}while(strcmp(next->classname, "path_corner"));
+
+		path->nexttrain = next;
 	}
 
-	// validate
-	if(e->npc.combattarg != nil){
-		targ = nil;
-		while((targ = findent(targ, FOFS(targetname), e->npc.combattarg)) != nil){
-			if(strcmp(targ->classname, "point_combat") != 0){
-				gprintf("%s at %s has bad combattarg %s : %s at %s\n",
-				   e->classname, vtos(e->s.pos.trBase),
-				   e->npc.combattarg, targ->classname,
-				   vtos(targ->s.pos.trBase));
-			}
-		}
-	}
+	// start the train from the first corner
+	npcreached(ent);
 
-	if(e->target != nil){
-		e->npc.goalent = e->npc.movetarg = picktarget(e->target);
-		if(e->npc.movetarg == nil){
-			gprintf("%s can't find target %s at %s\n", 
-			   e->classname, e->target, vtos(e->s.pos.trBase));
-			e->target = nil;
-			invalid(e);
-		}else if(strcmp(e->npc.movetarg->classname, "path_corner") == 0){
-			vecsub(e->npc.goalent->s.pos.trBase, e->s.pos.trBase, v);
-			e->npc.idealyaw = vectoyaw(v);
-			e->npc.walk(e);
-			e->target = nil;
-		}else{
-			e->npc.goalent = e->npc.movetarg = nil;
-			invalid(e);
-		}
-	}else{
-		invalid(e);
-	}
-
-	e->think = npcthink;
-	e->nextthink = level.time + FRAMETIME;
+	// and make it wait for activation
+	//ent->s.pos.trType = TR_STATIONARY;
+	//ent->use = npcuse;
 }
 
 static void
-invalid(ent_t *e)
+npcsetup(ent_t *self)
 {
-	gprintf("invalid\n");
-	e->npc.pausetime = level.time + 100000000;
-	e->npc.stand(e);
+	vec3_t move;
+	float distance;
+	float light;
+	vec3_t color;
+	qboolean lightSet, colorSet;
+	char *sound;
+
+	vecclear(self->s.angles);
+
+	if(!self->speed)
+		self->speed = 100;
+
+	if(!self->target){
+		gprintf("npc without a target at %s\n", vtos(self->r.absmin));
+		entfree(self);
+		return;
+	}
+
+	// init mover
+
+	// if the "model2" key is set, use a seperate model
+	// for drawing, but clip against the brushes
+	if(self->model2)
+		self->s.modelindex2 = modelindex(self->model2);
+
+	// if the "loopsound" key is set, use a constant looping sound when moving
+	if(spawnstr("noise", "100", &sound))
+		self->s.loopSound = soundindex(sound);
+
+	// if the "color" or "light" keys are set, setup constantLight
+	lightSet = spawnfloat("light", "100", &light);
+	colorSet = spawnvec("color", "1 1 1", color);
+	if(lightSet || colorSet){
+		int r, g, b, i;
+
+		r = color[0] * 255;
+		if(r > 255)
+			r = 255;
+		g = color[1] * 255;
+		if(g > 255)
+			g = 255;
+		b = color[2] * 255;
+		if(b > 255)
+			b = 255;
+		i = light / 4;
+		if(i > 255)
+			i = 255;
+		self->s.constantLight = r | (g << 8) | (b << 16) | (i << 24);
+	}
+
+	self->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	self->s.eType = ET_MOVER;
+	veccpy(self->pos1, self->r.currentOrigin);
+	trap_LinkEntity(self);
+
+	self->s.pos.trType = TR_STATIONARY;
+	veccpy(self->pos1, self->s.pos.trBase);
+
+	// calculate time to reach second position from speed
+	vecsub(self->pos2, self->pos1, move);
+	distance = veclen(move);
+	if(!self->speed)
+		self->speed = 100;
+	vecmul(move, self->speed, self->s.pos.trDelta);
+	self->s.pos.trDuration = distance * 1000 / self->speed;
+	if(self->s.pos.trDuration <= 0)
+		self->s.pos.trDuration = 1;
+
+	self->reached = npcreached;
+
+	// start trains on the second frame, to make sure their targets have had
+	// a chance to spawn
+	self->nextthink = level.time + FRAMETIME;
+	self->think = npclinktargets;
+}
+
+static void
+npc_pain(ent_t *e, ent_t *attacker, int dmg)
+{
+	gprintf("pain\n");
+}
+
+static void
+npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
+{
+	gprintf("die\n");
+	trap_UnlinkEntity(e);
+}
+
+void
+SP_npc_test(ent_t *e)
+{
+	npcsetup(e);
+
+	e->model = "models/npc/test";
+	e->s.modelindex = modelindex(e->model);
+	vecset(e->r.mins, -32, -32, -64);
+	vecset(e->r.maxs, 32, 32, 64);
+	setorigin(e, e->s.origin);
+	e->health = 1;
+	e->takedmg = qtrue;
+
+	e->die = npc_die;
+	e->pain = npc_pain;
+
+	e->r.contents = CONTENTS_SOLID | CONTENTS_NPCCLIP;
+
+	trap_LinkEntity(e);
 }

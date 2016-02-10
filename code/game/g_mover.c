@@ -1086,7 +1086,7 @@ SP_func_plat(ent_t *ent)
 	spawnfloat("wait", "1", &ent->wait);
 	spawnfloat("lip", "8", &lip);
 
-	ent->wait = 1000;
+	ent->wait *= 1000;
 
 	// create second position
 	trap_SetBrushModel(ent, ent->model);

@@ -1576,9 +1576,6 @@ runframe(int levelTime)
 	if(level.gameovertime > 0 && level.time > level.gameovertime)
 		trap_SendConsoleCommand(EXEC_APPEND, "map limbo\n");
 
-	// choose an entity for NPCs to target this frame
-	setsightclient();
-
 	// go through all allocated objects
 	ent = &g_entities[0];
 	for(i = 0; i<level.nentities; i++, ent++){

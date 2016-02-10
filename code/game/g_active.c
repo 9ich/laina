@@ -870,11 +870,4 @@ clientendframe(ent_t *ent)
 	// set the bit for the reachability area the client is currently in
 //	i = trap_AAS_PointReachabilityAreaIndex( ent->client->ps.origin );
 //	ent->client->areabits[i >> 3] |= 1 << (i & 7);
-
-	// add player trail so monsters can follow
-	if(!visible(ent, traillastspot())){
-		gprintf("adding a trail %s %s\n", vtos(ent->s.pos.trBase),
-		   vtos(traillastspot()->s.pos.trBase));
-		trailadd(ent->s.pos.trBase);
-	}
 }
