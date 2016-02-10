@@ -331,6 +331,9 @@ Svcmd_EntityList_f(void)
 		case ET_MOVER:
 			gprintf("ET_MOVER            ");
 			break;
+		case ET_NPC:
+			gprintf("ET_NPC              ");
+			break;
 		case ET_CRATE:
 			gprintf("ET_CRATE            ");
 			break;

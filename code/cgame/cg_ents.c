@@ -713,7 +713,7 @@ adjustposformover(const vec3_t in, int moverNum, int fromTime, int toTime, vec3_
 	}
 
 	cent = &cg_entities[moverNum];
-	if(cent->currstate.eType != ET_MOVER){
+	if(cent->currstate.eType != ET_MOVER && cent->currstate.eType != ET_NPC){
 		veccpy(in, out);
 		veccpy(angles_in, angles_out);
 		return;
@@ -877,6 +877,7 @@ addcentity(cent_t *cent)
 		domissile(cent);
 		break;
 	case ET_MOVER:
+	case ET_NPC:
 		domover(cent);
 		break;
 	case ET_CRATE:

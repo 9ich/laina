@@ -189,7 +189,7 @@ npcsetup(ent_t *self)
 	}
 
 	self->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	self->s.eType = ET_MOVER;
+	self->s.eType = ET_NPC;
 	veccpy(self->pos1, self->r.currentOrigin);
 	trap_LinkEntity(self);
 
