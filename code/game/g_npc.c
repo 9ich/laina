@@ -19,6 +19,7 @@ npcreached(ent_t *ent)
 	float speed;
 	vec3_t move;
 	float length;
+	int i;
 
 	// copy the apropriate values
 	next = ent->nexttrain;
@@ -33,7 +34,17 @@ npcreached(ent_t *ent)
 	veccpy(next->s.origin, ent->pos1);
 	veccpy(next->nexttrain->s.origin, ent->pos2);
 
-	veccpy(next->s.angles, ent->s.apos.trBase);
+	// transition the angles
+	for(i = 0; i < 3; i++)
+		ent->s.apos.trBase[i] = anglemod(ent->r.currentAngles[i]);
+	for(i = 0; i < 3; i++){
+		ent->s.apos.trDelta[i] = anglemod(next->s.angles[i] - ent->r.currentAngles[i]);
+		if(next->s.angles[i] - ent->r.currentAngles[i] <= 0)
+			ent->s.apos.trDelta[i] = -anglemod(-ent->s.apos.trDelta[i]);
+	}
+	ent->s.apos.trDuration = 1000;
+	ent->s.apos.trTime = level.time;
+	ent->s.apos.trType = TR_LINEAR_STOP;
 
 	// if the path_corner has a speed, use that
 	if(next->speed)
