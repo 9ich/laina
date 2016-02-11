@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "bg_local.h"
 
 /*
 Think function. The wait time at a corner has completed, so start moving again.
@@ -228,16 +229,20 @@ npcsetup(ent_t *self)
 }
 
 static void
-npc_pain(ent_t *e, ent_t *attacker, int dmg)
-{
-	gprintf("pain\n");
-}
-
-static void
 npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 {
-	gprintf("die\n");
-	trap_UnlinkEntity(e);
+	entfree(e);
+}
+
+void
+npc_touch(ent_t *ent, ent_t *other, trace_t *trace)
+{
+	if(other->client == nil)
+		return;
+	if(other->client->ps.groundEntityNum != ent->s.number)
+		return;
+	other->client->ps.velocity[2] = JUMP_VELOCITY;
+	entfree(ent);
 }
 
 void
@@ -254,7 +259,7 @@ SP_npc_test(ent_t *e)
 	e->takedmg = qtrue;
 
 	e->die = npc_die;
-	e->pain = npc_pain;
+	e->touch = npc_touch;
 
 	e->r.contents = CONTENTS_SOLID | CONTENTS_NPCCLIP;
 
