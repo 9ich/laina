@@ -33,6 +33,8 @@ npcreached(ent_t *ent)
 	veccpy(next->s.origin, ent->pos1);
 	veccpy(next->nexttrain->s.origin, ent->pos2);
 
+	veccpy(next->s.angles, ent->s.apos.trBase);
+
 	// if the path_corner has a speed, use that
 	if(next->speed)
 		speed = next->speed;
