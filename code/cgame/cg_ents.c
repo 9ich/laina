@@ -206,10 +206,14 @@ dogeneral(cent_t *cent)
 	if(!s1->modelindex)
 		return;
 
+	// create the render entity
 	memset(&ent, 0, sizeof(ent));
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
+	// convert angles to axis
+	AnglesToAxis(cent->lerpangles, ent.axis);
 
 	// set frame
-
 	anim = s1->anim;
 	if(s1->nextanimtime != 0 && cg.time > s1->nextanimtime)
 		anim = s1->nextanim;
@@ -218,17 +222,65 @@ dogeneral(cent_t *cent)
 	ent.oldframe = cent->lerpframe.oldframe;
 	ent.backlerp = cent->lerpframe.backlerp;
 
-	veccpy(cent->lerporigin, ent.origin);
-	veccpy(cent->lerporigin, ent.oldorigin);
-
-	ent.hModel = cgs.gamemodels[s1->modelindex];
+	// get the model, either as a bmodel or a modelindex
+	if(s1->solid == SOLID_BMODEL)
+		ent.hModel = cgs.inlinedrawmodel[s1->modelindex];
+	else
+		ent.hModel = cgs.gamemodels[s1->modelindex];
 
 	// player model
 	if(s1->number == cg.snap->ps.clientNum)
 		ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
 
+	// add to refresh list
+	trap_R_AddRefEntityToScene(&ent);
+}
+
+/*
+dogeneral with a blob shadow
+*/
+static void
+dogeneralshadowed(cent_t *cent)
+{
+	refEntity_t ent;
+	entityState_t *s1;
+	float shadowplane;
+	int anim;
+
+	s1 = &cent->currstate;
+
+	// if set to invisible, skip
+	if(!s1->modelindex)
+		return;
+
+	// create the render entity
+	memset(&ent, 0, sizeof(ent));
+	veccpy(cent->lerporigin, ent.origin);
+	veccpy(cent->lerporigin, ent.oldorigin);
 	// convert angles to axis
 	AnglesToAxis(cent->lerpangles, ent.axis);
+
+	// set frame
+	anim = s1->anim;
+	if(s1->nextanimtime != 0 && cg.time > s1->nextanimtime)
+		anim = s1->nextanim;
+	runlerpframe(cgs.anims[s1->modelindex], &cent->lerpframe, anim, 1.0f);
+	ent.frame = cent->lerpframe.frame;
+	ent.oldframe = cent->lerpframe.oldframe;
+	ent.backlerp = cent->lerpframe.backlerp;
+
+	// get the model, either as a bmodel or a modelindex
+	if(s1->solid == SOLID_BMODEL)
+		ent.hModel = cgs.inlinedrawmodel[s1->modelindex];
+	else
+		ent.hModel = cgs.gamemodels[s1->modelindex];
+
+	drawentshadow(cent, &shadowplane);
+	ent.shadowPlane = shadowplane;
+
+	// player model
+	if(s1->number == cg.snap->ps.clientNum)
+		ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
@@ -550,6 +602,7 @@ domover(cent_t *cent)
 {
 	refEntity_t ent;
 	entityState_t *s1;
+	int anim;
 
 	s1 = &cent->currstate;
 
@@ -577,55 +630,14 @@ domover(cent_t *cent)
 	if(s1->modelindex2){
 		ent.skinNum = 0;
 		ent.hModel = cgs.gamemodels[s1->modelindex2];
-		trap_R_AddRefEntityToScene(&ent);
-	}
-}
-
-static void
-docrate(cent_t *cent)
-{
-	refEntity_t ent;
-	entityState_t *s1;
-	float shadowplane;
-	int anim;
-
-	s1 = &cent->currstate;
-
-	// create the render entity
-	memset(&ent, 0, sizeof(ent));
-	veccpy(cent->lerporigin, ent.origin);
-	veccpy(cent->lerporigin, ent.oldorigin);
-	AnglesToAxis(cent->lerpangles, ent.axis);
-	ent.nonNormalizedAxes = qfalse;
-
-	// set frame
-
-	anim = s1->anim;
-	if(s1->nextanimtime != 0 && cg.time > s1->nextanimtime)
-		anim = s1->nextanim;
-	runlerpframe(cgs.anims[s1->modelindex], &cent->lerpframe, anim, 1.0f);
-	ent.frame = cent->lerpframe.frame;
-	ent.oldframe = cent->lerpframe.oldframe;
-	ent.backlerp = cent->lerpframe.backlerp;
-
-	// get the model, either as a bmodel or a modelindex
-	if(s1->solid == SOLID_BMODEL)
-		ent.hModel = cgs.inlinedrawmodel[s1->modelindex];
-	else
-		ent.hModel = cgs.gamemodels[s1->modelindex];
-
-	drawentshadow(cent, &shadowplane);
-	ent.shadowPlane = shadowplane;
-
-	ent.renderfx |= RF_MINLIGHT;
-
-	// add to refresh list
-	trap_R_AddRefEntityToScene(&ent);
-
-	// add the secondary model
-	if(s1->modelindex2){
-		ent.skinNum = 0;
-		ent.hModel = cgs.gamemodels[s1->modelindex2];
+		// set frame
+		anim = s1->anim;
+		if(s1->nextanimtime != 0 && cg.time > s1->nextanimtime)
+			anim = s1->nextanim;
+		runlerpframe(cgs.anims[s1->modelindex], &cent->lerpframe, anim, 1.0f);
+		ent.frame = cent->lerpframe.frame;
+		ent.oldframe = cent->lerpframe.oldframe;
+		ent.backlerp = cent->lerpframe.backlerp;
 		trap_R_AddRefEntityToScene(&ent);
 	}
 }
@@ -877,14 +889,14 @@ addcentity(cent_t *cent)
 		domissile(cent);
 		break;
 	case ET_MOVER:
-	case ET_NPC:
 		domover(cent);
 		break;
-	case ET_CRATE:
-		docrate(cent);
+	case ET_NPC:
+		dogeneralshadowed(cent);
 		break;
+	case ET_CRATE:
 	case ET_CRATE_BOUNCY:
-		docrate(cent);
+		dogeneralshadowed(cent);
 		break;
 	case ET_CHECKPOINTHALO:
 		dogeneral(cent);
