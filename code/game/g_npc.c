@@ -253,12 +253,12 @@ npc_touch(ent_t *ent, ent_t *other, trace_t *trace)
 	vecset(corner, other->r.absmax[0], other->r.absmin[1], other->r.absmin[2]);
 	if(vecdistsq(corner, org) < dist){
 		veccpy(corner, closest);
-		dist = vecdist(closest, org);
+		dist = vecdistsq(closest, org);
 	}
 	vecset(corner, other->r.absmin[0], other->r.absmax[1], other->r.absmin[2]);
 	if(vecdistsq(corner, org) < dist){
 		veccpy(corner, closest);
-		dist = vecdist(closest, org);
+		dist = vecdistsq(closest, org);
 	}
 	vecset(corner, other->r.absmax[0], other->r.absmax[1], other->r.absmin[2]);
 	if(vecdistsq(corner, org) < dist){
