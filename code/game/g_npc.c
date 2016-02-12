@@ -276,7 +276,7 @@ npc_touch(ent_t *ent, ent_t *other, trace_t *trace)
 		return;
 	}
 	other->client->ps.velocity[2] = JUMP_VELOCITY;
-	entdamage(other, nil, nil, nil, nil, 1, 0, ent->meansofdeath);
+	entdamage(other, nil, nil, nil, nil, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
 }
 
 static void
