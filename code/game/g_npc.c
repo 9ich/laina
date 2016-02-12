@@ -9,6 +9,7 @@ startmoving(ent_t *ent)
 {
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_LINEAR_STOP;
+	ent->s.anim = ANIM_NPCWALK;
 }
 
 extern void	SetMoverState(ent_t *ent, moverstate_t moverstate, int time);
@@ -46,6 +47,7 @@ npcreached(ent_t *ent)
 	ent->s.apos.trDuration = 1000;
 	ent->s.apos.trTime = level.time;
 	ent->s.apos.trType = TR_LINEAR_STOP;
+	ent->s.anim = ANIM_NPCTURN;
 
 	// if the path_corner has a speed, use that
 	if(next->speed)
@@ -229,9 +231,25 @@ npcsetup(ent_t *self)
 }
 
 static void
+deathend(ent_t *e)
+{
+	e->s.anim = ANIM_NPCDEAD;
+	e->think = entfree;
+	e->nextthink = level.time + 10000;
+}
+
+static void
 npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 {
-	entfree(e);
+	veccpy(e->r.currentOrigin, e->s.pos.trBase);
+	vecset(e->s.pos.trDelta, 0, 0, 0);
+	e->s.pos.trTime = level.time;
+	e->s.pos.trDuration = 0;
+	e->s.eType = ET_GENERAL;
+	e->r.contents = 0;
+	e->s.anim = ANIM_NPCDEATH;
+	e->think = deathend;
+	e->nextthink = level.time + 800;
 }
 
 static void
@@ -271,8 +289,8 @@ npc_touch(ent_t *ent, ent_t *other, trace_t *trace)
 	if(other->client->ps.velocity[2] < 0 &&
 	   dir[2] > 0.5f*M_PI - DEG2RAD(60) &&
 	   dir[2] <= 0.5f*M_PI + DEG2RAD(60)){
+		npc_die(ent, other, other, 1, 0);
 		other->client->ps.velocity[2] = JUMP_VELOCITY;
-		entfree(ent);
 		return;
 	}
 	other->client->ps.velocity[2] = JUMP_VELOCITY;
@@ -311,7 +329,7 @@ SP_npc_test(ent_t *e)
 
 	e->r.contents = CONTENTS_TRIGGER;
 
-	e->s.anim = ANIM_IDLE;
+	e->s.anim = ANIM_NPCIDLE;
 
 	trap_LinkEntity(e);
 }

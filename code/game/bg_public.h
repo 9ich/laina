@@ -496,6 +496,13 @@ typedef enum
 	ANIM_CRATEIDLE	= 0,
 	ANIM_CRATESMASH,
 
+	// NPC animations
+	ANIM_NPCIDLE	= 0,
+	ANIM_NPCWALK,
+	ANIM_NPCTURN,
+	ANIM_NPCDEATH,
+	ANIM_NPCDEAD,
+
 	// player animations
 	BOTH_DEATH1	= 0,
 	BOTH_DEAD1,
