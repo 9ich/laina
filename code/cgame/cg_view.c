@@ -571,8 +571,9 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 		cgprintf("cg.clframe:%i\n", cg.clframe);
 
 	if(cg_debugPosition.integer)
-		cgprintf("yaw=%06.2f pitch=%06.2f roll=%06.2f\n", cg.pps.viewangles[YAW],
-		   cg.pps.viewangles[PITCH], cg.pps.viewangles[ROLL]);
+		cgprintf("(%06.2f %06.2f %06.2f) yaw=%06.2f pitch=%06.2f roll=%06.2f\n",
+		   cg.pps.origin[0], cg.pps.origin[1], cg.pps.origin[2],
+		   cg.pps.viewangles[YAW], cg.pps.viewangles[PITCH], cg.pps.viewangles[ROLL]);
 
 }
 
