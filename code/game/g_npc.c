@@ -234,15 +234,59 @@ npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 	entfree(e);
 }
 
-void
+static void
 npc_touch(ent_t *ent, ent_t *other, trace_t *trace)
+{
+	vec3_t dir, org, corner, closest;
+	float dist;
+
+	if(other->client == nil)
+		return;
+
+	// if player entered the bounds from above, kill the npc
+	vecadd(ent->r.absmin, ent->r.absmax, org);
+	vecmul(org, 0.5f, org);
+
+	vecset(closest, other->r.absmin[0], other->r.absmin[1], other->r.absmin[2]);
+	dist = vecdistsq(closest, org);
+
+	vecset(corner, other->r.absmax[0], other->r.absmin[1], other->r.absmin[2]);
+	if(vecdistsq(corner, org) < dist){
+		veccpy(corner, closest);
+		dist = vecdist(closest, org);
+	}
+	vecset(corner, other->r.absmin[0], other->r.absmax[1], other->r.absmin[2]);
+	if(vecdistsq(corner, org) < dist){
+		veccpy(corner, closest);
+		dist = vecdist(closest, org);
+	}
+	vecset(corner, other->r.absmax[0], other->r.absmax[1], other->r.absmin[2]);
+	if(vecdistsq(corner, org) < dist){
+		veccpy(corner, closest);
+	}
+
+	vecsub(closest, org, dir);
+	vecnorm(dir);
+
+	if(other->client->ps.velocity[2] < 0 &&
+	   dir[2] > 0.5f*M_PI - DEG2RAD(60) &&
+	   dir[2] <= 0.5f*M_PI + DEG2RAD(60)){
+		other->client->ps.velocity[2] = JUMP_VELOCITY;
+		entfree(ent);
+		return;
+	}
+	other->client->ps.velocity[2] = JUMP_VELOCITY;
+	entdamage(other, nil, nil, nil, nil, 1, 0, ent->meansofdeath);
+}
+
+static void
+npc_blocked(ent_t *ent, ent_t *other)
 {
 	if(other->client == nil)
 		return;
-	if(other->client->ps.groundEntityNum != ent->s.number)
-		return;
+
 	other->client->ps.velocity[2] = JUMP_VELOCITY;
-	entfree(ent);
+	entdamage(other, ent, ent, nil, nil, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
 }
 
 void
@@ -250,18 +294,24 @@ SP_npc_test(ent_t *e)
 {
 	npcsetup(e);
 
-	e->model = "models/npc/test";
+	e->model = "models/npc/test/test";
 	e->s.modelindex = modelindex(e->model);
-	vecset(e->r.mins, -32, -32, -64);
-	vecset(e->r.maxs, 32, 32, 64);
+	// origin is on ground
+	vecset(e->r.mins, -20, -20, 0);
+	vecset(e->r.maxs, 20, 20, 40);
 	setorigin(e, e->s.origin);
 	e->health = 1;
 	e->takedmg = qtrue;
+	e->damage = 1;
+	e->meansofdeath = 2;
 
 	e->die = npc_die;
+	e->blocked = npc_blocked;
 	e->touch = npc_touch;
 
-	e->r.contents = CONTENTS_SOLID | CONTENTS_NPCCLIP;
+	e->r.contents = CONTENTS_TRIGGER;
+
+	e->s.anim = ANIM_IDLE;
 
 	trap_LinkEntity(e);
 }
