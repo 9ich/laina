@@ -627,34 +627,7 @@ void	runmover(ent_t *ent);
 void	doortrigger_touch(ent_t *ent, ent_t *other, trace_t *trace);
 
 // g_npc.c
-void	npcstart(ent_t *e);
-void	npcstartgo(ent_t *e);
-void	npcdroptofloor(ent_t *ent);
-void	npcthink(ent_t *e);
-void	walknpcstart(ent_t *e);
-void	swimnpcstart(ent_t *e);
-void	flynpcstart(ent_t *e);
-void	npcattackfinished(ent_t *e, float time);
-void	npcdeathuse(ent_t *e);
-void	npccategorizepos(ent_t *ent);
-qboolean	npccheckattack(ent_t *e);
-void	npccheckfly(ent_t *e);
-void	npccheckground(ent_t *ent);
-
-// g_npcai.c
-void	aistand(ent_t *e, float dist);
-void	aiwalk(ent_t *e, float dist);
-void	aimove(ent_t *e, float dist);
-void	aiturn(ent_t *e, float dist);
-void	airun(ent_t *e, float dist);
-void	aicharge(ent_t *e, float dist);
-qboolean	visible(ent_t *e, ent_t *other);
-void	setsightclient(void);
-
-// g_npcmove.c
-void	npcchangeyaw(ent_t*);
-void	npcmovetogoal(ent_t *e, float dist);
-qboolean	npcwalkmove(ent_t *e, float yaw, float dist);
+void	runnpc(ent_t *ent);
 
 // g_trigger.c
 void	trigger_teleporter_touch(ent_t *self, ent_t *other, trace_t *trace);

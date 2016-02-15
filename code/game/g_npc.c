@@ -1,6 +1,20 @@
 #include "g_local.h"
 #include "bg_local.h"
 
+enum
+{
+	SUSPEND		= (1<<0),	// don't drop path_corners to floor
+};
+
+void
+runnpc(ent_t *ent)
+{
+	if(ent->s.pos.trType == TR_GRAVITY)
+		runitem(ent);	// flops on ground like an item
+	else
+		runmover(ent);
+}
+
 /*
 Think function. The wait time at a corner has completed, so start moving again.
 */
@@ -130,15 +144,17 @@ npclinktargets(ent_t *ent)
 					 vtos(path->s.origin));
 				return;
 			}
+		}while(strcmp(next->classname, "path_corner") != 0);
+
+		if(!(ent->spawnflags & SUSPEND)){
 			// drop target path_corners to floor, subject to npc bounds
 			veccpy(next->s.origin, end);
 			end[2] -= 99999;
 			trap_Trace(&tr, next->s.origin, ent->r.mins, ent->r.maxs, end,
 			   next->s.number, MASK_NPCSOLID);
-			if(tr.fraction == 1.0f || tr.allsolid)
-				continue;
-			veccpy(tr.endpos, next->s.origin);
-		}while(strcmp(next->classname, "path_corner"));
+			if(tr.fraction != 1.0f && !tr.allsolid)
+				veccpy(tr.endpos, next->s.origin);
+		}
 
 		path->nexttrain = next;
 	}
@@ -207,7 +223,6 @@ npcsetup(ent_t *self)
 	self->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	self->s.eType = ET_NPC;
 	veccpy(self->pos1, self->r.currentOrigin);
-	trap_LinkEntity(self);
 
 	self->s.pos.trType = TR_STATIONARY;
 	veccpy(self->pos1, self->s.pos.trBase);
@@ -241,15 +256,29 @@ deathend(ent_t *e)
 static void
 npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 {
-	veccpy(e->r.currentOrigin, e->s.pos.trBase);
-	vecset(e->s.pos.trDelta, 0, 0, 0);
+	vec3_t end;
+	trace_t tr;
+
+	veccpy(e->s.origin, end);
+	end[2] -= 99999;
+	trap_Trace(&tr, e->r.currentOrigin, e->r.mins, e->r.maxs, end, e->s.number, MASK_SOLID);
+	if(tr.startsolid){
+		entfree(e);
+		return;
+	}
+
+	e->s.groundEntityNum = tr.entityNum;
+
+	setorigin(e, e->r.currentOrigin);
+	e->s.pos.trType = TR_GRAVITY;
 	e->s.pos.trTime = level.time;
-	e->s.pos.trDuration = 0;
-	e->s.eType = ET_GENERAL;
+	e->physbounce = 0.5f;
+	e->s.eFlags |= EF_BOUNCE_HALF;
 	e->r.contents = 0;
 	e->s.anim = ANIM_NPCDEATH;
 	e->think = deathend;
 	e->nextthink = level.time + 800;
+	trap_LinkEntity(e);
 }
 
 static void
@@ -307,14 +336,20 @@ npc_blocked(ent_t *ent, ent_t *other)
 	entdamage(other, ent, ent, nil, nil, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
 }
 
+static void
+npcfinishspawn(ent_t *e)
+{
+	npcsetup(e);
+	e->r.contents = CONTENTS_TRIGGER;
+	e->s.anim = ANIM_NPCIDLE;
+	trap_LinkEntity(e);
+}
+
 void
 SP_npc_test(ent_t *e)
 {
-	npcsetup(e);
-
 	e->model = "models/npc/test/test";
 	e->s.modelindex = modelindex(e->model);
-	// origin is on ground
 	vecset(e->r.mins, -20, -20, 0);
 	vecset(e->r.maxs, 20, 20, 40);
 	setorigin(e, e->s.origin);
@@ -327,9 +362,7 @@ SP_npc_test(ent_t *e)
 	e->blocked = npc_blocked;
 	e->touch = npc_touch;
 
-	e->r.contents = CONTENTS_TRIGGER;
-
-	e->s.anim = ANIM_NPCIDLE;
-
-	trap_LinkEntity(e);
+	// complete the spawn after the rest of the level is done spawning
+	e->think = npcfinishspawn;
+	e->nextthink = level.time + 2*FRAMETIME;
 }

@@ -2243,7 +2243,6 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/g_misc.o \
   $(B)/$(BASEGAME)/game/g_missile.o \
   $(B)/$(BASEGAME)/game/g_npc.o \
-  $(B)/$(BASEGAME)/game/g_npcmove.o \
   $(B)/$(BASEGAME)/game/g_mover.o \
   $(B)/$(BASEGAME)/game/g_save.o \
   $(B)/$(BASEGAME)/game/g_session.o \

@@ -1620,8 +1620,13 @@ runframe(int levelTime)
 			continue;
 		}
 
-		if(ent->s.eType == ET_MOVER || ent->s.eType == ET_NPC){
+		if(ent->s.eType == ET_MOVER){
 			runmover(ent);
+			continue;
+		}
+
+		if(ent->s.eType == ET_NPC){
+			runnpc(ent);
 			continue;
 		}
 
