@@ -228,6 +228,8 @@ dogeneral(cent_t *cent)
 	else
 		ent.hModel = cgs.gamemodels[s1->modelindex];
 
+	ent.renderfx |= RF_MINLIGHT;
+
 	// player model
 	if(s1->number == cg.snap->ps.clientNum)
 		ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
@@ -277,6 +279,8 @@ dogeneralshadowed(cent_t *cent)
 
 	drawentshadow(cent, &shadowplane);
 	ent.shadowPlane = shadowplane;
+
+	ent.renderfx |= RF_MINLIGHT;
 
 	// player model
 	if(s1->number == cg.snap->ps.clientNum)
