@@ -103,8 +103,9 @@ npcreached(ent_t *ent)
 static void
 npcuse(ent_t *ent, ent_t *other, ent_t *activator)
 {
-	ent->nextthink = level.time + 1;
-	ent->think = startmoving;
+	// let NPC do startmoving
+	ent->nextthink = level.time;
+	ent->use = nil;
 }
 
 /*
@@ -159,12 +160,11 @@ npclinktargets(ent_t *ent)
 		path->nexttrain = next;
 	}
 
-	// start the train from the first corner
+	// place the NPC on the first corner, but make it wait for activation
 	npcreached(ent);
-
-	// and make it wait for activation
-	//ent->s.pos.trType = TR_STATIONARY;
-	//ent->use = npcuse;
+	ent->nextthink = 0;
+	ent->s.pos.trType = TR_STATIONARY;
+	ent->use = npcuse;
 }
 
 static void
@@ -362,7 +362,6 @@ SP_npc_test(ent_t *e)
 	e->blocked = npc_blocked;
 	e->touch = npc_touch;
 
-	// complete the spawn after the rest of the level is done spawning
 	e->think = npcfinishspawn;
-	e->nextthink = level.time + 2*FRAMETIME;
+	e->nextthink = level.time + FRAMETIME;
 }
