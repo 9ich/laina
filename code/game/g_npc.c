@@ -345,13 +345,21 @@ npcfinishspawn(ent_t *e)
 	trap_LinkEntity(e);
 }
 
+/*
+An overgrown rat.
+
+SUSPENDED	no drop to floor
+
+"angle"		angle to face when spawning
+"target"	the first path_corner of a succession of linked path_corners to follow
+*/
 void
-SP_npc_test(ent_t *e)
+SP_npc_rat(ent_t *e)
 {
-	e->model = "models/npc/test/test";
+	e->model = "models/npc/rat/rat";
 	e->s.modelindex = modelindex(e->model);
 	vecset(e->r.mins, -20, -20, 0);
-	vecset(e->r.maxs, 20, 20, 40);
+	vecset(e->r.maxs, 20, 20, 22);
 	setorigin(e, e->s.origin);
 	e->health = 1;
 	e->takedmg = qtrue;
@@ -362,6 +370,5 @@ SP_npc_test(ent_t *e)
 	e->blocked = npc_blocked;
 	e->touch = npc_touch;
 
-	e->think = npcfinishspawn;
-	e->nextthink = level.time + FRAMETIME;
+	npcfinishspawn(e);
 }
