@@ -92,10 +92,11 @@ npcreached(ent_t *ent)
 	// start it going
 	SetMoverState(ent, MOVER_1TO2, level.time);
 
+	ent->think = startmoving;
+
 	// if there is a "wait" value on the target, don't start moving yet
 	if(next->wait){
 		ent->nextthink = level.time + next->wait * 1000;
-		ent->think = startmoving;
 		ent->s.pos.trType = TR_STATIONARY;
 	}
 }
