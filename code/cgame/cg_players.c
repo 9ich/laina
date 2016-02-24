@@ -1784,7 +1784,7 @@ doplayer(cent_t *cent)
 		return;
 
 	// get the player model information
-	renderfx = 0;
+	renderfx = RF_MINLIGHT;
 	if(cent->currstate.number == cg.snap->ps.clientNum){
 		if(!cg.thirdperson)
 			renderfx = RF_THIRD_PERSON;	// only draw in mirrors
