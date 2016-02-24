@@ -113,7 +113,7 @@ void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 	vec3_t			mins, maxs;
 
 	if (!name) {
-		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL" );
+		Com_Error( ERR_DROP, "SV_SetBrushModel: null name" );
 	}
 
 	if (name[0] != '*') {
