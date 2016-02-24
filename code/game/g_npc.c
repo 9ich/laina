@@ -359,8 +359,8 @@ SP_npc_rat(ent_t *e)
 {
 	e->model = "models/npc/rat/rat";
 	e->s.modelindex = modelindex(e->model);
-	vecset(e->r.mins, -20, -20, 0);
-	vecset(e->r.maxs, 20, 20, 22);
+	vecset(e->r.mins, -30, -30, 0);
+	vecset(e->r.maxs, 30, 30, 26);
 	setorigin(e, e->s.origin);
 	e->health = 1;
 	e->takedmg = qtrue;
