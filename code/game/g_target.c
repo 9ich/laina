@@ -100,7 +100,7 @@ Think_Target_Delay(ent_t *ent)
 void
 Use_Target_Delay(ent_t *ent, ent_t *other, ent_t *activator)
 {
-	ent->nextthink = level.time + (ent->wait + ent->random * crandom()) * 1000;
+	ent->nextthink = level.time + (ent->wait + ent->random*crandom()) * 1000;
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
 }
@@ -110,10 +110,8 @@ SP_target_delay(ent_t *ent)
 {
 	// check delay for backwards compatability
 	if(!spawnfloat("delay", "0", &ent->wait))
-		spawnfloat("wait", "1", &ent->wait);
+		spawnfloat("wait", "0", &ent->wait);
 
-	if(!ent->wait)
-		ent->wait = 1;
 	ent->use = Use_Target_Delay;
 }
 
