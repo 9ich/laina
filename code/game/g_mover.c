@@ -512,6 +512,7 @@ Use_BinaryMover(ent_t *ent, ent_t *other, ent_t *activator)
 	}
 
 	ent->activator = activator;
+	ent->ckpoint = level.checkpoint;
 
 	if(ent->moverstate == MOVER_POS1){
 		// start moving 50 msec later, becase if this was player
@@ -566,6 +567,14 @@ Use_BinaryMover(ent_t *ent, ent_t *other, ent_t *activator)
 	}
 }
 
+void
+Levelrespawn_Mover(ent_t *ent)
+{
+	restoreinitialstate(ent);
+	ent->s.pos.trTime = level.time;
+	ent->s.apos.trTime = level.time;
+}
+
 /*
 "pos1", "pos2", and "speed" should be set before calling,
 so the movement delta can be calculated
@@ -612,6 +621,8 @@ InitMover(ent_t *ent)
 
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
+	ent->levelrespawn = Levelrespawn_Mover;
+	ent->ckpoint = level.checkpoint;
 
 	ent->moverstate = MOVER_POS1;
 	ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -1279,6 +1290,7 @@ Reached_Train(ent_t *ent)
 static void
 Use_Train(ent_t *ent, ent_t *other, ent_t *activator)
 {
+	ent->ckpoint = level.checkpoint;
 	ent->nextthink = level.time + 1;
 	ent->think = Think_BeginMoving;
 }

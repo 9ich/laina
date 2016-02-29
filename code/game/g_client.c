@@ -507,9 +507,9 @@ clientrespawn
 void
 clientrespawn(ent_t *ent)
 {
+	levelrespawn();
 	copytobodyqueue(ent);
 	clientspawn(ent);
-	levelrespawn();
 }
 
 /*

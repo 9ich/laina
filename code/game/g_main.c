@@ -36,6 +36,8 @@ typedef struct
 } cvarTable_t;
 
 ent_t g_entities[MAX_GENTITIES];
+// all ents in g_entities saved in their state just after spawn, for levelrespawn
+ent_t g_initialents[MAX_GENTITIES];
 gclient_t g_clients[MAX_CLIENTS];
 
 vmCvar_t g_gametype;

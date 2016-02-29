@@ -6,6 +6,12 @@ enum
 	SUSPEND		= (1<<0),	// don't drop path_corners to floor
 };
 
+static void
+npclevelrespawn(ent_t *ent)
+{
+	restoreinitialstate(ent);
+}
+
 void
 runnpc(ent_t *ent)
 {
@@ -244,13 +250,21 @@ npcsetup(ent_t *self)
 	// a chance to spawn
 	self->nextthink = level.time + FRAMETIME;
 	self->think = npclinktargets;
+	self->levelrespawn = npclevelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 static void
 deathend(ent_t *e)
 {
+	e->r.svFlags |= SVF_NOCLIENT;
+}
+
+static void
+liedead(ent_t *e)
+{
 	e->s.anim = ANIM_NPCDEAD;
-	e->think = entfree;
+	e->think = deathend;
 	e->nextthink = level.time + 10000;
 }
 
@@ -260,11 +274,13 @@ npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 	vec3_t end;
 	trace_t tr;
 
+	e->ckpoint = level.checkpoint;
+
 	veccpy(e->s.origin, end);
 	end[2] -= 99999;
 	trap_Trace(&tr, e->r.currentOrigin, e->r.mins, e->r.maxs, end, e->s.number, MASK_SOLID);
 	if(tr.startsolid){
-		entfree(e);
+		trap_UnlinkEntity(e);
 		return;
 	}
 
@@ -277,7 +293,7 @@ npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 	e->s.eFlags |= EF_BOUNCE_HALF;
 	e->r.contents = 0;
 	e->s.anim = ANIM_NPCDEATH;
-	e->think = deathend;
+	e->think = liedead;
 	e->nextthink = level.time + 800;
 	trap_LinkEntity(e);
 }

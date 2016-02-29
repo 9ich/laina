@@ -1403,6 +1403,7 @@ Cmd_Stats_f(ent_t *ent)
 	    trap_SendServerCommand( ent-g_entities, va("print \"%d%% level coverage\n\"", n * 100 / max));
 	*/
 }
+	
 
 /*
 =================

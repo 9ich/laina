@@ -22,6 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 void
+trigger_levelrespawn(ent_t *ent)
+{
+	restoreinitialstate(ent);
+}
+
+void
 InitTrigger(ent_t *self)
 {
 	if(!veccmp(self->s.angles, vec3_origin))
@@ -30,6 +36,8 @@ InitTrigger(ent_t *self)
 	trap_SetBrushModel(self, self->model);
 	self->r.contents = CONTENTS_TRIGGER;	// replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
+	self->levelrespawn = trigger_levelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 // the wait time has passed, so set back up for another activation
@@ -45,6 +53,7 @@ multi_wait(ent_t *ent)
 void
 multi_trigger(ent_t *ent, ent_t *activator)
 {
+	ent->ckpoint = level.checkpoint;
 	ent->activator = activator;
 	if(ent->nextthink)
 		return;	// can't retrigger until the wait is over
@@ -123,7 +132,7 @@ void
 trigger_always_think(ent_t *ent)
 {
 	usetargets(ent, ent);
-	entfree(ent);
+	trap_UnlinkEntity(ent);
 }
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
@@ -142,6 +151,9 @@ SP_trigger_always(ent_t *ent)
 	// we must have some delay to make sure our use targets are present
 	ent->nextthink = level.time + delay + 100;
 	ent->think = trigger_always_think;
+	ent->levelrespawn = trigger_levelrespawn;
+	ent->ckpoint = level.checkpoint;
+	ent->r.svFlags |= SVF_NOCLIENT;
 }
 
 /*
@@ -458,6 +470,8 @@ SP_trigger_timer(ent_t *self)
 
 	self->use = timer_use;
 	self->think = timer_think;
+	self->levelrespawn = trigger_levelrespawn;
+	self->ckpoint = level.checkpoint;
 
 	if(self->random >= self->wait){
 		self->random = self->wait - FRAMETIME;

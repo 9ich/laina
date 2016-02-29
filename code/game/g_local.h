@@ -455,6 +455,7 @@ typedef struct
 } levelstatic_t;
 
 // g_spawn.c
+void		restoreinitialstate(ent_t *e);
 qboolean	spawnstr(const char *key, const char *defaultString, char **out);
 // spawn string returns a temporary reference, you must CopyString() if you want to keep it
 qboolean	spawnfloat(const char *key, const char *defaultString, float *out);
@@ -693,7 +694,8 @@ void	BotTestAAS(vec3_t origin);
 
 extern levelstatic_t level;
 extern ent_t g_entities[MAX_GENTITIES];
-
+// all ents in g_entities saved in their state just after spawn, for levelrespawn
+extern ent_t g_initialents[MAX_GENTITIES];
 #define FOFS(x)		((size_t)&(((ent_t*)0)->x))
 
 extern vmCvar_t g_gametype;

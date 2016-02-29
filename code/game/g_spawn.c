@@ -553,6 +553,34 @@ parsespawnvars(void)
 	return qtrue;
 }
 
+/*
+Saves the states of entities just after spawning. Use with levelrespawn.
+*/
+static void
+saveinitialstates(void)
+{
+	int i;
+
+	for(i = 0; i < level.nentities; i++)
+		g_initialents[i] = g_entities[i];
+}
+
+/*
+Resets to the state of an entity just after spawning.
+*/
+void
+restoreinitialstate(ent_t *e)
+{
+	int tmp;
+
+	tmp = e->ckpoint;
+	*e = g_initialents[e->s.number];
+	e->ckpoint = tmp;
+	// if the ent was originally linked, make sure it's linked now too
+	if(e->r.linked)
+		trap_LinkEntity(e);
+}
+
 /*QUAKED worldspawn (0 0 0) ?
 
 Every map should have exactly one worldspawn.
@@ -637,4 +665,6 @@ spawnall(void)
 		spawngentityfromspawnvars();
 
 	level.spawning = qfalse;	// any future calls to entspawn*() will be errors
+
+	saveinitialstates();
 }

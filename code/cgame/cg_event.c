@@ -926,6 +926,7 @@ entevent(cent_t *cent, vec3_t position)
 
 	case EV_LEVELRESPAWN:
 		DEBUGNAME("EV_LEVELRESPAWN");
+		trap_S_ClearLoopingSounds(qtrue);
 		initlocalents();
 		break;
 		

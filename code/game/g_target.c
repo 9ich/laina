@@ -23,6 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //==========================================================
 
+static void
+target_levelrespawn(ent_t *e)
+{
+	restoreinitialstate(e);
+}
+
 /*QUAKED target_give (1 0 0) (-8 -8 -8) (8 8 8)
 Gives the activator all the items pointed to.
 */
@@ -37,6 +43,8 @@ Use_Target_Give(ent_t *ent, ent_t *other, ent_t *activator)
 
 	if(!ent->target)
 		return;
+
+	ent->ckpoint = level.checkpoint;
 
 	memset(&trace, 0, sizeof(trace));
 	t = nil;
@@ -55,6 +63,8 @@ void
 SP_target_give(ent_t *ent)
 {
 	ent->use = Use_Target_Give;
+	ent->levelrespawn = target_levelrespawn;
+	ent->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -68,6 +78,8 @@ Use_target_remove_powerups(ent_t *ent, ent_t *other, ent_t *activator)
 {
 	if(!activator->client)
 		return;
+
+	ent->ckpoint = level.checkpoint;
 
 	if(activator->client->ps.powerups[PW_REDFLAG])
 		teamreturnflag(TEAM_RED);
@@ -83,6 +95,8 @@ void
 SP_target_remove_powerups(ent_t *ent)
 {
 	ent->use = Use_target_remove_powerups;
+	ent->levelrespawn = target_levelrespawn;
+	ent->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -100,6 +114,7 @@ Think_Target_Delay(ent_t *ent)
 void
 Use_Target_Delay(ent_t *ent, ent_t *other, ent_t *activator)
 {
+	ent->ckpoint = level.checkpoint;
 	ent->nextthink = level.time + (ent->wait + ent->random*crandom()) * 1000;
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
@@ -113,6 +128,8 @@ SP_target_delay(ent_t *ent)
 		spawnfloat("wait", "0", &ent->wait);
 
 	ent->use = Use_Target_Delay;
+	ent->levelrespawn = target_levelrespawn;
+	ent->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -125,6 +142,7 @@ The activator is given this many points.
 void
 Use_Target_Score(ent_t *ent, ent_t *other, ent_t *activator)
 {
+	ent->ckpoint = level.checkpoint;
 	addscore(activator, ent->r.currentOrigin, ent->count);
 }
 
@@ -134,6 +152,8 @@ SP_target_score(ent_t *ent)
 	if(!ent->count)
 		ent->count = 1;
 	ent->use = Use_Target_Score;
+	ent->levelrespawn = target_levelrespawn;
+	ent->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -150,6 +170,9 @@ Use_Target_Print(ent_t *ent, ent_t *other, ent_t *activator)
 		return;
 	}
 
+	ent->ckpoint = level.checkpoint;
+
+
 	if(ent->spawnflags & 3){
 		if(ent->spawnflags & 1)
 			teamcmd(TEAM_RED, va("cp \"%s\"", ent->message));
@@ -165,6 +188,8 @@ void
 SP_target_print(ent_t *ent)
 {
 	ent->use = Use_Target_Print;
+	ent->levelrespawn = target_levelrespawn;
+	ent->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -184,6 +209,8 @@ Multiple identical looping sounds will just increase volume without any speed co
 void
 Use_Target_Speaker(ent_t *ent, ent_t *other, ent_t *activator)
 {
+	ent->ckpoint = level.checkpoint;
+
 	if(ent->spawnflags & 3){				// looping sound toggles
 		if(ent->s.loopSound)
 			ent->s.loopSound = 0;			// turn it off
@@ -233,6 +260,8 @@ SP_target_speaker(ent_t *ent)
 		ent->s.loopSound = ent->noiseindex;
 
 	ent->use = Use_Target_Speaker;
+	ent->levelrespawn = target_levelrespawn;
+	ent->ckpoint = level.checkpoint;
 
 	if(ent->spawnflags & 4)
 		ent->r.svFlags |= SVF_BROADCAST;
@@ -278,6 +307,8 @@ target_laser_think(ent_t *self)
 
 	trap_LinkEntity(self);
 	self->nextthink = level.time + FRAMETIME;
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 void
@@ -338,6 +369,8 @@ SP_target_laser(ent_t *self)
 	// let everything else get spawned before we start firing
 	self->think = target_laser_start;
 	self->nextthink = level.time + FRAMETIME;
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -368,6 +401,8 @@ SP_target_teleporter(ent_t *self)
 		gprintf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
 
 	self->use = target_teleporter_use;
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -401,6 +436,8 @@ void
 SP_target_relay(ent_t *self)
 {
 	self->use = target_relay_use;
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 //==========================================================
@@ -418,6 +455,8 @@ void
 SP_target_kill(ent_t *self)
 {
 	self->use = target_kill_use;
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 /*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -427,6 +466,8 @@ void
 SP_target_position(ent_t *self)
 {
 	setorigin(self, self->s.origin);
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 }
 
 static void
@@ -472,6 +513,8 @@ SP_target_location(ent_t *self)
 {
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;	// Let them all spawn first
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 
 	setorigin(self, self->s.origin);
 }
@@ -510,6 +553,8 @@ SP_target_secret(ent_t *self)
 
 	self->use = target_secret_use;
 	self->message = "You discovered a secret area!";
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 	self->r.svFlags = SVF_NOCLIENT;
 	level.nsecrets++;
 	trap_LinkEntity(self);
@@ -554,6 +599,8 @@ SP_target_changemap(ent_t *self)
 {
 	spawnstr("map", "", &self->message);
 	self->use = target_changemap_use;
+	self->levelrespawn = target_levelrespawn;
+	self->ckpoint = level.checkpoint;
 	self->r.svFlags = SVF_NOCLIENT;
 	trap_LinkEntity(self);
 }
