@@ -1483,6 +1483,8 @@ clientcmd(int clientNum)
 		Cmd_SetViewpos_f(ent);
 	else if(Q_stricmp(cmd, "stats") == 0)
 		Cmd_Stats_f(ent);
+	else if(Q_stricmp(cmd, "levelrespawn") == 0)
+		levelrespawn();	// force a levelrespawn for debugging
 	else
 		trap_SendServerCommand(clientNum, va("print \"unknown cmd %s\n\"", cmd));
 }
