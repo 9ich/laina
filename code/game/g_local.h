@@ -100,76 +100,9 @@ enum
 
 #define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
-typedef struct npcframe_t	npcframe_t;
-typedef struct npcmove_t	npcmove_t;
-typedef struct npc_t		npc_t;
 typedef struct ent_s	ent_t;
 typedef struct gclient_s	gclient_t;
 
-struct npcframe_t
-{
-	void	(*aifn)(ent_t*, float dist);
-	float	dist;
-	void	(*think)(ent_t*);
-};
-
-struct npcmove_t
-{
-	int		firstframe, lastframe;
-	npcframe_t	*frame;
-	void		(*endfn)(ent_t*);
-};
-
-// NPCs are stupid bots.
-struct npc_t
-{
-	pmove_t		pm;
-	playerState_t	ps;
-	usercmd_t	ucmd;
-	npcmove_t	*mv;
-	float		idealyaw;
-	float		yawspeed;
-	float		enemyyaw;
-	qboolean	enemyvis;
-	qboolean	enemyinfront;
-	int		pausetime;
-	int		nextframe;
-	float		scale;
-	vec3_t		goal;
-	vec3_t		savedgoal;
-	vec3_t		lastsighting;
-	float		searchtime;
-	float		trailtime;
-	int		idletime;
-	int		attackstate;
-	int		aiflags;
-	ent_t		*goalent;
-	ent_t		*enemy;
-	ent_t		*oldenemy;
-	int		enemyrange;
-	ent_t		*movetarg;
-	char		*combattarg;
-	float		viewheight;
-	int		showhostile;
-	// derived from ent->s.pos and ent->s.apos
-	vec3_t		pos;
-	vec3_t		vel;
-	vec3_t		angles;
-	vec3_t		anglesvel;
-	qboolean	ongroundplane;
-	trace_t		groundtrace;
-
-	void		(*stand)(ent_t*);
-	void		(*idle)(ent_t*);
-	void		(*search)(ent_t*);
-	void		(*walk)(ent_t*);
-	void		(*run)(ent_t*);
-	//void		(*attack)(ent_t*, ent_t *targ, float eta);
-	void		(*attack)(ent_t*);
-	void		(*melee)(ent_t*);
-	void		(*sight)(ent_t*, ent_t*);
-	qboolean	(*checkattack)(ent_t *);
-};
 
 struct ent_s
 {
@@ -182,7 +115,6 @@ struct ent_s
 
 	gclient_t		*client;	// nil if not a client
 	item_t			*item;		// nil if not an item
-	npc_t			npc;		// just for NPCs
 
 	qboolean		inuse;
 
@@ -520,13 +452,6 @@ typedef struct
 	int		ncratesbroken;
 	int		ncarrots;
 	int		ncarrotspickedup;
-
-	int		numnpcs;
-	ent_t		*sightclient;
-	ent_t		*sightent;	// FIXME: what's the difference here?
-	int		sightentframenum;
-	ent_t		*soundent;
-	int		soundentframe;
 } levelstatic_t;
 
 // g_spawn.c

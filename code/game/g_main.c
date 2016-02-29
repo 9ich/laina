@@ -491,12 +491,6 @@ levelrespawn(void)
 
 	gprintf("------- levelrespawn -------\n");
 
-	level.sightclient = nil;
-	level.sightent = nil;
-	level.sightentframenum = 0;
-	level.soundent = nil;
-	level.soundentframe = 0;
-
 	for(i = 0, e = level.entities; i < level.nentities; i++, e++){
 		if(!e->inuse)
 			continue;
