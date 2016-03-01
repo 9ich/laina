@@ -1,6 +1,8 @@
 #include "g_local.h"
 #include "bg_local.h"
 
+static vec3_t cratemins = {-16, -16, 0};
+static vec3_t cratemaxs = {16, 16, 32};
 #define BOX_CONTENTS_SPEED	150.0f
 #define BOX_CONTENTS_JUMP	100.f
 
@@ -63,9 +65,9 @@ SP_crate(ent_t *ent)
 	setorigin(ent, ent->s.origin);
 	veccpy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
-	vecset(ent->r.mins, -16, -16, -16);
-	vecset(ent->r.maxs, 16, 16, 16);
-	ent->ckpoint = ENTITYNUM_WORLD;
+	veccpy(cratemins, ent->r.mins);
+	veccpy(cratemaxs, ent->r.maxs);
+	ent->ckpoint = level.checkpoint;
 	level.ncrates++;
 	trap_LinkEntity(ent);
 }
@@ -92,8 +94,8 @@ SP_crate_checkpoint(ent_t *ent)
 	setorigin(ent, ent->s.origin);
 	veccpy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
-	vecset(ent->r.mins, -16, -16, -16);
-	vecset(ent->r.maxs, 16, 16, 16);
+	veccpy(cratemins, ent->r.mins);
+	veccpy(cratemaxs, ent->r.maxs);
 	trap_LinkEntity(ent);
 }
 
@@ -111,9 +113,13 @@ SP_checkpoint_halo(ent_t *ent)
 	ent->touch = nil;
 	ent->takedmg = qfalse;
 	ent->r.contents = 0;
-	// reposition on ground
-	ent->s.origin[2] += ent->r.mins[2];
+	// float off ground a little
+	ent->s.origin[2] += 2.0f;
 	setorigin(ent, ent->s.origin);
+	ent->s.pos.trType = TR_SINE;
+	ent->s.pos.trDelta[2] = 1.0f;
+	ent->s.pos.trDuration = 4000;
+	ent->s.pos.trTime = level.time;
 	trap_LinkEntity(ent);
 }
 
@@ -130,8 +136,8 @@ SP_crate_bouncy(ent_t *ent)
 	// make sure the client precaches this sound
 	soundindex("sound/world/jumppad.wav");
 	setorigin(ent, ent->s.origin);
-	vecset(ent->r.mins, -16, -16, -16);
-	vecset(ent->r.maxs, 16, 16, 16);
+	veccpy(cratemins, ent->r.mins);
+	veccpy(cratemaxs, ent->r.maxs);
 	ent->model = "models/crates/bouncy/bouncy.md3";
 	ent->s.modelindex = modelindex(ent->model);
 	ent->physbounce = 0.2;
@@ -155,8 +161,8 @@ void
 SP_crate_tnt(ent_t *ent)
 {
 	setorigin(ent, ent->s.origin);
-	vecset(ent->r.mins, -16, -16, -16);
-	vecset(ent->r.maxs, 16, 16, 16);
+	veccpy(cratemins, ent->r.mins);
+	veccpy(cratemaxs, ent->r.maxs);
 	ent->model = "models/crates/tnt/tnt.md3";
 	ent->s.modelindex = modelindex(ent->model);
 	ent->physbounce = 0.2f;
@@ -227,8 +233,7 @@ static void
 crate_levelrespawn(ent_t *self)
 {
 	level.ncratesbroken--;
-	self->ckpoint = ENTITYNUM_WORLD;
-	trap_LinkEntity(self);
+	restoreinitialstate(self);
 }
 
 static void
@@ -282,13 +287,7 @@ crate_tnt_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 static void
 crate_tnt_levelrespawn(ent_t *self)
 {
-	self->ckpoint = ENTITYNUM_WORLD;
-	self->touch = crate_tnt_touch;
-	self->use = crate_tnt_use;
-	self->pain = crate_tnt_pain;
-	self->die = crate_tnt_die;
-	self->health = 1;
-	trap_LinkEntity(self);
+	restoreinitialstate(self);
 }
 
 static void
