@@ -225,12 +225,19 @@ typedef enum
 
 	G_SIN	= 100,
 	G_COS,
+	G_ACOS,
 	G_ATAN2,
 	G_SQRT,
 	G_FLOOR,
 	G_CEIL,
 	G_TESTPRINTINT,
 	G_TESTPRINTFLOAT,
+	G_EXP,
+	G_LOG,
+	G_LOG10,
+	G_POW,
+	G_FMOD,
+	G_ASIN,
 
 	BOTLIB_SETUP = 200,	// ( void );
 	BOTLIB_SHUTDOWN,	// ( void );

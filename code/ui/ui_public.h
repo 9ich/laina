@@ -126,12 +126,21 @@ typedef enum
 	UI_FS_SEEK,
 	UI_SET_PBCLSTATUS,
 
-	UI_SIN = 100,
+	UI_SIN	= 100,
 	UI_COS,
+	UI_ACOS,
 	UI_ATAN2,
 	UI_SQRT,
 	UI_FLOOR,
-	UI_CEIL
+	UI_CEIL,
+	UI_TESTPRINTINT,
+	UI_TESTPRINTFLOAT,
+	UI_EXP,
+	UI_LOG,
+	UI_LOG10,
+	UI_POW,
+	UI_FMOD,
+	UI_ASIN,
 } uiImport_t;
 
 typedef enum

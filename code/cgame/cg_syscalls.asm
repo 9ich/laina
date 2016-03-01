@@ -100,3 +100,9 @@ equ	floor						-106
 equ	ceil						-107
 equ	testPrintInt				-108
 equ	testPrintFloat				-109
+equ	exp					-110
+equ	log					-111
+equ	log10					-112
+equ	pow					-113
+equ	fmod					-114
+equ	asin					-115

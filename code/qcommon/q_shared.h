@@ -339,6 +339,12 @@ typedef	int	fixed16_t;
 #ifndef M_PI
 #define M_PI		3.14159265358979323846f	// matches value in gcc v2 math.h
 #endif
+#ifndef M_TAU
+#define M_TAU		6.28318530717958647692f
+#endif
+#ifndef M_E
+#define M_E		2.71828182845904523536f
+#endif
 
 #define NUMVERTEXNORMALS	162
 extern	vec3_t	bytedirs[NUMVERTEXNORMALS];

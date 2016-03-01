@@ -119,4 +119,10 @@ double	tan(double x);
 int	abs(int n);
 double	fabs(double x);
 double	acos(double x);
+double	exp(double x);
+double	log(double x);
+double	log10(double x);
+double	pow(double x, double y);
+double	fmod(double x, double y);
+double	asin(double x);
 #endif	// BG_LIB_H

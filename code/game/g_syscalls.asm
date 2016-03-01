@@ -47,14 +47,21 @@ equ trap_TraceCapsule		-44
 equ trap_EntityContactCapsule	-45
 equ trap_FS_Seek -46
 
-equ	sin						-101
-equ	cos						-102
-equ	atan2					-103
-equ	sqrt					-104
-equ	floor					-105
-equ	ceil					-106
-equ	testPrintInt			-107
-equ	testPrintFloat			-108
+equ	sin							-101
+equ	cos							-102
+equ	acos						-103
+equ	atan2						-104
+equ	sqrt						-105
+equ	floor						-106
+equ	ceil						-107
+equ	testPrintInt				-108
+equ	testPrintFloat				-109
+equ	exp					-110
+equ	log					-111
+equ	log10					-112
+equ	pow					-113
+equ	fmod					-114
+equ	asin					-115
 
 
 

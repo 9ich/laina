@@ -796,21 +796,30 @@ intptr_t SV_GameSystemCalls( intptr_t *args ) {
 
 	case G_SIN:
 		return FloatAsInt( sin( VMF(1) ) );
-
 	case G_COS:
 		return FloatAsInt( cos( VMF(1) ) );
-
+	case G_ACOS:
+		return FloatAsInt( Q_acos( VMF(1) ) );
 	case G_ATAN2:
 		return FloatAsInt( atan2( VMF(1), VMF(2) ) );
-
 	case G_SQRT:
 		return FloatAsInt( sqrt( VMF(1) ) );
-
 	case G_FLOOR:
 		return FloatAsInt( floor( VMF(1) ) );
-
 	case G_CEIL:
 		return FloatAsInt( ceil( VMF(1) ) );
+	case G_EXP:
+		return FloatAsInt( exp( VMF(1) ) );
+	case G_LOG:
+		return FloatAsInt( log( VMF(1) ) );
+	case G_LOG10:
+		return FloatAsInt( log10( VMF(1) ) );
+	case G_POW:
+		return FloatAsInt( pow( VMF(1), VMF(2) ) );
+	case G_FMOD:
+		return FloatAsInt( fmod( VMF(1), VMF(2) ) );
+	case G_ASIN:
+		return FloatAsInt( asin( VMF(1) ) );
 
 
 	default:
