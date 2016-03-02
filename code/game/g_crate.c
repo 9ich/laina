@@ -194,11 +194,14 @@ static void
 crate_use(ent_t *self, ent_t *other, ent_t *activator)
 {
 	ent_t *tent;
-	vec3_t vel;
+	vec3_t pt, vel;
 	int i, it;
 
 	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
 	tent->s.otherEntityNum = activator->s.number;
+
+	vecadd(self->r.absmin, self->r.absmax, pt);
+	vecmul(pt, 0.5f, pt);
 
 	if(self->boxcontents != 0){
 		it = self->boxcontents;
@@ -206,7 +209,7 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 			vel[0] = crandom()*BOX_CONTENTS_SPEED;
 			vel[1] = crandom()*BOX_CONTENTS_SPEED;
 			vel[2] = BOX_CONTENTS_JUMP + crandom()*BOX_CONTENTS_SPEED;
-			itemlaunch(&bg_itemlist[it], self->s.pos.trBase, vel);
+			itemlaunch(&bg_itemlist[it], pt, vel);
 		}
 	}
 	usetargets(self, activator);
@@ -257,6 +260,8 @@ crate_bouncy_touch(ent_t *self, ent_t *other, trace_t *trace)
 		return;
 	if(other->s.groundEntityNum != self->s.number)
 		return;
+	if(other->client->ps.velocity[2] > 0)
+		return;
 	trigger_push_touch(self, other, trace);
 	self->s.anim = ANIM_CRATESMASH;
 	self->s.nextanim = ANIM_CRATEIDLE;
@@ -306,6 +311,10 @@ crate_tnt_touch(ent_t *self, ent_t *other, trace_t *trace)
 		return;
 	if(other->s.groundEntityNum != self->s.number)
 		return;
+	if(!touchcrate(&other->client->ps, &self->s))
+		return;
+	self->touch = nil;
+	self->r.contents = CONTENTS_SOLID;
 	self->ckpoint = level.checkpoint;
 	other->client->ps.velocity[2] = JUMP_VELOCITY;
 	self->nextthink = level.time + 632;

@@ -683,6 +683,8 @@ touchcrate(playerState_t *pps, entityState_t *crate)
 		return qfalse;		// didn't land on the crate
 	if(!pps->crashland)
 		return qfalse;		// didn't land hard enough
+	if(pps->velocity[2] > 0)
+		return qfalse;
 
 	// remember hitting this crate this frame (recycle jumppad fields)
 	pps->jumppad_ent = crate->number;
