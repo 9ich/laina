@@ -254,6 +254,7 @@ cratesmash(vec3_t pos)
 	int i;
 
 	veccpy(pos, pt);
+	pt[2] += 16;	// reposition to crate's centre
 	smokepuff(pt, vel, 64, 0.85f, 0.58f, 0.44f, 1.0f, 300, cg.time,
 	   0, LEF_PUFF_DONT_SCALE, cgs.media.smokePuffShader);
 	pt[0] += -4 + 8*Q_random(&seed);
@@ -273,24 +274,26 @@ cratesmash(vec3_t pos)
 void
 tntexplode(vec3_t pos)
 {
-	vec3_t up, vel;
+	vec3_t pt, up, vel;
 	localent_t *xplo;
 
+	veccpy(pos, pt);
+	pt[2] += 16;	// reposition to crate's centre
 	vecset(up, 0, 0, 1);
 	vecset(vel, 0, 0, 16);
 
-	trap_S_StartSound(pos, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tntExpSound);
+	trap_S_StartSound(pt, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tntExpSound);
 
-	xplo = explosion(pos, up, cgs.media.tntExpModel, cgs.media.tntExpShader,
+	xplo = explosion(pt, up, cgs.media.tntExpModel, cgs.media.tntExpShader,
 	   1000, qtrue);
 	xplo->light = 100;
 	vecset(xplo->lightcolor, 1.0f, 0.8f, 0.4f);
 
-	impactmark(cgs.media.burnMarkShader, pos, up, random()*360, 1, 1, 1,
+	impactmark(cgs.media.burnMarkShader, pt, up, random()*360, 1, 1, 1,
 	   1, qfalse, 100, qfalse);
 
-	pos[2] += 24.0f;
-	smokepuff(pos, vel, 64, 0.0f, 0.0f, 0.0, 1.0f, 3000, cg.time,
+	pt[2] += 24.0f;
+	smokepuff(pt, vel, 64, 0.0f, 0.0f, 0.0, 1.0f, 3000, cg.time,
 	   0, LEF_PUFF_DONT_SCALE, cgs.media.smokePuffShader);
 }
 
