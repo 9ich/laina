@@ -1176,6 +1176,7 @@ static void RB_CalcDiffuseColor_scalar( unsigned char *colors )
 	numVertexes = tess.numVertexes;
 	for (i = 0 ; i < numVertexes ; i++, v += 4, normal += 4) {
 		incoming = DotProduct (normal, lightDir);
+		incoming = 0.5f + incoming*0.5f;
 		if ( incoming <= 0 ) {
 			*(int *)&colors[i*4] = ambientLightInt;
 			continue;
