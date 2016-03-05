@@ -63,8 +63,13 @@ npcreached(ent_t *ent)
 		ent->s.apos.trDelta[i] = anglemod(next->s.angles[i] - ent->r.currentAngles[i]);
 		if(next->s.angles[i] - ent->r.currentAngles[i] <= 0)
 			ent->s.apos.trDelta[i] = -anglemod(-ent->s.apos.trDelta[i]);
+		if(next->wait != 0.0f)
+			ent->s.apos.trDelta[i] /= next->wait;
 	}
-	ent->s.apos.trDuration = 1000;
+	if(next->wait != 0.0f)
+		ent->s.apos.trDuration = next->wait*1000;
+	else
+		ent->s.apos.trDuration = 1000;
 	ent->s.apos.trTime = level.time;
 	ent->s.apos.trType = TR_LINEAR_STOP;
 	ent->s.anim = ANIM_NPCTURN;
@@ -73,7 +78,7 @@ npcreached(ent_t *ent)
 	if(next->speed)
 		speed = next->speed;
 	else
-		// otherwise use the train's speed
+		// otherwise use the NPC's speed
 		speed = ent->speed;
 	if(speed < 1)
 		speed = 1;
