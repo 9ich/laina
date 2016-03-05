@@ -57,12 +57,17 @@ npcreached(ent_t *ent)
 	veccpy(next->nexttrain->s.origin, ent->pos2);
 
 	// transition the angles
-	for(i = 0; i < 3; i++)
-		ent->s.apos.trBase[i] = anglemod(ent->r.currentAngles[i]);
 	for(i = 0; i < 3; i++){
-		ent->s.apos.trDelta[i] = anglemod(next->s.angles[i] - ent->r.currentAngles[i]);
-		if(next->s.angles[i] - ent->r.currentAngles[i] <= 0)
-			ent->s.apos.trDelta[i] = -anglemod(-ent->s.apos.trDelta[i]);
+		ent->r.currentAngles[i] = anglemod(ent->r.currentAngles[i]);
+		ent->s.apos.trBase[i] = ent->r.currentAngles[i];
+		ent->s.apos.trDelta[i] = next->s.angles[i] - ent->r.currentAngles[i];
+		if(next->s.angles[i] > ent->r.currentAngles[i]){
+			if(ent->s.apos.trDelta[i] >= 180)
+				ent->s.apos.trDelta[i] -= 360;
+		}else{
+			if(ent->s.apos.trDelta[i] <= -180)
+				ent->s.apos.trDelta[i] += 360;
+		}
 		if(next->wait != 0.0f)
 			ent->s.apos.trDelta[i] /= next->wait;
 	}
