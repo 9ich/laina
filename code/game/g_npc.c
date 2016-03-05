@@ -155,10 +155,14 @@ npclinktargets(ent_t *ent)
 		}while(strcmp(next->classname, "path_corner") != 0);
 
 		if(!(ent->spawnflags & SUSPEND)){
-			// drop target path_corners to floor, subject to npc bounds
+			vec3_t mins, maxs;
+
+			vecset(mins, -1, -1, -2);
+			vecset(maxs, 1, 1, 1);
+			// drop target path_corners to floor
 			veccpy(next->s.origin, end);
 			end[2] -= 99999;
-			trap_Trace(&tr, next->s.origin, ent->r.mins, ent->r.maxs, end,
+			trap_Trace(&tr, next->s.origin, mins, maxs, end,
 			   next->s.number, MASK_NPCSOLID);
 			if(tr.fraction != 1.0f && !tr.allsolid)
 				veccpy(tr.endpos, next->s.origin);
