@@ -200,9 +200,6 @@ npcsetup(ent_t *self)
 
 	vecclear(self->s.angles);
 
-	if(!self->speed)
-		self->speed = 100;
-
 	if(!self->target){
 		gprintf("npc without a target at %s\n", vtos(self->r.absmin));
 		entfree(self);
@@ -266,6 +263,10 @@ npcsetup(ent_t *self)
 	self->think = npclinktargets;
 	self->levelrespawn = npclevelrespawn;
 	self->ckpoint = level.checkpoint;
+
+	self->r.contents = CONTENTS_TRIGGER;
+	self->s.anim = ANIM_NPCIDLE;
+	trap_LinkEntity(self);
 }
 
 static void
@@ -367,15 +368,6 @@ npc_blocked(ent_t *ent, ent_t *other)
 	entdamage(other, ent, ent, nil, nil, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
 }
 
-static void
-npcfinishspawn(ent_t *e)
-{
-	npcsetup(e);
-	e->r.contents = CONTENTS_TRIGGER;
-	e->s.anim = ANIM_NPCIDLE;
-	trap_LinkEntity(e);
-}
-
 /*
 An overgrown rat.
 
@@ -401,5 +393,8 @@ SP_npc_rat(ent_t *e)
 	e->blocked = npc_blocked;
 	e->touch = npc_touch;
 
-	npcfinishspawn(e);
+	if(!e->speed)
+		e->speed = 100;
+
+	npcsetup(e);
 }
