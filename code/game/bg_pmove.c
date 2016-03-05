@@ -1406,7 +1406,6 @@ checkduck(void)
 
 	if(pm->ps->pm_type == PM_DEAD){
 		pm->maxs[2] = -8;
-		pm->ps->viewheight = DEAD_VIEWHEIGHT;
 		return;
 	}
 

@@ -366,8 +366,6 @@ player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int means
 	self->s.powerups = 0;
 	self->r.contents = CONTENTS_CORPSE;
 
-	veccpy(self->s.angles, self->client->ps.viewangles);
-
 	self->s.loopSound = 0;
 
 	self->r.maxs[2] = -8;
