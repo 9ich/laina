@@ -301,10 +301,19 @@ crate_tnt_levelrespawn(ent_t *self)
 static void
 crate_tnt_explode(ent_t *e)
 {
+	vec3_t pt;
+
+	vecadd(e->r.absmin, e->r.absmax, pt);
+	vecmul(pt, 0.5f, pt);
 	trap_UnlinkEntity(e);
-	radiusdamage(e->s.origin, e, e->splashdmg,
+	radiusdamage(e->r.currentOrigin, e, e->splashdmg,
 	   e->splashradius, e, e->splashmeansofdeath);
-	enttemp(e->s.origin, EV_TNT_EXPLODE);
+	setorigin(e, pt);
+	e->classname = "explodedtnt";
+	e->s.eType = ET_EVENTS + EV_TNT_EXPLODE;
+	e->eventtime = level.time;
+	e->r.contents = 0;
+	trap_LinkEntity(e);
 }
 
 static void

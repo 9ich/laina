@@ -278,7 +278,6 @@ tntexplode(vec3_t pos)
 	localent_t *xplo;
 
 	veccpy(pos, pt);
-	pt[2] += 16;	// reposition to crate's centre
 	vecset(up, 0, 0, 1);
 	vecset(vel, 0, 0, 16);
 
