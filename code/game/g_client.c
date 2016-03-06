@@ -47,6 +47,25 @@ SP_playerspawn(ent_t *ent)
 		ent->flags |= FL_NO_HUMANS;
 }
 
+/*QUAKED info_player_respawnpoint (1 1 0) (-16 -16 -24) (16 16 32)
+
+Respawn spot to be targeted by a crate_checkpoint.
+Targets will be fired when someone spawns on them.
+*/
+void
+SP_info_player_respawnpoint(ent_t *ent)
+{
+	int i;
+
+	ent->classname = "info_player_respawnpoint";
+	spawnint("nobots", "0", &i);
+	if(i)
+		ent->flags |= FL_NO_BOTS;
+	spawnint("nohumans", "0", &i);
+	if(i)
+		ent->flags |= FL_NO_HUMANS;
+}
+
 /*
 =======================================================================
 
@@ -233,6 +252,33 @@ SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, 
 	return list_spot[rnd];
 }
 
+static ent_t*
+selectrespawnpoint(vec3_t origin, vec3_t angles)
+{
+	ent_t *ckpoint, *spot, *best;
+
+	ckpoint = &g_entities[level.checkpoint];
+	veccpy(ckpoint->s.origin, origin);
+	origin[2] += 9;
+	veccpy(ckpoint->s.angles, angles);
+	if(!possibletelefrag(ckpoint))
+		return ckpoint;
+
+	best = ckpoint;
+	spot = nil;
+	while((spot = findent(spot, FOFS(targetname), ckpoint->target)) != nil){
+		if(Q_stricmp(spot->classname, "info_player_respawnpoint") != 0)
+			continue;
+		if(possibletelefrag(spot))
+			continue;
+		veccpy(spot->s.origin, origin);
+		origin[2] += 9;
+		veccpy(spot->s.angles, angles);
+		best = spot;
+	}
+	return best;
+}
+
 /*
 ===========
 selectspawnpoint
@@ -246,41 +292,9 @@ selectspawnpoint(vec3_t avoidPoint, vec3_t origin, vec3_t angles, qboolean isbot
 	ent_t *spot;
 
 	if(level.checkpoint != ENTITYNUM_NONE){
-		spot = &g_entities[level.checkpoint];
-		veccpy(spot->s.origin, origin);
-		origin[2] += 9;
-		veccpy(spot->s.angles, angles);
-		return spot;
+		return selectrespawnpoint(origin, angles);
 	}
 	return SelectRandomFurthestSpawnPoint(avoidPoint, origin, angles, isbot);
-
-	/*
-	ent_t	*spot;
-	ent_t	*nearestSpot;
-
-	nearestSpot = SelectNearestDeathmatchSpawnPoint( avoidPoint );
-
-	spot = SelectRandomDeathmatchSpawnPoint ( );
-	if( spot == nearestSpot ){
-	    // roll again if it would be real close to point of death
-	    spot = SelectRandomDeathmatchSpawnPoint ( );
-	    if( spot == nearestSpot ){
-	            // last try
-	            spot = SelectRandomDeathmatchSpawnPoint ( );
-	    }
-	}
-
-	// find a single player start spot
-	if(!spot){
-	    errorf( "Couldn't find a spawn point" );
-	}
-
-	veccpy (spot->s.origin, origin);
-	origin[2] += 9;
-	veccpy (spot->s.angles, angles);
-
-	return spot;
-	*/
 }
 
 /*

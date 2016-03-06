@@ -121,8 +121,6 @@ typedef struct
 	void (*spawn)(ent_t *ent);
 } spawn_t;
 
-void	SP_playerspawn(ent_t *ent);
-
 void	SP_func_plat(ent_t *ent);
 void	SP_func_static(ent_t *ent);
 void	SP_func_rotating(ent_t *ent);
@@ -156,12 +154,15 @@ void	SP_target_push(ent_t *ent);
 void	SP_target_secret(ent_t *ent);
 void	SP_target_changemap(ent_t *ent);
 
-void	SP_light(ent_t *self);
+void	SP_playerspawn(ent_t *self);
+void	SP_info_player_respawnpoint(ent_t *self);
 void	SP_info_null(ent_t *self);
 void	SP_info_notnull(ent_t *self);
 void	SP_info_player_intermission(ent_t *self);
 void	SP_info_camp(ent_t *self);
 void	SP_path_corner(ent_t *self);
+
+void	SP_light(ent_t *self);
 
 void	SP_misc_teleporter_dest(ent_t *self);
 void	SP_misc_model(ent_t *ent);
@@ -192,6 +193,8 @@ SP_item_botroam(ent_t *ent){ }
 
 spawn_t spawns[] = {
 	{"playerspawn", SP_playerspawn},
+	{"info_player_start", SP_playerspawn},
+	{"info_player_respawnpoint", SP_info_player_respawnpoint},
 
 	{"crate_", SP_crate},	// underscore for radiant menu
 	{"crate_checkpoint", SP_crate_checkpoint},
