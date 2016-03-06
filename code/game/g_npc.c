@@ -312,7 +312,7 @@ npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 static void
 npc_touch(ent_t *ent, ent_t *other, trace_t *trace)
 {
-	vec3_t dir, org, corner, closest;
+	vec3_t dir, org, corner, closest, playerorg;
 	float dist;
 
 	if(other->client == nil)
@@ -350,18 +350,28 @@ npc_touch(ent_t *ent, ent_t *other, trace_t *trace)
 		other->client->ps.velocity[2] = JUMP_VELOCITY;
 		return;
 	}
-	other->client->ps.velocity[2] = JUMP_VELOCITY;
-	entdamage(other, nil, nil, nil, nil, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
+	veccpy(other->client->ps.origin, playerorg);
+	playerorg[2] += other->client->ps.viewheight;
+	vecsub(playerorg, org, dir);
+	entdamage(other, ent, ent, dir, ent->r.currentOrigin, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
 }
 
 static void
 npc_blocked(ent_t *ent, ent_t *other)
 {
+	vec3_t org, playerorg, dir;
+
 	if(other->client == nil)
 		return;
 
-	other->client->ps.velocity[2] = JUMP_VELOCITY;
-	entdamage(other, ent, ent, nil, nil, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
+	vecadd(ent->r.absmin, ent->r.absmax, org);
+	vecmul(org, 0.5f, org);
+
+	veccpy(other->client->ps.origin, playerorg);
+	playerorg[2] += other->client->ps.viewheight;
+	vecsub(playerorg, org, dir);
+
+	entdamage(other, ent, ent, dir, ent->r.currentOrigin, ent->damage, DAMAGE_NO_PROTECTION, ent->meansofdeath);
 }
 
 /*

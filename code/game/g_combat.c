@@ -552,10 +552,6 @@ entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 			targ->use(targ, inflictor, attacker);
 		return;
 	}
-	// reduce damage by the attacker's handicap value
-	// unless they are rocket jumping
-	if(attacker->client && attacker != targ)
-		damage = 50;
 
 	client = targ->client;
 
@@ -569,12 +565,13 @@ entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 		vecnorm(dir);
 
 	knockback = damage;
-	if(knockback > 200)
-		knockback = 200;
+	if(knockback > 2)
+		knockback = 2;
 	if(targ->flags & FL_NO_KNOCKBACK)
 		knockback = 0;
 	if(dflags & DAMAGE_NO_KNOCKBACK)
 		knockback = 0;
+	knockback *= 300;
 
 	// figure momentum add, even if the damage won't be taken
 	if(knockback && targ->client){
@@ -584,6 +581,7 @@ entdamage(ent_t *targ, ent_t *inflictor, ent_t *attacker,
 		mass = 200;
 
 		vecmul(dir, g_knockback.value * (float)knockback / mass, kvel);
+		kvel[2] *= 0.5f;
 		vecadd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 
 		// set the timer so that the other client can't cancel
