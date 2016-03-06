@@ -125,4 +125,5 @@ double	log10(double x);
 double	pow(double x, double y);
 double	fmod(double x, double y);
 double	asin(double x);
+long	round(double x);
 #endif	// BG_LIB_H

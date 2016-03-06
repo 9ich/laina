@@ -1940,7 +1940,7 @@ abs_val(LDOUBLE value)
 	return result;
 }
 
-static long
+long
 round(LDOUBLE value)
 {
 	long intpart;
