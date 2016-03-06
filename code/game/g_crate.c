@@ -197,8 +197,11 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 	vec3_t pt, vel;
 	int i, it;
 
-	tent = enttemp(self->s.pos.trBase, EV_SMASH_CRATE);
-	tent->s.otherEntityNum = activator->s.number;
+	self->classname = "smashedcrate";
+	self->s.eType = ET_EVENTS + EV_SMASH_CRATE;
+	self->eventtime = level.time;
+	self->s.modelindex = 0;
+	self->r.contents = 0;
 
 	vecadd(self->r.absmin, self->r.absmax, pt);
 	vecmul(pt, 0.5f, pt);
@@ -213,7 +216,7 @@ crate_use(ent_t *self, ent_t *other, ent_t *activator)
 		}
 	}
 	usetargets(self, activator);
-	trap_UnlinkEntity(self);
+	trap_LinkEntity(self);
 	level.ncratesbroken++;
 	self->ckpoint = level.checkpoint;
 }
