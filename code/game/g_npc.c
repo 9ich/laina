@@ -294,10 +294,6 @@ npc_die(ent_t *e, ent_t *inflictor, ent_t *attacker, int dmg, int mod)
 	veccpy(e->s.origin, end);
 	end[2] -= 99999;
 	trap_Trace(&tr, e->r.currentOrigin, e->r.mins, e->r.maxs, end, e->s.number, MASK_SOLID);
-	if(tr.startsolid){
-		trap_UnlinkEntity(e);
-		return;
-	}
 
 	e->s.groundEntityNum = tr.entityNum;
 
