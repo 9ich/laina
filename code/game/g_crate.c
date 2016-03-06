@@ -174,7 +174,7 @@ SP_crate_tnt(ent_t *ent)
 	ent->levelrespawn = crate_tnt_levelrespawn;
 	ent->health = 1;
 	ent->takedmg = qtrue;
-	ent->s.eType = ET_CRATE_BOUNCY;
+	ent->s.eType = ET_CRATE;
 	veccpy(ent->s.angles, ent->s.apos.trBase);
 	ent->r.contents = CONTENTS_SOLID | CONTENTS_TRIGGER;
 
