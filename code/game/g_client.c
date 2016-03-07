@@ -1279,6 +1279,4 @@ clientgameover(ent_t *e)
 			break;
 	if(i == MAX_CLIENTS)
 		gameover();
-	else
-		addevent(e, EV_GAMEOVER, 1);
 }

@@ -700,7 +700,7 @@ ClientThink_real(ent_t *ent)
 	client->latchedbuttons |= client->buttons & ~client->oldbuttons;
 
 	// check for respawning
-	if(client->ps.stats[STAT_HEALTH] <= 0){
+	if(client->ps.stats[STAT_HEALTH] <= 0 && client->ps.persistant[PERS_LIVES] > 0){
 		// wait for the attack button to be pressed
 		if(level.time > client->respawntime){
 			// forcerespawn is to prevent users from waiting out powerups

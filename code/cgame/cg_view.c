@@ -475,6 +475,9 @@ drawframe(int serverTime, stereoFrame_t stereoview, qboolean demoplayback)
 	// update cvars
 	updatecvars();
 
+	if(cg.snap->ps.persistant[PERS_LIVES] < 0 && cg.gameovertime == 0)
+		cg.gameovertime = cg.time;
+
 	// if we are only updating the screen as a loading
 	// pacifier, don't even try to read snapshots
 	if(cg.infoscreentext[0] != 0){

@@ -918,7 +918,7 @@ intermission(void)
 		if(!client->inuse)
 			continue;
 		// respawn if dead
-		if(client->health <= 0)
+		if(client->health <= 0 && client->client->ps.persistant[PERS_LIVES] > 0)
 			clientrespawn(client);
 		clientintermission(client);
 	}
@@ -1540,9 +1540,11 @@ gameover(void)
 
 	gprintf("------- gameover -------\n");
 
+	if(level.gameovertime)
+		return;
+
 	for(i = 0, ent = level.entities; i < MAX_CLIENTS; i++, ent++)
 		if(ent->inuse && ent->client->sess.specstate == SPECTATOR_NOT){
-			addevent(ent, EV_GAMEOVER, 2);
 			// force spec now
 			ent->client->deathspectime = level.time;
 		}
@@ -1569,8 +1571,10 @@ runframe(int levelTime)
 	// get any cvar changes
 	updatecvars();
 
-	if(level.gameovertime > 0 && level.time > level.gameovertime)
+	if(level.gameovertime > 0 && level.time > level.gameovertime){
 		trap_SendConsoleCommand(EXEC_APPEND, "map limbo\n");
+		level.gameovertime = 0;
+	}
 
 	// go through all allocated objects
 	ent = &g_entities[0];

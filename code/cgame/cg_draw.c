@@ -1411,17 +1411,26 @@ drawwarmup(void)
 			 qfalse, qtrue, cw, (int)(cw * 1.5), 0);
 }
 
-void
+static void
 drawgameover(void)
 {
-	switch(cg.gameover){
-	case 0:
+	int i;
+
+	if(cg.snap->ps.persistant[PERS_LIVES] > 0)
 		return;
-	case 1:
-		centerprint("Game over for you!", 0.4f*SCREEN_HEIGHT, 18);
-	case 2:
-		centerprint("Game over!", 0.4f*SCREEN_HEIGHT, 18);
+
+	for(i = 0; i < cgs.maxclients; i++){
+		if(cg_entities[i].currstate.eType == ET_PLAYER &&
+		   !(cg_entities[i].currstate.eFlags & EF_CONNECTION) &&
+		   i != cg.snap->ps.clientNum)
+			break;
 	}
+	// if we're not alone in the server, draw a different 
+	// gameover message
+	if(i == cgs.maxclients)
+		centerprint("Game over!", 0.4f*SCREEN_HEIGHT, 18);
+	else
+		centerprint("Out of lives!", 0.4f*SCREEN_HEIGHT, 18);
 }
 
 static void
