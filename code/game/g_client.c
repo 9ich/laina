@@ -384,6 +384,20 @@ initbodyqueue(void)
 	}
 }
 
+void
+clearbodyqueue(void)
+{
+	ent_t *e;
+
+	level.bodyqueueindex = 0;
+	e = nil;
+	while((e = findent(e, FOFS(classname), "bodyque")) != nil){
+		memset(e, 0, sizeof *e);
+		e->classname = "bodyque";
+		e->neverfree = qtrue;
+	}
+}
+
 /*
 =============
 BodySink

@@ -580,6 +580,7 @@ void		copytobodyqueue(ent_t *ent);
 void		clientrespawn(ent_t *ent);
 void		intermission(void);
 void		initbodyqueue(void);
+void		clearbodyqueue(void);
 void		clientspawn(ent_t *ent);
 void		player_die(ent_t *self, ent_t *inflictor, ent_t *attacker, int damage, int mod);
 void		addscore(ent_t *ent, vec3_t origin, int score);

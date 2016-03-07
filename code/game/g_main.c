@@ -478,12 +478,8 @@ shutdowngame(int restart)
 /*
 Soft re-initialisation of the level.
 
-Called on singleplayer respawn.  Respawns anything with levelrespawn !=
-nil, i.e. ordinary items and crates.  Frees dropped items.
-
-This ought to reset level times as well, but that causes brief lag/loss
-warning messages in cgame. This probably requires a new server syscall
-to reset times like map_restart does.
+Called on singleplayer respawn.
+Calls ent->levelrespawn if != nil. Use ent->levelrespawn with restoreinitialstate.
 */
 void
 levelrespawn(void)
@@ -493,6 +489,7 @@ levelrespawn(void)
 
 	gprintf("------- levelrespawn -------\n");
 
+	clearbodyqueue();
 	for(i = 0, e = level.entities; i < level.nentities; i++, e++){
 		if(!e->inuse)
 			continue;
