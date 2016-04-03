@@ -616,20 +616,5 @@ drawpropstr(int x, int y, const char *str, int style, vec4_t color)
 		return;
 	}
 
-	if(style & UI_PULSE){
-		drawcolor[0] = color[0] * 0.8;
-		drawcolor[1] = color[1] * 0.8;
-		drawcolor[2] = color[2] * 0.8;
-		drawcolor[3] = color[3];
-		drawpropstr2(x, y, str, color, sizeScale, cgs.media.charsetProp);
-
-		drawcolor[0] = color[0];
-		drawcolor[1] = color[1];
-		drawcolor[2] = color[2];
-		drawcolor[3] = 0.5 + 0.5 * sin(cg.time / PULSE_DIVISOR);
-		drawpropstr2(x, y, str, drawcolor, sizeScale, cgs.media.charsetPropGlow);
-		return;
-	}
-
 	drawpropstr2(x, y, str, color, sizeScale, cgs.media.charsetProp);
 }
